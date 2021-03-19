@@ -5,28 +5,37 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
+	_ "os/user"
 	"os/signal"
 	"strings"
+	"github.com/yuin/gopher-lua"
 )
+
+var l *lua.LState
+var prompt string
 
 func main() {
 	HandleSignals()
+	LuaInit()
 
 	for {
-		user, _ := user.Current()
-		dir, _ := os.Getwd()
-		host, _ := os.Hostname()
+		//user, _ := user.Current()
+		//dir, _ := os.Getwd()
+		//host, _ := os.Hostname()
 
 		reader := bufio.NewReader(os.Stdin)
 
-		fmt.Printf("\u001b[1m\u001b[36m%s@%s \u001b[34m%s $ \u001b[0m", user.Username, host, dir)
+		fmt.Printf(prompt)
 
 		cmdString, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		cmdString = strings.TrimSuffix(cmdString, "\n")
+		err = l.DoString(cmdString)
+
+		if err == nil { continue }
+
 		cmdArgs := strings.Fields(cmdString)
 
 		if len(cmdArgs) == 0 { continue }
@@ -47,9 +56,18 @@ func main() {
 }
 
 func HandleSignals() {
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		<-c
-	}()
+	signal.Ignore(os.Interrupt)
+}
+
+func LuaInit() {
+	l = lua.NewState()
+
+	l.OpenLibs()
+
+	l.SetGlobal("prompt", l.NewFunction(hshprompt))
+
+	err := l.DoFile(os.Getenv("HOME") + "/.hilbishrc.lua")
+	if err != nil {
+		panic(err)
+	}
 }
