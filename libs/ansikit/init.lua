@@ -1,3 +1,7 @@
+-- We're basically porting Ansikit to lua
+-- https://github.com/Luvella/AnsiKit/blob/master/lib/index.js
+-- which is made by yours truly sammy :^)
+
 local ansikit = {}
 
 ansikit.getCSI = function (code, endc)
