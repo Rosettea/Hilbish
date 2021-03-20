@@ -66,14 +66,16 @@ func main() {
 		switch cmdArgs[0] {
 		case "exit":
 			os.Exit(0)
-		}
+		case "cd":
+			os.Chdir(strings.Trim(cmdString, "cd "))
+		default:
+			cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
 
-		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-
-		if err := cmd.Run(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			if err := cmd.Run(); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		}
 		readline.AddHistory(cmdString)
 	}
