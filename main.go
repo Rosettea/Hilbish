@@ -15,7 +15,7 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-const version = "0.0.4"
+const version = "0.0.5"
 var l *lua.LState
 var prompt string
 
