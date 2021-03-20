@@ -22,6 +22,7 @@ ansikit.text = function (text)
 		blue = {'{blue}', ansikit.getCSI(34)},
 		magenta = {'{magenta}', ansikit.getCSI(35)},
 		cyan = {'{cyan}', ansikit.getCSI(36)}
+		-- TODO: Background, bright colors
 	}
 
 	for k, v in pairs(colors) do
