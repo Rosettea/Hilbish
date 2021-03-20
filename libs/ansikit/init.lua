@@ -17,6 +17,9 @@ ansikit.text = function (text)
 		underline_off = {'{underline-off}', ansikit.getCSI(24)},
 		black = {'{black}', ansikit.getCSI(30)},
 		red = {'{red}', ansikit.getCSI(31)},
+		green = {'{green}', ansikit.getCSI(32)},
+		yellow = {'{yellow}', ansikit.getCSI(33)},
+		blue = {'{blue}', ansikit.getCSI(34)},
 		magenta = {'{magenta}', ansikit.getCSI(35)},
 		cyan = {'{cyan}', ansikit.getCSI(36)}
 	}
