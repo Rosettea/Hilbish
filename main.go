@@ -1,20 +1,43 @@
 package main
 
 import (
-	"bufio"
+	_ "bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	_ "os/user"
+	"syscall"
 	"os/signal"
 	"strings"
+
+	"github.com/akamensky/argparse"
+	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 )
 
+const version = "0.0.4"
 var l *lua.LState
 var prompt string
 
 func main() {
+	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
+	verflag := parser.Flag("v", "version", &argparse.Options{
+		Required: false,
+		Help: "color palette to use",
+	})
+
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+		os.Exit(0)
+	}
+
+	if *verflag {
+		fmt.Printf("Hilbish v%s\n", version)
+		os.Exit(0)
+	}
+
+	os.Setenv("SHELL", os.Args[0])
 	HandleSignals()
 	LuaInit()
 
@@ -23,11 +46,11 @@ func main() {
 		//dir, _ := os.Getwd()
 		//host, _ := os.Hostname()
 
-		reader := bufio.NewReader(os.Stdin)
+		//reader := bufio.NewReader(os.Stdin)
 
-		fmt.Printf(prompt)
+		//fmt.Printf(prompt)
 
-		cmdString, err := reader.ReadString('\n')
+		cmdString, err := readline.String(prompt)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
@@ -52,11 +75,16 @@ func main() {
 		if err := cmd.Run(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
+		readline.AddHistory(cmdString)
 	}
 }
 
 func HandleSignals() {
-	signal.Ignore(os.Interrupt)
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+	}()
 }
 
 func LuaInit() {
