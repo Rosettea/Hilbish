@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"os/signal"
 	"strings"
+	"io"
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
@@ -51,6 +52,10 @@ func main() {
 		//fmt.Printf(prompt)
 
 		cmdString, err := readline.String(prompt)
+		if err == io.EOF {
+			fmt.Println("")
+			break
+		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
