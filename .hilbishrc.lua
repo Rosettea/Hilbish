@@ -1,3 +1,6 @@
 -- Default Hilbish config
+package.path = package.path .. ';./libs/?/init.lua'
 
-prompt(string.char(0x001b).."[36m"..os.getenv("USER").." λ "..string.char(0x001b).."[0m")
+local ansikit = require 'ansikit'
+
+prompt(ansikit.text('λ {bold}{cyan}'..os.getenv('USER')..' >{magenta}>{cyan}>{reset} '))
