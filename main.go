@@ -23,7 +23,7 @@ func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := parser.Flag("v", "version", &argparse.Options{
 		Required: false,
-		Help: "color palette to use",
+		Help: "prints hilbish version",
 	})
 
 	err := parser.Parse(os.Args)
