@@ -59,7 +59,15 @@ func main() {
 
 		if err == nil { continue }
 
-		cmdArgs := strings.Fields(cmdString)
+		quoted := false
+		q := func(r rune) bool {
+			if r == '"' {
+				quoted = !quoted
+			}
+			return !quoted && r == ' '
+		}
+
+		cmdArgs := strings.FieldsFunc(cmdString, q)
 
 		if len(cmdArgs) == 0 { continue }
 
