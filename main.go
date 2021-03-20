@@ -10,15 +10,19 @@ import (
 	"os/signal"
 	"strings"
 	"io"
+	lfs "hilbish/golibs/fs"
+	cmds "hilbish/golibs/commander"
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 )
 
-const version = "0.0.5"
+const version = "0.0.6"
 var l *lua.LState
 var prompt string
+var commands = map[string]bool{}
 
 func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
@@ -76,11 +80,25 @@ func main() {
 
 		if len(cmdArgs) == 0 { continue }
 
+		if commands[cmdArgs[0]] {
+			err := l.CallByParam(lua.P{
+				Fn: l.GetField(
+					l.GetTable(
+						l.GetGlobal("commander"),
+						lua.LString("__commands")),
+					cmdArgs[0]),
+				NRet: 0,
+				Protect: true,
+			}, luar.New(l, cmdArgs[1:]))
+			if err != nil {
+				// TODO: dont panic
+				panic(err)
+			}
+			continue
+		}
 		switch cmdArgs[0] {
 		case "exit":
 			os.Exit(0)
-		case "cd":
-			os.Chdir(strings.Trim(cmdString, "cd "))
 		default:
 			cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 			cmd.Stderr = os.Stderr
@@ -108,6 +126,21 @@ func LuaInit() {
 	l.OpenLibs()
 
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
+
+	l.PreloadModule("fs", lfs.Loader)
+
+	commander := cmds.New()
+	commander.Events.On("commandRegister",
+	func (cmdName string, cmd *lua.LFunction) {
+		commands[cmdName] = true
+		l.SetField(
+			l.GetTable(l.GetGlobal("commander"),
+			lua.LString("__commands")),
+			cmdName,
+			cmd)
+	})
+
+	l.PreloadModule("commander", commander.Loader)
 
 	err := l.DoFile(os.Getenv("HOME") + "/.hilbishrc.lua")
 	if err != nil {
