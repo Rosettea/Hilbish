@@ -23,6 +23,7 @@ const version = "0.0.12"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
+var aliases = map[string]string{}
 
 func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
@@ -86,29 +87,15 @@ func main() {
 
 		if err == nil { continue }
 
-		quoted := false
-		cmdArgs := []string{}
-		sb := &strings.Builder{}
-
-		for _, r := range cmdString {
-			if r == '"' {
-				quoted = !quoted
-				// dont add back quotes
-				//sb.WriteRune(r)
-			} else if !quoted && r == '~' {
-				sb.WriteString(os.Getenv("HOME"))
-			} else if !quoted && r == ' ' {
-				cmdArgs = append(cmdArgs, sb.String())
-				sb.Reset()
-			} else {
-				sb.WriteRune(r)
-			}
-		}
-		if sb.Len() > 0 {
-			cmdArgs = append(cmdArgs, sb.String())
-		}
-
+		cmdArgs := splitInput(cmdString)
 		if len(cmdArgs) == 0 { continue }
+
+		if aliases[cmdArgs[0]] != "" {
+			cmdString = aliases[cmdArgs[0]] + strings.Trim(cmdString, cmdArgs[0])
+			cmdArgs := splitInput(cmdString)
+			execCommand(cmdArgs[0], cmdArgs[1:])
+			continue
+		}
 
 		if commands[cmdArgs[0]] {
 			err := l.CallByParam(lua.P{
@@ -130,19 +117,52 @@ func main() {
 		case "exit":
 			os.Exit(0)
 		default:
-			cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-			cmd.Stdin = os.Stdin
-			cmd.Stderr = os.Stderr
-			cmd.Stdout = os.Stdout
-
-			if err := cmd.Run(); err != nil {
+			err := execCommand(cmdArgs[0], cmdArgs[1:])
+			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
-		readline.AddHistory(cmdString)
 	}
 }
 
+func splitInput(input string) []string {
+	quoted := false
+	cmdArgs := []string{}
+	sb := &strings.Builder{}
+
+	for _, r := range input {
+		if r == '"' {
+			quoted = !quoted
+			// dont add back quotes
+			//sb.WriteRune(r)
+		} else if !quoted && r == '~' {
+			sb.WriteString(os.Getenv("HOME"))
+		} else if !quoted && r == ' ' {
+			cmdArgs = append(cmdArgs, sb.String())
+			sb.Reset()
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+	if sb.Len() > 0 {
+		cmdArgs = append(cmdArgs, sb.String())
+	}
+
+	readline.AddHistory(input)
+	return cmdArgs
+}
+func execCommand(name string, args []string) error {
+	cmd := exec.Command(name, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
 func HandleSignals() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -157,6 +177,7 @@ func LuaInit() {
 	l.OpenLibs()
 
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
+	l.SetGlobal("alias", l.NewFunction(hshalias))
 
 	l.PreloadModule("fs", lfs.Loader)
 

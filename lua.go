@@ -10,3 +10,11 @@ func hshprompt(L *lua.LState) int {
 	return 0
 }
 
+func hshalias(L *lua.LState) int {
+	alias := L.ToString(1)
+	source := L.ToString(2)
+
+	aliases[alias] = source
+
+	return 1
+}
