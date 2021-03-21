@@ -19,7 +19,7 @@ import (
 	"layeh.com/gopher-luar"
 )
 
-const version = "0.0.10"
+const version = "0.0.11"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -44,11 +44,13 @@ func main() {
 
 	os.Setenv("SHELL", os.Args[0])
 
-	input, _ := os.ReadFile(".hilbishrc.lua")
-	input, err := os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
+	input, err := os.ReadFile(".hilbishrc.lua")
 	if err != nil {
-		fmt.Println("could not find .hilbishrc.lua or /usr/share/.hilbishrc.lua")
-		return
+		input, err = os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
+		if err != nil {
+			fmt.Println("could not find .hilbishrc.lua or /usr/share/hilbish/.hilbishrc.lua")
+			return
+		}
 	}
 
 	homedir, _ := os.UserHomeDir()
@@ -109,6 +111,7 @@ func main() {
 		if len(cmdArgs) == 0 { continue }
 
 		if commands[cmdArgs[0]] {
+			fmt.Printf("%+q", cmdArgs[1:])
 			err := l.CallByParam(lua.P{
 				Fn: l.GetField(
 					l.GetTable(
