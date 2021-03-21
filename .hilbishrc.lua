@@ -1,11 +1,14 @@
 -- Default Hilbish config
-package.path = package.path .. ';./libs/?/init.lua' .. ';/home/sammy/.luarocks/lib/lua/5.4/?.so'
+package.path = package.path .. ';./libs/?/init.lua;/usr/share/hilbish/libs/?/init.lua'
 
 fs = require 'fs'
 commander = require 'commander'
 
 commander.register("cd", function (path)
-	fs.cd(path[1])
+	print(path)
+	if path then
+		fs.cd(path[1])
+	end
 end)
 --[[commander = {
 	__commands = {}
