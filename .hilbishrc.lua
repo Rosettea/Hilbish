@@ -10,12 +10,6 @@ commander.register("cd", function (path)
 		fs.cd(path[1])
 	end
 end)
---[[commander = {
-	__commands = {}
-}
-commander.__commands.ayo = function ()
-	print("ayo?")
-end]]--
 
 local ansikit = require 'ansikit'
 
