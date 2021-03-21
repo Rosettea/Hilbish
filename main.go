@@ -69,14 +69,24 @@ func main() {
 		if err == nil { continue }
 
 		quoted := false
-		q := func(r rune) bool {
+		cmdArgs := []string{}
+		sb := &strings.Builder{}
+
+		for _, r := range cmdString {
 			if r == '"' {
 				quoted = !quoted
+				// dont add back quotes
+				//sb.WriteRune(r)
+			} else if !quoted && r == ' ' {
+				cmdArgs = append(cmdArgs, sb.String())
+				sb.Reset()
+			} else {
+				sb.WriteRune(r)
 			}
-			return !quoted && r == ' '
 		}
-
-		cmdArgs := strings.FieldsFunc(cmdString, q)
+		if sb.Len() > 0 {
+			cmdArgs = append(cmdArgs, sb.String())
+		}
 
 		if len(cmdArgs) == 0 { continue }
 
