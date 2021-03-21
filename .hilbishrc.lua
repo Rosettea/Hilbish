@@ -6,7 +6,7 @@ commander = require 'commander'
 ansikit = require 'ansikit'
 
 commander.register("cd", function (path)
-	if path then
+	if #path == 1 then
 		fs.cd(path[1])
 	end
 end)
