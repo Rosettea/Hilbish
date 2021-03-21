@@ -5,4 +5,4 @@
 [ ] Confirmed windows support
 [ ] Readme badges
 [ ] Hooks
-[ ] Aliases
+[x] Aliases
