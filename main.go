@@ -111,6 +111,7 @@ func main() {
 			os.Exit(0)
 		default:
 			cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+			cmd.Stdin = os.Stdin
 			cmd.Stderr = os.Stderr
 			cmd.Stdout = os.Stdout
 
