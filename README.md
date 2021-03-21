@@ -27,7 +27,7 @@ This will build a `hilbish` executable in the current directory.
 # Install
 `sudo cp hilbish /usr/bin`
 `sudo mkdir /usr/share/hilbish`
-`sudo cp libs preload.lua .hilbishrc.lua /usr/share/hilbish`
+`sudo cp libs preload.lua .hilbishrc.lua /usr/share/hilbish -r`
 
 # License
 [MIT](LICENSE)
