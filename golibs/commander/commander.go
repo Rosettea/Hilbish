@@ -20,7 +20,8 @@ func (c *Commander) Loader(L *lua.LState) int {
 		"register": c.register,
 	}
 	mod := L.SetFuncs(L.NewTable(), exports)
-	L.SetField(mod, "__commands", L.NewTable())
+	L.SetGlobal("commanding", &lua.LTable{})
+	L.SetField(L.GetGlobal("commanding"), "__commands", L.NewTable())
 
 	L.Push(mod)
 

@@ -111,11 +111,10 @@ func main() {
 		if len(cmdArgs) == 0 { continue }
 
 		if commands[cmdArgs[0]] {
-			fmt.Printf("%+q", cmdArgs[1:])
 			err := l.CallByParam(lua.P{
 				Fn: l.GetField(
 					l.GetTable(
-						l.GetGlobal("commander"),
+						l.GetGlobal("commanding"),
 						lua.LString("__commands")),
 					cmdArgs[0]),
 				NRet: 0,
@@ -166,7 +165,7 @@ func LuaInit() {
 	func (cmdName string, cmd *lua.LFunction) {
 		commands[cmdName] = true
 		l.SetField(
-			l.GetTable(l.GetGlobal("commander"),
+			l.GetTable(l.GetGlobal("commanding"),
 			lua.LString("__commands")),
 			cmdName,
 			cmd)
@@ -174,7 +173,15 @@ func LuaInit() {
 
 	l.PreloadModule("commander", commander.Loader)
 
-	err := l.DoFile(os.Getenv("HOME") + "/.hilbishrc.lua")
+	l.DoString("package.path = package.path .. ';./libs/?/init.lua;/usr/share/hilbish/libs/?/init.lua'")
+
+	err := l.DoFile("/usr/share/hilbish/preload.lua")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
+	}
+
+	homedir, _ := os.UserHomeDir()
+	err = l.DoFile(homedir + "/.hilbishrc.lua")
 	if err != nil {
 		panic(err)
 	}
