@@ -19,7 +19,7 @@ import (
 	"layeh.com/gopher-luar"
 )
 
-const version = "0.0.9"
+const version = "0.0.10"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -43,6 +43,22 @@ func main() {
 	}
 
 	os.Setenv("SHELL", os.Args[0])
+
+	input, _ := os.ReadFile(".hilbishrc.lua")
+	input, err := os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
+	if err != nil {
+		fmt.Println("could not find .hilbishrc.lua or /usr/share/.hilbishrc.lua")
+		return
+	}
+
+	homedir, _ := os.UserHomeDir()
+	err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+	if err != nil {
+		fmt.Println("Error creating config file")
+		fmt.Println(err)
+		return
+        }
+
 	HandleSignals()
 	LuaInit()
 
