@@ -19,7 +19,7 @@ import (
 	"layeh.com/gopher-luar"
 )
 
-const version = "0.0.6"
+const version = "0.0.8"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -77,6 +77,8 @@ func main() {
 				quoted = !quoted
 				// dont add back quotes
 				//sb.WriteRune(r)
+			} else if r == '~' {
+				sb.WriteString(os.Getenv("HOME"))
 			} else if !quoted && r == ' ' {
 				cmdArgs = append(cmdArgs, sb.String())
 				sb.Reset()
