@@ -1,9 +1,14 @@
 # Hilbish
 🎀 a nice lil shell for lua people made with go and lua
 
+It is currently in a mostly beta state but is very much usable
+(I'm using it right now).
+
+There are still some things missing like pipes but granted that will be
+added soon.
+
 # Building
-Prebuilt binaries are not yet provided, since Hilbish is not stable.  
-It is usable though, so to try it out you'll have to manually compile.  
+Prebuilt binaries are not yet provided, so to try it out you'll have to manually compile.  
 
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
@@ -18,7 +23,11 @@ go build
 ```
 
 This will build a `hilbish` executable in the current directory. 
-At which you can either run or move to a bin directory for easy use.
+
+# Install
+`sudo cp hilbish /usr/bin`
+`sudo mkdir /usr/share/hilbish`
+`sudo cp libs preload.lua .hilbishrc.lua /usr/share/hilbish`
 
 # License
 [MIT](LICENSE)
