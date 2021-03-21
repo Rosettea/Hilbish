@@ -77,7 +77,7 @@ func main() {
 				quoted = !quoted
 				// dont add back quotes
 				//sb.WriteRune(r)
-			} else if r == '~' {
+			} else if !quoted && r == '~' {
 				sb.WriteString(os.Getenv("HOME"))
 			} else if !quoted && r == ' ' {
 				cmdArgs = append(cmdArgs, sb.String())
