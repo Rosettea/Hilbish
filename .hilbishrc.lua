@@ -5,7 +5,6 @@ fs = require 'fs'
 commander = require 'commander'
 
 commander.register("cd", function (path)
-	print(path)
 	if path then
 		fs.cd(path[1])
 	end
