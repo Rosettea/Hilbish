@@ -19,7 +19,7 @@ import (
 	"layeh.com/gopher-luar"
 )
 
-const version = "0.0.11"
+const version = "0.0.12"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -177,7 +177,11 @@ func LuaInit() {
 
 	err := l.DoFile("/usr/share/hilbish/preload.lua")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
+		err = l.DoFile("preload.lua")
+		if err != nil {
+			fmt.Fprintln(os.Stderr,
+			"Missing preload file, builtins may be missing.")
+		}
 	}
 
 	homedir, _ := os.UserHomeDir()
