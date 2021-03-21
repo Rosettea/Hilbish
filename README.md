@@ -7,6 +7,9 @@ It is currently in a mostly beta state but is very much usable
 There are still some things missing like pipes but granted that will be
 added soon.
 
+# Links
+- **[Documentation](https://github.com/Hilbis/Hilbish/wiki)**
+
 # Building
 Prebuilt binaries are not yet provided, so to try it out you'll have to manually compile.  
 
