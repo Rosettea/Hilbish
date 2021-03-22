@@ -18,20 +18,16 @@ Prebuilt binaries are not yet provided, so to try it out you'll have to manually
 ### Requirements
 - Go 1.16
 
-### Setup
-```
+### Install
+```sh
 git clone https://github.com/Hilbis/Hilbish
 cd Hilbish
-go build
+sudo make install
 ```
 
-This will build a `hilbish` executable in the current directory. 
-
-# Install
+### Uninstall
 ```sh
-sudo cp hilbish /usr/bin
-sudo mkdir /usr/share/hilbish
-sudo cp libs preload.lua .hilbishrc.lua /usr/share/hilbish -r
+sudo make uninstall
 ```
 
 # License
