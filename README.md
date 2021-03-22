@@ -5,7 +5,7 @@ It is currently in a mostly beta state but is very much usable
 (I'm using it right now).
 
 There are still some things missing like pipes but granted that will be
-added soon.
+added soon. (or you can use dev branch)
 
 # Links
 - **[Documentation](https://github.com/Hilbis/Hilbish/wiki)**
