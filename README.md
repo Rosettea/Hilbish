@@ -28,6 +28,11 @@ sudo make install
 sudo make
 ```
 
+Alternativly, if you use Arch Linux, you can install Hilbish with an (unofficial) AUR package
+```sh
+yay -S hilbish-git
+```
+
 ### Uninstall
 ```sh
 sudo make uninstall
