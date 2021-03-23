@@ -22,7 +22,10 @@ Prebuilt binaries are not yet provided, so to try it out you'll have to manually
 ```sh
 git clone https://github.com/Hilbis/Hilbish
 cd Hilbish
+make build
 sudo make install
+# Or 
+sudo make
 ```
 
 ### Uninstall

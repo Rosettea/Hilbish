@@ -5,7 +5,7 @@ LIBDIR ?= $(PREFIX)/share/hilbish
 build:
 	@go build
 
-install: build
+install:
 	@install -v -d "$(BINDIR)/" && install -m 0755 -v hilbish "$(BINDIR)/hilbish"
 	@mkdir -p "$(LIBDIR)"
 	@cp libs preload.lua .hilbishrc.lua "$(LIBDIR)" -r
