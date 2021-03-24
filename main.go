@@ -4,12 +4,13 @@ import (
 	_ "bufio"
 	"fmt"
 	"os"
-	"os/exec"
+	_ "os/exec"
 	_ "os/user"
 	"syscall"
 	"os/signal"
 	"strings"
 	"io"
+	"context"
 	lfs "hilbish/golibs/fs"
 	cmds "hilbish/golibs/commander"
 
@@ -17,6 +18,9 @@ import (
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
+	"mvdan.cc/sh/v3/interp"
+	"mvdan.cc/sh/v3/syntax"
+
 )
 
 const version = "0.0.12"
@@ -65,6 +69,7 @@ func main() {
 	HandleSignals()
 	LuaInit()
 
+	readline.Completer = readline.FilenameCompleter
 	for {
 		//user, _ := user.Current()
 		//dir, _ := os.Getwd()
@@ -92,8 +97,8 @@ func main() {
 
 		if aliases[cmdArgs[0]] != "" {
 			cmdString = aliases[cmdArgs[0]] + strings.Trim(cmdString, cmdArgs[0])
-			cmdArgs := splitInput(cmdString)
-			execCommand(cmdArgs[0], cmdArgs[1:])
+			//cmdArgs := splitInput(cmdString)
+			execCommand(cmdString)
 			continue
 		}
 
@@ -111,13 +116,14 @@ func main() {
 				// TODO: dont panic
 				panic(err)
 			}
+			readline.AddHistory(cmdString)
 			continue
 		}
 		switch cmdArgs[0] {
 		case "exit":
 			os.Exit(0)
 		default:
-			err := execCommand(cmdArgs[0], cmdArgs[1:])
+			err := execCommand(cmdString)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
@@ -151,18 +157,23 @@ func splitInput(input string) []string {
 	readline.AddHistory(input)
 	return cmdArgs
 }
-func execCommand(name string, args []string) error {
-	cmd := exec.Command(name, args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
 
-
-	if err := cmd.Run(); err != nil {
-		return err
+func execCommand(cmd string) error {
+	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
+	if err != nil {
+		if syntax.IsIncomplete(err) {
+			fmt.Println("incomplete input")
+			return nil
+		}
 	}
+	runner, _ := interp.New(
+		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
+	)
+	runner.Run(context.TODO(), file)
+
 	return nil
 }
+
 func HandleSignals() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
