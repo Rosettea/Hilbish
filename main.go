@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "bufio"
+	"bufio"
 	"fmt"
 	"os"
 	_ "os/exec"
@@ -23,7 +23,7 @@ import (
 
 )
 
-const version = "0.1.0"
+const version = "0.1.1"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -125,10 +125,43 @@ func main() {
 		default:
 			err := execCommand(cmdString)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				if syntax.IsIncomplete(err) {
+					sb := &strings.Builder{}
+					for {
+						done := StartMultiline(cmdString, sb)
+						if done {
+							break
+						}
+					}
+				} else {
+					fmt.Fprintln(os.Stderr, err)
+				}
 			}
 		}
 	}
+}
+
+func StartMultiline(prev string, sb *strings.Builder) bool {
+	if sb.String() == "" { sb.WriteString(prev + "\n") }
+
+	fmt.Printf("... ")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	cont, err := reader.ReadString('\n')
+	if err == io.EOF {
+		fmt.Println("")
+		return true
+	}
+
+	sb.WriteString(cont)
+
+	err = execCommand(sb.String())
+	if err != nil && syntax.IsIncomplete(err) {
+		return false
+	}
+
+	return true
 }
 
 func splitInput(input string) []string {
@@ -161,10 +194,7 @@ func splitInput(input string) []string {
 func execCommand(cmd string) error {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
-		if syntax.IsIncomplete(err) {
-			fmt.Println("incomplete input")
-			return nil
-		}
+		return err
 	}
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
