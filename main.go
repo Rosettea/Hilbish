@@ -23,7 +23,7 @@ import (
 
 )
 
-const version = "0.1.1"
+const version = "0.1.2"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
