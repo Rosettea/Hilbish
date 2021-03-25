@@ -59,12 +59,14 @@ func main() {
 	}
 
 	homedir, _ := os.UserHomeDir()
-	err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
-	if err != nil {
-		fmt.Println("Error creating config file")
-		fmt.Println(err)
-		return
-        }
+	if _, err := os.Stat(homedir + "/.hilbishrc.lua"); os.IsNotExist(err) {
+		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+		if err != nil {
+			fmt.Println("Error creating config file")
+			fmt.Println(err)
+			return
+		}
+	}
 
 	HandleSignals()
 	LuaInit()
