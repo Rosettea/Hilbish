@@ -23,7 +23,7 @@ import (
 
 )
 
-const version = "0.0.12"
+const version = "0.2.0-dev"
 var l *lua.LState
 var prompt string
 var commands = map[string]bool{}
@@ -33,7 +33,11 @@ func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := parser.Flag("v", "version", &argparse.Options{
 		Required: false,
-		Help: "prints hilbish version",
+		Help: "Prints Hilbish version",
+	})
+	setshflag := parser.Flag("S", "set-shell-env", &argparse.Options{
+		Required: false,
+		Help: "Sets $SHELL to Hilbish's executed path",
 	})
 
 	err := parser.Parse(os.Args)
@@ -47,7 +51,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	os.Setenv("SHELL", os.Args[0])
+	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
 
 	input, err := os.ReadFile(".hilbishrc.lua")
 	if err != nil {
