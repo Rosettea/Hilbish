@@ -90,7 +90,10 @@ func main() {
 		cmdString = strings.TrimSuffix(cmdString, "\n")
 		err = l.DoString(cmdString)
 
-		if err == nil { continue }
+		if err == nil {
+			readline.AddHistory(cmdString)
+			continue
+		}
 
 		cmdArgs := splitInput(cmdString)
 		if len(cmdArgs) == 0 { continue }
