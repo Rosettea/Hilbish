@@ -1,6 +1,8 @@
 -- Default Hilbish config
 ansikit = require 'ansikit'
 
-prompt(ansikit.text('λ {bold}{cyan}'..os.getenv('USER')..' >{magenta}>{cyan}>{reset} '))
+prompt(ansikit.text(
+	'{blue}\u {cyan}\d {green}∆{reset} '
+))
 
 --hook("tab complete", function ())
