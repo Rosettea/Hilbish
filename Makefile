@@ -17,7 +17,7 @@ uninstall:
 	@rm -vrf \
 			"$(DESTDIR)$(BINDIR)/hilbish" \
 			"$(DESTDIR)$(LIBDIR)"
-	@sed -i '/$(DESTDIR)\/usr\/bin\/hilbish/d' /etc/shells
+	@sed -i '/hilbish/d' /etc/shells
 	@echo "Hilbish Uninstalled"
 
 clean:
