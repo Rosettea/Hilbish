@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "bufio"
+	"bufio"
 	"fmt"
 	"os"
 	_ "os/exec"
@@ -63,12 +63,14 @@ func main() {
 	}
 
 	homedir, _ := os.UserHomeDir()
-	err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
-	if err != nil {
-		fmt.Println("Error creating config file")
-		fmt.Println(err)
-		return
-        }
+	if _, err := os.Stat(homedir + "/.hilbishrc.lua"); os.IsNotExist(err) {
+		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+		if err != nil {
+			fmt.Println("Error creating config file")
+			fmt.Println(err)
+			return
+		}
+	}
 
 	HandleSignals()
 	LuaInit()
@@ -94,7 +96,10 @@ func main() {
 		cmdString = strings.TrimSuffix(cmdString, "\n")
 		err = l.DoString(cmdString)
 
-		if err == nil { continue }
+		if err == nil {
+			readline.AddHistory(cmdString)
+			continue
+		}
 
 		cmdArgs := splitInput(cmdString)
 		if len(cmdArgs) == 0 { continue }
@@ -129,7 +134,17 @@ func main() {
 		default:
 			err := execCommand(cmdString)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				if syntax.IsIncomplete(err) {
+					sb := &strings.Builder{}
+					for {
+						done := StartMultiline(cmdString, sb)
+						if done {
+							break
+						}
+					}
+				} else {
+					fmt.Fprintln(os.Stderr, err)
+				}
 			}
 		}
 	}
@@ -137,6 +152,29 @@ func main() {
 
 func fmtPrompt() string {
 	return prompt
+}
+
+func StartMultiline(prev string, sb *strings.Builder) bool {
+	if sb.String() == "" { sb.WriteString(prev + "\n") }
+
+	fmt.Printf("... ")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	cont, err := reader.ReadString('\n')
+	if err == io.EOF {
+		fmt.Println("")
+		return true
+	}
+
+	sb.WriteString(cont)
+
+	err = execCommand(sb.String())
+	if err != nil && syntax.IsIncomplete(err) {
+		return false
+	}
+
+	return true
 }
 
 func splitInput(input string) []string {
@@ -169,10 +207,7 @@ func splitInput(input string) []string {
 func execCommand(cmd string) error {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
-		if syntax.IsIncomplete(err) {
-			fmt.Println("incomplete input")
-			return nil
-		}
+		return err
 	}
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
