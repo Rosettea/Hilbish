@@ -83,7 +83,7 @@ func main() {
 
 		//fmt.Printf(prompt)
 
-		cmdString, err := readline.String(prompt)
+		cmdString, err := readline.String(fmtPrompt())
 		if err == io.EOF {
 			fmt.Println("")
 			break
@@ -133,6 +133,10 @@ func main() {
 			}
 		}
 	}
+}
+
+func fmtPrompt() string {
+	return prompt
 }
 
 func splitInput(input string) []string {
