@@ -22,7 +22,7 @@ cd Hilbish
 make build
 sudo make install
 # Or 
-sudo make
+sudo make all
 ```
 
 Alternativly, if you use Arch Linux, you can install Hilbish with an **(unofficial)** AUR package
