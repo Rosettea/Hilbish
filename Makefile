@@ -1,4 +1,5 @@
 PREFIX ?= /usr
+DESTDIR ?=
 BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/share/hilbish
 
@@ -6,17 +7,17 @@ build:
 	@go build
 
 install:
-	@install -v -d "$(BINDIR)/" && install -m 0755 -v hilbish "$(BINDIR)/hilbish"
-	@mkdir -p "$(LIBDIR)"
-	@cp libs preload.lua .hilbishrc.lua "$(LIBDIR)" -r
-	@echo /usr/bin/hilbish >> /etc/shells
+	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
+	@mkdir -p "$(DESTDIR)$(LIBDIR)"
+	@cp libs preload.lua .hilbishrc.lua "$(DESTDIR)$(LIBDIR)" -r
+	@echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
 	@echo "Hilbish Installed"
 
 uninstall:
 	@rm -vrf \
-			"$(BINDIR)/hilbish" \
-			"$(LIBDIR)"
-	@sed '/\/usr\/bin\/hilbish/d' /etc/shells
+			"$(DESTDIR)$(BINDIR)/hilbish" \
+			"$(DESTDIR)$(LIBDIR)"
+	@sed -i '/hilbish/d' /etc/shells
 	@echo "Hilbish Uninstalled"
 
 clean:
