@@ -101,15 +101,7 @@ func main() {
 			continue
 		}
 
-		// Set a variable to the command string before ^^ is
-		// replaced with the command before. This will be added
-		// to history, preventing ^^ from before being replaced.
-		pcmdString := cmdString
-
-		lastcmd := readline.GetHistory(readline.HistorySize() - 1)
-		cmdString = strings.Replace(cmdString, "^^", lastcmd, 1)
-
-		cmdArgs := splitInput(pcmdString)
+		cmdArgs, cmdString := splitInput(cmdString)
 		if len(cmdArgs) == 0 { continue }
 
 		if aliases[cmdArgs[0]] != "" {
@@ -204,10 +196,16 @@ func StartMultiline(prev string, sb *strings.Builder) bool {
 	return true
 }
 
-func splitInput(input string) []string {
+func splitInput(input string) ([]string, string) {
+	// end my suffering
+	// TODO: refactor this garbage
 	quoted := false
+	startlastcmd := false
+	lastcmddone := false
 	cmdArgs := []string{}
 	sb := &strings.Builder{}
+	cmdstr := &strings.Builder{}
+	lastcmd := readline.GetHistory(readline.HistorySize() - 1)
 
 	for _, r := range input {
 		if r == '"' {
@@ -219,16 +217,26 @@ func splitInput(input string) []string {
 		} else if !quoted && r == ' ' {
 			cmdArgs = append(cmdArgs, sb.String())
 			sb.Reset()
+		} else if !quoted && r == '^' && startlastcmd && !lastcmddone {
+			cmdstr.WriteString(lastcmd)
+			sb.WriteString(lastcmd)
+			startlastcmd = !startlastcmd
+			lastcmddone = !lastcmddone
+			continue
+		} else if !quoted && r == '^' && !lastcmddone {
+			startlastcmd = !startlastcmd
+			continue
 		} else {
 			sb.WriteRune(r)
 		}
+		cmdstr.WriteRune(r)
 	}
 	if sb.Len() > 0 {
 		cmdArgs = append(cmdArgs, sb.String())
 	}
 
 	readline.AddHistory(input)
-	return cmdArgs
+	return cmdArgs, cmdstr.String()
 }
 
 func execCommand(cmd string) error {
