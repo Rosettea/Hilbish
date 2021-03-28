@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	_ "os/exec"
-	_ "os/user"
+	"os/user"
 	"syscall"
 	"os/signal"
 	"strings"
@@ -76,10 +76,10 @@ func main() {
 	LuaInit()
 
 	readline.Completer = readline.FilenameCompleter
+
+
 	for {
-		//user, _ := user.Current()
 		//dir, _ := os.Getwd()
-		//host, _ := os.Hostname()
 
 		//reader := bufio.NewReader(os.Stdin)
 
@@ -151,7 +151,26 @@ func main() {
 }
 
 func fmtPrompt() string {
-	return prompt
+	user, _ := user.Current()
+	host, _ := os.Hostname()
+	cwd, _ := os.Getwd()
+	cwd = strings.Replace(cwd, user.HomeDir, "~", 1)
+	args := []string{
+		"d",
+		cwd,
+		"h",
+		host,
+		"u",
+		user.Name,
+	}
+	for i, v := range args {
+		if i % 2 == 0 {
+			args[i] = "%" + v
+		}
+	}
+	r := strings.NewReplacer(args...)
+	nprompt := r.Replace(prompt)
+	return nprompt
 }
 
 func StartMultiline(prev string, sb *strings.Builder) bool {
