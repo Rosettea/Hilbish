@@ -101,7 +101,15 @@ func main() {
 			continue
 		}
 
-		cmdArgs := splitInput(cmdString)
+		// Set a variable to the command string before ^^ is
+		// replaced with the command before. This will be added
+		// to history, preventing ^^ from before being replaced.
+		pcmdString := cmdString
+
+		lastcmd := readline.GetHistory(readline.HistorySize() - 1)
+		cmdString = strings.Replace(cmdString, "^^", lastcmd, 1)
+
+		cmdArgs := splitInput(pcmdString)
 		if len(cmdArgs) == 0 { continue }
 
 		if aliases[cmdArgs[0]] != "" {
