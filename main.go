@@ -12,6 +12,7 @@ import (
 	"context"
 	lfs "hilbish/golibs/fs"
 	cmds "hilbish/golibs/commander"
+	hooks "hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
@@ -30,6 +31,7 @@ var prompt string
 var commands = map[string]bool{}
 // Command aliases
 var aliases = map[string]string{}
+var bait hooks.Bait
 
 func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
@@ -58,21 +60,21 @@ func main() {
 	// Set $SHELL if the user wants to
 	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
 
-	// Read config from current directory
-	// (this is assuming the current dir is Hilbish's git)
-	input, err := os.ReadFile(".hilbishrc.lua")
-	if err != nil {
-		// If it wasnt found, go to "real default"
-		input, err = os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
-		if err != nil {
-			fmt.Println("could not find .hilbishrc.lua or /usr/share/hilbish/.hilbishrc.lua")
-			return
-		}
-	}
-
 	homedir, _ := os.UserHomeDir()
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(homedir + "/.hilbishrc.lua"); os.IsNotExist(err) {
+		// Read default from current directory
+		// (this is assuming the current dir is Hilbish's git)
+		input, err := os.ReadFile(".hilbishrc.lua")
+		if err != nil {
+			// If it wasnt found, go to "real default"
+			input, err = os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
+			if err != nil {
+				fmt.Println("could not find .hilbishrc.lua or /usr/share/hilbish/.hilbishrc.lua")
+				return
+			}
+		}
+
 		// Create it using either default config we found
 		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
 		if err != nil {
@@ -159,8 +161,15 @@ func main() {
 						}
 					}
 				} else {
+					if code, ok := interp.IsExitStatus(err); ok {
+						if code > 0 {
+							bait.Em.Emit("command.fail", code)
+						}
+					}
 					fmt.Fprintln(os.Stderr, err)
 				}
+			} else {
+				bait.Em.Emit("command.success", nil)
 			}
 		}
 	}
@@ -281,9 +290,9 @@ func execCommand(cmd string) error {
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
 	)
-	runner.Run(context.TODO(), file)
+	err = runner.Run(context.TODO(), file)
 
-	return nil
+	return err
 }
 
 // do i even have to say
@@ -320,6 +329,9 @@ func LuaInit() {
 	})
 
 	l.PreloadModule("commander", commander.Loader)
+
+	bait = hooks.New()
+	l.PreloadModule("bait", bait.Loader)
 
 	// Add more paths that Lua can require from
 	l.DoString("package.path = package.path .. ';./libs/?/init.lua;/usr/share/hilbish/libs/?/init.lua'")
