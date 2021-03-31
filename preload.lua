@@ -5,17 +5,23 @@ local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
 
-commander.register('cd', function (path)
-	if #path == 1 then
-		local ok, err = pcall(function() fs.cd(path[1]) end)
+commander.register('cd', function (args)
+	bait.throw('cd', args)
+	if #args > 0 then
+		local path = ''
+		for i = 1, #args do
+			path = path .. tostring(args[i]) .. ' '
+		end
+
+		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
 			if err == 1 then
 				print('directory does not exist')
 			end
-		end
-		bait.throw('cd', path)
+			bait.throw('command.fail', nil)
+		else bait.throw('command.success', nil) end
 		return
 	end
 	fs.cd(os.getenv 'HOME')
-	bait.throw('cd', path)
+	bait.throw('command.success', nil)
 end)
