@@ -29,7 +29,7 @@ func cd(L *lua.LState) int {
 	if err != nil {
 		switch err.(*os.PathError).Err.Error() {
 		case "no such file or directory":
-			LuaErr(L, 1)
+			LuaErr(L, 2)
 		}
 	}
 
