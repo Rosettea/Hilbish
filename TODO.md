@@ -6,3 +6,4 @@
 - [ ] Readme badges
 - [x] Hooks
 - [x] Aliases
+- [ ] hlua (hilbish lua) - 100% lua in the hilbish interactive shell, cuz why not
