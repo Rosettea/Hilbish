@@ -3,9 +3,15 @@
 
 local fs = require 'fs'
 local commander = require 'commander'
+local bait = require 'bait'
 
 commander.register('cd', function (path)
 	if #path == 1 then
-		fs.cd(path[1])
+		local ok, err = pcall(function() fs.cd(path[1]) end)
+		if not ok then
+			if err == 1 then
+				print("directory does not exist")
+			end
+		end
 	end
 end)
