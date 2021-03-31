@@ -13,7 +13,9 @@ commander.register('cd', function (path)
 				print('directory does not exist')
 			end
 		end
+		bait.throw('cd', path)
 		return
 	end
 	fs.cd(os.getenv 'HOME')
+	bait.throw('cd', path)
 end)
