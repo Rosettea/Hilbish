@@ -15,6 +15,7 @@ func Loader(L *lua.LState) int {
 
 
 func LuaErr(L *lua.LState, code int) {
+	// TODO: Error with a table, with path and error code
 	L.Error(lua.LNumber(code), 1)
 }
 
