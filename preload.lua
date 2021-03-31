@@ -10,8 +10,10 @@ commander.register('cd', function (path)
 		local ok, err = pcall(function() fs.cd(path[1]) end)
 		if not ok then
 			if err == 1 then
-				print("directory does not exist")
+				print('directory does not exist')
 			end
 		end
+		return
 	end
+	fs.cd(os.getenv 'HOME')
 end)
