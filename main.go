@@ -108,6 +108,7 @@ func main() {
 		if err == nil {
 			// If it succeeds, add to history and prompt again
 			readline.AddHistory(cmdString)
+			bait.Em.Emit("command.success", nil)
 			continue
 		}
 
