@@ -2,6 +2,7 @@ package fs
 
 import (
 	"os"
+	"strings"
 
 	"github.com/yuin/gopher-lua"
 )
@@ -26,7 +27,7 @@ var exports = map[string]lua.LGFunction{
 func cd(L *lua.LState) int {
 	path := L.ToString(1)
 
-	err := os.Chdir(path)
+	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
 		switch err.(*os.PathError).Err.Error() {
 		case "no such file or directory":
