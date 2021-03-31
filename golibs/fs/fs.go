@@ -13,6 +13,11 @@ func Loader(L *lua.LState) int {
     return 1
 }
 
+
+func LuaErr(L *lua.LState, code int) {
+	L.Error(lua.LNumber(code), 1)
+}
+
 var exports = map[string]lua.LGFunction{
     "cd": cd,
 }
@@ -20,7 +25,13 @@ var exports = map[string]lua.LGFunction{
 func cd(L *lua.LState) int {
 	path := L.ToString(1)
 
-	os.Chdir(path)
+	err := os.Chdir(path)
+	if err != nil {
+		switch err.(*os.PathError).Err.Error() {
+		case "no such file or directory":
+			LuaErr(L, 1)
+		}
+	}
 
 	return 0
 }
