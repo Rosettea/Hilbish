@@ -30,6 +30,7 @@ var commands = map[string]bool{}
 // Command aliases
 var aliases = map[string]string{}
 var bait hooks.Bait
+var homedir string
 
 func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
@@ -58,7 +59,7 @@ func main() {
 	// Set $SHELL if the user wants to
 	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
 
-	homedir, _ := os.UserHomeDir()
+	homedir, _ = os.UserHomeDir()
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(homedir + "/.hilbishrc.lua"); os.IsNotExist(err) {
 		// Read default from current directory
@@ -87,6 +88,7 @@ func main() {
 	LuaInit()
 
 	readline.Completer = readline.FilenameCompleter
+	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
 		cmdString, err := readline.String(fmtPrompt())
@@ -108,6 +110,7 @@ func main() {
 		if err == nil {
 			// If it succeeds, add to history and prompt again
 			readline.AddHistory(cmdString)
+			readline.SaveHistory(homedir + "/.hilbish-history")
 			bait.Em.Emit("command.success", nil)
 			continue
 		}
@@ -140,6 +143,7 @@ func main() {
 				panic(err)
 			}
 			readline.AddHistory(cmdString)
+			readline.SaveHistory(homedir + "/.hilbish-history")
 			continue
 		}
 
@@ -223,7 +227,7 @@ func StartMultiline(prev string, sb *strings.Builder) bool {
 		return false
 	}
 
-	return true 
+	return true
 }
 
 func splitInput(input string) ([]string, string) {
@@ -277,6 +281,7 @@ func splitInput(input string) ([]string, string) {
 	}
 
 	readline.AddHistory(input)
+	readline.SaveHistory(homedir + "/.hilbish-history")
 	return cmdArgs, cmdstr.String()
 }
 
