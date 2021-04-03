@@ -108,6 +108,7 @@ func main() {
 		if err == nil {
 			// If it succeeds, add to history and prompt again
 			readline.AddHistory(cmdString)
+			bait.Em.Emit("command.exit", nil)
 			bait.Em.Emit("command.success", nil)
 			continue
 		}
@@ -162,12 +163,14 @@ func main() {
 				} else {
 					if code, ok := interp.IsExitStatus(err); ok {
 						if code > 0 {
+							bait.Em.Emit("command.exit", nil)
 							bait.Em.Emit("command.fail", code)
 						}
 					}
 					fmt.Fprintln(os.Stderr, err)
 				}
 			} else {
+				bait.Em.Emit("command.exit", nil)
 				bait.Em.Emit("command.success", nil)
 			}
 		}
