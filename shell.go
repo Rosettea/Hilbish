@@ -24,6 +24,7 @@ func RunInput(input string) {
 		// If it succeeds, add to history and prompt again
 		readline.AddHistory(input)
 		readline.SaveHistory(homedir + "/.hilbish-history")
+		bait.Em.Emit("command.exit", nil)
 		bait.Em.Emit("command.success", nil)
 		return
 	}
@@ -79,12 +80,14 @@ func RunInput(input string) {
 			} else {
 				if code, ok := interp.IsExitStatus(err); ok {
 					if code > 0 {
+						bait.Em.Emit("command.exit", nil)
 						bait.Em.Emit("command.fail", code)
 					}
 				}
 				fmt.Fprintln(os.Stderr, err)
 			}
 		} else {
+			bait.Em.Emit("command.exit", nil)
 			bait.Em.Emit("command.success", nil)
 		}
 	}
