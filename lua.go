@@ -15,6 +15,8 @@ func LuaInit() {
 
 	l.OpenLibs()
 
+	l.SetGlobal("_ver", lua.LString(version))
+
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 
