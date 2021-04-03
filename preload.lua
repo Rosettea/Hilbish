@@ -25,3 +25,39 @@ commander.register('cd', function (args)
 	fs.cd(os.getenv 'HOME')
 	bait.throw('command.success', nil)
 end)
+
+do
+	local virt_G = { }
+	
+	setmetatable(_G, {
+		__index = function (self, key)
+			local got_virt = virt_G[key]
+			if got_virt ~= nil then
+				return got_virt
+			end
+			
+			virt_G[key] = os.getenv(key)
+			return virt_G[key]
+		end,
+			
+		__newindex = function (self, key, value)
+			if type(value) == 'string' then
+				os.setenv(key, value)
+				virt_G[key] = value
+			else
+				if type(virt_G[key]) == 'string' then
+					os.setenv(key, '')
+				end
+				virt_G[key] = value
+			end
+		end,
+	})
+	
+	bait.catch('command.exit', function ()
+		for key, value in pairs(virt_G) do
+			if type(value) == 'string' then
+				virt_G[key] = os.getenv(key)
+			end
+		end
+	end)
+end
