@@ -8,6 +8,10 @@ function doPrompt(fail)
 	))
 end
 
+print(ansikit.text('Welcome {cyan}'.. os.getenv 'USER' ..
+'{reset} to {magenta}Hilbish{reset},\n' .. 
+'the nice lil shell for {blue}Lua{reset} fanatics!\n'))
+
 doPrompt()
 
 bait.catch('command.fail', function()
