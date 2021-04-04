@@ -12,8 +12,20 @@ Prebuilt binaries are not yet provided, so to try it out you'll have to manually
 
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
-### Requirements
-- Go 1.16
+### Prerequisites
+- [Go 1.16](https://go.dev)
+
+- GNU Readline
+
+On Fedora, readline can be installed with:  
+```
+sudo dnf install readline-devel
+```  
+
+On Debian/Ubuntu and distros based on them, it can be installed with:  
+```
+sudo apt install libreadline-dev
+```
 
 ### Install
 ```sh
