@@ -18,23 +18,12 @@ import (
 
 func RunInput(input string) {
 	// First try to run user input in Lua
-	if strings.HasSuffix(input, "\\") {
-		for {
-			input = strings.TrimSuffix(input, "\\")
-			input = ContinuePrompt(input)
-			input = strings.TrimSpace(input)
-			if input == "" { break }
-			// For some reason !HasSuffix didnt work :\, stupid
-			if !strings.HasSuffix(input, "\\") { break }
-		}
-	}
-
 	err := l.DoString(input)
 
 	if err == nil {
 		// If it succeeds, add to history and prompt again
-		//readline.AddHistory(input)
-		//readline.SaveHistory(homedir + "/.hilbish-history")
+		readline.AddHistory(input)
+		readline.SaveHistory(homedir + "/.hilbish-history")
 		bait.Em.Emit("command.exit", nil)
 		bait.Em.Emit("command.success", nil)
 		return
@@ -110,20 +99,7 @@ func splitInput(input string) ([]string, string) {
 	return cmdArgs, cmdstr.String()
 }
 
-func ContinuePrompt(prev string) string {
-	fmt.Printf("... ")
 
-	reader := bufio.NewReader(os.Stdin)
-
-	cont, err := reader.ReadString('\n')
-	if err == io.EOF {
-		// Exit when ^D
-		fmt.Println("")
-		return ""
-	}
-
-	return prev + "\n" + cont
-}
 
 func StartMultiline(prev string, sb *strings.Builder) bool {
 	// sb fromt outside is passed so we can

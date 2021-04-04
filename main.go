@@ -7,6 +7,7 @@ import (
 	"syscall"
 	"os/signal"
 	"strings"
+	"bufio"
 	"io"
 	hooks "hilbish/golibs/bait"
 
@@ -86,7 +87,7 @@ func main() {
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
-		cmdString, err := readline.String(fmtPrompt())
+		input, err := readline.String(fmtPrompt())
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
 			fmt.Println("")
@@ -98,9 +99,31 @@ func main() {
 		}
 
 		// I have no idea if we need this anymore
-		cmdString = strings.TrimSuffix(cmdString, "\n")
-		RunInput(cmdString)
+		if strings.HasSuffix(input, "\\") {
+			for {
+				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
+
+				if err != nil || !strings.HasSuffix(input, "\\") { break }
+			}
+		}
+		RunInput(input)
 	}
+}
+
+func ContinuePrompt(prev string) (string, error) {
+	fmt.Printf("> ")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	// TODO: use readline here?
+	cont, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("")
+		return "", err
+	}
+	cont = strings.TrimSpace(cont)
+
+	return prev + "\n" + strings.TrimSuffix(cont, "\n"), nil
 }
 
 // This semi cursed function formats our prompt (obviously)
