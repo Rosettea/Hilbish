@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/bobappleyard/readline"
-	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
+	_ "github.com/yuin/gopher-lua"
+	_ "layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 
@@ -18,78 +18,26 @@ import (
 
 func RunInput(input string) {
 	// First try to run user input in Lua
+	if strings.HasSuffix(input, "\\") {
+		for {
+			input = strings.TrimSuffix(input, "\\")
+			input = ContinuePrompt(input)
+			input = strings.TrimSpace(input)
+			if input == "" { break }
+			// For some reason !HasSuffix didnt work :\, stupid
+			if !strings.HasSuffix(input, "\\") { break }
+		}
+	}
+
 	err := l.DoString(input)
 
 	if err == nil {
 		// If it succeeds, add to history and prompt again
-		readline.AddHistory(input)
-		readline.SaveHistory(homedir + "/.hilbish-history")
+		//readline.AddHistory(input)
+		//readline.SaveHistory(homedir + "/.hilbish-history")
 		bait.Em.Emit("command.exit", nil)
 		bait.Em.Emit("command.success", nil)
 		return
-	}
-
-	// Split up the input
-	cmdArgs, cmdString := splitInput(input)
-	// If there's actually no input, prompt again
-	if len(cmdArgs) == 0 { return }
-
-	// If alias was found, use command alias
-	if aliases[cmdArgs[0]] != "" {
-		cmdString = aliases[cmdArgs[0]] + strings.Trim(cmdString, cmdArgs[0])
-		execCommand(cmdString)
-		return
-	}
-
-	// If command is defined in Lua then run it
-	if commands[cmdArgs[0]] {
-		err := l.CallByParam(lua.P{
-			Fn: l.GetField(
-				l.GetTable(
-					l.GetGlobal("commanding"),
-					lua.LString("__commands")),
-				cmdArgs[0]),
-			NRet: 0,
-			Protect: true,
-		}, luar.New(l, cmdArgs[1:]))
-		if err != nil {
-			// TODO: dont panic
-			panic(err)
-		}
-		readline.AddHistory(cmdString)
-		readline.SaveHistory(homedir + "/.hilbish-history")
-		return
-	}
-
-	// Last option: use sh interpreter
-	switch cmdArgs[0] {
-	case "exit":
-		os.Exit(0)
-	default:
-		err := execCommand(cmdString)
-		if err != nil {
-			// If input is incomplete, start multiline prompting
-			if syntax.IsIncomplete(err) {
-				sb := &strings.Builder{}
-				for {
-					done := StartMultiline(cmdString, sb)
-					if done {
-						break
-					}
-				}
-			} else {
-				if code, ok := interp.IsExitStatus(err); ok {
-					if code > 0 {
-						bait.Em.Emit("command.exit", nil)
-						bait.Em.Emit("command.fail", code)
-					}
-				}
-				fmt.Fprintln(os.Stderr, err)
-			}
-		} else {
-			bait.Em.Emit("command.exit", nil)
-			bait.Em.Emit("command.success", nil)
-		}
 	}
 }
 
@@ -160,6 +108,21 @@ func splitInput(input string) ([]string, string) {
 	readline.AddHistory(input)
 	readline.SaveHistory(homedir + "/.hilbish-history")
 	return cmdArgs, cmdstr.String()
+}
+
+func ContinuePrompt(prev string) string {
+	fmt.Printf("... ")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	cont, err := reader.ReadString('\n')
+	if err == io.EOF {
+		// Exit when ^D
+		fmt.Println("")
+		return ""
+	}
+
+	return prev + "\n" + cont
 }
 
 func StartMultiline(prev string, sb *strings.Builder) bool {
