@@ -26,6 +26,10 @@ commander.register('cd', function (args)
 	bait.throw('command.success', nil)
 end)
 
+commander.register('exit', function()
+	os.exit(0)
+end)
+
 do
 	local virt_G = { }
 	

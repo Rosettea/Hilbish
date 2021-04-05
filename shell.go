@@ -47,47 +47,41 @@ func RunInput(input string) {
 			Protect: true,
 		}, luar.New(l, cmdArgs[1:]))
 		if err != nil {
-			// TODO: dont panic
-			panic(err)
+			fmt.Fprintln(os.Stderr,
+			"Error in command:\n\n" + err.Error())
 		}
-		HandleHistory(cmdString)
+		if cmdArgs[0] != "exit" { HandleHistory(cmdString) }
 		return
 	}
 
 	// Last option: use sh interpreter
-	switch cmdArgs[0] {
-	case "exit":
-		os.Exit(0)
-	default:
-		err := execCommand(cmdString)
-		if err != nil {
-			// If input is incomplete, start multiline prompting
-			if syntax.IsIncomplete(err) {
-				for {
-					cmdString, err = ContinuePrompt(strings.TrimSuffix(cmdString, "\\"))
-					if err != nil { break }
-					err = execCommand(cmdString)
-
+	err = execCommand(cmdString)
+	if err != nil {
+		// If input is incomplete, start multiline prompting
+		if syntax.IsIncomplete(err) {
+			for {
+				cmdString, err = ContinuePrompt(strings.TrimSuffix(cmdString, "\\"))
+				if err != nil { break }
+				err = execCommand(cmdString)
 					if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
-						continue
-					} else if code, ok := interp.IsExitStatus(err); ok {
-						bait.Em.Emit("command.exit", code)
-					} else if err != nil {
-						fmt.Fprintln(os.Stderr, err)
-						bait.Em.Emit("command.exit", 1)
-					}
-					break
-				}
-			} else {
-				if code, ok := interp.IsExitStatus(err); ok {
+					continue
+				} else if code, ok := interp.IsExitStatus(err); ok {
 					bait.Em.Emit("command.exit", code)
-				} else { fmt.Fprintln(os.Stderr, err) }
+				} else if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					bait.Em.Emit("command.exit", 1)
+				}
+				break
 			}
 		} else {
-			bait.Em.Emit("command.exit", 0)
+			if code, ok := interp.IsExitStatus(err); ok {
+				bait.Em.Emit("command.exit", code)
+			} else { fmt.Fprintln(os.Stderr, err) }
 		}
-		HandleHistory(cmdString)
+	} else {
+		bait.Em.Emit("command.exit", 0)
 	}
+	HandleHistory(cmdString)
 }
 
 // Run command in sh interpreter
