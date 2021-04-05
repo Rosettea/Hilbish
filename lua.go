@@ -25,6 +25,7 @@ func LuaInit() {
 	l.SetGlobal("_ver", lua.LString(version))
 
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
+	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 
 	// Add fs module to Lua
@@ -72,6 +73,12 @@ func LuaInit() {
 
 func hshprompt(L *lua.LState) int {
 	prompt = L.ToString(1)
+
+	return 0
+}
+
+func hshmlprompt(L *lua.LState) int {
+	multilinePrompt = L.ToString(1)
 
 	return 0
 }

@@ -21,6 +21,8 @@ const version = "0.3.0-dev"
 var l *lua.LState
 // User's prompt, this will get set when lua side is initialized
 var prompt string
+var multilinePrompt = "> "
+
 // Map of builtin/custom commands defined in the commander lua module
 var commands = map[string]bool{}
 // Command aliases
@@ -113,7 +115,7 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
-	fmt.Printf("> ")
+	fmt.Print(multilinePrompt)
 
 	reader := bufio.NewReader(os.Stdin)
 

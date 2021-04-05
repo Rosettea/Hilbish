@@ -162,7 +162,7 @@ func StartMultiline(prev string, sb *strings.Builder) bool {
 	// save input from previous prompts
 	if sb.String() == "" { sb.WriteString(prev + "\n") }
 
-	fmt.Printf("sh> ")
+	fmt.Print(multilinePrompt)
 
 	reader := bufio.NewReader(os.Stdin)
 
