@@ -12,7 +12,7 @@ import (
 
 var minimalconf = `
 ansikit = require 'ansikit'
-prompt(ansikit.text(
+prompt(ansikit.format(
 		'{blue}%u {cyan}%d {green}∆{reset} '
 ))
 `
@@ -64,7 +64,7 @@ func LuaInit() {
 	err = l.DoFile(homedir + "/.hilbishrc.lua")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
-		"An error has occured while loading your config! Falling back to minimal default config.\n")
+		"\nAn error has occured while loading your config! Falling back to minimal default config.\n")
 
 		l.DoString(minimalconf)
 	}
