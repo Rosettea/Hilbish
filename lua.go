@@ -10,6 +10,13 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
+var minimalconf = `
+ansikit = require 'ansikit'
+prompt(ansikit.text(
+		'{blue}%u {cyan}%d {green}∆{reset} '
+))
+`
+
 func LuaInit() {
 	l = lua.NewState()
 
@@ -56,7 +63,10 @@ func LuaInit() {
 	// Run config
 	err = l.DoFile(homedir + "/.hilbishrc.lua")
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, err,
+		"An error has occured while loading your config! Falling back to minimal default config.\n")
+
+		l.DoString(minimalconf)
 	}
 }
 
