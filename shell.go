@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/bobappleyard/readline"
-	_ "github.com/yuin/gopher-lua"
-	_ "layeh.com/gopher-luar"
+	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 
@@ -22,11 +22,71 @@ func RunInput(input string) {
 
 	if err == nil {
 		// If it succeeds, add to history and prompt again
-		readline.AddHistory(input)
-		readline.SaveHistory(homedir + "/.hilbish-history")
-		bait.Em.Emit("command.exit", nil)
-		bait.Em.Emit("command.success", nil)
+		HandleHistory(input)
+
+		bait.Em.Emit("command.exit", 0)
 		return
+	}
+
+	cmdArgs, cmdString := splitInput(input)
+
+	// If alias was found, use command alias
+	if aliases[cmdArgs[0]] != "" {
+		cmdString = aliases[cmdArgs[0]] + strings.Trim(cmdString, cmdArgs[0])
+	}
+
+	// If command is defined in Lua then run it
+	if commands[cmdArgs[0]] {
+		err := l.CallByParam(lua.P{
+			Fn: l.GetField(
+				l.GetTable(
+					l.GetGlobal("commanding"),
+					lua.LString("__commands")),
+				cmdArgs[0]),
+			NRet: 0,
+			Protect: true,
+		}, luar.New(l, cmdArgs[1:]))
+		if err != nil {
+			// TODO: dont panic
+			panic(err)
+		}
+		HandleHistory(cmdString)
+		return
+	}
+
+	// Last option: use sh interpreter
+	switch cmdArgs[0] {
+	case "exit":
+		os.Exit(0)
+	default:
+		err := execCommand(cmdString)
+		if err != nil {
+			// If input is incomplete, start multiline prompting
+			if syntax.IsIncomplete(err) {
+				for {
+					cmdString, err = ContinuePrompt(strings.TrimSuffix(cmdString, "\\"))
+					if err != nil { break }
+					err = execCommand(cmdString)
+
+					if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
+						continue
+					} else if code, ok := interp.IsExitStatus(err); ok {
+						bait.Em.Emit("command.exit", code)
+					} else if err != nil {
+						fmt.Fprintln(os.Stderr, err)
+						bait.Em.Emit("command.exit", 1)
+					}
+					break
+				}
+			} else {
+				if code, ok := interp.IsExitStatus(err); ok {
+					bait.Em.Emit("command.exit", code)
+				} else { fmt.Fprintln(os.Stderr, err) }
+			}
+		} else {
+			bait.Em.Emit("command.exit", 0)
+		}
+		HandleHistory(cmdString)
 	}
 }
 
@@ -94,12 +154,14 @@ func splitInput(input string) ([]string, string) {
 		cmdArgs = append(cmdArgs, sb.String())
 	}
 
-	readline.AddHistory(input)
-	readline.SaveHistory(homedir + "/.hilbish-history")
 	return cmdArgs, cmdstr.String()
 }
 
-
+func HandleHistory(cmd string) {
+	readline.AddHistory(cmd)
+	readline.SaveHistory(homedir + "/.hilbish-history")
+	// TODO: load history again (history shared between sessions like this ye)
+}
 
 func StartMultiline(prev string, sb *strings.Builder) bool {
 	// sb fromt outside is passed so we can
