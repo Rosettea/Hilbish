@@ -98,7 +98,9 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 		}
 
-		// I have no idea if we need this anymore
+		input = strings.TrimSpace(input)
+		if len(input) == 0 { continue }
+
 		if strings.HasSuffix(input, "\\") {
 			for {
 				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
