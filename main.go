@@ -17,7 +17,7 @@ import (
 
 )
 
-const version = "0.3.0"
+const version = "0.3.1"
 var l *lua.LState
 // User's prompt, this will get set when lua side is initialized
 var prompt string
