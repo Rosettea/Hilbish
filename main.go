@@ -141,7 +141,7 @@ func fmtPrompt() string {
 	args := []string{
 		"d", cwd,
 		"h", host,
-		"u", user.Name,
+		"u", user.Username,
 	}
 
 	for i, v := range args {
