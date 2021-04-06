@@ -105,15 +105,15 @@ ansikit.format = function(text)
 end
 
 ansikit.getCode = function(code, terminate)
-	return string.char 0x001b .. code ..
-	(terminate and string.char 0x001b .. '\\' or '')
+	return string.char(0x001b) .. code ..
+	(terminate and string.char(0x001b) .. '\\' or '')
 end
 
 ansikit.getCSI = function(code, endc)
 	endc = (endc and endc or 'm')
 	code = (code and code or '')
 
-	return string.char 0x001b .. '[' .. code .. endc
+	return string.char(0x001b) .. '[' .. code .. endc
 end
 
 ansikit.hideCursor = function()
@@ -141,7 +141,7 @@ ansikit.println = function(text)
 end
 
 ansikit.reset = function()
-	return ansikit.printCode 'c'
+	return ansikit.printCode('c')
 end
 
 ansikit.restoreCursor = function()
@@ -149,7 +149,7 @@ ansikit.restoreCursor = function()
 end
 
 ansikit.restoreState = function()
-	return ansikit.printCode 8
+	return ansikit.printCode(8)
 end
 
 ansikit.rgb = function(r, g, b)
@@ -157,7 +157,7 @@ ansikit.rgb = function(r, g, b)
 	g = (g and g or 0)
 	b = (b and b or 0)
 
-	return ansikit.printCSI '38;2;' .. r .. ';' .. g .. ';' .. b
+	return ansikit.printCSI('38;2;' .. r .. ';' .. g .. ';' .. b)
 end
 
 ansikit.saveCursor = function()
@@ -165,7 +165,7 @@ ansikit.saveCursor = function()
 end
 
 ansikit.saveState = function()
-	return ansikit.printCode 7
+	return ansikit.printCode(7)
 end
 
 ansikit.setTitle = function(text)
