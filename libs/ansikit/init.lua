@@ -61,17 +61,6 @@ ansikit.cursorUp = function(y)
 	return ansikit.printCSI(y, 'A')
 end
 
-ansikit.getCode = function(code, terminate)
-	endc = (endc and endc or 'm')
-	return string.char(0x001b) .. code ..
-	(terminate and string.char(0x001b) .. '\\' or '')
-end
-
-ansikit.getCSI = function(code, endc)
-	endc = (endc and endc or 'm')
-	return string.char(0x001b) .. '[' .. code .. endc
-end
-
 ansikit.format = function(text)
 	local colors = {
 		-- TODO: write codes manually instead of using functions
@@ -115,6 +104,22 @@ ansikit.format = function(text)
 	return text
 end
 
+ansikit.getCode = function(code, terminate)
+	return string.char 0x001b .. code ..
+	(terminate and string.char 0x001b .. '\\' or '')
+end
+
+ansikit.getCSI = function(code, endc)
+	endc = (endc and endc or 'm')
+	code = (code and code or '')
+
+	return string.char 0x001b .. '[' .. code .. endc
+end
+
+ansikit.hideCursor = function()
+	return ansikit.printCSI('?25', 'l')
+end
+
 ansikit.print = function(text)
 	io.write(ansikit.format(text))
 	return ansikit
@@ -133,6 +138,42 @@ end
 ansikit.println = function(text)
 	print(ansikit.print(text))
 	return ansikit
+end
+
+ansikit.reset = function()
+	return ansikit.printCode 'c'
+end
+
+ansikit.restoreCursor = function()
+	return ansikit.printCSI(nil, 'u')
+end
+
+ansikit.restoreState = function()
+	return ansikit.printCode 8
+end
+
+ansikit.rgb = function(r, g, b)
+	r = (r and r or 0)
+	g = (g and g or 0)
+	b = (b and b or 0)
+
+	return ansikit.printCSI '38;2;' .. r .. ';' .. g .. ';' .. b
+end
+
+ansikit.saveCursor = function()
+	return ansikit.printCSI(nil, 's')
+end
+
+ansikit.saveState = function()
+	return ansikit.printCode 7
+end
+
+ansikit.setTitle = function(text)
+	ansikit.printCode (']2;' .. text, true)
+end
+
+ansikit.showCursor = function()
+	return ansikit.printCSI('?25', 'h')
 end
 
 return ansikit
