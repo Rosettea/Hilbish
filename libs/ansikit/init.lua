@@ -169,7 +169,7 @@ ansikit.saveState = function()
 end
 
 ansikit.setTitle = function(text)
-	ansikit.printCode (']2;' .. text, true)
+	return ansikit.printCode(']2;' .. text, true)
 end
 
 ansikit.showCursor = function()
