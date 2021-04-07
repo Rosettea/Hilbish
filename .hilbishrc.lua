@@ -8,8 +8,8 @@ function doPrompt(fail)
 	))
 end
 
-print(ansikit.format('Welcome to {magenta}Hilbish{reset} {cyan}'.. os.getenv 'USER' ..
-'{reset}.\n' ..
+print(ansikit.format('Welcome to {magenta}Hilbish{reset}, {cyan}' ..
+os.getenv 'USER' .. '{reset}.\n' ..
 'The nice lil shell for {blue}Lua{reset} fanatics!\n'))
 
 doPrompt()
