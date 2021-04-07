@@ -17,7 +17,7 @@ prompt(ansikit.format(
 ))
 `
 
-func LuaInit() {
+func LuaInit(confpath string) {
 	l = lua.NewState()
 
 	l.OpenLibs()
@@ -60,9 +60,8 @@ func LuaInit() {
 		}
 	}
 
-	homedir, _ := os.UserHomeDir()
 	// Run config
-	err = l.DoFile(homedir + "/.hilbishrc.lua")
+	err = l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
 		"\nAn error has occured while loading your config! Falling back to minimal default config.\n")

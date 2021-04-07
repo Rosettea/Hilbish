@@ -31,6 +31,9 @@ var bait hooks.Bait
 var homedir string
 
 func main() {
+	homedir, _ = os.UserHomeDir()
+	defaultconfpath := homedir + "/.hilbishrc.lua"
+
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := parser.Flag("v", "version", &argparse.Options{
 		Required: false,
@@ -39,6 +42,11 @@ func main() {
 	setshflag := parser.Flag("S", "set-shell-env", &argparse.Options{
 		Required: false,
 		Help: "Sets $SHELL to Hilbish's executed path",
+	})
+	configflag := parser.String("C", "config", &argparse.Options{
+		Required: false,
+		Help: "Sets the path to Hilbish's config",
+		Default: defaultconfpath,
 	})
 
 	err := parser.Parse(os.Args)
@@ -57,9 +65,8 @@ func main() {
 	// Set $SHELL if the user wants to
 	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
 
-	homedir, _ = os.UserHomeDir()
 	// If user's config doesn't exixt,
-	if _, err := os.Stat(homedir + "/.hilbishrc.lua"); os.IsNotExist(err) {
+	if _, err := os.Stat(defaultconfpath); os.IsNotExist(err) {
 		// Read default from current directory
 		// (this is assuming the current dir is Hilbish's git)
 		input, err := os.ReadFile(".hilbishrc.lua")
@@ -83,7 +90,7 @@ func main() {
 	}
 
 	HandleSignals()
-	LuaInit()
+	LuaInit(*configflag)
 
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")
