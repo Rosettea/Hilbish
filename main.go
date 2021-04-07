@@ -14,7 +14,7 @@ import (
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
-
+	"golang.org/x/term"
 )
 
 const version = "0.3.1"
@@ -111,6 +111,10 @@ func main() {
 			}
 		}
 		RunInput(input)
+
+		termwidth, _, err := term.GetSize(0)
+		if err != nil { continue }
+		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
 	}
 }
 
