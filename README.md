@@ -37,9 +37,13 @@ sudo make install
 sudo make all
 ```
 
-Alternativly, if you use Arch Linux, you can install Hilbish with an **(unofficial)** AUR package
+Alternativly, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package
 ```sh
 yay -S hilbish-git
+```
+Or install a prebuilt binary from an **(unofficial)** AUR package
+```sh
+yay -S hilbish
 ```
 
 ### Uninstall
