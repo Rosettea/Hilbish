@@ -27,6 +27,12 @@ On Debian/Ubuntu and distros based on them, it can be installed with:
 sudo apt install libreadline-dev
 ```
 
+
+Alternativly, if you use Arch Linux, you can install Hilbish with an **(unofficial)** AUR package
+```sh
+yay -S hilbish-git
+```
+
 ### Install
 ```sh
 git clone https://github.com/Hilbis/Hilbish
@@ -35,11 +41,6 @@ make build
 sudo make install
 # Or 
 sudo make all
-```
-
-Alternativly, if you use Arch Linux, you can install Hilbish with an **(unofficial)** AUR package
-```sh
-yay -S hilbish-git
 ```
 
 ### Uninstall
