@@ -1,11 +1,26 @@
-# Hilbish
-🎀 a nice lil shell for lua people made with go and lua
+<div align="center">
+	<h1>Hilbish</h1>
+	<blockquote>
+	🎀 a nice lil shell for lua people made with go and lua
+	</blockquote>
+</div>
 
-It is currently in a mostly beta state but is very much usable
-(I'm using it right now).
+Hilbish is an interactive Unix-like shell written in Go, with the config
+and other code written in Lua.  
+It is currently in a Beta state. Though very fit for daily usage,
+updates may contain breaking changes.
+
+# Screenshots
+<div align="center">
+<img src="gallery/default.png"><br><br>
+<img src="gallery/terminal.png"><br><br>
+<img src="gallery/pillprompt.png">
+</div>
 
 # Links
 - **[Documentation](https://github.com/Hilbis/Hilbish/wiki)**
+- **[Gallery](https://github.com/Hilbis/Hilbish/discussions/36)** - See
+more screenshots of Hilbish in action
 
 # Building
 Prebuilt binaries are not yet provided, so to try it out you'll have to manually compile.  
@@ -51,5 +66,22 @@ yay -S hilbish
 sudo make uninstall
 ```
 
+# Contributing
+Any kind of contributions to Hilbish are welcome!   
+Make sure to read [CONTRIBUTING.md](CONTRIBUTING.md) before getting started.
+
+### Special Thanks To
+Everyone here who has contributed:
+<a href="https://github.com/Hilbis/Hilbish/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Hilbis/Hilbish" />
+</a>
+
+*Made with [contributors-img](https://contrib.rocks).*
+
+### Credits
+- [This blog post](https://www.vidarholen.net/contents/blog/?p=878) which
+is how Hilbish now inserts a newline even if output doesn't have one.
+
 # License
-[MIT](LICENSE)
+Hilbish is licensed under the MIT license.  
+[Read here](LICENSE) for more info.
