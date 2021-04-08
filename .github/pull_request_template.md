@@ -1,0 +1,5 @@
+---
+- [ ] I have reviewed CONTRIBUTING.md.
+- [ ] My commits and title use the [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) format.
+- [ ] I have documented any breaking changes according to [SemVer](https://semver.org/).
+---
