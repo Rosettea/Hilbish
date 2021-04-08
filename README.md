@@ -2,7 +2,10 @@
 	<h1>Hilbish</h1>
 	<blockquote>
 	🎀 a nice lil shell for lua people made with go and lua
-	</blockquote>
+	</blockquote><p align="center">
+		<a href="https://github.com/Hilbis/Hilbish/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22"><img src="https://img.shields.io/github/issues/Hilbis/Hilbish/help%20wanted?color=green" alt="help wanted"></a>
+		<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+	</p>
 </div>
 
 Hilbish is an interactive Unix-like shell written in Go, with the config
