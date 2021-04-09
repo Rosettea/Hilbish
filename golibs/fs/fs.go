@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 )
 
 func Loader(L *lua.LState) int {
@@ -22,6 +23,8 @@ func LuaErr(L *lua.LState, code int) {
 
 var exports = map[string]lua.LGFunction{
     "cd": cd,
+    "mkdir": mkdir,
+    "stat": stat,
 }
 
 func cd(L *lua.LState) int {
@@ -38,3 +41,21 @@ func cd(L *lua.LState) int {
 	return 0
 }
 
+func mkdir(L *lua.LState) int {
+	dirname := L.ToString(1)
+
+	// TODO: handle error here
+	os.Mkdir(strings.TrimSpace(dirname), 0744)
+
+	return 0
+}
+
+func stat(L *lua.LState) int {
+	path := L.ToString(1)
+
+	// TODO: handle error here
+	pathinfo, _ := os.Stat(path)
+	L.Push(luar.New(L, pathinfo))
+
+	return 1
+}
