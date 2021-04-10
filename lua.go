@@ -54,7 +54,6 @@ func LuaInit(confpath string) {
 	.. ';/usr/share/hilbish/libs/?/init.lua;'
 	.. os.getenv 'HOME' .. '/.local/share/hilbish/libs/?/init.lua;'
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua'
-	print(package.path)
 	`)
 
 	err := l.DoFile("/usr/share/hilbish/preload.lua")
