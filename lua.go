@@ -50,8 +50,11 @@ func LuaInit(confpath string) {
 
 	// Add more paths that Lua can require from
 	l.DoString(`package.path = package.path
-	.. ';./libs/?/init.lua;/usr/share/hilbish/libs/?/init.lua'
-	.. ';./?/init.lua;./?/?.lua'
+	.. ';./libs/?/init.lua;./?/init.lua;./?/?.lua'
+	.. ';/usr/share/hilbish/libs/?/init.lua;'
+	.. os.getenv 'HOME' .. '/.local/share/hilbish/libs/?/init.lua;'
+	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua'
+	print(package.path)
 	`)
 
 	err := l.DoFile("/usr/share/hilbish/preload.lua")
