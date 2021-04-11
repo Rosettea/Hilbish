@@ -53,6 +53,7 @@ func LuaInit(confpath string) {
 	.. ';./libs/?/init.lua;./?/init.lua;./?/?.lua'
 	.. ';/usr/share/hilbish/libs/?/init.lua;'
 	.. os.getenv 'HOME' .. '/.local/share/hilbish/libs/?/init.lua;'
+	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua;'
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?.lua'
 	`)
 
