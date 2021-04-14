@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/user"
-	"syscall"
 	"os/signal"
 	"strings"
-	"bufio"
 	"io"
 	hooks "hilbish/golibs/bait"
 
@@ -29,6 +27,7 @@ var commands = map[string]bool{}
 var aliases = map[string]string{}
 var bait hooks.Bait
 var homedir string
+var running bool
 
 func main() {
 	homedir, _ = os.UserHomeDir()
@@ -89,13 +88,14 @@ func main() {
 		}
 	}
 
-	HandleSignals()
+	go HandleSignals()
 	LuaInit(*configflag)
 
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
+		running = false
 		input, err := readline.String(fmtPrompt())
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
@@ -117,6 +117,7 @@ func main() {
 				if err != nil || !strings.HasSuffix(input, "\\") { break }
 			}
 		}
+		running = true
 		RunInput(input)
 
 		termwidth, _, err := term.GetSize(0)
@@ -126,12 +127,7 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
-	fmt.Print(multilinePrompt)
-
-	reader := bufio.NewReader(os.Stdin)
-
-	// TODO: use readline here?
-	cont, err := reader.ReadString('\n')
+	cont, err := readline.String(multilinePrompt)
 	if err != nil {
 		fmt.Println("")
 		return "", err
@@ -170,9 +166,14 @@ func fmtPrompt() string {
 // do i even have to say
 func HandleSignals() {
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-	}()
+	signal.Notify(c, os.Interrupt)
+
+	for range c {
+		if !running {
+			fmt.Println(" // interrupt")
+			readline.ReplaceLine("", 0)
+			readline.RefreshLine()
+		}
+	}
 }
 
