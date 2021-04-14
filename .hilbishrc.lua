@@ -18,4 +18,3 @@ bait.catch('command.exit', function(code)
 	doPrompt(code ~= 0)
 end)
 
---hook("tab complete", function ())
