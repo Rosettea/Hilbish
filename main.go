@@ -11,6 +11,7 @@ import (
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
+	"github.com/Hilbis/Hilbiline"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
@@ -91,12 +92,14 @@ func main() {
 	go HandleSignals()
 	LuaInit(*configflag)
 
-	readline.Completer = readline.FilenameCompleter
-	readline.LoadHistory(homedir + "/.hilbish-history")
+	hl := hilbiline.New(prompt)
+	//readline.Completer = readline.FilenameCompleter
+	//readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
 		running = false
-		input, err := readline.String(fmtPrompt())
+		hl.SetPrompt(fmtPrompt())
+		input, err := hl.Read()
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
 			fmt.Println("")
@@ -170,9 +173,9 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			fmt.Println(" // interrupt")
-			readline.ReplaceLine("", 0)
-			readline.RefreshLine()
+			//fmt.Println(" // interrupt")
+			//readline.ReplaceLine("", 0)
+			//readline.RefreshLine()
 		}
 	}
 }
