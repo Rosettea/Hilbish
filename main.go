@@ -170,7 +170,6 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			fmt.Println(" // interrupt")
 			readline.ReplaceLine("", 0)
 			readline.RefreshLine()
 		}
