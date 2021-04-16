@@ -98,8 +98,10 @@ func main() {
 
 	for {
 		running = false
+
 		hl.SetPrompt(fmtPrompt())
 		input, err := hl.Read()
+
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
 			fmt.Println("")
@@ -111,7 +113,7 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		if len(input) == 0 { continue }
+		if len(input) == 0 { fmt.Print("\n"); continue }
 
 		if strings.HasSuffix(input, "\\") {
 			for {
