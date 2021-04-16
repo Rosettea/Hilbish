@@ -92,7 +92,7 @@ func main() {
 	go HandleSignals()
 	LuaInit(*configflag)
 
-	hl := hilbiline.New(prompt)
+	hl := hilbiline.New("")
 	//readline.Completer = readline.FilenameCompleter
 	//readline.LoadHistory(homedir + "/.hilbish-history")
 
