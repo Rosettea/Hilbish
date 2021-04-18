@@ -10,7 +10,6 @@ import (
 	hooks "hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
-	"github.com/bobappleyard/readline"
 	"github.com/Hilbis/Hilbiline"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
@@ -132,7 +131,8 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
-	cont, err := readline.String(multilinePrompt)
+	hl := hilbiline.New(multilinePrompt)
+	cont, err := hl.Read()
 	if err != nil {
 		fmt.Println("")
 		return "", err
