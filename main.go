@@ -49,7 +49,7 @@ func main() {
 	})
 	// loginshflag
 	// TODO: issue #37
-	_ = parser.String("l", "login", &argparse.Options{
+	_ = parser.Flag("l", "login", &argparse.Options{
 		Required: false,
 		Help: "Makes Hilbish act like a login shell",
 	})
