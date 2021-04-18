@@ -10,12 +10,12 @@ import (
 	hooks "hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
-	"github.com/bobappleyard/readline"
+	"github.com/Hilbis/Hilbiline"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
 
-const version = "0.3.2"
+const version = "0.3.3-hilbiline"
 var l *lua.LState
 // User's prompt, this will get set when lua side is initialized
 var prompt string
@@ -91,12 +91,16 @@ func main() {
 	go HandleSignals()
 	LuaInit(*configflag)
 
-	readline.Completer = readline.FilenameCompleter
-	readline.LoadHistory(homedir + "/.hilbish-history")
+	hl := hilbiline.New("")
+	//readline.Completer = readline.FilenameCompleter
+	//readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
 		running = false
-		input, err := readline.String(fmtPrompt())
+
+		hl.SetPrompt(fmtPrompt())
+		input, err := hl.Read()
+
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
 			fmt.Println("")
@@ -108,7 +112,7 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		if len(input) == 0 { continue }
+		if len(input) == 0 { fmt.Print("\n"); continue }
 
 		if strings.HasSuffix(input, "\\") {
 			for {
@@ -127,7 +131,8 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
-	cont, err := readline.String(multilinePrompt)
+	hl := hilbiline.New(multilinePrompt)
+	cont, err := hl.Read()
 	if err != nil {
 		fmt.Println("")
 		return "", err
@@ -170,8 +175,9 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			readline.ReplaceLine("", 0)
-			readline.RefreshLine()
+			//fmt.Println(" // interrupt")
+			//readline.ReplaceLine("", 0)
+			//readline.RefreshLine()
 		}
 	}
 }
