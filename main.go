@@ -15,7 +15,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "0.3.3-hilbiline"
+const version = "0.4.0-dev.1+hilbiline"
 var l *lua.LState
 // User's prompt, this will get set when lua side is initialized
 var prompt string
