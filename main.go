@@ -47,7 +47,9 @@ func main() {
 		Help: "Sets the path to Hilbish's config",
 		Default: defaultconfpath,
 	})
-	loginshflag := parser.String("l", "login", &argparse.Options{
+	// loginshflag
+	// TODO: issue #37
+	_ = parser.String("l", "login", &argparse.Options{
 		Required: false,
 		Help: "Makes Hilbish act like a login shell",
 	})
