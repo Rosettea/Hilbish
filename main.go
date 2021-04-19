@@ -2,27 +2,30 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/user"
-	"os/signal"
-	"strings"
-	"io"
 	hooks "hilbish/golibs/bait"
+	"io"
+	"os"
+	"os/signal"
+	"os/user"
+	"strings"
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
 
 const version = "0.3.2"
+
 var l *lua.LState
+
 // User's prompt, this will get set when lua side is initialized
 var prompt string
 var multilinePrompt = "> "
 
 // Map of builtin/custom commands defined in the commander lua module
 var commands = map[string]bool{}
+
 // Command aliases
 var aliases = map[string]string{}
 var bait hooks.Bait
@@ -36,16 +39,16 @@ func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := parser.Flag("v", "version", &argparse.Options{
 		Required: false,
-		Help: "Prints Hilbish version",
+		Help:     "Prints Hilbish version",
 	})
 	setshflag := parser.Flag("S", "set-shell-env", &argparse.Options{
 		Required: false,
-		Help: "Sets $SHELL to Hilbish's executed path",
+		Help:     "Sets $SHELL to Hilbish's executed path",
 	})
 	configflag := parser.String("C", "config", &argparse.Options{
 		Required: false,
-		Help: "Sets the path to Hilbish's config",
-		Default: defaultconfpath,
+		Help:     "Sets the path to Hilbish's config",
+		Default:  defaultconfpath,
 	})
 
 	err := parser.Parse(os.Args)
@@ -62,7 +65,9 @@ func main() {
 	}
 
 	// Set $SHELL if the user wants to
-	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
+	if *setshflag {
+		os.Setenv("SHELL", os.Args[0])
+	}
 
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultconfpath); os.IsNotExist(err) {
@@ -79,7 +84,7 @@ func main() {
 		}
 
 		// Create it using either default config we found
-		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+		err = os.WriteFile(homedir+"/.hilbishrc.lua", input, 0644)
 		if err != nil {
 			// If that fails, bail
 			fmt.Println("Error creating config file")
@@ -108,21 +113,27 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		if len(input) == 0 { continue }
+		if len(input) == 0 {
+			continue
+		}
 
 		if strings.HasSuffix(input, "\\") {
 			for {
 				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
 
-				if err != nil || !strings.HasSuffix(input, "\\") { break }
+				if err != nil || !strings.HasSuffix(input, "\\") {
+					break
+				}
 			}
 		}
 		running = true
 		RunInput(input)
 
 		termwidth, _, err := term.GetSize(0)
-		if err != nil { continue }
-		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
+		if err != nil {
+			continue
+		}
+		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth-1) + "\r")
 	}
 }
 
@@ -152,7 +163,7 @@ func fmtPrompt() string {
 	}
 
 	for i, v := range args {
-		if i % 2 == 0 {
+		if i%2 == 0 {
 			args[i] = "%" + v
 		}
 	}
@@ -175,4 +186,3 @@ func HandleSignals() {
 		}
 	}
 }
-
