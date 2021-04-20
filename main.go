@@ -2,35 +2,36 @@ package main
 
 import (
 	"fmt"
-	hooks "hilbish/golibs/bait"
 	"io"
 	"os"
 	"os/signal"
 	"os/user"
 	"strings"
 
+	hooks "hilbish/golibs/bait"
+
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
-	lua "github.com/yuin/gopher-lua"
+	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
 
 const version = "0.3.2"
 
-var l *lua.LState
+var (
+	l *lua.LState
 
-// User's prompt, this will get set when lua side is initialized
-var prompt string
-var multilinePrompt = "> "
+	// User's prompt, this will get set when lua side is initialized
+	prompt string
+	multilinePrompt = "> "
 
-// Map of builtin/custom commands defined in the commander lua module
-var commands = map[string]bool{}
+	commands = map[string]bool{}
+	aliases = map[string]string{}
 
-// Command aliases
-var aliases = map[string]string{}
-var bait hooks.Bait
-var homedir string
-var running bool
+	bait hooks.Bait
+	homedir string
+	running bool
+)
 
 func main() {
 	homedir, _ = os.UserHomeDir()
