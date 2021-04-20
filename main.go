@@ -40,15 +40,15 @@ func main() {
 	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := parser.Flag("v", "version", &argparse.Options{
 		Required: false,
-		Help:     "Prints Hilbish version",
+		Help: "Prints Hilbish version",
 	})
 	setshflag := parser.Flag("S", "set-shell-env", &argparse.Options{
 		Required: false,
-		Help:     "Sets $SHELL to Hilbish's executed path",
+		Help: "Sets $SHELL to Hilbish's executed path",
 	})
 	configflag := parser.String("C", "config", &argparse.Options{
 		Required: false,
-		Help:     "Sets the path to Hilbish's config",
+		Help: "Sets the path to Hilbish's config",
 		Default:  defaultconfpath,
 	})
 
@@ -164,7 +164,7 @@ func fmtPrompt() string {
 	}
 
 	for i, v := range args {
-		if i%2 == 0 {
+		if i % 2 == 0 {
 			args[i] = "%" + v
 		}
 	}
