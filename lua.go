@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
-	lfs "hilbish/golibs/fs"
-	cmds "hilbish/golibs/commander"
 	hooks "hilbish/golibs/bait"
+	cmds "hilbish/golibs/commander"
+	lfs "hilbish/golibs/fs"
+	"os"
 
 	"github.com/yuin/gopher-lua"
 )
@@ -34,14 +34,14 @@ func LuaInit(confpath string) {
 	commander := cmds.New()
 	// When a command from Lua is added, register it for use
 	commander.Events.On("commandRegister",
-	func (cmdName string, cmd *lua.LFunction) {
-		commands[cmdName] = true
-		l.SetField(
-			l.GetTable(l.GetGlobal("commanding"),
-			lua.LString("__commands")),
-			cmdName,
-			cmd)
-	})
+		func(cmdName string, cmd *lua.LFunction) {
+			commands[cmdName] = true
+			l.SetField(
+				l.GetTable(l.GetGlobal("commanding"),
+					lua.LString("__commands")),
+				cmdName,
+				cmd)
+		})
 
 	l.PreloadModule("commander", commander.Loader)
 
@@ -62,7 +62,7 @@ func LuaInit(confpath string) {
 		err = l.DoFile("preload.lua")
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
-			"Missing preload file, builtins may be missing.")
+				"Missing preload file, builtins may be missing.")
 		}
 	}
 
@@ -70,7 +70,7 @@ func LuaInit(confpath string) {
 	err = l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
-		"\nAn error has occured while loading your config! Falling back to minimal default config.\n")
+			"\nAn error has occured while loading your config! Falling back to minimal default config.\n")
 
 		l.DoString(minimalconf)
 	}

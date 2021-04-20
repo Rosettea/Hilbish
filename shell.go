@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"bufio"
 	"context"
+	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
-
 )
 
 func RunInput(input string) {
@@ -44,14 +43,16 @@ func RunInput(input string) {
 					l.GetGlobal("commanding"),
 					lua.LString("__commands")),
 				cmdArgs[0]),
-			NRet: 0,
+			NRet:    0,
 			Protect: true,
 		}, luar.New(l, cmdArgs[1:]))
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
-			"Error in command:\n\n" + err.Error())
+				"Error in command:\n\n"+err.Error())
 		}
-		if cmdArgs[0] != "exit" { HandleHistory(cmdString) }
+		if cmdArgs[0] != "exit" {
+			HandleHistory(cmdString)
+		}
 		return
 	}
 
@@ -62,9 +63,11 @@ func RunInput(input string) {
 		if syntax.IsIncomplete(err) {
 			for {
 				cmdString, err = ContinuePrompt(strings.TrimSuffix(cmdString, "\\"))
-				if err != nil { break }
+				if err != nil {
+					break
+				}
 				err = execCommand(cmdString)
-					if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
+				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
 					bait.Em.Emit("command.exit", code)
@@ -77,7 +80,9 @@ func RunInput(input string) {
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
 				bait.Em.Emit("command.exit", code)
-			} else { fmt.Fprintln(os.Stderr, err) }
+			} else {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		}
 	} else {
 		bait.Em.Emit("command.exit", 0)

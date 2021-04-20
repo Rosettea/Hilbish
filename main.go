@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/user"
-	"os/signal"
-	"strings"
 	"io"
+	"os"
+	"os/signal"
+	"os/user"
+	"strings"
+
 	hooks "hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
@@ -16,18 +17,21 @@ import (
 )
 
 const version = "0.4.0-dev.2+hilbiline"
-var l *lua.LState
-// User's prompt, this will get set when lua side is initialized
-var prompt string
-var multilinePrompt = "> "
 
-// Map of builtin/custom commands defined in the commander lua module
-var commands = map[string]bool{}
-// Command aliases
-var aliases = map[string]string{}
-var bait hooks.Bait
-var homedir string
-var running bool
+var (
+	l *lua.LState
+
+	// User's prompt, this will get set when lua side is initialized
+	prompt string
+	multilinePrompt = "> "
+
+	commands = map[string]bool{}
+	aliases = map[string]string{}
+
+	bait hooks.Bait
+	homedir string
+	running bool
+)
 
 func main() {
 	homedir, _ = os.UserHomeDir()
@@ -45,7 +49,7 @@ func main() {
 	configflag := parser.String("C", "config", &argparse.Options{
 		Required: false,
 		Help: "Sets the path to Hilbish's config",
-		Default: defaultconfpath,
+		Default:  defaultconfpath,
 	})
 	// loginshflag
 	// TODO: issue #37
@@ -69,7 +73,9 @@ func main() {
 	}
 
 	// Set $SHELL if the user wants to
-	if *setshflag { os.Setenv("SHELL", os.Args[0]) }
+	if *setshflag {
+		os.Setenv("SHELL", os.Args[0])
+	}
 
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultconfpath); os.IsNotExist(err) {
@@ -86,7 +92,7 @@ func main() {
 		}
 
 		// Create it using either default config we found
-		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+		err = os.WriteFile(homedir+"/.hilbishrc.lua", input, 0644)
 		if err != nil {
 			// If that fails, bail
 			fmt.Println("Error creating config file")
@@ -125,15 +131,19 @@ func main() {
 			for {
 				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
 
-				if err != nil || !strings.HasSuffix(input, "\\") { break }
+				if err != nil || !strings.HasSuffix(input, "\\") {
+					break
+				}
 			}
 		}
 		running = true
 		RunInput(input)
 
 		termwidth, _, err := term.GetSize(0)
-		if err != nil { continue }
-		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
+		if err != nil {
+			continue
+		}
+		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth-1) + "\r")
 	}
 }
 
@@ -188,4 +198,3 @@ func HandleSignals() {
 		}
 	}
 }
-
