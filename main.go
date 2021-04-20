@@ -15,7 +15,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "0.4.0-dev.1+hilbiline"
+const version = "0.4.0-dev.2+hilbiline"
 var l *lua.LState
 // User's prompt, this will get set when lua side is initialized
 var prompt string
@@ -146,7 +146,7 @@ func ContinuePrompt(prev string) (string, error) {
 	}
 	cont = strings.TrimSpace(cont)
 
-	return prev + "\n" + strings.TrimSuffix(cont, "\n"), nil
+	return prev + " " + strings.TrimSuffix(cont, "\n"), nil
 }
 
 // This semi cursed function formats our prompt (obviously)
