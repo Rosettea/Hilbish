@@ -141,7 +141,7 @@ func main() {
 		if err != nil {
 			continue
 		}
-		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth-1) + "\r")
+		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
 	}
 }
 
