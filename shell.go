@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/yuin/gopher-lua"
+	"github.com/bobappleyard/readline"
 	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -113,7 +114,7 @@ func splitInput(input string) ([]string, string) {
 	cmdArgs := []string{}
 	sb := &strings.Builder{}
 	cmdstr := &strings.Builder{}
-	lastcmd := "" //readline.GetHistory(readline.HistorySize() - 1)
+	lastcmd := readline.GetHistory(readline.HistorySize() - 1)
 
 	for _, r := range input {
 		if r == '"' {
@@ -158,8 +159,8 @@ func splitInput(input string) ([]string, string) {
 }
 
 func HandleHistory(cmd string) {
-	//readline.AddHistory(cmd)
-	//readline.SaveHistory(homedir + "/.hilbish-history")
+	readline.AddHistory(cmd)
+	readline.SaveHistory(homedir + "/.hilbish-history")
 	// TODO: load history again (history shared between sessions like this ye)
 }
 

@@ -11,12 +11,12 @@ import (
 	hooks "hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
-	"github.com/Hilbis/Hilbiline"
+	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
 
-const version = "0.4.0-dev.2+hilbiline"
+const version = "0.4.0-dev.2"
 
 var (
 	l *lua.LState
@@ -104,15 +104,13 @@ func main() {
 	go HandleSignals()
 	LuaInit(*configflag)
 
-	hl := hilbiline.New("")
-	//readline.Completer = readline.FilenameCompleter
-	//readline.LoadHistory(homedir + "/.hilbish-history")
+	readline.Completer = readline.FilenameCompleter
+	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	for {
 		running = false
 
-		hl.SetPrompt(fmtPrompt())
-		input, err := hl.Read()
+		input, err := readline.String(fmtPrompt())
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
@@ -125,7 +123,7 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		if len(input) == 0 { fmt.Print("\n"); continue }
+		if len(input) == 0 { continue }
 
 		if strings.HasSuffix(input, "\\") {
 			for {
@@ -192,9 +190,8 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			//fmt.Println(" // interrupt")
-			//readline.ReplaceLine("", 0)
-			//readline.RefreshLine()
+			readline.ReplaceLine("", 0)
+			readline.RefreshLine()
 		}
 	}
 }
