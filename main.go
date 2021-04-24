@@ -16,7 +16,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "0.4.0-dev.2"
+const version = "0.4.0-dev.3"
 
 var (
 	l *lua.LState
@@ -31,6 +31,7 @@ var (
 	bait hooks.Bait
 	homedir string
 	running bool
+	interactive bool
 )
 
 func main() {
@@ -46,6 +47,10 @@ func main() {
 		Required: false,
 		Help: "Sets $SHELL to Hilbish's executed path",
 	})
+	cmdflag := parser.String("c", "command", &argparse.Options{
+		Required: false,
+		// TODO: Help: "",
+	})
 	configflag := parser.String("C", "config", &argparse.Options{
 		Required: false,
 		Help: "Sets the path to Hilbish's config",
@@ -57,7 +62,10 @@ func main() {
 		Required: false,
 		Help: "Makes Hilbish act like a login shell",
 	})
-
+	interactiveflag := parser.Flag("i", "interactive", &argparse.Options{
+		Required: false,
+		Help: "Force Hilbish to be an interactive shell",
+	})
 
 	err := parser.Parse(os.Args)
 	// If invalid flags or --help/-h,
@@ -65,6 +73,10 @@ func main() {
 		// Print usage
 		fmt.Print(parser.Usage(err))
 		os.Exit(0)
+	}
+
+	if *cmdflag == "" || *interactiveflag {
+		interactive = true
 	}
 
 	if *verflag {
@@ -92,7 +104,7 @@ func main() {
 		}
 
 		// Create it using either default config we found
-		err = os.WriteFile(homedir+"/.hilbishrc.lua", input, 0644)
+		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
 		if err != nil {
 			// If that fails, bail
 			fmt.Println("Error creating config file")
@@ -107,7 +119,8 @@ func main() {
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
-	for {
+	RunInput(*cmdflag)
+	for interactive {
 		running = false
 
 		input, err := readline.String(fmtPrompt())

@@ -67,6 +67,7 @@ func LuaInit(confpath string) {
 	}
 
 	// Run config
+	if !interactive { return }
 	err = l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
