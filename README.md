@@ -10,8 +10,8 @@
 
 Hilbish is an interactive Unix-like shell written in Go, with the config
 and other code written in Lua.  
-It is currently in a Beta state. Though very fit for daily usage,
-updates may contain breaking changes.
+It is sort of in a stable state currently, usable as a daily shell,
+but there may still be breaking changes in Lua modules.
 
 # Screenshots
 <div align="center">
@@ -57,11 +57,11 @@ sudo make all
 
 Alternativly, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package
 ```sh
-yay -S hilbish-git
-```
-Or install a prebuilt binary from an **(unofficial)** AUR package
-```sh
 yay -S hilbish
+```
+If you want the latest and greatest, you can install and compile from latest git commit  
+```sh
+yay -S hilbish-git
 ```
 
 ### Uninstall
