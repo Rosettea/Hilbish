@@ -10,7 +10,7 @@ install:
 	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"
 	@cp libs preload.lua .hilbishrc.lua "$(DESTDIR)$(LIBDIR)" -r
-	@grep "$(DESTDIR)$(BINDIR)/hilbish" -qxF  /etc/shells || echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
+	@grep "$(DESTDIR)$(BINDIR)/hilbish" -qxF /etc/shells || echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
 	@echo "Hilbish Installed"
 
 uninstall:
