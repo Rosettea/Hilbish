@@ -2,6 +2,8 @@ github.com/Hilbis/Hilbiline v0.0.0-20210416123506-f1b20c1c66e4 h1:S9ulYwm5MUp02m
 github.com/Hilbis/Hilbiline v0.0.0-20210416123506-f1b20c1c66e4/go.mod h1:mp9I7lvFoZ3ldAeydCzISakl6VdQYyrR8vVjmnKGqDo=
 github.com/akamensky/argparse v1.2.2 h1:P17T0ZjlUNJuWTPPJ2A5dM1wxarHgHqfYH+AZTo2xQA=
 github.com/akamensky/argparse v1.2.2/go.mod h1:S5kwC7IuDcEr5VeXtGPRVZ5o/FdhcMlQz4IZQuw64xA=
+github.com/bobappleyard/readline v0.0.0-20150707195538-7e300e02d38e h1:4G8AYOOwZdDWOiJR6D6JXaFmj5BDS7c5D5PyqsG/+Hg=
+github.com/bobappleyard/readline v0.0.0-20150707195538-7e300e02d38e/go.mod h1:fmqtV+Wqx0uFYLN1F4VhjZdtT56Dr8c3yA7nALFsw/Q=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9 h1:xz6Nv3zcwO2Lila35hcb0QloCQsc38Al13RNEzWRpX4=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9/go.mod h1:2wSM9zJkl1UQEFZgSd68NfCgRz1VL1jzy/RjCg+ULrs=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=

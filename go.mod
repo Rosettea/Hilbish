@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/Hilbis/Hilbiline v0.0.0-20210416123506-f1b20c1c66e4
 	github.com/akamensky/argparse v1.2.2
+	github.com/bobappleyard/readline v0.0.0-20150707195538-7e300e02d38e
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da
