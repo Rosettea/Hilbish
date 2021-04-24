@@ -146,8 +146,7 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
-	hl := hilbiline.New(multilinePrompt)
-	cont, err := hl.Read()
+	cont, err := readline.String(multilinePrompt)
 	if err != nil {
 		fmt.Println("")
 		return "", err
