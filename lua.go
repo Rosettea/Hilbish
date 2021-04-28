@@ -27,6 +27,7 @@ func LuaInit(confpath string) {
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
 	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
+	l.SetGlobal("appendpath", l.NewFunction(hsappendpath))
 
 	// Add fs module to Lua
 	l.PreloadModule("fs", lfs.Loader)
@@ -98,4 +99,12 @@ func hshalias(L *lua.LState) int {
 	aliases[alias] = source
 
 	return 1
+}
+
+func hsappendpath(L *lua.LState) int {
+	path := L.ToString(1)
+
+	os.Setenv("PATH", os.Getenv("PATH")+":"+path)
+
+	return 0
 }

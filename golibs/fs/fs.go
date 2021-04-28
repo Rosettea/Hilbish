@@ -21,25 +21,9 @@ func LuaErr(L *lua.LState, code int) {
 }
 
 var exports = map[string]lua.LGFunction{
-	"cd":         cd,
-	"mkdir":      mkdir,
-	"stat":       stat,
-	"appendpath": appendpath,
-}
-
-func appendpath(L *lua.LState) int {
-	path := L.ToString(1)
-
-	os.Setenv("PATH", os.Getenv("PATH")+":"+path)
-	// cmd := exec.Command("export PATH=" + os.Getenv("PATH") + ":" + path)
-	// shell.execCommand("export PATH=" + os.Getenv("PATH") + ":" + path)
-
-	// fmt.Println(cmd.String())
-	// err := cmd.Run()
-	// if err != nil {
-	// LuaErr(L, 1)
-	// }
-	return 0
+	"cd":    cd,
+	"mkdir": mkdir,
+	"stat":  stat,
 }
 
 func cd(L *lua.LState) int {
