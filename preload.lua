@@ -5,6 +5,23 @@ local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
 
+commander.register('appendpath', function (args)
+	bait.throw('appendpath', args)
+    local path = ''
+    for i = 1, #args do
+        path = path .. tostring(args[i]) .. ':'
+    end
+    path = path:sub(1, -2)
+
+    local ok, err = pcall(function() fs.appendpath(path) end)
+    if not ok then
+        if err == 1 then
+            print('failed to set path')
+        end
+        bait.throw('command.exit', err)
+    else bait.throw('command.exit', 0) end
+end)
+
 commander.register('cd', function (args)
 	bait.throw('cd', args)
 	if #args > 0 then

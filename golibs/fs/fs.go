@@ -4,17 +4,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
+	lua "github.com/yuin/gopher-lua"
+	luar "layeh.com/gopher-luar"
 )
 
 func Loader(L *lua.LState) int {
-    mod := L.SetFuncs(L.NewTable(), exports)
+	mod := L.SetFuncs(L.NewTable(), exports)
 
-    L.Push(mod)
-    return 1
+	L.Push(mod)
+	return 1
 }
-
 
 func LuaErr(L *lua.LState, code int) {
 	// TODO: Error with a table, with path and error code
@@ -22,9 +21,25 @@ func LuaErr(L *lua.LState, code int) {
 }
 
 var exports = map[string]lua.LGFunction{
-    "cd": cd,
-    "mkdir": mkdir,
-    "stat": stat,
+	"cd":         cd,
+	"mkdir":      mkdir,
+	"stat":       stat,
+	"appendpath": appendpath,
+}
+
+func appendpath(L *lua.LState) int {
+	path := L.ToString(1)
+
+	os.Setenv("PATH", os.Getenv("PATH")+":"+path)
+	// cmd := exec.Command("export PATH=" + os.Getenv("PATH") + ":" + path)
+	// shell.execCommand("export PATH=" + os.Getenv("PATH") + ":" + path)
+
+	// fmt.Println(cmd.String())
+	// err := cmd.Run()
+	// if err != nil {
+	// LuaErr(L, 1)
+	// }
+	return 0
 }
 
 func cd(L *lua.LState) int {

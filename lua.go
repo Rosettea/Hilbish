@@ -7,7 +7,7 @@ import (
 	lfs "hilbish/golibs/fs"
 	"os"
 
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 )
 
 var minimalconf = `
@@ -67,7 +67,9 @@ func LuaInit(confpath string) {
 	}
 
 	// Run config
-	if !interactive { return }
+	if !interactive {
+		return
+	}
 	err = l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,

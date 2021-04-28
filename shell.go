@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yuin/gopher-lua"
 	"github.com/bobappleyard/readline"
-	"layeh.com/gopher-luar"
+	lua "github.com/yuin/gopher-lua"
+	luar "layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -167,7 +167,9 @@ func HandleHistory(cmd string) {
 func StartMultiline(prev string, sb *strings.Builder) bool {
 	// sb fromt outside is passed so we can
 	// save input from previous prompts
-	if sb.String() == "" { sb.WriteString(prev + " ") }
+	if sb.String() == "" {
+		sb.WriteString(prev + " ")
+	}
 
 	fmt.Print(multilinePrompt)
 
