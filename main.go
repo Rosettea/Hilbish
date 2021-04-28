@@ -8,7 +8,7 @@ import (
 	"os/user"
 	"strings"
 
-	hooks "hilbish/golibs/bait"
+	"hilbish/golibs/bait"
 
 	"github.com/akamensky/argparse"
 	"github.com/bobappleyard/readline"
@@ -28,7 +28,7 @@ var (
 	commands = map[string]bool{}
 	aliases = map[string]string{}
 
-	bait hooks.Bait
+	hooks bait.Bait
 	homedir string
 	running bool
 	interactive bool

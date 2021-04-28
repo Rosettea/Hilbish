@@ -23,7 +23,7 @@ func RunInput(input string) {
 		// If it succeeds, add to history and prompt again
 		HandleHistory(input)
 
-		bait.Em.Emit("command.exit", 0)
+		hooks.Em.Emit("command.exit", 0)
 		return
 	}
 
@@ -71,22 +71,22 @@ func RunInput(input string) {
 				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					bait.Em.Emit("command.exit", code)
+					hooks.Em.Emit("command.exit", code)
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, err)
-					bait.Em.Emit("command.exit", 1)
+					hooks.Em.Emit("command.exit", 1)
 				}
 				break
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				bait.Em.Emit("command.exit", code)
+				hooks.Em.Emit("command.exit", code)
 			} else {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
 	} else {
-		bait.Em.Emit("command.exit", 0)
+		hooks.Em.Emit("command.exit", 0)
 	}
 	HandleHistory(cmdString)
 }

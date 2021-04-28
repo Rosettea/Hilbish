@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	hooks "hilbish/golibs/bait"
-	cmds "hilbish/golibs/commander"
+	"hilbish/golibs/bait"
+	"hilbish/golibs/commander"
 	lfs "hilbish/golibs/fs"
 	"os"
 
-	lua "github.com/yuin/gopher-lua"
+	"github.com/yuin/gopher-lua"
 )
 
 var minimalconf = `
@@ -32,9 +32,9 @@ func LuaInit(confpath string) {
 	// Add fs module to Lua
 	l.PreloadModule("fs", lfs.Loader)
 
-	commander := cmds.New()
+	cmds := commander.New()
 	// When a command from Lua is added, register it for use
-	commander.Events.On("commandRegister",
+	cmds.Events.On("commandRegister",
 		func(cmdName string, cmd *lua.LFunction) {
 			commands[cmdName] = true
 			l.SetField(
@@ -44,10 +44,10 @@ func LuaInit(confpath string) {
 				cmd)
 		})
 
-	l.PreloadModule("commander", commander.Loader)
+	l.PreloadModule("commander", cmds.Loader)
 
-	bait = hooks.New()
-	l.PreloadModule("bait", bait.Loader)
+	hooks = bait.New()
+	l.PreloadModule("bait", hooks.Loader)
 
 	// Add more paths that Lua can require from
 	l.DoString(`package.path = package.path
