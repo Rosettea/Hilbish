@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/bobappleyard/readline"
-	lua "github.com/yuin/gopher-lua"
-	luar "layeh.com/gopher-luar"
+	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
