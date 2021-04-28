@@ -21,9 +21,9 @@ func LuaErr(L *lua.LState, code int) {
 }
 
 var exports = map[string]lua.LGFunction{
-	"cd":    cd,
+	"cd": cd,
 	"mkdir": mkdir,
-	"stat":  stat,
+	"stat": stat,
 }
 
 func cd(L *lua.LState) int {
