@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
-	lfs "hilbish/golibs/fs"
+	"hilbish/golibs/fs"
 	"os"
 
 	"github.com/yuin/gopher-lua"
@@ -30,7 +30,7 @@ func LuaInit(confpath string) {
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
 
 	// Add fs module to Lua
-	l.PreloadModule("fs", lfs.Loader)
+	l.PreloadModule("fs", fs.Loader)
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
