@@ -45,6 +45,11 @@ On Debian/Ubuntu and distros based on them, it can be installed with:
 sudo apt install libreadline-dev
 ```
 
+On OpenSUSE, it can be installed with:
+```
+sudo zypper install readline-devel
+```
+
 ### Install
 ```sh
 git clone https://github.com/Hilbis/Hilbish
