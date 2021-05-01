@@ -49,7 +49,7 @@ func RunInput(input string) {
 		}, luar.New(l, cmdArgs[1:]))
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
-				"Error in command:\n\n"+err.Error())
+				"Error in command:\n\n" + err.Error())
 		}
 		if cmdArgs[0] != "exit" {
 			HandleHistory(cmdString)
