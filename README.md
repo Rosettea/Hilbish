@@ -80,6 +80,7 @@ Make sure to read [CONTRIBUTING.md](CONTRIBUTING.md) before getting started.
 
 ### Special Thanks To
 Everyone here who has contributed:
+
 <a href="https://github.com/Hilbis/Hilbish/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Hilbis/Hilbish" />
 </a>
