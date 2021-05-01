@@ -17,7 +17,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "0.4.0-dev.8"
+const version = "0.4.0"
 
 var (
 	l *lua.LState
