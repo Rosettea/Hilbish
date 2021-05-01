@@ -17,7 +17,7 @@ prompt(ansikit.format(
 ))
 `
 
-func LuaInit(confpath string) {
+func LuaInit() {
 	l = lua.NewState()
 
 	l.OpenLibs()
@@ -66,12 +66,12 @@ func LuaInit(confpath string) {
 				"Missing preload file, builtins may be missing.")
 		}
 	}
-
-	// Run config
+}
+func RunConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	err = l.DoFile(confpath)
+	err := l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
 			"\nAn error has occured while loading your config! Falling back to minimal default config.\n")
@@ -84,7 +84,10 @@ func RunLogin() {
 	if _, err := os.Stat(homedir + "/.hprofile.lua"); os.IsNotExist(err) {
 		return
 	}
-	err = l.DoFile(homedir + "/.hprofile.lua")
+	if !login {
+		return
+	}
+	err := l.DoFile(homedir + "/.hprofile.lua")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
 			"\nAn error has occured while loading your login config!n")

@@ -61,7 +61,7 @@ func main() {
 	}
 
 	// first arg, first character
-	if loginshflag || os.Args[0][0] == "-" {
+	if loginshflag || os.Args[0][0] == '-' {
 		login = true
 	}
 
@@ -100,8 +100,9 @@ func main() {
 	}
 
 	go HandleSignals()
-	LuaInit(*configflag)
+	LuaInit()
 	RunLogin()
+	RunConfig(*configflag)
 
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")
