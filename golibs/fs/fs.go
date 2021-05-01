@@ -4,8 +4,8 @@ import (
 	"os"
 	"strings"
 
-	lua "github.com/yuin/gopher-lua"
-	luar "layeh.com/gopher-luar"
+	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 )
 
 func Loader(L *lua.LState) int {
