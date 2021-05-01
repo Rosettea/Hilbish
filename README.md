@@ -52,7 +52,7 @@ sudo zypper install readline-devel
 
 ### Install
 ```sh
-git clone https://github.com/Hilbis/Hilbish
+git clone --recursive https://github.com/Hilbis/Hilbish
 cd Hilbish
 make build
 sudo make install
