@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"os/signal"
 	"os/user"
-	"strings"
+	"path/filepath"
 
 	"hilbish/golibs/bait"
 
@@ -27,15 +28,18 @@ var (
 	commands = map[string]bool{}
 	aliases = map[string]string{}
 
-	hooks bait.Bait
 	homedir string
+	curuser *user.User
+
 	running bool // Is a command currently running
+	hooks bait.Bait
 	interactive bool
 	login bool // Are we the login shell?
 )
 
 func main() {
 	homedir, _ = os.UserHomeDir()
+	curuser, _ = user.Current()
 	defaultconfpath := homedir + "/.hilbishrc.lua"
 
 //	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
@@ -169,16 +173,16 @@ func ContinuePrompt(prev string) (string, error) {
 
 // This semi cursed function formats our prompt (obviously)
 func fmtPrompt() string {
-	user, _ := user.Current()
 	host, _ := os.Hostname()
 	cwd, _ := os.Getwd()
 
-	cwd = strings.Replace(cwd, user.HomeDir, "~", 1)
+	cwd = strings.Replace(cwd, curuser.HomeDir, "~", 1)
 
 	args := []string{
 		"d", cwd,
+		"D", filepath.Base(cwd),
 		"h", host,
-		"u", user.Username,
+		"u", curuser.Username,
 	}
 
 	for i, v := range args {

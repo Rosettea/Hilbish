@@ -23,6 +23,7 @@ func LuaInit() {
 	l.OpenLibs()
 
 	l.SetGlobal("_ver", lua.LString(version))
+	l.SetGlobal("_user", lua.LString(curuser.Username))
 
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
 	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
