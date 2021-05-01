@@ -21,8 +21,7 @@ const version = "0.4.0-dev.7"
 var (
 	l *lua.LState
 
-	// User's prompt, this will get set when lua side is initialized
-	prompt string
+	prompt string // User's prompt, this will get set when lua side is initialized
 	multilinePrompt = "> "
 
 	commands = map[string]bool{}
@@ -30,8 +29,9 @@ var (
 
 	hooks bait.Bait
 	homedir string
-	running bool
+	running bool // Is a command currently running
 	interactive bool
+	login bool // Are we the login shell?
 )
 
 func main() {
@@ -49,6 +49,7 @@ func main() {
 	_ = getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 
 	getopt.Parse()
+	loginshflag := getopt.Lookup('l').Seen()
 	interactiveflag := getopt.Lookup('i').Seen()
 
 	if *cmdflag == "" || interactiveflag {
@@ -57,6 +58,11 @@ func main() {
 
 	if getopt.NArgs() > 0 {
 		interactive = false
+	}
+
+	// first arg, first character
+	if loginshflag || os.Args[0][0] == "-" {
+		login = true
 	}
 
 	if *verflag {
@@ -95,6 +101,7 @@ func main() {
 
 	go HandleSignals()
 	LuaInit(*configflag)
+	RunLogin()
 
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")

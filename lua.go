@@ -80,6 +80,17 @@ func LuaInit(confpath string) {
 	}
 }
 
+func RunLogin() {
+	if _, err := os.Stat(homedir + "/.hprofile.lua"); os.IsNotExist(err) {
+		return
+	}
+	err = l.DoFile(homedir + "/.hprofile.lua")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err,
+			"\nAn error has occured while loading your login config!n")
+	}
+}
+
 func hshprompt(L *lua.LState) int {
 	prompt = L.CheckString(1)
 
