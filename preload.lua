@@ -12,6 +12,8 @@ commander.register('cd', function (args)
 		for i = 1, #args do
 			path = path .. tostring(args[i]) .. ' '
 		end
+		path = path:gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
+		:gsub('$([%w_]+)', os.getenv):gsub('%z','$')
 
 		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
