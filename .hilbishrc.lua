@@ -8,9 +8,8 @@ function doPrompt(fail)
 	))
 end
 
-print(lunacolors.format('Welcome to {magenta}Hilbish{reset}, {cyan}' ..
-_user .. '{reset}.\n' ..
-'The nice lil shell for {blue}Lua{reset} fanatics!\n'))
+print(lunacolors.format('Welcome to {magenta}Hilbish{reset}, {cyan}' .. _user .. 
+'{reset}.\n' .. 'The nice lil shell for {blue}Lua{reset} fanatics!\n'))
 
 doPrompt()
 
