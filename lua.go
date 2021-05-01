@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
-	"os"
 
 	"github.com/yuin/gopher-lua"
 )
@@ -118,6 +120,7 @@ func hshalias(L *lua.LState) int {
 
 func hshappendPath(L *lua.LState) int {
 	path := L.CheckString(1)
+	path = strings.Replace(path, "~", curuser.HomeDir, 1)
 
 	os.Setenv("PATH", os.Getenv("PATH") + ":" + path)
 
