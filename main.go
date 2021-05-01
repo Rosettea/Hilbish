@@ -46,12 +46,13 @@ func main() {
 	// loginshflag
 	// TODO: issue #37
 	_ = getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
-	interactiveflag := getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
+	_ = getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 
 	getopt.Parse()
 	args := getopt.Args()
+	interactiveflag := getopt.Lookup('i').Seen()
 
-	if *cmdflag != "" || *interactiveflag {
+	if *cmdflag == "" || interactiveflag {
 		interactive = true
 	}
 
