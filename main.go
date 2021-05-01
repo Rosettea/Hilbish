@@ -49,11 +49,14 @@ func main() {
 	_ = getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 
 	getopt.Parse()
-	args := getopt.Args()
 	interactiveflag := getopt.Lookup('i').Seen()
 
 	if *cmdflag == "" || interactiveflag {
 		interactive = true
+	}
+
+	if getopt.NArgs() > 0 {
+		interactive = false
 	}
 
 	if *verflag {
@@ -97,11 +100,13 @@ func main() {
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	RunInput(*cmdflag)
-	if len(args) > 0 {
-		err := l.DoFile(args[0])
+	if getopt.NArgs() > 0 {
+		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
+		os.Exit(0)
 	}
 
 	for interactive {
