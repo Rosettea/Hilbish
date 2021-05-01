@@ -156,6 +156,7 @@ func main() {
 }
 
 func ContinuePrompt(prev string) (string, error) {
+	hooks.Em.Emit("multiline", nil)
 	cont, err := readline.String(multilinePrompt)
 	if err != nil {
 		fmt.Println("")
