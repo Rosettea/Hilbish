@@ -1,14 +1,14 @@
 -- Default Hilbish config
-ansikit = require 'ansikit'
+lunacolors = require 'lunacolors'
 bait = require 'bait'
 
 function doPrompt(fail)
-	prompt(ansikit.format(
-		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆{reset} '
+	prompt(lunacolors.format(
+		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
 	))
 end
 
-print(ansikit.format('Welcome to {magenta}Hilbish{reset}, {cyan}' ..
+print(lunacolors.format('Welcome to {magenta}Hilbish{reset}, {cyan}' ..
 _user .. '{reset}.\n' ..
 'The nice lil shell for {blue}Lua{reset} fanatics!\n'))
 
