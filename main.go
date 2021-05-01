@@ -10,13 +10,13 @@ import (
 
 	"hilbish/golibs/bait"
 
-	"github.com/akamensky/argparse"
+	"github.com/pborman/getopt"
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
 )
 
-const version = "0.4.0-dev.3"
+const version = "0.4.0-dev.4"
 
 var (
 	l *lua.LState
@@ -38,44 +38,20 @@ func main() {
 	homedir, _ = os.UserHomeDir()
 	defaultconfpath := homedir + "/.hilbishrc.lua"
 
-	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
-	verflag := parser.Flag("v", "version", &argparse.Options{
-		Required: false,
-		Help: "Prints Hilbish version",
-	})
-	setshflag := parser.Flag("S", "set-shell-env", &argparse.Options{
-		Required: false,
-		Help: "Sets $SHELL to Hilbish's executed path",
-	})
-	cmdflag := parser.String("c", "command", &argparse.Options{
-		Required: false,
-		// TODO: Help: "",
-	})
-	configflag := parser.String("C", "config", &argparse.Options{
-		Required: false,
-		Help: "Sets the path to Hilbish's config",
-		Default:  defaultconfpath,
-	})
+//	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
+	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
+	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
+	cmdflag := getopt.StringLong("command", 'c', "", /*TODO: Help description*/ "")
+	configflag := getopt.StringLong("config", 'C', defaultconfpath, "Sets the path to Hilbish's config")
 	// loginshflag
 	// TODO: issue #37
-	_ = parser.Flag("l", "login", &argparse.Options{
-		Required: false,
-		Help: "Makes Hilbish act like a login shell",
-	})
-	interactiveflag := parser.Flag("i", "interactive", &argparse.Options{
-		Required: false,
-		Help: "Force Hilbish to be an interactive shell",
-	})
+	_ = getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
+	interactiveflag := getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 
-	err := parser.Parse(os.Args)
-	// If invalid flags or --help/-h,
-	if err != nil {
-		// Print usage
-		fmt.Print(parser.Usage(err))
-		os.Exit(0)
-	}
+	getopt.Parse()
+	args := getopt.Args()
 
-	if *cmdflag == "" || *interactiveflag {
+	if *cmdflag != "" || *interactiveflag {
 		interactive = true
 	}
 
@@ -120,6 +96,13 @@ func main() {
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
 	RunInput(*cmdflag)
+	if len(args) > 0 {
+		err := l.DoFile(args[0])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	}
+
 	for interactive {
 		running = false
 
