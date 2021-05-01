@@ -61,49 +61,6 @@ ansikit.cursorUp = function(y)
 	return ansikit.printCSI(y, 'A')
 end
 
-ansikit.format = function(text)
-	local colors = {
-		-- TODO: write codes manually instead of using functions
-		-- less function calls = faster ????????
-		reset = {'{reset}', ansikit.getCSI(0)},
-		bold = {'{bold}', ansikit.getCSI(1)},
-		dim = {'{dim}', ansikit.getCSI(2)},
-		italic = {'{italic}', ansikit.getCSI(3)},
-		underline = {'{underline}', ansikit.getCSI(4)},
-		invert = {'{invert}', ansikit.getCSI(7)},
-		bold_off = {'{bold-off}', ansikit.getCSI(22)},
-		underline_off = {'{underline-off}', ansikit.getCSI(24)},
-		black = {'{black}', ansikit.getCSI(30)},
-		red = {'{red}', ansikit.getCSI(31)},
-		green = {'{green}', ansikit.getCSI(32)},
-		yellow = {'{yellow}', ansikit.getCSI(33)},
-		blue = {'{blue}', ansikit.getCSI(34)},
-		magenta = {'{magenta}', ansikit.getCSI(35)},
-		cyan = {'{cyan}', ansikit.getCSI(36)},
-		white = {'{white}', ansikit.getCSI(37)},
-		red_bg = {'{red-bg}', ansikit.getCSI(41)},
-		green_bg = {'{green-bg}', ansikit.getCSI(42)},
-		yellow_bg = {'{green-bg}', ansikit.getCSI(43)},
-		blue_bg = {'{blue-bg}', ansikit.getCSI(44)},
-		magenta_bg = {'{magenta-bg}', ansikit.getCSI(45)},
-		cyan_bg = {'{cyan-bg}', ansikit.getCSI(46)},
-		white_bg = {'{white-bg}', ansikit.getCSI(47)},
-		gray = {'{gray}', ansikit.getCSI(90)},
-		bright_red = {'{bright-red}', ansikit.getCSI(91)},
-		bright_green = {'{bright-green}', ansikit.getCSI(92)},
-		bright_yellow = {'{bright-yellow}', ansikit.getCSI(93)},
-		bright_blue = {'{bright-blue}', ansikit.getCSI(94)},
-		bright_magenta = {'{bright-magenta}', ansikit.getCSI(95)},
-		bright_cyan = {'{bright-cyan}', ansikit.getCSI(96)}
-	}
-
-	for k, v in pairs(colors) do
-		text = text:gsub(v[1], v[2])
-	end
-
-	return text
-end
-
 ansikit.getCode = function(code, terminate)
 	return string.char(0x001b) .. code ..
 	(terminate and string.char(0x001b) .. '\\' or '')
