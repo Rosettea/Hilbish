@@ -81,20 +81,20 @@ func LuaInit(confpath string) {
 }
 
 func hshprompt(L *lua.LState) int {
-	prompt = L.ToString(1)
+	prompt = L.CheckString(1)
 
 	return 0
 }
 
 func hshmlprompt(L *lua.LState) int {
-	multilinePrompt = L.ToString(1)
+	multilinePrompt = L.CheckString(1)
 
 	return 0
 }
 
 func hshalias(L *lua.LState) int {
-	alias := L.ToString(1)
-	source := L.ToString(2)
+	alias := L.CheckString(1)
+	source := L.CheckString(2)
 
 	aliases[alias] = source
 
@@ -102,7 +102,7 @@ func hshalias(L *lua.LState) int {
 }
 
 func hshappendPath(L *lua.LState) int {
-	path := L.ToString(1)
+	path := L.CheckString(1)
 
 	os.Setenv("PATH", os.Getenv("PATH") + ":" + path)
 

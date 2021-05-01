@@ -27,7 +27,7 @@ var exports = map[string]lua.LGFunction{
 }
 
 func cd(L *lua.LState) int {
-	path := L.ToString(1)
+	path := L.CheckString(1)
 
 	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
@@ -41,7 +41,7 @@ func cd(L *lua.LState) int {
 }
 
 func mkdir(L *lua.LState) int {
-	dirname := L.ToString(1)
+	dirname := L.CheckString(1)
 
 	// TODO: handle error here
 	os.Mkdir(strings.TrimSpace(dirname), 0744)
@@ -50,7 +50,7 @@ func mkdir(L *lua.LState) int {
 }
 
 func stat(L *lua.LState) int {
-	path := L.ToString(1)
+	path := L.CheckString(1)
 
 	// TODO: handle error here
 	pathinfo, _ := os.Stat(path)

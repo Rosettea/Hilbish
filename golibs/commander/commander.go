@@ -29,8 +29,8 @@ func (c *Commander) Loader(L *lua.LState) int {
 }
 
 func (c *Commander) register(L *lua.LState) int {
-	cmdName := L.ToString(1)
-	cmd := L.ToFunction(2)
+	cmdName := L.CheckString(1)
+	cmd := L.CheckFunction(2)
 
 	c.Events.Emit("commandRegister", cmdName, cmd)
 
