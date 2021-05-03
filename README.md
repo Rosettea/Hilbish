@@ -60,11 +60,11 @@ sudo make install
 sudo make all
 ```
 
-Alternativly, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package
+Alternatively, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package:
 ```sh
 yay -S hilbish
 ```
-If you want the latest and greatest, you can install and compile from latest git commit  
+If you want the latest and greatest, you can install and compile from latest git commit: 
 ```sh
 yay -S hilbish-git
 ```
