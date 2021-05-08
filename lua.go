@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"syscall"
 
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
@@ -31,6 +33,7 @@ func LuaInit() {
 	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
+	l.SetGlobal("exec", l.NewFunction(hshexec))
 
 	// Add fs module to Lua
 	l.PreloadModule("fs", fs.Loader)
@@ -125,5 +128,21 @@ func hshappendPath(L *lua.LState) int {
 
 	os.Setenv("PATH", os.Getenv("PATH") + ":" + path)
 
+	return 0
+}
+
+func hshexec(L *lua.LState) int {
+	cmd := L.CheckString(1)
+	cmdArgs, _ := splitInput(cmd)
+	cmdPath, err := exec.LookPath(cmdArgs[0])
+	if err != nil {
+		fmt.Println(err)
+		// if we get here, cmdPath will be nothing
+		// therefore nothing will run
+	}
+
+	// syscall.Exec requires an absolute path to a binary
+	// path, args, string slice of environments
+	syscall.Exec(cmdPath, cmdArgs, os.Environ())
 	return 0
 }
