@@ -48,11 +48,9 @@ func main() {
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
 	cmdflag := getopt.StringLong("command", 'c', "", /*TODO: Help description*/ "")
 	configflag := getopt.StringLong("config", 'C', defaultconfpath, "Sets the path to Hilbish's config")
-	// loginshflag
-	// TODO: issue #37
-	_ = getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
-	_ = getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
-	_ = getopt.BoolLong("noexec", 'n', "Force Hilbish to be an interactive shell")
+	getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
+	getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
+	getopt.BoolLong("noexec", 'n', "Force Hilbish to be an interactive shell")
 
 	getopt.Parse()
 	loginshflag := getopt.Lookup('l').Seen()
