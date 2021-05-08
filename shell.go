@@ -16,9 +16,17 @@ import (
 )
 
 func RunInput(input string) {
-	// First try to run user input in Lua
-	err := l.DoString(input)
-
+	// First try to load input, essentially compiling to bytecode
+	fn, err := l.LoadString(input)
+	if err != nil && noexecute {
+		fmt.Println(err)
+		return
+	}
+	// And if there's no syntax errors and -n isnt provided, run
+	if !noexecute {
+		l.Push(fn)
+		err = l.PCall(0, lua.MultRet, nil)
+	}
 	if err == nil {
 		// If it succeeds, add to history and prompt again
 		HandleHistory(input)

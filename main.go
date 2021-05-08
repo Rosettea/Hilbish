@@ -35,6 +35,7 @@ var (
 	hooks bait.Bait
 	interactive bool
 	login bool // Are we the login shell?
+	noexecute bool // Should we run Lua or only report syntax errors
 )
 
 func main() {
@@ -51,10 +52,12 @@ func main() {
 	// TODO: issue #37
 	_ = getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
 	_ = getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
+	_ = getopt.BoolLong("noexec", 'n', "Force Hilbish to be an interactive shell")
 
 	getopt.Parse()
 	loginshflag := getopt.Lookup('l').Seen()
 	interactiveflag := getopt.Lookup('i').Seen()
+	noexecflag := getopt.Lookup('n').Seen()
 
 	if *cmdflag == "" || interactiveflag {
 		interactive = true
@@ -62,6 +65,10 @@ func main() {
 
 	if getopt.NArgs() > 0 {
 		interactive = false
+	}
+
+	if noexecflag {
+		noexecute = true
 	}
 
 	// first arg, first character
