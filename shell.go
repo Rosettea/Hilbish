@@ -52,9 +52,17 @@ func RunInput(input string) {
 					l.GetGlobal("commanding"),
 					lua.LString("__commands")),
 				cmdArgs[0]),
-			NRet:    0,
+			NRet:    1,
 			Protect: true,
 		}, luar.New(l, cmdArgs[1:]))
+		luaexitcode := l.Get(-1)
+		exitcode := lua.LNumber(0)
+
+		l.Pop(1)
+
+		if luaexitcode != lua.LNil {
+			exitcode = luaexitcode.(lua.LNumber)
+		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Error in command:\n\n" + err.Error())
@@ -62,6 +70,7 @@ func RunInput(input string) {
 		if cmdArgs[0] != "exit" {
 			HandleHistory(cmdString)
 		}
+		hooks.Em.Emit("command.exit", exitcode)
 		return
 	}
 
