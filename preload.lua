@@ -20,7 +20,7 @@ commander.register('cd', function (args)
 			if err == 1 then
 				print('directory does not exist')
 			end
-			return 1
+			return err
 		end
 		return
 	end
