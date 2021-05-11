@@ -60,8 +60,8 @@ func RunInput(input string) {
 
 		l.Pop(1)
 
-		if luaexitcode != lua.LNil {
-			exitcode = luaexitcode.(lua.LNumber)
+		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+			exitcode = code
 		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
