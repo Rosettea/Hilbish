@@ -14,6 +14,7 @@ import (
 	"github.com/pborman/getopt"
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 	"golang.org/x/term"
 )
 
@@ -118,6 +119,7 @@ func main() {
 
 	RunInput(*cmdflag)
 	if getopt.NArgs() > 0 {
+		l.SetGlobal("args", luar.New(l, getopt.Args()))
 		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
