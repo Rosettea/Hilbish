@@ -65,9 +65,9 @@ func LuaInit() {
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?.lua'
 	`)
 
-	err := l.DoFile("/usr/share/hilbish/preload.lua")
+	err := l.DoFile("preload.lua")
 	if err != nil {
-		err = l.DoFile("preload.lua")
+		err = l.DoFile("/usr/share/hilbish/preload.lua")
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Missing preload file, builtins may be missing.")
