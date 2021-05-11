@@ -20,8 +20,8 @@ commander.register('cd', function (args)
 			if err == 1 then
 				print('directory does not exist')
 			end
-			bait.throw('command.exit', err)
-		else bait.throw('command.exit', 0) end
+			return 1
+		end
 		return
 	end
 	fs.cd(os.getenv 'HOME')
