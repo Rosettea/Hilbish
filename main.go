@@ -46,7 +46,7 @@ func main() {
 //	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
-	cmdflag := getopt.StringLong("command", 'c', "", /*TODO: Help description*/ "")
+	cmdflag := getopt.StringLong("command", 'c', "", "Executes a command on startup")
 	configflag := getopt.StringLong("config", 'C', defaultconfpath, "Sets the path to Hilbish's config")
 	getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
 	getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
