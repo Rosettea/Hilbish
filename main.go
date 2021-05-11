@@ -108,12 +108,15 @@ func main() {
 		}
 	}
 
+	go HandleSignals()
 	LuaInit()
-
 	RunLogin()
-	RunInput(*cmdflag)
 	RunConfig(*configflag)
 
+	readline.Completer = readline.FilenameCompleter
+	readline.LoadHistory(homedir + "/.hilbish-history")
+
+	RunInput(*cmdflag)
 	if getopt.NArgs() > 0 {
 		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
@@ -122,11 +125,6 @@ func main() {
 		}
 		os.Exit(0)
 	}
-
-	readline.Completer = readline.FilenameCompleter
-	readline.LoadHistory(homedir + "/.hilbish-history")
-
-	go HandleSignals()
 
 	for interactive {
 		running = false
