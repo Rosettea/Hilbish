@@ -6,6 +6,9 @@ LIBDIR ?= $(PREFIX)/share/hilbish
 build:
 	@go build
 
+build-dev:
+	@go build -ldflags "-X main.version=$(git describe --tags)"
+
 install:
 	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"
@@ -25,4 +28,4 @@ clean:
 
 all: build install
 
-.PHONY: install uninstall build clean
+.PHONY: install uninstall build build-dev clean
