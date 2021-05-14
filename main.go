@@ -18,7 +18,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "0.4.1-dev.9"
+var version = "v0.4.1-dev.9"
 
 var (
 	l *lua.LState
@@ -76,7 +76,7 @@ func main() {
 	}
 
 	if *verflag {
-		fmt.Printf("Hilbish v%s\n", version)
+		fmt.Printf("Hilbish %s\n", version)
 		os.Exit(0)
 	}
 
