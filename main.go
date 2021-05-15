@@ -44,7 +44,6 @@ func main() {
 	curuser, _ = user.Current()
 	defaultconfpath := homedir + "/.hilbishrc.lua"
 
-//	parser := argparse.NewParser("hilbish", "A shell for lua and flower lovers")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
 	cmdflag := getopt.StringLong("command", 'c', "", "Executes a command on startup")
