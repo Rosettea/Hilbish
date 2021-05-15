@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	dbg "runtime/debug"
 	"strings"
+	"strconv"
+	"syscall"
+	"io/ioutil"
 	"os/signal"
 	"os/user"
 	"path/filepath"
@@ -18,9 +22,10 @@ import (
 	"golang.org/x/term"
 )
 
-var version = "v0.4.1-dev.9"
-
 var (
+	version = "v0.4.1-dev.9"
+	debug = "false"
+
 	l *lua.LState
 
 	prompt string // User's prompt, this will get set when lua side is initialized
@@ -57,7 +62,18 @@ func main() {
 	loginshflag := getopt.Lookup('l').Seen()
 	interactiveflag := getopt.Lookup('i').Seen()
 	noexecflag := getopt.Lookup('n').Seen()
+	debugbool, _ := strconv.ParseBool(debug)
 
+	if debugbool {
+		tmpfile, _ := ioutil.TempFile("", "hilbish*.log")
+
+		// redirects stderr to our tmpfile
+		// this is for logging panics
+		err := syscall.Dup2(int(tmpfile.Fd()), int(os.Stderr.Fd()))
+		if err != nil {
+			fmt.Println("Failed to redirect stderr to file: %v", err)
+		}
+	}
 	if *cmdflag == "" || interactiveflag {
 		interactive = true
 	}
