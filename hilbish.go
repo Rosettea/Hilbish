@@ -6,12 +6,14 @@ package main
 import (
 	"os"
 
+	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"mvdan.cc/sh/v3/interp"
 )
 
 var exports = map[string]lua.LGFunction {
 	"run": run,
+	"flag": flag,
 }
 
 func HilbishLoader(L *lua.LState) int {
@@ -44,3 +46,10 @@ func run(L *lua.LState) int {
 	return 1
 }
 
+func flag(L *lua.LState) int {
+	flagchar := L.CheckString(1)
+
+	L.Push(lua.LBool(getopt.Lookup([]rune(flagchar)[0]).Seen()))
+
+	return 1
+}
