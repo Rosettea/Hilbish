@@ -14,8 +14,17 @@ import (
 )
 
 func RunInput(input string) {
+	cmdArgs, cmdString := splitInput(input)
+
+	// If alias was found, use command alias
+	if aliases[cmdArgs[0]] != "" {
+		alias := aliases[cmdArgs[0]]
+		cmdString = alias + strings.Trim(cmdString, cmdArgs[0])
+		cmdArgs, cmdString = splitInput(cmdString)
+	}
+
 	// First try to load input, essentially compiling to bytecode
-	fn, err := l.LoadString(input)
+	fn, err := l.LoadString(cmdString)
 	if err != nil && noexecute {
 		fmt.Println(err)
 		return
@@ -31,15 +40,6 @@ func RunInput(input string) {
 
 		hooks.Em.Emit("command.exit", 0)
 		return
-	}
-
-	cmdArgs, cmdString := splitInput(input)
-
-	// If alias was found, use command alias
-	if aliases[cmdArgs[0]] != "" {
-		alias := aliases[cmdArgs[0]]
-		cmdString = alias + strings.Trim(cmdString, cmdArgs[0])
-		cmdArgs, cmdString = splitInput(cmdString)
 	}
 
 	// If command is defined in Lua then run it
