@@ -116,7 +116,10 @@ func main() {
 	readline.Completer = readline.FilenameCompleter
 	readline.LoadHistory(homedir + "/.hilbish-history")
 
-	RunInput(*cmdflag)
+	if *cmdflag != "" {
+		RunInput(*cmdflag)
+	}
+
 	if getopt.NArgs() > 0 {
 		l.SetGlobal("args", luar.New(l, getopt.Args()))
 		err := l.DoFile(getopt.Arg(0))
