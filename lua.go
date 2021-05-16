@@ -12,6 +12,7 @@ import (
 	"hilbish/golibs/fs"
 
 	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 )
 
 var minimalconf = `
@@ -23,17 +24,15 @@ prompt(ansikit.format(
 
 func LuaInit() {
 	l = lua.NewState()
-
 	l.OpenLibs()
-
-	l.SetGlobal("_ver", lua.LString(version))
-	l.SetGlobal("_user", lua.LString(curuser.Username))
 
 	l.SetGlobal("prompt", l.NewFunction(hshprompt))
 	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
 	l.SetGlobal("exec", l.NewFunction(hshexec))
+
+	l.SetGlobal("hilbish", luar.New(l, hilbish))
 
 	// Add fs module to Lua
 	l.PreloadModule("fs", fs.Loader)

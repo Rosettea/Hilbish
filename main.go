@@ -18,9 +18,9 @@ import (
 	"golang.org/x/term"
 )
 
-var version = "v0.4.0"
 
 var (
+	version = "v0.4.0"
 	l *lua.LState
 
 	prompt string // User's prompt, this will get set when lua side is initialized
@@ -37,6 +37,7 @@ var (
 	interactive bool
 	login bool // Are we the login shell?
 	noexecute bool // Should we run Lua or only report syntax errors
+	hilbish *Hilbish // dont ask
 )
 
 func main() {
@@ -106,6 +107,14 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+	}
+
+	host, _ := os.Hostname()
+
+	hilbish = &Hilbish {
+		Version: version,
+		User: curuser.Username,
+		Hostname: host,
 	}
 
 	go HandleSignals()
