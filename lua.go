@@ -123,10 +123,14 @@ func hshalias(L *lua.LState) int {
 }
 
 func hshappendPath(L *lua.LState) int {
-	path := L.CheckString(1)
-	path = strings.Replace(path, "~", curuser.HomeDir, 1)
+	dir := L.CheckString(1)
+	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
+	pathenv := os.Getenv("PATH")
 
-	os.Setenv("PATH", os.Getenv("PATH") + ":" + path)
+	// if dir isnt already in $PATH, add it
+	if !strings.Contains(pathenv, dir) {
+		os.Setenv("PATH", pathenv + ":" + dir)
+	}
 
 	return 0
 }
