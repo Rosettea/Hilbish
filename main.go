@@ -174,7 +174,7 @@ func ContinuePrompt(prev string) (string, error) {
 	}
 	cont = strings.TrimSpace(cont)
 
-	return prev + " " + strings.TrimSuffix(cont, "\n"), nil
+	return prev + strings.TrimSuffix(cont, "\n"), nil
 }
 
 // This semi cursed function formats our prompt (obviously)
