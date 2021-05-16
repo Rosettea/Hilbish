@@ -181,31 +181,3 @@ func HandleHistory(cmd string) {
 	// TODO: load history again (history shared between sessions like this ye)
 }
 
-func StartMultiline(prev string, sb *strings.Builder) bool {
-	// sb fromt outside is passed so we can
-	// save input from previous prompts
-	if sb.String() == "" {
-		sb.WriteString(prev + " ")
-	}
-
-	fmt.Print(multilinePrompt)
-
-	reader := bufio.NewReader(os.Stdin)
-
-	cont, err := reader.ReadString('\n')
-	cont = strings.TrimSuffix(cont, "\n") + " "
-	if err == io.EOF {
-		// Exit when ^D
-		fmt.Println("")
-		return true
-	}
-
-	sb.WriteString(cont)
-
-	err = execCommand(sb.String())
-	if err != nil && syntax.IsIncomplete(err) {
-		return false
-	}
-
-	return true
-}
