@@ -18,7 +18,7 @@ import (
 	"golang.org/x/term"
 )
 
-var version = "v0.4.1-dev.9"
+var version = "v0.4.0"
 
 var (
 	l *lua.LState
