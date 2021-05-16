@@ -8,6 +8,7 @@ import (
 
 	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
+	"github.com/yuin/gopher-lua/parse"
 	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -31,6 +32,11 @@ func RunInput(input string) {
 	fn, err := l.LoadString(cmdString)
 	if err != nil && noexecute {
 		fmt.Println(err)
+		if lerr, ok := err.(*lua.ApiError); ok {
+			if perr, ok := lerr.Cause.(*parse.Error); ok {
+				print(perr.Pos.Line == parse.EOF)
+			}
+		}
 		return
 	}
 	// And if there's no syntax errors and -n isnt provided, run
