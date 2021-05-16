@@ -19,7 +19,7 @@ func RunInput(input string) {
 	// If alias was found, use command alias
 	if aliases[cmdArgs[0]] != "" {
 		alias := aliases[cmdArgs[0]]
-		cmdString = alias + strings.Trim(cmdString, cmdArgs[0])
+		cmdString = alias + strings.TrimPrefix(cmdString, cmdArgs[0])
 		cmdArgs, cmdString = splitInput(cmdString)
 	}
 
