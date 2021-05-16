@@ -17,10 +17,14 @@ func RunInput(input string) {
 	cmdArgs, cmdString := splitInput(input)
 
 	// If alias was found, use command alias
-	if aliases[cmdArgs[0]] != "" {
+	for aliases[cmdArgs[0]] != "" {
 		alias := aliases[cmdArgs[0]]
 		cmdString = alias + strings.TrimPrefix(cmdString, cmdArgs[0])
 		cmdArgs, cmdString = splitInput(cmdString)
+
+		if aliases[cmdArgs[0]] != "" {
+			continue
+		}
 	}
 
 	// First try to load input, essentially compiling to bytecode
