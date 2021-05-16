@@ -4,8 +4,8 @@
 package main
 
 type Hilbish struct {
-	Version string `luar:"version"` // Hilbish's version
-	User string `luar:"user"` // Name of the user
-	Hostname string `luar:"hostname"`
+	Version string // Hilbish's version
+	User string // Name of the user
+	Hostname string
 }
 
