@@ -146,6 +146,7 @@ func hshexec(L *lua.LState) int {
 
 	// syscall.Exec requires an absolute path to a binary
 	// path, args, string slice of environments
+	// TODO: alternative for windows
 	syscall.Exec(cmdPath, cmdArgs, os.Environ())
-	return 0
+	return 0 // random thought: does this ever return?
 }
