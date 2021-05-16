@@ -3,9 +3,44 @@
 // go here.
 package main
 
-type Hilbish struct {
-	Version string // Hilbish's version
-	User string // Name of the user
-	Hostname string
+import (
+	"os"
+
+	"github.com/yuin/gopher-lua"
+	"mvdan.cc/sh/v3/interp"
+)
+
+var exports = map[string]lua.LGFunction {
+	"run": run,
+}
+
+func HilbishLoader(L *lua.LState) int {
+	mod := L.SetFuncs(L.NewTable(), exports)
+
+	host, _ := os.Hostname()
+
+	L.SetField(mod, "ver", lua.LString(version))
+	L.SetField(mod, "user", lua.LString(curuser.Username))
+	L.SetField(mod, "host", lua.LString(host))
+
+	L.Push(mod)
+
+	return 1
+}
+
+// Runs a command
+func run(L *lua.LState) int {
+	var exitcode uint8 = 0
+	cmd := L.CheckString(1)
+	err := execCommand(cmd)
+
+	if code, ok := interp.IsExitStatus(err); ok {
+		exitcode = code
+	} else if err != nil {
+		exitcode = 1
+	}
+
+	L.Push(lua.LNumber(exitcode))
+	return 1
 }
 

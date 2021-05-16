@@ -37,7 +37,6 @@ var (
 	interactive bool
 	login bool // Are we the login shell?
 	noexecute bool // Should we run Lua or only report syntax errors
-	hilbish *Hilbish // dont ask
 )
 
 func main() {
@@ -107,14 +106,6 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-	}
-
-	host, _ := os.Hostname()
-
-	hilbish = &Hilbish {
-		Version: version,
-		User: curuser.Username,
-		Hostname: host,
 	}
 
 	go HandleSignals()

@@ -12,7 +12,6 @@ import (
 	"hilbish/golibs/fs"
 
 	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
 )
 
 var minimalconf = `
@@ -32,7 +31,9 @@ func LuaInit() {
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
 	l.SetGlobal("exec", l.NewFunction(hshexec))
 
-	l.SetGlobal("hilbish", luar.New(l, hilbish))
+	// yes this is stupid, i know
+	l.PreloadModule("hilbish", HilbishLoader)
+	l.DoString("hilbish = require 'hilbish'")
 
 	// Add fs module to Lua
 	l.PreloadModule("fs", fs.Loader)
