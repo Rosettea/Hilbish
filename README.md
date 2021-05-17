@@ -51,13 +51,25 @@ sudo zypper install readline-devel
 ```
 
 ### Install
+First, clone Hilbish:
 ```sh
 git clone --recursive https://github.com/Hilbis/Hilbish
 cd Hilbish
-make build
+```   
+
+Then build and install:
+```sh
+make dev
 sudo make install
 # Or 
 sudo make all
+```  
+
+Or, if you want the latest stable release:
+```
+git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+make build
+sudo make install
 ```
 
 Alternatively, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package:
