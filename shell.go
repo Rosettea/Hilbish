@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bobappleyard/readline"
+//	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 	"github.com/yuin/gopher-lua/parse"
 	"layeh.com/gopher-luar"
@@ -132,7 +132,7 @@ func splitInput(input string) ([]string, string) {
 	cmdArgs := []string{}
 	sb := &strings.Builder{}
 	cmdstr := &strings.Builder{}
-	lastcmd := readline.GetHistory(readline.HistorySize() - 1)
+	lastcmd := "" //readline.GetHistory(readline.HistorySize() - 1)
 
 	for _, r := range input {
 		if r == '"' {

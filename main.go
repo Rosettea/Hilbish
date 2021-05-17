@@ -12,7 +12,6 @@ import (
 	"hilbish/golibs/bait"
 
 	"github.com/pborman/getopt"
-	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
 	"golang.org/x/term"
@@ -22,6 +21,7 @@ import (
 var (
 	version = "v0.4.0"
 	l *lua.LState
+	lr *LineReader
 
 	prompt string // User's prompt, this will get set when lua side is initialized
 	multilinePrompt = "> "
@@ -113,8 +113,7 @@ func main() {
 	RunLogin()
 	RunConfig(*configflag)
 
-	readline.Completer = readline.FilenameCompleter
-	readline.LoadHistory(homedir + "/.hilbish-history")
+	lr = NewLineReader("")
 
 	if *cmdflag != "" {
 		RunInput(*cmdflag)
@@ -133,7 +132,8 @@ func main() {
 	for interactive {
 		running = false
 
-		input, err := readline.String(fmtPrompt())
+		lr.SetPrompt(fmtPrompt())
+		input, err := lr.Read()
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
@@ -171,7 +171,8 @@ func main() {
 
 func ContinuePrompt(prev string) (string, error) {
 	hooks.Em.Emit("multiline", nil)
-	cont, err := readline.String(multilinePrompt)
+	lr.SetPrompt(multilinePrompt)
+	cont, err := lr.Read()
 	if err != nil {
 		fmt.Println("")
 		return "", err
@@ -214,15 +215,14 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			readline.ReplaceLine("", 0)
-			readline.RefreshLine()
+			//readline.ReplaceLine("", 0)
+			//readline.RefreshLine()
 		}
 	}
 }
 
 func HandleHistory(cmd string) {
-	readline.AddHistory(cmd)
-	readline.SaveHistory(homedir + "/.hilbish-history")
+	lr.AddHistory(cmd)
 	// TODO: load history again (history shared between sessions like this ye)
 }
 
