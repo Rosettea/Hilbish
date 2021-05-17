@@ -4,13 +4,13 @@ BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/share/hilbish
 
 build:
-	@go build
+	@go build -ldflags "-s -w"
 
 dev:
-	@go build -ldflags "-X main.version=$(shell git describe --tags)"
+	@go build -ldflags "-s -w -X main.version=$(shell git describe --tags)"
 
 hilbiline:
-	@go build -ldflags "-X main.version=$(shell git describe --tags)+hilbiline" -tags hilbiline
+	@go build -ldflags "-s -w -X main.version=$(shell git describe --tags)+hilbiline" -tags hilbiline
 
 install:
 	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
