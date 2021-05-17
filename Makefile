@@ -31,4 +31,4 @@ clean:
 
 all: build install
 
-.PHONY: install uninstall build build-dev clean
+.PHONY: install uninstall build dev hilbiline clean
