@@ -158,6 +158,7 @@ func main() {
 			}
 		}
 		running = true
+		HandleHistory(input)
 		RunInput(input)
 
 		termwidth, _, err := term.GetSize(0)
@@ -218,3 +219,10 @@ func HandleSignals() {
 		}
 	}
 }
+
+func HandleHistory(cmd string) {
+	readline.AddHistory(cmd)
+	readline.SaveHistory(homedir + "/.hilbish-history")
+	// TODO: load history again (history shared between sessions like this ye)
+}
+

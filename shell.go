@@ -45,9 +45,6 @@ func RunInput(input string) {
 		err = l.PCall(0, lua.MultRet, nil)
 	}
 	if err == nil {
-		// If it succeeds, add to history and prompt again
-		HandleHistory(input)
-
 		hooks.Em.Emit("command.exit", 0)
 		return
 	}
@@ -74,9 +71,6 @@ func RunInput(input string) {
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Error in command:\n\n" + err.Error())
-		}
-		if cmdArgs[0] != "exit" {
-			HandleHistory(cmdString)
 		}
 		hooks.Em.Emit("command.exit", exitcode)
 		return
@@ -113,7 +107,6 @@ func RunInput(input string) {
 	} else {
 		hooks.Em.Emit("command.exit", 0)
 	}
-	HandleHistory(cmdString)
 }
 
 // Run command in sh interpreter
@@ -181,11 +174,5 @@ func splitInput(input string) ([]string, string) {
 	}
 
 	return cmdArgs, cmdstr.String()
-}
-
-func HandleHistory(cmd string) {
-	readline.AddHistory(cmd)
-	readline.SaveHistory(homedir + "/.hilbish-history")
-	// TODO: load history again (history shared between sessions like this ye)
 }
 
