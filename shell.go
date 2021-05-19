@@ -122,6 +122,11 @@ func execCommand(cmd string) error {
 			return interp.NewExitStatus(exitcode)
 		}
 
+		err := l.DoString(argstring)
+		if err == nil {
+			return nil
+		}
+
 		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
 			hooks.Em.Emit("command.not-found", args[0])
 			return interp.NewExitStatus(127)
