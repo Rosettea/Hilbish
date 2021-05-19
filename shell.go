@@ -16,7 +16,7 @@ import (
 )
 
 func RunInput(input string) {
-	_, cmdString := splitInput(input)
+	cmdArgs, cmdString := splitInput(input)
 
 	// First try to load input, essentially compiling to bytecode
 	fn, err := l.LoadString(cmdString)
@@ -37,6 +37,31 @@ func RunInput(input string) {
 	if err == nil {
 		hooks.Em.Emit("command.exit", 0)
 		return
+	}
+	if commands[cmdArgs[0]] {
+		err := l.CallByParam(lua.P{
+			Fn: l.GetField(
+				l.GetTable(
+					l.GetGlobal("commanding"),
+					lua.LString("__commands")),
+				cmdArgs[0]),
+			NRet:    1,
+			Protect: true,
+		}, luar.New(l, cmdArgs[1:]))
+		luaexitcode := l.Get(-1)
+		var exitcode uint8 = 0
+
+		l.Pop(1)
+
+		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+			exitcode = uint8(code)
+		}
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr,
+				"Error in command:\n\n" + err.Error())
+		}
+		hooks.Em.Emit("command.exit", exitcode)
 	}
 
 	// Last option: use sh interpreter
