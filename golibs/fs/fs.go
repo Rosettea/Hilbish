@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -31,9 +32,13 @@ func cd(L *lua.LState) int {
 
 	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
-		switch err.(*os.PathError).Err.Error() {
+		switch e := err.(*os.PathError).Err.Error(); e {
 		case "no such file or directory":
 			LuaErr(L, 1)
+		default:
+			fmt.Printf("Found unhandled error case: %s", e)
+			fmt.Printf("Report this at https://github.com/Hilbis/Hilbish/issues with the title being: \"fs: unahndled error case %s\", and show what caused it.\n", e)
+			LuaErr(L, 213)
 		}
 	}
 
