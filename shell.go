@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 //	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
@@ -15,18 +16,7 @@ import (
 )
 
 func RunInput(input string) {
-	cmdArgs, cmdString := splitInput(input)
-
-	// If alias was found, use command alias
-	for aliases[cmdArgs[0]] != "" {
-		alias := aliases[cmdArgs[0]]
-		cmdString = alias + strings.TrimPrefix(cmdString, cmdArgs[0])
-		cmdArgs, cmdString = splitInput(cmdString)
-
-		if aliases[cmdArgs[0]] != "" {
-			continue
-		}
-	}
+	_, cmdString := splitInput(input)
 
 	// First try to load input, essentially compiling to bytecode
 	fn, err := l.LoadString(cmdString)
@@ -46,33 +36,6 @@ func RunInput(input string) {
 	}
 	if err == nil {
 		hooks.Em.Emit("command.exit", 0)
-		return
-	}
-
-	// If command is defined in Lua then run it
-	if commands[cmdArgs[0]] {
-		err := l.CallByParam(lua.P{
-			Fn: l.GetField(
-				l.GetTable(
-					l.GetGlobal("commanding"),
-					lua.LString("__commands")),
-				cmdArgs[0]),
-			NRet:    1,
-			Protect: true,
-		}, luar.New(l, cmdArgs[1:]))
-		luaexitcode := l.Get(-1)
-		exitcode := lua.LNumber(0)
-
-		l.Pop(1)
-
-		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
-			exitcode = code
-		}
-		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"Error in command:\n\n" + err.Error())
-		}
-		hooks.Em.Emit("command.exit", exitcode)
 		return
 	}
 
@@ -115,8 +78,60 @@ func execCommand(cmd string) error {
 	if err != nil {
 		return err
 	}
+
+	exechandle := func(ctx context.Context, args []string) error {
+		hc := interp.HandlerCtx(ctx)
+		args, argstring := splitInput(strings.Join(args, " "))
+
+		// If alias was found, use command alias
+		for aliases[args[0]] != "" {
+			alias := aliases[args[0]]
+			argstring = alias + strings.TrimPrefix(argstring, args[0])
+			args, argstring = splitInput(argstring)
+
+			if aliases[args[0]] != "" {
+				continue
+			}
+		}
+
+		// If command is defined in Lua then run it
+		if commands[args[0]] {
+			err := l.CallByParam(lua.P{
+				Fn: l.GetField(
+					l.GetTable(
+						l.GetGlobal("commanding"),
+						lua.LString("__commands")),
+					args[0]),
+				NRet:    1,
+				Protect: true,
+			}, luar.New(l, args[1:]))
+			luaexitcode := l.Get(-1)
+			var exitcode uint8 = 0
+
+			l.Pop(1)
+
+			if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+				exitcode = uint8(code)
+			}
+
+			if err != nil {
+				fmt.Fprintln(os.Stderr,
+					"Error in command:\n\n" + err.Error())
+			}
+			hooks.Em.Emit("command.exit", exitcode)
+			return interp.NewExitStatus(exitcode)
+		}
+
+		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
+			fmt.Printf("hilbish: %s not found\n", args[0])
+			return interp.NewExitStatus(127)
+		}
+
+		return interp.DefaultExecHandler(2*time.Second)(ctx, args)
+	}
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
+		interp.ExecHandler(exechandle),
 	)
 	err = runner.Run(context.TODO(), file)
 
