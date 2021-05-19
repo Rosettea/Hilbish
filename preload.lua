@@ -1,10 +1,10 @@
 -- The preload file initializes everything else for our shell
--- Currently it just adds our builtins
 
 local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
 
+-- Builtins
 commander.register('cd', function (args)
 	bait.throw('cd', args)
 	if #args > 0 then
@@ -85,4 +85,9 @@ function string.split(str, delimiter)
 
 	return result
 end
+
+-- Hook handles
+bait.catch('command.not-found', function(cmd)
+	print(string.format('hilbish: %s not found', cmd))
+end)
 

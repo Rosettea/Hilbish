@@ -123,7 +123,7 @@ func execCommand(cmd string) error {
 		}
 
 		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
-			fmt.Printf("hilbish: %s not found\n", args[0])
+			hooks.Em.Emit("command.not-found", args[0])
 			return interp.NewExitStatus(127)
 		}
 
