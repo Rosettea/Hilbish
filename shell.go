@@ -62,6 +62,7 @@ func RunInput(input string) {
 				"Error in command:\n\n" + err.Error())
 		}
 		hooks.Em.Emit("command.exit", exitcode)
+		return
 	}
 
 	// Last option: use sh interpreter
