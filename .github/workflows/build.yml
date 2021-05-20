@@ -19,9 +19,9 @@ jobs:
             os: ubuntu-latest
 #            - windows
 #            - darwin
-          goarch:
+          - goarch:
             - amd64
-          exclude:  
+          - exclude:  
             - goarch: "386"
               goos: darwin 
     steps:
