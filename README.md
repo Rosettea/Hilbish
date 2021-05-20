@@ -25,16 +25,27 @@ but there may still be breaking changes in Lua modules.
 - **[Gallery](https://github.com/Hilbis/Hilbish/discussions/36)** - See
 more screenshots of Hilbish in action
 
-# Building
-Prebuilt binaries are not yet provided, so to try it out you'll have to manually compile.  
-
+# Installation
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
-### Prerequisites
+### Prebuilt binaries
+Binaries are provided for the latest commit.  
+
+**Note that these use Hilbiline, not readline, and may be missing functionality
+(moving the cursor, proper unicode support and backspace working properly)**  
+
+Click on the checkmark (or x) near the commit hash, then details for your platform  
+<br><img src="https://modeus.is-inside.me/dyr8UGGq.png"><br>
+
+Then click on the artifacts drop down, and download artifact for your platform,
+like what is highlighted in the screenshot.  
+<br><img src="https://modeus.is-inside.me/KJ0Puceb.png"><br>
+
+### Manual Build
+#### Prerequisites
 - [Go 1.16](https://go.dev)
 
 - GNU Readline
-
 On Fedora, readline can be installed with:  
 ```
 sudo dnf install readline-devel
@@ -50,14 +61,19 @@ On OpenSUSE, it can be installed with:
 sudo zypper install readline-devel
 ```
 
-### Install
+#### Install
 First, clone Hilbish:
 ```sh
 git clone --recursive https://github.com/Hilbis/Hilbish
 cd Hilbish
 ```   
 
-Then build and install:
+And get dependencies:  
+```sh
+go get -d
+```  
+
+then, build and install:
 ```sh
 make dev
 sudo make install
@@ -71,6 +87,9 @@ git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
 make build
 sudo make install
 ```
+
+If you want to use Hilbiline instead, replace `make dev`/`make build` with `make hilbiline`.
+`make build all` will still try to use readline.
 
 Alternatively, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package:
 ```sh
