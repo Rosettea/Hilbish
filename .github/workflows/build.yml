@@ -10,20 +10,20 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
         # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
-          - goos: linux
-            os: ubuntu-latest
-#            - windows
-#            - darwin
-          - goarch:
-            - amd64
-          - exclude:  
-            - goarch: "386"
-              goos: darwin 
+        goos: 
+          - linux
+#          - windows
+#          - darwin
+        goarch: 
+          - "386"
+          - amd64
+        exclude:  
+          - goarch: "386"
+            goos: darwin 
     steps:
     - name: Install readline
       run: sudo apt install libreadline-dev
@@ -35,4 +35,3 @@ jobs:
         goarch: ${{ matrix.goarch }}
         extra_files: LICENSE README.md
         asset_name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
-
