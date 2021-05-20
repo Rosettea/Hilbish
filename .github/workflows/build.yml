@@ -13,9 +13,6 @@ jobs:
         include:
           - build: linux-amd64
             os: ubuntu-latest
-          - build: darwin-amd64
-            os: macOS-latest
-
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -25,4 +22,8 @@ jobs:
           go-version: '1.16.2'
       - name: Build
         run: make hilbiline
+      - uses: actions/upload-artifact@v2
+        with:
+          name: hilbish-${{ matrix.build }}
+          path: hilbish
 
