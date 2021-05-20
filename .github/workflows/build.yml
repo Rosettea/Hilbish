@@ -35,5 +35,5 @@ jobs:
         goarch: ${{ matrix.goarch }}
         extra_files: LICENSE README.md
         asset_name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
-        ldflags: -tags hilbiline
+        build_flags: -tags hilbiline
         pre_command: go get -d
