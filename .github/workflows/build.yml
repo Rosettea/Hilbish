@@ -1,39 +1,26 @@
-on: 
-  push:
-    branches:
-      - master
-      - dev
-  pull_request:
-      branches:
-          - dev
+name: Build
+
+on:
+  - push
+  - pull_request
 
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: ${{ matrix.build }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
-        goos: 
-          - linux
-#          - windows
-#          - darwin
-        goarch: 
-          - "386"
-          - amd64
-        exclude:  
-          - goarch: "386"
-            goos: darwin 
+        include:
+          - build: linux-amd64
+            os: ubuntu-latest
+          - build: darwin-amd64
+            os: macOS-latest
+
     steps:
-    - name: Install readline
-      run: sudo apt install libreadline-dev
-    - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.17
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: ${{ matrix.goos }}
-        goarch: ${{ matrix.goarch }}
-        extra_files: LICENSE README.md
-        asset_name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
-        build_flags: -tags hilbiline
-        pre_command: go get -d
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+      - name: Build
+        run: make hilbiline
+
