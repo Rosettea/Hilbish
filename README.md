@@ -61,35 +61,26 @@ On OpenSUSE, it can be installed with:
 sudo zypper install readline-devel
 ```
 
-#### Install
+#### Build
 First, clone Hilbish:
 ```sh
 git clone --recursive https://github.com/Hilbis/Hilbish
 cd Hilbish
+# If you want the latest stable release, run this following command
+git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
 ```   
 
-And get dependencies:  
+And get dependencies and build:  
 ```sh
 go get -d
-```  
-
-then, build and install:
-```sh
 make dev
-sudo make install
-# Or 
-sudo make all
-```  
-
-Or, if you want the latest stable release:
-```
-git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+# If you want to use latest stable release,
 make build
-sudo make install
+# or want to use Hilbiline,
+make hilbiline
 ```
-
-If you want to use Hilbiline instead, replace `make dev`/`make build` with `make hilbiline`.
-`make build all` will still try to use readline.
+#### Install
+`sudo make install`
 
 Alternatively, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package:
 ```sh
