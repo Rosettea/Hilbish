@@ -8,31 +8,31 @@ on:
           - dev
 
 jobs:
-	build:
-		name: Build
-		runs-on: ${{ matrix.os }}
-		strategy:
-			matrix:
-				include:
-				# build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
-					- goos: linux
-						os: ubuntu-latest
-#						- windows
-#						- darwin
-					goarch:
-						- amd64
-					exclude:  
-						- goarch: "386"
-							goos: darwin 
-		steps:
-		- name: Install readline
-			run: sudo apt install libreadline-dev
-		- uses: actions/checkout@v2
-		- uses: wangyoucao577/go-release-action@v1.17
-			with:
-				github_token: ${{ secrets.GITHUB_TOKEN }}
-				goos: ${{ matrix.goos }}
-				goarch: ${{ matrix.goarch }}
-				extra_files: LICENSE README.md
-				asset_name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+        # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
+          - goos: linux
+            os: ubuntu-latest
+#            - windows
+#            - darwin
+          goarch:
+            - amd64
+          exclude:  
+            - goarch: "386"
+              goos: darwin 
+    steps:
+    - name: Install readline
+      run: sudo apt install libreadline-dev
+    - uses: actions/checkout@v2
+    - uses: wangyoucao577/go-release-action@v1.17
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        extra_files: LICENSE README.md
+        asset_name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
 
