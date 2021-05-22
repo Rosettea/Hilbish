@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    name: ${{ matrix.build }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - build: linux-amd64
+            os: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16.2'
+      - name: Build
+        run: make hilbiline
+      - uses: actions/upload-artifact@v2
+        with:
+          name: hilbish-${{ matrix.build }}
+          path: hilbish
+
