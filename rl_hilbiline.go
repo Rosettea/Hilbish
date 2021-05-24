@@ -5,7 +5,7 @@
 // this is hilbiline's, as is obvious by the filename
 package main
 
-import "github.com/Hilbis/Hilbiline"
+import "github.com/Mewyuna/Hilbiline"
 
 type LineReader struct {
 	hl *hilbiline.HilbilineState
