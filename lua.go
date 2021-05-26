@@ -12,6 +12,7 @@ import (
 	"hilbish/golibs/fs"
 
 	"github.com/yuin/gopher-lua"
+	"layeh.com/gopher-luar"
 )
 
 var minimalconf = `
@@ -30,6 +31,7 @@ func LuaInit() {
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
 	l.SetGlobal("exec", l.NewFunction(hshexec))
+	l.SetGlobal("goro", luar.New(l, hshgoroutine))
 
 	// yes this is stupid, i know
 	l.PreloadModule("hilbish", HilbishLoader)
@@ -150,4 +152,8 @@ func hshexec(L *lua.LState) int {
 	// TODO: alternative for windows
 	syscall.Exec(cmdPath, cmdArgs, os.Environ())
 	return 0 // random thought: does this ever return?
+}
+
+func hshgoroutine(gofunc func()) {
+	go gofunc()
 }
