@@ -107,17 +107,13 @@ func execCommand(cmd string) error {
 
 	exechandle := func(ctx context.Context, args []string) error {
 		hc := interp.HandlerCtx(ctx)
-		args, argstring := splitInput(strings.Join(args, " "))
+		_, argstring := splitInput(strings.Join(args, " "))
 
 		// If alias was found, use command alias
-		for aliases[args[0]] != "" {
+		if aliases[args[0]] != "" {
 			alias := aliases[args[0]]
 			argstring = alias + strings.TrimPrefix(argstring, args[0])
-			args, argstring = splitInput(argstring)
-
-			if aliases[args[0]] != "" {
-				continue
-			}
+			args[0] = alias
 		}
 
 		// If command is defined in Lua then run it
@@ -146,11 +142,6 @@ func execCommand(cmd string) error {
 			}
 			hooks.Em.Emit("command.exit", exitcode)
 			return interp.NewExitStatus(exitcode)
-		}
-
-		err := l.DoString(argstring)
-		if err == nil {
-			return nil
 		}
 
 		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
