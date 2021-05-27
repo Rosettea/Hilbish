@@ -3,6 +3,7 @@
 local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
+local old_dir = os.getenv "PWD"
 
 -- Builtins
 commander.register('cd', function (args)
@@ -13,8 +14,12 @@ commander.register('cd', function (args)
 			path = path .. tostring(args[i]) .. ' '
 		end
 		path = path:gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
-		:gsub('$([%w_]+)', os.getenv):gsub('%z','$')
+		:gsub('$([%w_]+)', os.getenv):gsub('%z','$'):gsub("%s+", "")
 
+        if path == '-' then
+            path = old_dir
+        end
+        old_dir = os.getenv "PWD"
 		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
 			if err == 1 then
