@@ -14,6 +14,7 @@ import (
 var exports = map[string]lua.LGFunction {
 	"run": run,
 	"flag": flag,
+	"cwd": cwd,
 }
 
 func HilbishLoader(L *lua.LState) int {
@@ -53,3 +54,12 @@ func flag(L *lua.LState) int {
 
 	return 1
 }
+
+func cwd(L *lua.LState) int {
+	cwd, _ := os.Getwd()
+
+	L.Push(lua.LString(cwd))
+
+	return 1
+}
+
