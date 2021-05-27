@@ -3,7 +3,7 @@
 local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
-local old_dir = os.getenv "PWD"
+local old_dir = hilbish.cwd()
 
 -- Builtins
 commander.register('cd', function (args)
@@ -18,8 +18,10 @@ commander.register('cd', function (args)
 
         if path == '-' then
             path = old_dir
+            print(path)
         end
-        old_dir = os.getenv "PWD"
+        old_dir = hilbish.cwd()
+
 		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
 			if err == 1 then
