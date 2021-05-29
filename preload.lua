@@ -5,6 +5,9 @@ local commander = require 'commander'
 local bait = require 'bait'
 local old_dir = hilbish.cwd()
 
+local shlvl = tonumber(os.getenv 'SHLVL')
+if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 1) end
+
 -- Builtins
 commander.register('cd', function (args)
 	bait.throw('cd', args)
