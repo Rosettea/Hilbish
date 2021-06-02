@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -61,6 +62,10 @@ func main() {
 		interactive = true
 	}
 
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+		interactive = false
+	}
+
 	if getopt.NArgs() > 0 {
 		interactive = false
 	}
@@ -114,6 +119,13 @@ func main() {
 	RunConfig(*configflag)
 
 	lr = NewLineReader("")
+
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+		for scanner.Scan() {
+			RunInput(scanner.Text())
+		}
+	}
 
 	if *cmdflag != "" {
 		RunInput(*cmdflag)
