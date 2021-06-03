@@ -72,7 +72,7 @@ git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
 
 And get dependencies and build:  
 ```sh
-go get -d
+go get -d all
 make dev
 # If you want to use latest stable release,
 make build
