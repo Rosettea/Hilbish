@@ -83,7 +83,7 @@ func RunConfig(confpath string) {
 	err := l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
-			"\nAn error has occured while loading your config! Falling back to minimal default config.\n")
+			"\nAn error has occured while loading your config! Falling back to minimal default config.")
 
 		l.DoString(minimalconf)
 	}
