@@ -16,8 +16,8 @@ import (
 )
 
 var minimalconf = `
-ansikit = require 'ansikit'
-prompt(ansikit.format(
+lunacolors = require 'lunacolors'
+prompt(lunacolors.format(
 		'{blue}%u {cyan}%d {green}∆{reset} '
 ))
 `
