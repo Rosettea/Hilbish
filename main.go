@@ -18,14 +18,9 @@ import (
 	"golang.org/x/term"
 )
 
-
 var (
-	version = "v0.4.0"
 	l *lua.LState
 	lr *LineReader
-
-	prompt string // User's prompt, this will get set when lua side is initialized
-	multilinePrompt = "> "
 
 	commands = map[string]bool{}
 	aliases = map[string]string{}
@@ -33,11 +28,7 @@ var (
 	homedir string
 	curuser *user.User
 
-	running bool // Is a command currently running
 	hooks bait.Bait
-	interactive bool
-	login bool // Are we the login shell?
-	noexecute bool // Should we run Lua or only report syntax errors
 )
 
 func main() {

@@ -58,14 +58,7 @@ func LuaInit() {
 	l.PreloadModule("bait", hooks.Loader)
 
 	// Add more paths that Lua can require from
-	l.DoString(`package.path = package.path
-	.. ';./libs/?/init.lua;./?/init.lua;./?/?.lua'
-	.. ';/usr/share/hilbish/libs/?/init.lua;'
-	.. ';/usr/share/hilbish/libs/?/?.lua;'
-	.. os.getenv 'HOME' .. '/.local/share/hilbish/libs/?/init.lua;'
-	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua;'
-	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?.lua'
-	`)
+	l.DoString("package.path = package.path .. " + requirePaths)
 
 	err := l.DoFile("preload.lua")
 	if err != nil {
