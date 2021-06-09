@@ -63,7 +63,7 @@ sudo zypper install readline-devel
 
 On Arch Linux, it can be installed with:
 ```
-sudo pacman -S install readline
+sudo pacman -S readline
 ```
 
 #### Build
