@@ -91,7 +91,7 @@ go get -d all
 make dev
 ```
 
-If you checked out to the latest stable release, run
+If you `git checkout`'d the latest stable release, run
 `make build` instead of `make dev`.  
 or want to experiment Hilbiline, instead run
 `make hilbiline`
