@@ -9,6 +9,7 @@ var (
 	.. os.getenv 'HOME' .. '/.local/share/hilbish/libs/?/init.lua;'
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua;'
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?.lua'`
+	preloadPath = "/usr/share/hilbish/preload.lua"
 
 	prompt string // Prompt will always get changed anyway
 	multilinePrompt = "> "
@@ -20,6 +21,5 @@ var (
 	interactive bool
 	login bool // Are we the login shell?
 	noexecute bool // Should we run Lua or only report syntax errors
-
 )
 

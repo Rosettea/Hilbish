@@ -62,7 +62,7 @@ func LuaInit() {
 
 	err := l.DoFile("preload.lua")
 	if err != nil {
-		err = l.DoFile("/usr/share/hilbish/preload.lua")
+		err = l.DoFile(preloadPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Missing preload file, builtins may be missing.")
