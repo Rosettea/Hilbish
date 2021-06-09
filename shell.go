@@ -149,7 +149,7 @@ func execCommand(cmd string) error {
 			return interp.NewExitStatus(127)
 		}
 
-		return interp.DefaultExecHandler(2*time.Second)(ctx, args)
+		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
 	}
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
