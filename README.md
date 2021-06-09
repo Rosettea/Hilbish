@@ -41,6 +41,16 @@ Then click on the artifacts drop down, and download artifact for your platform,
 like what is highlighted in the screenshot.  
 <br><img src="https://modeus.is-inside.me/KJ0Puceb.png"><br>
 
+### AUR
+Arch Linux users can install Hilbish from the AUR.
+```sh
+yay -S hilbish
+```
+If you want the latest and greatest, you can install and compile from the latest git commit  
+```sh
+yay -S hilbish-git
+```
+
 ### Manual Build
 #### Prerequisites
 - [Go 1.16](https://go.dev)
@@ -88,15 +98,6 @@ or want to experiment Hilbiline, instead run
 
 #### Install
 `sudo make install`
-
-Alternatively, if you use Arch Linux, you can compile Hilbish with an **(unofficial)** AUR package:
-```sh
-yay -S hilbish
-```
-If you want the latest and greatest, you can install and compile from latest git commit: 
-```sh
-yay -S hilbish-git
-```
 
 ### Uninstall
 ```sh
