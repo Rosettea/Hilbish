@@ -79,11 +79,13 @@ And get dependencies and build:
 ```sh
 go get -d all
 make dev
-# If you want to use latest stable release,
-make build
-# or want to use Hilbiline,
-make hilbiline
 ```
+
+If you checked out to the latest stable release, run
+`make build` instead of `make dev`.  
+or want to experiment Hilbiline, instead run
+`make hilbiline`
+
 #### Install
 `sudo make install`
 
