@@ -61,6 +61,11 @@ On OpenSUSE, it can be installed with:
 sudo zypper install readline-devel
 ```
 
+On ArchLinux, it can be installed with:
+```
+sudo pacman -S install readline
+```
+
 #### Build
 First, clone Hilbish:
 ```sh
