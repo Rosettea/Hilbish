@@ -44,8 +44,8 @@ like what is highlighted in the screenshot.
 ### Manual Build
 #### Prerequisites
 - [Go 1.16](https://go.dev)
-
 - GNU Readline
+
 On Fedora, readline can be installed with:  
 ```
 sudo dnf install readline-devel
