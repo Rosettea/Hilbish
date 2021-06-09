@@ -218,8 +218,7 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
-			//readline.ReplaceLine("", 0)
-			//readline.RefreshLine()
+			lr.ClearInput()
 		}
 	}
 }

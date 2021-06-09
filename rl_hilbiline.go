@@ -32,3 +32,7 @@ func (lr *LineReader) AddHistory(cmd string) {
 	return
 }
 
+func (lr *LineReader) ClearInput() {
+	return
+}
+

@@ -34,3 +34,8 @@ func (lr *LineReader) AddHistory(cmd string) {
 	readline.SaveHistory(homedir + "/.hilbish-history")
 }
 
+func (lr *LineReader) ClearInput() {
+	readline.ReplaceLine("", 0)
+	readline.RefreshLine()
+}
+
