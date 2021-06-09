@@ -44,19 +44,19 @@ end)
 
 do
 	local virt_G = { }
-	
+
 	setmetatable(_G, {
-		__index = function (self, key)
+		__index = function (_, key)
 			local got_virt = virt_G[key]
 			if got_virt ~= nil then
 				return got_virt
 			end
-			
+
 			virt_G[key] = os.getenv(key)
 			return virt_G[key]
 		end,
-			
-		__newindex = function (self, key, value)
+
+		__newindex = function (_, key, value)
 			if type(value) == 'string' then
 				os.setenv(key, value)
 				virt_G[key] = value
@@ -68,7 +68,7 @@ do
 			end
 		end,
 	})
-	
+
 	bait.catch('command.exit', function ()
 		for key, value in pairs(virt_G) do
 			if type(value) == 'string' then
@@ -82,15 +82,15 @@ end
 function string.split(str, delimiter)
 	local result = {}
 	local from = 1
-	
+
 	local delim_from, delim_to = string.find(str, delimiter, from)
-	
+
 	while delim_from do
 		table.insert(result, string.sub(str, from, delim_from - 1))
 		from = delim_to + 1
 		delim_from, delim_to = string.find(str, delimiter, from)
 	end
-	
+
 	table.insert(result, string.sub(str, from))
 
 	return result
