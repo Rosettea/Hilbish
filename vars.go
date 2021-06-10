@@ -10,6 +10,7 @@ var (
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?/?.lua;'
 	.. os.getenv 'HOME'	.. '/.local/share/hilbish/libs/?.lua'`
 	preloadPath = "/usr/share/hilbish/preload.lua"
+	defaultConfDir = "" // ~ will be substituted for home
 
 	prompt string // Prompt will always get changed anyway
 	multilinePrompt = "> "

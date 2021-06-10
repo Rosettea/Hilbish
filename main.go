@@ -29,17 +29,25 @@ var (
 	curuser *user.User
 
 	hooks bait.Bait
+	defaultConfPath string
 )
 
 func main() {
 	homedir, _ = os.UserHomeDir()
 	curuser, _ = user.Current()
-	defaultconfpath := homedir + "/.hilbishrc.lua"
+
+	if defaultConfDir == "" {
+		// we'll add *our* default if its empty (wont be if its changed comptime)
+		defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
+	} else {
+		// else do ~ substitution
+		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
+	}
 
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
 	cmdflag := getopt.StringLong("command", 'c', "", "Executes a command on startup")
-	configflag := getopt.StringLong("config", 'C', defaultconfpath, "Sets the path to Hilbish's config")
+	configflag := getopt.StringLong("config", 'C', defaultConfPath, "Sets the path to Hilbish's config")
 	getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
 	getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 	getopt.BoolLong("noexec", 'n', "Don't execute and only report Lua syntax errors")
@@ -81,12 +89,12 @@ func main() {
 	}
 
 	// If user's config doesn't exixt,
-	if _, err := os.Stat(defaultconfpath); os.IsNotExist(err) {
+	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) {
 		// Read default from current directory
 		// (this is assuming the current dir is Hilbish's git)
 		input, err := os.ReadFile(".hilbishrc.lua")
 		if err != nil {
-			// If it wasnt found, go to "real default"
+			// If it wasnt found, go to the real sample conf
 			input, err = os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
 			if err != nil {
 				fmt.Println("could not find .hilbishrc.lua or /usr/share/hilbish/.hilbishrc.lua")
@@ -95,7 +103,7 @@ func main() {
 		}
 
 		// Create it using either default config we found
-		err = os.WriteFile(homedir + "/.hilbishrc.lua", input, 0644)
+		err = os.WriteFile(defaultConfPath, input, 0644)
 		if err != nil {
 			// If that fails, bail
 			fmt.Println("Error creating config file")
