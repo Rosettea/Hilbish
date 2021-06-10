@@ -3,7 +3,7 @@
 local fs = require 'fs'
 local commander = require 'commander'
 local bait = require 'bait'
-local old_dir = hilbish.cwd()
+local oldDir = hilbish.cwd()
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 1) end
@@ -20,10 +20,10 @@ commander.register('cd', function (args)
 		:gsub('$([%w_]+)', os.getenv):gsub('%z','$'):gsub("%s+", "")
 
         if path == '-' then
-            path = old_dir
+            path = oldDir
             print(path)
         end
-        old_dir = hilbish.cwd()
+        oldDir = hilbish.cwd()
 
 		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
