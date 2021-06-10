@@ -35,7 +35,8 @@ commander.register('cd', function (args)
 		return
 	end
 	fs.cd(os.getenv 'HOME')
-	bait.throw('command.exit', 0)
+
+	return
 end)
 
 commander.register('exit', function()
