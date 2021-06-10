@@ -95,9 +95,9 @@ func main() {
 		input, err := os.ReadFile(".hilbishrc.lua")
 		if err != nil {
 			// If it wasnt found, go to the real sample conf
-			input, err = os.ReadFile("/usr/share/hilbish/.hilbishrc.lua")
+			input, err = os.ReadFile(sampleConfPath)
 			if err != nil {
-				fmt.Println("could not find .hilbishrc.lua or /usr/share/hilbish/.hilbishrc.lua")
+				fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
 				return
 			}
 		}
