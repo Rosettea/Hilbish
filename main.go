@@ -183,14 +183,13 @@ func main() {
 func ContinuePrompt(prev string) (string, error) {
 	hooks.Em.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
-
 	cont, err := lr.Read()
 	if err != nil {
 		fmt.Println("")
-		return prev, err
+		return "", err
 	}
-
 	cont = strings.TrimSpace(cont)
+
 	return prev + strings.TrimSuffix(cont, "\n"), nil
 }
 
