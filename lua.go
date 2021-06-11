@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
@@ -32,6 +33,7 @@ func LuaInit() {
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
 	l.SetGlobal("exec", l.NewFunction(hshexec))
 	l.SetGlobal("goro", luar.New(l, hshgoroutine))
+	l.SetGlobal("timeout", luar.New(l, hshtimeout))
 
 	// yes this is stupid, i know
 	l.PreloadModule("hilbish", HilbishLoader)
@@ -151,3 +153,9 @@ func hshexec(L *lua.LState) int {
 func hshgoroutine(gofunc func()) {
 	go gofunc()
 }
+
+func hshtimeout(timeoutfunc func(), ms int) {
+	timeout := time.Duration(ms) * time.Millisecond
+	time.AfterFunc(timeout, timeoutfunc)
+}
+
