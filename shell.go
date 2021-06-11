@@ -177,7 +177,7 @@ func splitInput(input string) ([]string, string) {
 	quoted := false
 	startlastcmd := false
 	lastcmddone := false
-	cmdArgs := []string{}
+	cmdArgs := []string{""}
 	sb := &strings.Builder{}
 	cmdstr := &strings.Builder{}
 	lastcmd := "" //readline.GetHistory(readline.HistorySize() - 1)
