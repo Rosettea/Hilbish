@@ -140,6 +140,7 @@ func main() {
 		os.Exit(0)
 	}
 
+input:
 	for interactive {
 		running = false
 
@@ -162,8 +163,10 @@ func main() {
 		if strings.HasSuffix(input, "\\") {
 			for {
 				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
-
-				if err != nil || !strings.HasSuffix(input, "\\") {
+				if err != nil {
+					goto input // continue inside nested loop
+				}
+				if !strings.HasSuffix(input, "\\") {
 					break
 				}
 			}
