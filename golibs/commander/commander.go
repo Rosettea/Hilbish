@@ -18,6 +18,7 @@ func New() Commander {
 func (c *Commander) Loader(L *lua.LState) int {
 	var exports = map[string]lua.LGFunction{
 		"register": c.register,
+		"deregister": c.deregister,
 	}
 	mod := L.SetFuncs(L.NewTable(), exports)
 
