@@ -34,6 +34,7 @@ func LuaInit() {
 	l.SetGlobal("exec", l.NewFunction(hshexec))
 	l.SetGlobal("goro", luar.New(l, hshgoroutine))
 	l.SetGlobal("timeout", luar.New(l, hshtimeout))
+	l.SetGlobal("interval", l.NewFunction(hshinterval))
 
 	// yes this is stupid, i know
 	l.PreloadModule("hilbish", HilbishLoader)
@@ -157,5 +158,35 @@ func hshgoroutine(gofunc func()) {
 func hshtimeout(timeoutfunc func(), ms int) {
 	timeout := time.Duration(ms) * time.Millisecond
 	time.AfterFunc(timeout, timeoutfunc)
+}
+
+func hshinterval(L *lua.LState) int {
+	intervalfunc := L.CheckFunction(1)
+	ms := L.CheckInt(2)
+	interval := time.Duration(ms) * time.Millisecond
+
+	ticker := time.NewTicker(interval)
+	stop := make(chan lua.LValue)
+
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				if err := L.CallByParam(lua.P{
+					Fn: intervalfunc,
+					NRet: 0,
+					Protect: true,
+				}); err != nil {
+					panic(err)
+				}
+			case <-stop:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
+	L.Push(lua.LChannel(stop))
+	return 1
 }
 
