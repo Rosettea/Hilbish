@@ -22,7 +22,7 @@ var (
 	l *lua.LState
 	lr *LineReader
 
-	commands = map[string]bool{}
+	commands = map[string]*lua.LFunction{}
 	aliases = map[string]string{}
 
 	homedir string

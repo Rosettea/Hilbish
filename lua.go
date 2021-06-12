@@ -45,16 +45,9 @@ func LuaInit() {
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
-	// TODO: maybe dont add command code to a lua table? insstead use a map
-	cmds.Events.On("commandRegister",
-		func(cmdName string, cmd *lua.LFunction) {
-			commands[cmdName] = true
-			l.SetField(
-				l.GetTable(l.GetGlobal("commanding"),
-					lua.LString("__commands")),
-				cmdName,
-				cmd)
-		})
+	cmds.Events.On("commandRegister", func(cmdName string, cmd *lua.LFunction) {
+		commands[cmdName] = cmd
+	})
 
 	l.PreloadModule("commander", cmds.Loader)
 

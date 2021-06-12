@@ -49,13 +49,9 @@ func RunInput(input string) {
 		hooks.Em.Emit("command.exit", 0)
 		return
 	}
-	if commands[cmdArgs[0]] {
+	if commands[cmdArgs[0]] != nil {
 		err := l.CallByParam(lua.P{
-			Fn: l.GetField(
-				l.GetTable(
-					l.GetGlobal("commanding"),
-					lua.LString("__commands")),
-				cmdArgs[0]),
+			Fn: commands[cmdArgs[0]],
 			NRet:    1,
 			Protect: true,
 		}, luar.New(l, cmdArgs[1:]))
@@ -128,13 +124,9 @@ func execCommand(cmd string) error {
 		}
 
 		// If command is defined in Lua then run it
-		if commands[args[0]] {
+		if commands[args[0]] != nil {
 			err := l.CallByParam(lua.P{
-				Fn: l.GetField(
-					l.GetTable(
-						l.GetGlobal("commanding"),
-						lua.LString("__commands")),
-					args[0]),
+				Fn: commands[args[0]],
 				NRet:    1,
 				Protect: true,
 			}, luar.New(l, args[1:]))
