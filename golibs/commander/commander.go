@@ -20,8 +20,6 @@ func (c *Commander) Loader(L *lua.LState) int {
 		"register": c.register,
 	}
 	mod := L.SetFuncs(L.NewTable(), exports)
-	L.SetGlobal("commanding", &lua.LTable{})
-	L.SetField(L.GetGlobal("commanding"), "__commands", L.NewTable())
 
 	L.Push(mod)
 
@@ -37,3 +35,10 @@ func (c *Commander) register(L *lua.LState) int {
 	return 0
 }
 
+func (c *Commander) deregister(L *lua.LState) int {
+	cmdName := L.CheckString(1)
+
+	c.Events.Emit("commandDeregister", cmdName)
+
+	return 0
+}

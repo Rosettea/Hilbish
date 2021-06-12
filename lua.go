@@ -48,7 +48,9 @@ func LuaInit() {
 	cmds.Events.On("commandRegister", func(cmdName string, cmd *lua.LFunction) {
 		commands[cmdName] = cmd
 	})
-
+	cmds.Events.On("commandDeregister", func(cmdName string) {
+		delete(commands, cmdName)
+	})
 	l.PreloadModule("commander", cmds.Loader)
 
 	hooks = bait.New()
