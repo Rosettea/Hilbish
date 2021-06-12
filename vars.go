@@ -2,7 +2,7 @@ package main
 
 // String vars that are free to be changed at compile time
 var (
-	version = "v0.4.0"
+	version = "v0.5.0"
 	requirePaths = `';./libs/?/init.lua;./?/init.lua;./?/?.lua'
 	.. ';/usr/share/hilbish/libs/?/init.lua;'
 	.. ';/usr/share/hilbish/libs/?/?.lua;'
