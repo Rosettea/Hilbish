@@ -121,7 +121,8 @@ func execCommand(cmd string) error {
 		if aliases[args[0]] != "" {
 			alias := aliases[args[0]]
 			argstring = alias + strings.TrimPrefix(argstring, args[0])
-			args[0] = alias
+			cmdArgs, _ := splitInput(argstring)
+			args = cmdArgs
 		}
 
 		// If command is defined in Lua then run it
