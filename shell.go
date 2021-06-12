@@ -9,7 +9,7 @@ import (
 
 //	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
-	"github.com/yuin/gopher-lua/parse"
+//	"github.com/yuin/gopher-lua/parse"
 	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
