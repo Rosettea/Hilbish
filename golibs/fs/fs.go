@@ -47,9 +47,15 @@ func cd(L *lua.LState) int {
 
 func mkdir(L *lua.LState) int {
 	dirname := L.CheckString(1)
+	recursive := L.ToBool(2)
+	path := strings.TrimSpace(dirname)
 
 	// TODO: handle error here
-	os.Mkdir(strings.TrimSpace(dirname), 0744)
+	if recursive {
+		os.MkdirAll(path, 0744)
+	} else {
+		os.Mkdir(path, 0744)
+	}
 
 	return 0
 }
