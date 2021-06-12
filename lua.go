@@ -170,7 +170,8 @@ func hshinterval(L *lua.LState) int {
 					NRet: 0,
 					Protect: true,
 				}); err != nil {
-					panic(err)
+					fmt.Fprintln(os.Stderr,
+						"Error in interval function:\n\n", err)
 				}
 			case <-stop:
 				ticker.Stop()
