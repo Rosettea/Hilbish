@@ -49,7 +49,7 @@ func main() {
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
 	cmdflag := getopt.StringLong("command", 'c', "", "Executes a command on startup")
 	configflag := getopt.StringLong("config", 'C', defaultConfPath, "Sets the path to Hilbish's config")
-	getopt.BoolLong("login", 'l', "Makes Hilbish act like a login shell")
+	getopt.BoolLong("login", 'l', "Force Hilbish to be a login shell")
 	getopt.BoolLong("interactive", 'i', "Force Hilbish to be an interactive shell")
 	getopt.BoolLong("noexec", 'n', "Don't execute and only report Lua syntax errors")
 
