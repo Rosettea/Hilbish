@@ -33,11 +33,12 @@ func RunInput(input string) {
 	fn, err := l.LoadString(cmdString)
 	if err != nil && noexecute {
 		fmt.Println(err)
-		if lerr, ok := err.(*lua.ApiError); ok {
+	/*	if lerr, ok := err.(*lua.ApiError); ok {
 			if perr, ok := lerr.Cause.(*parse.Error); ok {
 				print(perr.Pos.Line == parse.EOF)
 			}
 		}
+	*/
 		return
 	}
 	// And if there's no syntax errors and -n isnt provided, run
