@@ -44,6 +44,7 @@ func main() {
 		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
 	}
 
+	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
 	cmdflag := getopt.StringLong("command", 'c', "", "Executes a command on startup")
@@ -56,6 +57,11 @@ func main() {
 	loginshflag := getopt.Lookup('l').Seen()
 	interactiveflag := getopt.Lookup('i').Seen()
 	noexecflag := getopt.Lookup('n').Seen()
+
+	if *helpflag {
+		getopt.PrintUsage(os.Stdout)
+		os.Exit(0)
+	}
 
 	if *cmdflag == "" || interactiveflag {
 		interactive = true
