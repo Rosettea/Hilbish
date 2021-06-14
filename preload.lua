@@ -34,8 +34,8 @@ commander.register('cd', function (args)
 		bait.throw('cd', path)
 		return
 	end
-	fs.cd(os.getenv 'HOME')
-	bait.throw('cd', os.getenv 'HOME')
+	fs.cd(hilbish.home)
+	bait.throw('cd', hilbish.home)
 
 	return
 end)
