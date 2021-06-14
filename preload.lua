@@ -10,7 +10,6 @@ if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 1) en
 
 -- Builtins
 commander.register('cd', function (args)
-	bait.throw('cd', args)
 	if #args > 0 then
 		local path = ''
 		for i = 1, #args do
@@ -32,9 +31,11 @@ commander.register('cd', function (args)
 			end
 			return err
 		end
+		bait.throw('cd', path)
 		return
 	end
 	fs.cd(os.getenv 'HOME')
+	bait.throw('cd', os.getenv 'HOME')
 
 	return
 end)
