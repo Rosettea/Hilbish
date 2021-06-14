@@ -56,6 +56,12 @@ func RunInput(input string) {
 			NRet:    1,
 			Protect: true,
 		}, luar.New(l, cmdArgs[1:]))
+		if err != nil {
+			fmt.Fprintln(os.Stderr,
+				"Error in command:\n\n" + err.Error())
+			hooks.Em.Emit("command.exit", 1)
+			return
+		}
 		luaexitcode := l.Get(-1)
 		var exitcode uint8 = 0
 
@@ -65,10 +71,6 @@ func RunInput(input string) {
 			exitcode = uint8(code)
 		}
 
-		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"Error in command:\n\n" + err.Error())
-		}
 		hooks.Em.Emit("command.exit", exitcode)
 		return
 	}
