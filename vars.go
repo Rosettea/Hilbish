@@ -8,7 +8,10 @@ var (
 	.. ';/usr/share/hilbish/libs/?/?.lua;'
 	.. hilbish.home .. '/.local/share/hilbish/libs/?/init.lua;'
 	.. hilbish.home	.. '/.local/share/hilbish/libs/?/?.lua;'
-	.. hilbish.home	.. '/.local/share/hilbish/libs/?.lua'`
+	.. hilbish.home	.. '/.local/share/hilbish/libs/?.lua'
+	.. hilbish.home	.. '/.config/hilbish/?/init.lua'
+	.. hilbish.home	.. '/.config/hilbish/?/?.lua'
+	.. hilbish.home	.. '/.config/hilbish/?.lua'`
 	preloadPath = "/usr/share/hilbish/preload.lua"
 	defaultConfDir = "" // ~ will be substituted for home, path for user's default config
 	sampleConfPath = "/usr/share/hilbish/.hilbishrc.lua" // Path to default/sample config
