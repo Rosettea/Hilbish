@@ -7,9 +7,12 @@ import (
 	"testing"
 )
 
+func TestMain(m *testing.M) {
+	LuaInit()
+}
+
 // https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
 func TestRunInputSh(t *testing.T) {
-	LuaInit()
 	cmd := "echo 'hello'"
 	old := os.Stdout // keep backup of the real stdout
 	r, w, _ := os.Pipe()
@@ -36,7 +39,6 @@ func TestRunInputSh(t *testing.T) {
 }
 
 func TestRunInputLua(t *testing.T) {
-	LuaInit()
 	cmd := "print('hello')"
 	old := os.Stdout // keep backup of the real stdout
 	r, w, _ := os.Pipe()
