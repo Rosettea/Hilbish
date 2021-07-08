@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
@@ -21,9 +22,10 @@ func HilbishLoader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
 
 	host, _ := os.Hostname()
+	username := strings.Split(curuser.Username, "\\")[1] // for some reason Username includes the hostname on windows
 
 	L.SetField(mod, "ver", lua.LString(version))
-	L.SetField(mod, "user", lua.LString(curuser.Username))
+	L.SetField(mod, "user", lua.LString(username))
 	L.SetField(mod, "host", lua.LString(host))
 	L.SetField(mod, "home", lua.LString(homedir))
 

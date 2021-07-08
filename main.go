@@ -265,12 +265,13 @@ func fmtPrompt() string {
 	cwd, _ := os.Getwd()
 
 	cwd = strings.Replace(cwd, curuser.HomeDir, "~", 1)
+	username := strings.Split(curuser.Username, "\\")[1] // for some reason Username includes the hostname on windows
 
 	args := []string{
 		"d", cwd,
 		"D", filepath.Base(cwd),
 		"h", host,
-		"u", curuser.Username,
+		"u", username,
 	}
 
 	for i, v := range args {
