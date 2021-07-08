@@ -40,6 +40,8 @@ var (
 func main() {
 	homedir, _ = os.UserHomeDir()
 	curuser, _ = user.Current()
+	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
+	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
 	if defaultConfDir == "" {
 		// we'll add *our* default if its empty (wont be if its changed comptime)
