@@ -152,7 +152,8 @@ func hshgoroutine(gofunc func()) {
 
 func hshtimeout(timeoutfunc func(), ms int) {
 	timeout := time.Duration(ms) * time.Millisecond
-	time.AfterFunc(timeout, timeoutfunc)
+	time.Sleep(timeout)
+	timeoutfunc()
 }
 
 func hshinterval(L *lua.LState) int {
