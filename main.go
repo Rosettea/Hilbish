@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 	"os/signal"
 	"os/user"
@@ -265,7 +266,11 @@ func fmtPrompt() string {
 	cwd, _ := os.Getwd()
 
 	cwd = strings.Replace(cwd, curuser.HomeDir, "~", 1)
-	username := strings.Split(curuser.Username, "\\")[1] // for some reason Username includes the hostname on windows
+	username := curuser.Username
+	// this will be baked into binary since GOOS is a constant
+	if runtime.GOOS == "windows" {
+		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
+	}
 
 	args := []string{
 		"d", cwd,

@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/pborman/getopt"
@@ -22,7 +23,11 @@ func HilbishLoader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
 
 	host, _ := os.Hostname()
-	username := strings.Split(curuser.Username, "\\")[1] // for some reason Username includes the hostname on windows
+	username := curuser.Username
+	// this will be baked into binary since GOOS is a constant
+	if runtime.GOOS == "windows" {
+		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
+	}
 
 	L.SetField(mod, "ver", lua.LString(version))
 	L.SetField(mod, "user", lua.LString(username))
