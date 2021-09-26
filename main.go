@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"io"
 	"os"
@@ -11,14 +10,12 @@ import (
 	"os/signal"
 	"os/user"
 	"path/filepath"
-	"time"
 
 	"hilbish/golibs/bait"
 
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
-	"mvdan.cc/sh/v3/interp"
 	"golang.org/x/term"
 )
 
@@ -34,8 +31,6 @@ var (
 
 	hooks bait.Bait
 	defaultConfPath string
-
-	runner *interp.Runner	
 )
 
 func main() {
@@ -153,56 +148,6 @@ func main() {
 		}
 		os.Exit(0)
 	}
-
-	// Execute handler for sh runner
-	exechandle := func(ctx context.Context, args []string) error {
-		hc := interp.HandlerCtx(ctx)
-		_, argstring := splitInput(strings.Join(args, " "))
-
-		// If alias was found, use command alias
-		if aliases[args[0]] != "" {
-			alias := aliases[args[0]]
-			argstring = alias + strings.TrimPrefix(argstring, args[0])
-			cmdArgs, _ := splitInput(argstring)
-			args = cmdArgs
-		}
-
-		// If command is defined in Lua then run it
-		if commands[args[0]] != nil {
-			err := l.CallByParam(lua.P{
-				Fn: commands[args[0]],
-				NRet:    1,
-				Protect: true,
-			}, luar.New(l, args[1:]))
-			luaexitcode := l.Get(-1)
-			var exitcode uint8 = 0
-
-			l.Pop(1)
-
-			if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
-				exitcode = uint8(code)
-			}
-
-			if err != nil {
-				fmt.Fprintln(os.Stderr,
-					"Error in command:\n\n" + err.Error())
-			}
-			hooks.Em.Emit("command.exit", exitcode)
-			return interp.NewExitStatus(exitcode)
-		}
-
-		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
-			hooks.Em.Emit("command.not-found", args[0])
-			return interp.NewExitStatus(127)
-		}
-
-		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
-	}
-	// Setup sh runner outside of input label
-	runner, _ = interp.New(
-		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
-		interp.ExecHandler(exechandle),
-	)
 
 input:
 	for interactive {
