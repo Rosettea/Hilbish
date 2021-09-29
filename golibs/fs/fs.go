@@ -35,6 +35,8 @@ func cd(L *lua.LState) int {
 		switch e := err.(*os.PathError).Err.Error(); e {
 		case "no such file or directory":
 			LuaErr(L, 1)
+		case "not a directory":
+			LuaErr(L, 2)
 		default:
 			fmt.Printf("Found unhandled error case: %s\n", e)
 			fmt.Printf("Report this at https://github.com/Rosettea/Hilbish/issues with the title being: \"fs: unhandled error case %s\", and show what caused it.\n", e)
