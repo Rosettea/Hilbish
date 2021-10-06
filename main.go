@@ -46,7 +46,7 @@ func main() {
     if _, err := os.Stat(filepath.Join(confDir, "hilbish", "hilbishrc.lua")); os.IsNotExist(err) {
 		  defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
     } else {
-      defaultConfPath = filepath.Join(confDir, "hilbish", "hilbishrc.lua")
+		  defaultConfPath = filepath.Join(confDir, "hilbish", "hilbishrc.lua")
     }
 	} else {
 		// else do ~ substitution
