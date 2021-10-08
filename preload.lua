@@ -16,7 +16,7 @@ commander.register('cd', function (args)
 			path = path .. tostring(args[i]) .. ' '
 		end
 		path = path:gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
-		:gsub('$([%w_]+)', os.getenv):gsub('%z','$')
+		:gsub('$([%w_]+)', os.getenv):gsub('%z','$'):gsub('^%s*(.-)%s*$', '%1')
 
         if path == '-' then
             path = oldDir
