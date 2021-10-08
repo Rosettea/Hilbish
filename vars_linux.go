@@ -7,12 +7,12 @@ var (
 	requirePaths = `';./libs/?/?.lua;./libs/?/init.lua;./?/init.lua;./?/?.lua'
 	.. ';/usr/share/hilbish/libs/?/init.lua;'
 	.. ';/usr/share/hilbish/libs/?/?.lua;'
-	.. hilbish.xdgData .. '/hilbish/libs/?/init.lua;'
-	.. hilbish.xdgData	.. '/hilbish/libs/?/?.lua;'
-	.. hilbish.xdgData	.. '/hilbish/libs/?.lua'
-	.. hilbish.xdgConfig	.. '/?/init.lua'
-	.. hilbish.xdgConfig	.. '/?/?.lua'
-	.. hilbish.xdgConfig	.. '/?.lua'`
+	.. hilbish.xdg.data .. '/hilbish/libs/?/init.lua;'
+	.. hilbish.xdg.data	.. '/hilbish/libs/?/?.lua;'
+	.. hilbish.xdg.data	.. '/hilbish/libs/?.lua'
+	.. hilbish.xdg.config	.. '/?/init.lua'
+	.. hilbish.xdg.config	.. '/?/?.lua'
+	.. hilbish.xdg.config	.. '/?.lua'`
 	preloadPath = "/usr/share/hilbish/preload.lua"
 	sampleConfPath = "/usr/share/hilbish/.hilbishrc.lua" // Path to default/sample config
 )
