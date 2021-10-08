@@ -27,6 +27,7 @@ var (
 	aliases = map[string]string{}
 
 	homedir string
+	confDir string
 	curuser *user.User
 
 	hooks bait.Bait
@@ -35,13 +36,18 @@ var (
 
 func main() {
 	homedir, _ = os.UserHomeDir()
+	confDir = getenv("XDG_CONFIG_HOME", homedir + "/.config")
 	curuser, _ = user.Current()
 	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
 	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
 	if defaultConfDir == "" {
 		// we'll add *our* default if its empty (wont be if its changed comptime)
-		defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
+		if _, err := os.Stat(filepath.Join(confDir, "hilbish", "hilbishrc.lua")); os.IsNotExist(err) {
+			defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
+		} else {
+			defaultConfPath = filepath.Join(confDir, "hilbish", "hilbishrc.lua")
+		}
 	} else {
 		// else do ~ substitution
 		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
