@@ -31,7 +31,7 @@ commander.register('false', function()
 return 1
 end)
 ```
-    - When `false` is run, it will have the exit code of `1`, this is shorter/easier than throwing the command.exit hook and can work if the functionality of that changes
+- When `false` is run, it will have the exit code of `1`, this is shorter/easier than throwing the command.exit hook and can work if the functionality of that changes
 - Added `-c` description
 - `args` variable, set when Hilbish runs a Lua script. It is an array that includes the execute path as the first argument
 - Lua code can be aliased
@@ -120,6 +120,7 @@ Or instead of recloning, run `git submodule update --init --recursive` in Hilbis
 - Continue to new line if output doesnt end with it
 
 Observed:
+
 ![Observed](https://camo.githubusercontent.com/5be15fed950a2926e6f14dfe4427b84b7c0c448d5d937f9df15959ca934a50ce/68747470733a2f2f6d6f646575732e69732d696e736964652e6d652f70633335416133492e706e67)
 
 ## [0.3.1] - 2021-04-06
