@@ -31,7 +31,7 @@ commander.register('false', function()
 return 1
 end)
 ```
-- When `false` is run, it will have the exit code of `1`, this is shorter/easier than throwing the command.exit hook and can work if the functionality of that changes
+When `false` is run, it will have the exit code of `1`, this is shorter/easier than throwing the command.exit hook and can work if the functionality of that changes
 - Added `-c` description
 - `args` variable, set when Hilbish runs a Lua script. It is an array that includes the execute path as the first argument
 - Lua code can be aliased
@@ -140,7 +140,6 @@ Observed:
 
 - **BREAKING Change**: Removed Bait hooks `command.success` and `command.fail`, there is now the single hook `command.exit`, with a single argument passed which the exit code of the command. Use this to determine if a command has failed or not (failure is code != 0)
 - **BREAKING Change**: The Ansikit function `text` has been renamed to `format`.
-Input ending 
 - `fs.cd` now throws an exception instead of silently failing, which you should handle with `pcall`
 - Enhancements to the `cd` command:
     - With no arguments will move to $HOME
