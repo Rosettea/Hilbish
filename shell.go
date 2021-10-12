@@ -24,6 +24,9 @@ func RunInput(input string) {
 		cmdString = alias + strings.TrimPrefix(cmdString, cmdArgs[0])
 		cmdArgs, cmdString = splitInput(cmdString)
 
+		if aliases[cmdArgs[0]] == alias {
+			break
+		}
 		if aliases[cmdArgs[0]] != "" {
 			continue
 		}
