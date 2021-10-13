@@ -43,7 +43,7 @@ func main() {
 
 	if defaultConfDir == "" {
 		// we'll add *our* default if its empty (wont be if its changed comptime)
-		if _, err := os.Stat(filepath.Join(confDir, "hilbish", "hilbishrc.lua")); os.IsNotExist(err) {
+		if _, err := os.Stat(filepath.Join(confDir, "hilbish")); os.IsNotExist(err) {
 			defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
 		} else {
 			defaultConfPath = filepath.Join(confDir, "hilbish", "hilbishrc.lua")
