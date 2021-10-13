@@ -4,6 +4,7 @@ package main
 var (
 	version = "v0.5.1"
 	defaultConfDir = "" // ~ will be substituted for home, path for user's default config
+	defaultHistDir = ""
 
 	prompt string // Prompt will always get changed anyway
 	multilinePrompt = "> "

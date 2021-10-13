@@ -14,7 +14,7 @@ type LineReader struct {
 // other gophers might hate this naming but this is local, shut up
 func NewLineReader(prompt string) *LineReader {
 	readline.Completer = readline.FilenameCompleter
-	readline.LoadHistory(homedir + "/.hilbish-history")
+	readline.LoadHistory(defaultHistPath)
 
 	return &LineReader{
 		Prompt: prompt,
@@ -31,7 +31,7 @@ func (lr *LineReader) SetPrompt(prompt string) {
 
 func (lr *LineReader) AddHistory(cmd string) {
 	readline.AddHistory(cmd)
-	readline.SaveHistory(homedir + "/.hilbish-history")
+	readline.SaveHistory(defaultHistPath)
 }
 
 func (lr *LineReader) ClearInput() {

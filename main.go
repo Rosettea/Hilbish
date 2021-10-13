@@ -32,6 +32,7 @@ var (
 
 	hooks bait.Bait
 	defaultConfPath string
+	defaultHistPath string
 )
 
 func main() {
@@ -52,7 +53,17 @@ func main() {
 		// else do ~ substitution
 		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
 	}
-
+	if defaultHistDir == "" {
+		// we'll add *our* default if its empty (wont be if its changed comptime)
+		if _, err := os.Stat(filepath.Join(confDir, "hilbish")); os.IsNotExist(err) {
+			defaultHistPath = filepath.Join(homedir, "/.hilbish-history")
+		} else {
+			defaultHistPath = filepath.Join(confDir, "hilbish", ".hilbish-history")
+		}
+	} else {
+		// else do ~ substitution
+		defaultHistPath = filepath.Join(strings.Replace(defaultHistDir, "~", homedir, 1), ".hilbishrc.lua")
+	}
 	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")
