@@ -30,6 +30,6 @@ func (b *Bait) throw(name string, args ...interface{}) {
 	b.Em.Emit(name, args...)
 }
 
-func (b *Bait) catch(name string, catcher func(interface{})) {
+func (b *Bait) catch(name string, catcher func(...interface{})) {
 	b.Em.On(name, catcher)
 }
