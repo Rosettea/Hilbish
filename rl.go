@@ -22,6 +22,7 @@ func NewLineReader(prompt string) *LineReader {
 }
 
 func (lr *LineReader) Read() (string, error) {
+	hooks.Em.Emit("command.precmd", nil)
 	return readline.String(lr.Prompt)
 }
 
