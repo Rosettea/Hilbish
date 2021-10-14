@@ -31,6 +31,7 @@ func RunInput(input string) {
 			continue
 		}
 	}
+	hooks.Em.Emit("command.preexec", input, cmdString)
 
 	// First try to load input, essentially compiling to bytecode
 	fn, err := l.LoadString(cmdString)
