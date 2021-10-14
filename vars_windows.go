@@ -7,6 +7,7 @@ var (
 	requirePaths = `';./libs/?/init.lua;./?/init.lua;./?/?.lua'
 	.. hilbish.home .. '\\Appdata\\Roaming\\Hilbish\\libs\\?\\init.lua;'
 	.. hilbish.home .. '\\Appdata\\Roaming\\Hilbish\\libs\\?\\?.lua;'`
-	preloadPath = "~\\Appdata\\Roaming\\Hilbish\\preload.lua" // ~ and \ gonna cry?
-	sampleConfPath = "~\\Appdata\\Roaming\\Hilbish\\hilbishrc.lua" // Path to default/sample config
+	dataDir = "~\\Appdata\\Roaming\\Hilbish" // ~ and \ gonna cry?
+	preloadPath = dataDir + "\\preload.lua"
+	sampleConfPath = dataDir + "\\hilbishrc.lua" // Path to default/sample config
 )

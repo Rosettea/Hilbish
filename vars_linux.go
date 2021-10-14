@@ -13,6 +13,7 @@ var (
 	.. hilbish.xdg.config	.. '/hilbish/?/init.lua'
 	.. hilbish.xdg.config	.. '/hilbish/?/?.lua'
 	.. hilbish.xdg.config	.. '/hilbish/?.lua'`
-	preloadPath = "/usr/share/hilbish/preload.lua"
-	sampleConfPath = "/usr/share/hilbish/.hilbishrc.lua" // Path to default/sample config
+	dataDir = "/usr/share/hilbish"
+	preloadPath = dataDir + "/preload.lua"
+	sampleConfPath = dataDir + "/.hilbishrc.lua" // Path to default/sample config
 )
