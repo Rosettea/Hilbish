@@ -184,7 +184,10 @@ input:
 		}
 
 		input = strings.TrimSpace(input)
-		if len(input) == 0 { continue }
+		if len(input) == 0 {
+			hooks.Em.Emit("command.exit", 0)
+			continue
+		}
 
 		if strings.HasSuffix(input, "\\") {
 			for {
