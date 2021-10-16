@@ -14,9 +14,9 @@ import (
 )
 
 var exports = map[string]lua.LGFunction {
-	"run": run,
-	"flag": flag,
-	"cwd": cwd,
+	"run": hlrun,
+	"flag": hlflag,
+	"cwd": hlcwd,
 }
 
 func HilbishLoader(L *lua.LState) int {
@@ -29,23 +29,24 @@ func HilbishLoader(L *lua.LState) int {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	L.SetField(mod, "ver", lua.LString(version))
-	L.SetField(mod, "user", lua.LString(username))
-	L.SetField(mod, "host", lua.LString(host))
-	L.SetField(mod, "home", lua.LString(homedir))
+	setField(L, mod, "ver", lua.LString(version), "The version of Hilbish")
+	setField(L, mod, "user", lua.LString(username), "Current user's username")
+	setField(L, mod, "host", lua.LString(host), "Hostname of the system")
+	setField(L, mod, "home", lua.LString(homedir), "Path of home directory")
 
 	xdg := L.NewTable()
-	L.SetField(xdg, "config", lua.LString(confDir))
-	L.SetField(xdg, "data", lua.LString(getenv("XDG_DATA_HOME", homedir + "/.local/share/")))
-	L.SetField(mod, "xdg", xdg)
+	setField(L, xdg, "config", lua.LString(confDir), "XDG config directory")
+	setField(L, xdg, "data", lua.LString(getenv("XDG_DATA_HOME", homedir + "/.local/share/")), "XDG data directory")
+	setField(L, mod, "xdg", xdg, "XDG values for Linux")
 
 	L.Push(mod)
 
 	return 1
 }
 
-// Runs a command
-func run(L *lua.LState) int {
+// run(cmd)
+// Runs `cmd` in Hilbish's sh interpreter
+func hlrun(L *lua.LState) int {
 	var exitcode uint8 = 0
 	cmd := L.CheckString(1)
 	err := execCommand(cmd)
@@ -60,7 +61,9 @@ func run(L *lua.LState) int {
 	return 1
 }
 
-func flag(L *lua.LState) int {
+// flag(f)
+// Checks if the `f` flag has been passed to Hilbish.
+func hlflag(L *lua.LState) int {
 	flagchar := L.CheckString(1)
 
 	L.Push(lua.LBool(getopt.Lookup([]rune(flagchar)[0]).Seen()))
@@ -68,7 +71,9 @@ func flag(L *lua.LState) int {
 	return 1
 }
 
-func cwd(L *lua.LState) int {
+// cwd()
+// Returns the current directory of the shell
+func hlcwd(L *lua.LState) int {
 	cwd, _ := os.Getwd()
 
 	L.Push(lua.LString(cwd))

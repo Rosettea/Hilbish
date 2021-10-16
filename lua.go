@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
@@ -95,8 +96,20 @@ func RunLogin() {
 	}
 }
 
-// prompt(str)
-// Changes the shell prompt to `str`
+func setField(L *lua.LState, module lua.LValue, name string, val lua.LValue, doc string) {
+	if val.Type() == lua.LTTable {
+		util.Document(L, module, doc)
+   }
+	L.SetField(module, name, val)
+}
+
+/* prompt(str)
+Changes the shell prompt to `str`
+There are a few verbs that can be used in the prompt text.
+These will be formatted and replaced with the appropriate values.
+`%d` - Current working directory
+`%u` - Name of current user
+`%h` - Hostname of device */
 func hshprompt(L *lua.LState) int {
 	prompt = L.CheckString(1)
 

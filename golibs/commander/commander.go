@@ -1,6 +1,8 @@
 package commander
 
 import (
+	"hilbish/util"
+
 	"github.com/chuckpreslar/emission"
 	"github.com/yuin/gopher-lua"
 )
@@ -21,7 +23,7 @@ func (c *Commander) Loader(L *lua.LState) int {
 		"deregister": c.cderegister,
 	}
 	mod := L.SetFuncs(L.NewTable(), exports)
-
+	util.Document(L, mod, "Commander is Hilbish's custom command library, a way to write commands with the shell in Lua.")
 	L.Push(mod)
 
 	return 1

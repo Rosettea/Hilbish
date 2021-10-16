@@ -1,3 +1,5 @@
+// The fs module provides easy and simple access to filesystem functions and other
+// things, and acts an addition to the Lua standard library's I/O and fs functions.
 package fs
 
 import (
@@ -5,12 +7,16 @@ import (
 	"os"
 	"strings"
 
+	"hilbish/util"
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
 )
 
 func Loader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
+
+	util.Document(L, mod, `The fs module provides easy and simple access to filesystem functions and other
+things, and acts an addition to the Lua standard library's I/O and fs functions.`)
 
 	L.Push(mod)
 	return 1
