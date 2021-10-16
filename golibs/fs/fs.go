@@ -30,6 +30,7 @@ var exports = map[string]lua.LGFunction{
 	"cd": fcd,
 	"mkdir": fmkdir,
 	"stat": fstat,
+	"readdir": freaddir,
 }
 
 // cd(dir)
@@ -77,8 +78,32 @@ func fstat(L *lua.LState) int {
 	path := L.CheckString(1)
 
 	// TODO: handle error here
-	pathinfo, _ := os.Stat(path)
+	pathinfo, err := os.Stat(path)
+	if err != nil {
+		luaErr(L, err.Error())
+		return 0
+	}
 	L.Push(luar.New(L, pathinfo))
+
+	return 1
+}
+
+// readdir(dir)
+// Returns a table of files in `dir`
+func freaddir(L *lua.LState) int {
+	dir := L.CheckString(1)
+	names := []string{}
+
+	dirEntries, err := os.ReadDir(dir)
+	if err != nil {
+		luaErr(L, err.Error())
+		return 0
+	}
+	for _, entry := range dirEntries {
+		names = append(names, entry.Name())
+	}
+
+	L.Push(luar.New(L, names))
 
 	return 1
 }
