@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 
+	"hilbish/util"
+
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"mvdan.cc/sh/v3/interp"
@@ -29,17 +31,17 @@ func HilbishLoader(L *lua.LState) int {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	setField(L, mod, "ver", lua.LString(version), "The version of Hilbish")
-	setField(L, mod, "user", lua.LString(username), "Current user's username")
-	setField(L, mod, "host", lua.LString(host), "Hostname of the system")
-	setField(L, mod, "home", lua.LString(homedir), "Path of home directory")
-	setField(L, mod, "dataDir", lua.LString(dataDir), "Path of Hilbish's data files")
+	L.SetField(mod, "ver", lua.LString(version))
+	L.SetField(mod, "user", lua.LString(username))
+	L.SetField(mod, "host", lua.LString(host))
+	L.SetField(mod, "home", lua.LString(homedir))
 
 	xdg := L.NewTable()
-	setField(L, xdg, "config", lua.LString(confDir), "XDG config directory")
-	setField(L, xdg, "data", lua.LString(getenv("XDG_DATA_HOME", homedir + "/.local/share/")), "XDG data directory")
-	setField(L, mod, "xdg", xdg, "XDG values for Linux")
+	L.SetField(xdg, "config", lua.LString(confDir))
+	L.SetField(xdg, "data", lua.LString(getenv("XDG_DATA_HOME", homedir + "/.local/share/")))
+	L.SetField(mod, "xdg", xdg)
 
+	util.Document(L, mod, "A miscellaneous sort of \"core\" API for things that relate to the shell itself and others.")
 	L.Push(mod)
 
 	return 1
