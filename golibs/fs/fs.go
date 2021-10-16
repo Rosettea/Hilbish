@@ -22,9 +22,8 @@ things, and acts an addition to the Lua standard library's I/O and fs functions.
 	return 1
 }
 
-func luaErr(L *lua.LState, code int) {
-	// TODO: Error with a table, with path and error code
-	L.Error(lua.LNumber(code), 2)
+func luaErr(L *lua.LState, msg string) {
+	L.Error(lua.LString(msg), 2)
 }
 
 var exports = map[string]lua.LGFunction{
