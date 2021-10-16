@@ -40,16 +40,8 @@ func fcd(L *lua.LState) int {
 
 	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
-		switch e := err.(*os.PathError).Err.Error(); e {
-		case "no such file or directory":
-			luaErr(L, 1)
-		case "not a directory":
-			luaErr(L, 2)
-		default:
-			fmt.Printf("Found unhandled error case: %s\n", e)
-			fmt.Printf("Report this at https://github.com/Rosettea/Hilbish/issues with the title being: \"fs: unhandled error case %s\", and show what caused it.\n", e)
-			luaErr(L, 213)
-		}
+		e := err.(*os.PathError).Err.Error()
+		luaErr(L, e)
 	}
 
 	return 0
@@ -61,12 +53,15 @@ func fmkdir(L *lua.LState) int {
 	dirname := L.CheckString(1)
 	recursive := L.ToBool(2)
 	path := strings.TrimSpace(dirname)
+	var err error
 
-	// TODO: handle error here
 	if recursive {
-		os.MkdirAll(path, 0744)
+		err = os.MkdirAll(path, 0744)
 	} else {
-		os.Mkdir(path, 0744)
+		err = os.Mkdir(path, 0744)
+	}
+	if err != nil {
+		luaErr(L, err.Error())
 	}
 
 	return 0
