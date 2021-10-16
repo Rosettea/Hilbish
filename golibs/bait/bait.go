@@ -18,18 +18,22 @@ func New() Bait {
 
 func (b *Bait) Loader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{})
-	L.SetField(mod, "throw", luar.New(L, b.throw))
-	L.SetField(mod, "catch", luar.New(L, b.catch))
+	L.SetField(mod, "throw", luar.New(L, b.bthrow))
+	L.SetField(mod, "catch", luar.New(L, b.bcatch))
 
 	L.Push(mod)
 
 	return 1
 }
 
-func (b *Bait) throw(name string, args ...interface{}) {
+// throw(name, ...args)
+// Throws a hook with `name` with the provided `args`
+func (b *Bait) bthrow(name string, args ...interface{}) {
 	b.Em.Emit(name, args...)
 }
 
-func (b *Bait) catch(name string, catcher func(...interface{})) {
+// catch(name, cb)
+// Catches a hook with `name`. Runs the `cb` when it is thrown
+func (b *Bait) bcatch(name string, catcher func(...interface{})) {
 	b.Em.On(name, catcher)
 }

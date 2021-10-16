@@ -17,8 +17,8 @@ func New() Commander {
 
 func (c *Commander) Loader(L *lua.LState) int {
 	var exports = map[string]lua.LGFunction{
-		"register": c.register,
-		"deregister": c.deregister,
+		"register": c.cregister,
+		"deregister": c.cderegister,
 	}
 	mod := L.SetFuncs(L.NewTable(), exports)
 
@@ -27,7 +27,9 @@ func (c *Commander) Loader(L *lua.LState) int {
 	return 1
 }
 
-func (c *Commander) register(L *lua.LState) int {
+// register(name, cb)
+// Register a command with `name` that runs `cb` when ran
+func (c *Commander) cregister(L *lua.LState) int {
 	cmdName := L.CheckString(1)
 	cmd := L.CheckFunction(2)
 
@@ -36,7 +38,9 @@ func (c *Commander) register(L *lua.LState) int {
 	return 0
 }
 
-func (c *Commander) deregister(L *lua.LState) int {
+// deregister(name)
+// Deregisters any command registered with `name`
+func (c *Commander) cderegister(L *lua.LState) int {
 	cmdName := L.CheckString(1)
 
 	c.Events.Emit("commandDeregister", cmdName)

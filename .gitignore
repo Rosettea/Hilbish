@@ -1,5 +1,6 @@
 *.exe
 hilbish
+docgen
 
 .vim
 petals/

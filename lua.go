@@ -95,18 +95,24 @@ func RunLogin() {
 	}
 }
 
+// prompt(str)
+// Changes the shell prompt to `str`
 func hshprompt(L *lua.LState) int {
 	prompt = L.CheckString(1)
 
 	return 0
 }
 
+// multiprompt(str)
+// Changes the continued line prompt to `str`
 func hshmlprompt(L *lua.LState) int {
 	multilinePrompt = L.CheckString(1)
 
 	return 0
 }
 
+// alias(cmd, orig)
+// Sets an alias of `orig` to `cmd`
 func hshalias(L *lua.LState) int {
 	alias := L.CheckString(1)
 	source := L.CheckString(2)
@@ -116,6 +122,8 @@ func hshalias(L *lua.LState) int {
 	return 1
 }
 
+// appendPath(dir)
+// Appends `dir` to $PATH
 func hshappendPath(L *lua.LState) int {
 	dir := L.CheckString(1)
 	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
@@ -129,6 +137,8 @@ func hshappendPath(L *lua.LState) int {
 	return 0
 }
 
+// exec(cmd)
+// Replaces running hilbish with `cmd`
 func hshexec(L *lua.LState) int {
 	cmd := L.CheckString(1)
 	cmdArgs, _ := splitInput(cmd)
@@ -146,16 +156,22 @@ func hshexec(L *lua.LState) int {
 	return 0 // random thought: does this ever return?
 }
 
+// goro(fn)
+// Puts `fn` in a goroutine
 func hshgoroutine(gofunc func()) {
 	go gofunc()
 }
 
+// timeout(cb, time)
+// Runs the `cb` function after `time` in milliseconds
 func hshtimeout(timeoutfunc func(), ms int) {
 	timeout := time.Duration(ms) * time.Millisecond
 	time.Sleep(timeout)
 	timeoutfunc()
 }
 
+// interval(cb, time)
+// Runs the `cb` function every `time` milliseconds
 func hshinterval(L *lua.LState) int {
 	intervalfunc := L.CheckFunction(1)
 	ms := L.CheckInt(2)
