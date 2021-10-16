@@ -44,6 +44,57 @@ commander.register('exit', function()
 	os.exit(0)
 end)
 
+commander.register('doc', function(args)
+	local moddocPath = hilbish.dataDir .. '/docs/'
+	local globalDesc = [[
+These are the global Hilbish functions that are always available and not part of a module.]]
+	if #args > 0 then
+		local mod = ''
+		for i = 1, #args do
+			mod = mod .. tostring(args[i]) .. ' '
+		end
+		mod = mod:gsub('^%s*(.-)%s*$', '%1')
+
+		local f = io.open(moddocPath .. mod .. '.txt', 'rb')
+		if not f then 
+			print('Could not find docs for module named ' .. mod .. '.')
+			return 1
+		end
+
+		local desc = (mod == 'global' and globalDesc or getmetatable(require(mod)).__doc)
+		local funcdocs = f:read '*a'
+		local backtickOccurence = 0
+		print(desc .. '\n\n' .. lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
+			backtickOccurence = backtickOccurence + 1
+			if backtickOccurence % 2 == 0 then
+				return '{reset}'
+			else
+				return '{invert}'
+			end
+		end)))
+		f:close()
+
+		return
+	end
+	local modules = fs.readdir(moddocPath)
+
+	io.write [[
+Welcome to Hilbish's doc tool! Here you can find documentation for builtin
+functions and other things.
+
+Usage: doc <module>
+
+Available modules: ]]
+
+	local mods = ''
+	for i = 1, #modules do
+		mods = mods .. tostring(modules[i]):gsub('.txt', '') .. ', '
+	end
+	print(mods)
+
+	return
+end)
+
 do
 	local virt_G = { }
 
