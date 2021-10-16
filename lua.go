@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 
-	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
@@ -94,13 +93,6 @@ func RunLogin() {
 		fmt.Fprintln(os.Stderr, err,
 			"\nAn error has occured while loading your login config!n")
 	}
-}
-
-func setField(L *lua.LState, module lua.LValue, name string, val lua.LValue, doc string) {
-	if val.Type() == lua.LTTable {
-		util.Document(L, module, doc)
-   }
-	L.SetField(module, name, val)
 }
 
 /* prompt(str)
