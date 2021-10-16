@@ -1,0 +1,6 @@
+cwd() > Returns the current directory of the shell
+
+flag(f) > Checks if the `f` flag has been passed to Hilbish.
+
+run(cmd) > Runs `cmd` in Hilbish's sh interpreter
+

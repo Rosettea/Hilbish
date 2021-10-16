@@ -1,0 +1,8 @@
+cd(dir) > Changes directory to `dir`
+
+mkdir(name, recursive) > Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
+
+readdir(dir) > Returns a table of files in `dir`
+
+stat(path) > Returns info about `path`
+

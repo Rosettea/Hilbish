@@ -1,0 +1,4 @@
+catch(name, cb) > Catches a hook with `name`. Runs the `cb` when it is thrown
+
+throw(name, ...args) > Throws a hook with `name` with the provided `args`
+

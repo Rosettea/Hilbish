@@ -1,0 +1,21 @@
+alias(cmd, orig) > Sets an alias of `orig` to `cmd`
+
+appendPath(dir) > Appends `dir` to $PATH
+
+exec(cmd) > Replaces running hilbish with `cmd`
+
+goro(fn) > Puts `fn` in a goroutine
+
+interval(cb, time) > Runs the `cb` function every `time` milliseconds
+
+multiprompt(str) > Changes the continued line prompt to `str`
+
+ prompt(str) > Changes the shell prompt to `str`
+There are a few verbs that can be used in the prompt text.
+These will be formatted and replaced with the appropriate values.
+`%d` - Current working directory
+`%u` - Name of current user
+`%h` - Hostname of device
+
+timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
+
