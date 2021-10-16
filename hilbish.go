@@ -33,6 +33,7 @@ func HilbishLoader(L *lua.LState) int {
 	setField(L, mod, "user", lua.LString(username), "Current user's username")
 	setField(L, mod, "host", lua.LString(host), "Hostname of the system")
 	setField(L, mod, "home", lua.LString(homedir), "Path of home directory")
+	setField(L, mod, "dataDir", lua.LString(dataDir), "Path of Hilbish's data files")
 
 	xdg := L.NewTable()
 	setField(L, xdg, "config", lua.LString(confDir), "XDG config directory")
