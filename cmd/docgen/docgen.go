@@ -43,6 +43,7 @@ func main() {
 		"fs": "f",
 		"commander": "c",
 		"bait": "b",
+		"terminal": "term",
 	}
 	docs := make(map[string][]string)
 

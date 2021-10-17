@@ -11,6 +11,7 @@ import (
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
+	"hilbish/golibs/terminal"
 
 	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
@@ -40,8 +41,9 @@ func LuaInit() {
 	l.PreloadModule("hilbish", HilbishLoader)
 	l.DoString("hilbish = require 'hilbish'")
 
-	// Add fs module to Lua
+	// Add fs and terminal module module to Lua
 	l.PreloadModule("fs", fs.Loader)
+	l.PreloadModule("terminal", terminal.Loader)
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
