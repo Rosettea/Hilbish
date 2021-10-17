@@ -22,10 +22,6 @@ addition to the Lua standard library's I/O and fs functions.`)
 	return 1
 }
 
-func luaErr(L *lua.LState, msg string) {
-	L.Error(lua.LString(msg), 2)
-}
-
 var exports = map[string]lua.LGFunction{
 	"cd": fcd,
 	"mkdir": fmkdir,
@@ -41,7 +37,7 @@ func fcd(L *lua.LState) int {
 	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
 		e := err.(*os.PathError).Err.Error()
-		luaErr(L, e)
+		L.RaiseError(e)
 	}
 
 	return 0
@@ -61,7 +57,7 @@ func fmkdir(L *lua.LState) int {
 		err = os.Mkdir(path, 0744)
 	}
 	if err != nil {
-		luaErr(L, err.Error())
+		L.RaiseError(err.Error())
 	}
 
 	return 0
@@ -74,7 +70,7 @@ func fstat(L *lua.LState) int {
 
 	pathinfo, err := os.Stat(path)
 	if err != nil {
-		luaErr(L, err.Error())
+		L.RaiseError(err.Error())
 		return 0
 	}
 	statTbl := L.NewTable()
@@ -95,7 +91,7 @@ func freaddir(L *lua.LState) int {
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
-		luaErr(L, err.Error())
+		L.RaiseError(err.Error())
 		return 0
 	}
 	for _, entry := range dirEntries {
