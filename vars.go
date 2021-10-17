@@ -5,6 +5,7 @@ var (
 	version = "v0.5.1"
 	defaultConfDir = "" // ~ will be substituted for home, path for user's default config
 	defaultHistDir = ""
+	commonRequirePaths = "';./libs/?/init.lua;./?/init.lua;./?/?.lua'"
 
 	prompt string // Prompt will always get changed anyway
 	multilinePrompt = "> "
