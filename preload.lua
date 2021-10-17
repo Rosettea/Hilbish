@@ -10,6 +10,7 @@ local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 1) end
 
 -- Builtins
+local recentDirs = {}
 commander.register('cd', function (args)
 	if #args > 0 then
 		local path = table.concat(args, ' '):gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
@@ -27,6 +28,11 @@ commander.register('cd', function (args)
 			return 1
 		end
 		bait.throw('cd', path)
+
+		-- add to table of recent dirs
+		table.insert(recentDirs, 1, path)
+		recentDirs[11] = nil
+
 		return
 	end
 	fs.cd(hilbish.home)
@@ -119,6 +125,41 @@ do
 		end
 	end)
 end
+
+commander.register('cdr', function(args)
+	if not args[1] then
+		print(lunacolors.format [[
+cdr: change directory to one which has been recently visied
+
+usage: cdr <index>
+
+to get a list of recent directories, use {green}{underline}cdr list{reset}]])
+		return
+	end
+
+	if args[1] == 'list' then
+		if #recentDirs == 0 then
+			print 'No directories have been visited.'
+			return 1
+		end
+		print(table.concat(recentDirs, '\n'))
+		return
+	end
+
+	local index = tonumber(args[1])
+	if not index then
+		print(string.format('received %s as index, which isn\'t a number', index))
+		return 1
+	end
+
+	if not recentDirs[index] then
+		print(string.format('no recent directory found at index %s', index))
+		return 1
+	end
+
+	fs.cd(recentDirs[index])
+	return
+end)
 
 -- Hook handles
 bait.catch('command.not-found', function(cmd)
