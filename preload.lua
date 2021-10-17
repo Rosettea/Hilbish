@@ -44,11 +44,7 @@ commander.register('doc', function(args)
 	local globalDesc = [[
 These are the global Hilbish functions that are always available and not part of a module.]]
 	if #args > 0 then
-		local mod = ''
-		for i = 1, #args do
-			mod = mod .. tostring(args[i]) .. ' '
-		end
-		mod = mod:gsub('^%s*(.-)%s*$', '%1')
+		local mod = table.concat(args, ' '):gsub('^%s*(.-)%s*$', '%1')
 
 		local f = io.open(moddocPath .. mod .. '.txt', 'rb')
 		if not f then 
@@ -83,11 +79,7 @@ Usage: doc <module>
 
 Available modules: ]]
 
-	local mods = ''
-	for i = 1, #modules do
-		mods = mods .. tostring(modules[i]):gsub('.txt', '') .. ', '
-	end
-	print(mods)
+	print(table.concat(modules, ', '))
 
 	return
 end)
