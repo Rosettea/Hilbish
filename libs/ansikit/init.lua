@@ -1,7 +1,7 @@
 -- We're basically porting Ansikit to lua
 -- https://github.com/Luvella/AnsiKit/blob/master/lib/index.js
 -- which is made by yours truly sammy :^)
-
+local lunacolors = require 'lunacolors'
 local ansikit = {}
 
 ansikit.clear = function(scrollback)
@@ -75,6 +75,12 @@ end
 
 ansikit.hideCursor = function()
 	return ansikit.printCSI('?25', 'l')
+end
+
+ansikit.link = function(url, text)
+	if not url then error 'ansikit: missing url for hyperlink' end
+	local text = (text and text or 'link')
+	io.write(lunacolors.blue('\27]8;;' .. url .. '\27\\' .. text .. '\27]8;;\27\\\n'))
 end
 
 ansikit.print = function(text)
