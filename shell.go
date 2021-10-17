@@ -55,11 +55,16 @@ func RunInput(input string) {
 		return
 	}
 	if commands[cmdArgs[0]] != nil {
+		luacmdArgs := l.NewTable()
+		for _, str := range cmdArgs[1:] {
+			luacmdArgs.Append(lua.LString(str))
+		}
+
 		err := l.CallByParam(lua.P{
 			Fn: commands[cmdArgs[0]],
 			NRet:    1,
 			Protect: true,
-		}, luar.New(l, cmdArgs[1:]))
+		}, luacmdArgs)
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Error in command:\n\n" + err.Error())
