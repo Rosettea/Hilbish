@@ -70,7 +70,7 @@ These are the global Hilbish functions that are always available and not part of
 			if backtickOccurence % 2 == 0 then
 				return '{reset}'
 			else
-				return '{underline}{blue}'
+				return '{underline}{green}'
 			end
 		end)))
 		f:close()
