@@ -1,3 +1,6 @@
 [submodule "libs/lunacolors"]
 	path = libs/lunacolors
 	url = https://github.com/Hilbis/Lunacolors
+[submodule "libs/succulent"]
+	path = libs/succulent
+	url = https://github.com/Rosettea/Succulent
