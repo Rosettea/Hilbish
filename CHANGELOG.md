@@ -2,6 +2,42 @@
 
 This is the changelog for the Hilbish shell made in Go and Lua.
 
+## [0.6.0] - 2021-10-17
+## Added
+- Hilbish will expand `~` in the preloadPath and samplePathConf variables. These are for compile time.
+- On Windows, the hostname in `%u` has been removed.
+- Made it easier to compile on Windows by adding Windows-tailored vars and paths.
+- Add require paths `./libs/?/?.lua`
+- Hilbish will now respect $XDG_CONFIG_HOME and will load its config and history there first and use Lua libraries in there and $XDG_DATA_HOME if they are set. (#71)
+  - If not, Hilbish will still default to `~`
+- Added some new hooks
+  - `command.precmd` is thrown right before Hilbish prompts for input
+  - `command.preexec` is thrown right before Hilbish executes a command. It passes 2 arguments: the command as the user typed, and what Hilbish will actually execute (resolved alias)
+- `hilbish.dataDir` is now available to know the directory of Hilbish data files (default config, docs, preload, etc)
+- A `docgen` program has been added to `cmd/docgen` in the GitHub repository, As the name suggests, it will output docs in a `docs` folder for functions implemented in Go
+- All hilbish modules/libraries now have a `__doc` metatable entry which is simply a short description of the module.
+- `fs.readdir(dir)` has been added. It will return a table of files in `dir`
+- Errors in the `fs.mkdir` function are now handled.
+- **Breaking Change:** `fs.cd` no longer returns a numeric code to indicate error. Instead, it returns an error message.
+- The `doc` command has been added to document functions of Hilbish libraries. Run the command for more details.
+- `link(url, text)` has been added to `ansikit`. It returns a string which can be printed to produce a hyperlink in a terminal. Note that not all terminals support this feature.
+- The [Succulent](https://github.com/Rosettea/Succulent) library has been added. This includes more utility functions and expansions to the Lua standard library itself.
+- The command string is now passed to the `command.exit` hook
+
+# Changed
+- Hilbish won't print an extra newline at exit with ctrl + d
+- `command.exit` with 0 exit code will now be thrown if input is nothing
+- **Breaking Change:** `fs.stat` has been made better. It returns a proper table instead of userdata, and has fields instead of functions
+  - It includes `name`, `mode` as a octal representation in a string, `isDir`, and `size`
+
+# Fixed
+- `timeout()` is now blocking
+- Directories with spaces in them can now be `cd`'d to
+- An alias with the same name as the command will now not cause a freeze (#73)
+- Userdata is no longer returned in the following cases:
+  - Commander arguments
+  - `fs` functions
+
 ## [0.5.1] - 2021-06-16
 
 ## Added
@@ -203,6 +239,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[0.6.0]: https://github.com/Rosettea/Hilbish/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Rosettea/Hilbish/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/Rosettea/Hilbish/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Rosettea/Hilbish/compare/v0.3.2...v0.4.0
