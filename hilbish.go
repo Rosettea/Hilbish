@@ -35,6 +35,7 @@ func HilbishLoader(L *lua.LState) int {
 	L.SetField(mod, "user", lua.LString(username))
 	L.SetField(mod, "host", lua.LString(host))
 	L.SetField(mod, "home", lua.LString(homedir))
+	L.SetField(mod, "dataDir", lua.LString(dataDir))
 
 	xdg := L.NewTable()
 	L.SetField(xdg, "config", lua.LString(confDir))
