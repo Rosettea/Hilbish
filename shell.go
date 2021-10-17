@@ -10,7 +10,6 @@ import (
 //	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
 //	"github.com/yuin/gopher-lua/parse"
-	"layeh.com/gopher-luar"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -51,7 +50,7 @@ func RunInput(input string) {
 		err = l.PCall(0, lua.MultRet, nil)
 	}
 	if err == nil {
-		hooks.Em.Emit("command.exit", 0)
+		cmdFinish(0, cmdString)
 		return
 	}
 	if commands[cmdArgs[0]] != nil {
@@ -68,7 +67,7 @@ func RunInput(input string) {
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
 				"Error in command:\n\n" + err.Error())
-			hooks.Em.Emit("command.exit", 1)
+			cmdFinish(1, cmdString)
 			return
 		}
 		luaexitcode := l.Get(-1)
@@ -80,7 +79,7 @@ func RunInput(input string) {
 			exitcode = uint8(code)
 		}
 
-		hooks.Em.Emit("command.exit", exitcode)
+		cmdFinish(exitcode, cmdString)
 		return
 	}
 
@@ -98,22 +97,22 @@ func RunInput(input string) {
 				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					hooks.Em.Emit("command.exit", code)
+					cmdFinish(code, cmdString)
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, err)
-					hooks.Em.Emit("command.exit", 1)
+					cmdFinish(1, cmdString)
 				}
 				break
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				hooks.Em.Emit("command.exit", code)
+				cmdFinish(code, cmdString)
 			} else {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
 	} else {
-		hooks.Em.Emit("command.exit", 0)
+		cmdFinish(0, cmdString)
 	}
 }
 
@@ -129,20 +128,32 @@ func execCommand(cmd string) error {
 		_, argstring := splitInput(strings.Join(args, " "))
 
 		// If alias was found, use command alias
-		if aliases[args[0]] != "" {
+		for aliases[args[0]] != "" {
 			alias := aliases[args[0]]
 			argstring = alias + strings.TrimPrefix(argstring, args[0])
 			cmdArgs, _ := splitInput(argstring)
 			args = cmdArgs
+
+			if aliases[args[0]] == alias {
+				break
+			}
+			if aliases[args[0]] != "" {
+				continue
+			}
 		}
 
 		// If command is defined in Lua then run it
+		luacmdArgs := l.NewTable()
+		for _, str := range args[1:] {
+			luacmdArgs.Append(lua.LString(str))
+		}
+
 		if commands[args[0]] != nil {
 			err := l.CallByParam(lua.P{
 				Fn: commands[args[0]],
 				NRet:    1,
 				Protect: true,
-			}, luar.New(l, args[1:]))
+			}, luacmdArgs)
 			luaexitcode := l.Get(-1)
 			var exitcode uint8 = 0
 
@@ -156,7 +167,7 @@ func execCommand(cmd string) error {
 				fmt.Fprintln(os.Stderr,
 					"Error in command:\n\n" + err.Error())
 			}
-			hooks.Em.Emit("command.exit", exitcode)
+			cmdFinish(exitcode, argstring)
 			return interp.NewExitStatus(exitcode)
 		}
 
@@ -229,3 +240,6 @@ func splitInput(input string) ([]string, string) {
 	return cmdArgs, cmdstr.String()
 }
 
+func cmdFinish(code uint8, cmdstr string) {
+	hooks.Em.Emit("command.exit", code, cmdstr)
+}
