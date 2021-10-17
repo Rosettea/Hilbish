@@ -4,3 +4,6 @@
 [submodule "libs/succulent"]
 	path = libs/succulent
 	url = https://github.com/Rosettea/Succulent
+[submodule "libs/inspect"]
+	path = libs/inspect
+	url = https://github.com/kikito/inspect.lua
