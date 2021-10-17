@@ -175,7 +175,6 @@ input:
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
-			fmt.Println("")
 			break
 		}
 		if err != nil {
