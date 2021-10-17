@@ -71,7 +71,9 @@ These are the global Hilbish functions that are always available and not part of
 
 		return
 	end
-	local modules = fs.readdir(moddocPath)
+	local modules = table.map(fs.readdir(moddocPath), function(f)
+		return lunacolors.underline(lunacolors.blue(f:sub(1, -5)))
+	end)
 
 	io.write [[
 Welcome to Hilbish's doc tool! Here you can find documentation for builtin
