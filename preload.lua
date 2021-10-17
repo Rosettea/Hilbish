@@ -12,11 +12,7 @@ if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 1) en
 -- Builtins
 commander.register('cd', function (args)
 	if #args > 0 then
-		local path = ''
-		for i = 1, #args do
-			path = path .. tostring(args[i]) .. ' '
-		end
-		path = path:gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
+		local path = table.concat(args, ' '):gsub('$%$','\0'):gsub('${([%w_]+)}', os.getenv)
 		:gsub('$([%w_]+)', os.getenv):gsub('%z','$'):gsub('^%s*(.-)%s*$', '%1')
 
         if path == '-' then
@@ -27,10 +23,8 @@ commander.register('cd', function (args)
 
 		local ok, err = pcall(function() fs.cd(path) end)
 		if not ok then
-			if err == 1 then
-				print('directory does not exist')
-			end
-			return err
+			print(err:sub(17))
+			return 1
 		end
 		bait.throw('cd', path)
 		return
