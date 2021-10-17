@@ -3,6 +3,7 @@
 package fs
 
 import (
+	"strconv"
 	"os"
 	"strings"
 
@@ -72,13 +73,17 @@ func fmkdir(L *lua.LState) int {
 func fstat(L *lua.LState) int {
 	path := L.CheckString(1)
 
-	// TODO: handle error here
 	pathinfo, err := os.Stat(path)
 	if err != nil {
 		luaErr(L, err.Error())
 		return 0
 	}
-	L.Push(luar.New(L, pathinfo))
+	statTbl := L.NewTable()
+	L.SetField(statTbl, "name", lua.LString(pathinfo.Name()))
+	L.SetField(statTbl, "size", lua.LNumber(pathinfo.Size()))
+	L.SetField(statTbl, "mode", lua.LString("0" + strconv.FormatInt(int64(pathinfo.Mode().Perm()), 8)))
+	L.SetField(statTbl, "isDir", lua.LBool(pathinfo.IsDir()))
+	L.Push(statTbl)
 
 	return 1
 }
