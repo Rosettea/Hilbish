@@ -9,7 +9,6 @@ import (
 
 	"hilbish/util"
 	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
 )
 
 func Loader(L *lua.LState) int {
@@ -92,7 +91,7 @@ func fstat(L *lua.LState) int {
 // Returns a table of files in `dir`
 func freaddir(L *lua.LState) int {
 	dir := L.CheckString(1)
-	names := []string{}
+	names := L.NewTable()
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
@@ -100,10 +99,10 @@ func freaddir(L *lua.LState) int {
 		return 0
 	}
 	for _, entry := range dirEntries {
-		names = append(names, entry.Name())
+		names.Append(lua.LString(entry.Name()))
 	}
 
-	L.Push(luar.New(L, names))
+	L.Push(names)
 
 	return 1
 }
