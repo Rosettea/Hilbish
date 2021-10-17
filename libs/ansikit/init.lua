@@ -80,7 +80,7 @@ end
 ansikit.link = function(url, text)
 	if not url then error 'ansikit: missing url for hyperlink' end
 	local text = (text and text or 'link')
-	io.write(lunacolors.blue('\27]8;;' .. url .. '\27\\' .. text .. '\27]8;;\27\\\n'))
+	return lunacolors.blue('\27]8;;' .. url .. '\27\\' .. text .. '\27]8;;\27\\\n')
 end
 
 ansikit.print = function(text)
