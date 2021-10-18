@@ -26,11 +26,6 @@ to make your life in a terminal easier.
 <img src="gallery/pillprompt.png">
 </div>
 
-# Links
-- **[Documentation](https://github.com/Hilbis/Hilbish/wiki)**
-- **[Gallery](https://github.com/Hilbis/Hilbish/discussions/36)** - See
-more screenshots of Hilbish in action
-
 # Installation
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
