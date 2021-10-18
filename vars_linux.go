@@ -6,13 +6,13 @@ package main
 var (
 	requirePaths = commonRequirePaths + `
 	.. ';/usr/share/hilbish/libs/?/init.lua;'
-	.. ';/usr/share/hilbish/libs/?/?.lua;'` + linuxUserPaths
+	.. '/usr/share/hilbish/libs/?/?.lua;'` + linuxUserPaths
 	linuxUserPaths = `
 	.. hilbish.xdg.data .. '/hilbish/libs/?/init.lua;'
 	.. hilbish.xdg.data	.. '/hilbish/libs/?/?.lua;'
-	.. hilbish.xdg.data	.. '/hilbish/libs/?.lua'
-	.. hilbish.xdg.config	.. '/hilbish/?/init.lua'
-	.. hilbish.xdg.config	.. '/hilbish/?/?.lua'
+	.. hilbish.xdg.data	.. '/hilbish/libs/?.lua;'
+	.. hilbish.xdg.config	.. '/hilbish/?/init.lua;'
+	.. hilbish.xdg.config	.. '/hilbish/?/?.lua;'
 	.. hilbish.xdg.config	.. '/hilbish/?.lua'`
 	dataDir = "/usr/share/hilbish"
 	preloadPath = dataDir + "/preload.lua"
