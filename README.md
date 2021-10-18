@@ -58,6 +58,12 @@ Or from the latest `master` commit with:
 yay -S hilbish-git
 ```
 
+### Nixpkgs
+Nix/NixOS users can install Hilbish from the central repository, nixpkgs, through the usual ways.
+
+If you're new to nix you should probably read up on how to do that [here](https://nixos.wiki/wiki/Cheatsheet#Comparison_of_secret_managing_schemes).
+
+
 ### Manual Build
 #### Prerequisites
 - [Go 1.16+](https://go.dev)
