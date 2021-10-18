@@ -262,6 +262,9 @@ func HandleSignals() {
 
 	for range c {
 		if !running {
+			if !interactive {
+				os.Exit(0)
+			}
 			lr.ClearInput()
 		}
 	}
