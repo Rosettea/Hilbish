@@ -4,9 +4,9 @@ package main
 
 // String vars that are free to be changed at compile time
 var (
-	requirePaths = commonRequirePaths + `
-	.. ';/usr/share/hilbish/libs/?/init.lua;'
-	.. '/usr/share/hilbish/libs/?/?.lua;'` + linuxUserPaths
+	requirePaths = commonRequirePaths + `.. ';'
+	.. hilbish.dataDir .. '/libs/?/init.lua;'
+	.. hilbish.dataDir .. '/libs/?/?.lua;'` + linuxUserPaths
 	linuxUserPaths = `
 	.. hilbish.xdg.data .. '/hilbish/libs/?/init.lua;'
 	.. hilbish.xdg.data	.. '/hilbish/libs/?/?.lua;'
