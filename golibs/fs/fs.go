@@ -91,7 +91,7 @@ func freaddir(L *lua.LState) int {
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
-		L.RaiseError(err.Error() + ": " + path)
+		L.RaiseError(err.Error() + ": " + dir)
 		return 0
 	}
 	for _, entry := range dirEntries {
