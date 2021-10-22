@@ -2,8 +2,18 @@
 
 This is the changelog for the Hilbish shell made in Go and Lua.
 
+## [0.6.1] - 2021-10-21
+### Fixed
+- Require paths now use the `dataDir` variable so there is no need to change it anymore unless you want to add more paths
+- Remove double slash in XDG data require paths
+- Ctrl+C is handled properly when not interactive and won't result in a panic anymore
+- Commanders are handled by the sh interpreter library only now, so they work with sh syntax
+
+### Changed
+- Error messages from `fs` functions now include the path provided
+
 ## [0.6.0] - 2021-10-17
-## Added
+### Added
 - Hilbish will expand `~` in the preloadPath and samplePathConf variables. These are for compile time.
 - On Windows, the hostname in `%u` has been removed.
 - Made it easier to compile on Windows by adding Windows-tailored vars and paths.
@@ -24,13 +34,13 @@ This is the changelog for the Hilbish shell made in Go and Lua.
 - The [Succulent](https://github.com/Rosettea/Succulent) library has been added. This includes more utility functions and expansions to the Lua standard library itself.
 - The command string is now passed to the `command.exit` hook
 
-# Changed
+### Changed
 - Hilbish won't print an extra newline at exit with ctrl + d
 - `command.exit` with 0 exit code will now be thrown if input is nothing
 - **Breaking Change:** `fs.stat` has been made better. It returns a proper table instead of userdata, and has fields instead of functions
   - It includes `name`, `mode` as a octal representation in a string, `isDir`, and `size`
 
-# Fixed
+### Fixed
 - `timeout()` is now blocking
 - Directories with spaces in them can now be `cd`'d to
 - An alias with the same name as the command will now not cause a freeze (#73)
@@ -40,15 +50,15 @@ This is the changelog for the Hilbish shell made in Go and Lua.
 
 ## [0.5.1] - 2021-06-16
 
-## Added
+### Added
 
 - Add `~/.config/hilbish` as a require path
 
-## Changed
+### Changed
 
 - `cd` hook is only thrown after directory has actually changed
 
-## Fixed
+### Fixed
 
 - Handle error in commander properly, preventing a panic from Lua
 
@@ -56,7 +66,7 @@ This is the changelog for the Hilbish shell made in Go and Lua.
 
 An absolutely massive release. Probably the biggest yet, includes a bunch of fixes and new features and convenient additions to the Lua API.
 
-## Added
+### Added
 
 - `-n` flag, which checks Lua for syntax errors without running it
 - `exec(command)` function, acts like the `exec` builtin in sh 
@@ -83,7 +93,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 - `hilbish.home` is a crossplatform Lua alternative to get the home directory easily.
 - `commander.deregister(cmdName)` de-registers any command defined with commander.
 
-## Changed
+### Changed
 
 - **Breaking Change**: Move `_user` and `_ver` to a global `hilbish` table
     - Accessing username and Hilbish version is now done with `hilbish.user` and `hilbish.ver`
@@ -100,7 +110,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 - Add input to history before alias expansion. Basically, this adds the actual alias to history instead of the aliased command.
 - Global preload path, require paths, default config directory and sample config directory can now be changed at compile time to help support other systems.
 
-## Fixed
+### Fixed
 
 - `cd` now exits with code `1` instead of the error code if it occurs
 - Don't append directory to $PATH with `appendPath` if its already there
@@ -111,7 +121,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 
 ## [0.4.0] - 2021-05-01
 
-## Added
+### Added
 - Ctrl C in the prompt now cancels/clear input (I've needed this for so long also)
 - Made Hilbish act like a login shell on login 
     - If Hilbish is the login shell, or the `-l`/`--login` flags are used, Hilbish will use an additional `~/.hprofile.lua` file, you can use this to set environment variables once on login
@@ -125,7 +135,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
     - `string.split(str, delimiter)`
 - Added a `_user` variable to easily get current user's name
 
-## Changed
+### Changed
 
 - **BREAKING Change**: [Lunacolors](https://github.com/Hilbis/Lunacolors) has replaced ansikit for formatting colors, which means the format function has been removed from ansikit and moved to Lunacolors. 
     - Users must replace ansikit with `lunacolors` in their config files
@@ -239,6 +249,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[0.6.1]: https://github.com/Rosettea/Hilbish/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Rosettea/Hilbish/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Rosettea/Hilbish/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/Rosettea/Hilbish/compare/v0.4.0...v0.5.0
