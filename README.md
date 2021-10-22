@@ -1,6 +1,6 @@
 <div align="center">
 	<img src="./assets/hilbish-flower.png" width=128><br>
-	<img src="./assets/hilbish-text.png" width=256>
+	<img src="./assets/hilbish-text.png" width=256><br>
 	<blockquote>
 	🌺 The flower shell. A comfy and nice little shell for Lua users and fans!
 	</blockquote>
