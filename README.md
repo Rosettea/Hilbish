@@ -1,10 +1,9 @@
 <div align="center">
 	<img src="./assets/hilbish-flower.png" width=128><br>
-	<img src="./assets/hilbish-text.png" width=256><br>
+	<img src="./assets/hilbish-text.png" width=256><br><br>
 	<blockquote>
 	🌺 The flower shell. A comfy and nice little shell for Lua users and fans!
-	</blockquote>
-	<h1></h1>
+	</blockquote><br>
 	<p align="center">
 		<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Rosettea/Hilbish?style=flat-square">
 		<img alt="GitHub commits since latest release (by date)" src="https://img.shields.io/github/commits-since/Rosettea/Hilbish/latest?style=flat-square">
