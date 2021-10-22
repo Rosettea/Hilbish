@@ -53,35 +53,6 @@ func RunInput(input string) {
 		cmdFinish(0, cmdString)
 		return
 	}
-	if commands[cmdArgs[0]] != nil {
-		luacmdArgs := l.NewTable()
-		for _, str := range cmdArgs[1:] {
-			luacmdArgs.Append(lua.LString(str))
-		}
-
-		err := l.CallByParam(lua.P{
-			Fn: commands[cmdArgs[0]],
-			NRet:    1,
-			Protect: true,
-		}, luacmdArgs)
-		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"Error in command:\n\n" + err.Error())
-			cmdFinish(1, cmdString)
-			return
-		}
-		luaexitcode := l.Get(-1)
-		var exitcode uint8 = 0
-
-		l.Pop(1)
-
-		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
-			exitcode = uint8(code)
-		}
-
-		cmdFinish(exitcode, cmdString)
-		return
-	}
 
 	// Last option: use sh interpreter
 	err = execCommand(cmdString)
