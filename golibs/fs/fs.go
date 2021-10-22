@@ -37,7 +37,7 @@ func fcd(L *lua.LState) int {
 	err := os.Chdir(strings.TrimSpace(path))
 	if err != nil {
 		e := err.(*os.PathError).Err.Error()
-		L.RaiseError(e)
+		L.RaiseError(e + ": " + path)
 	}
 
 	return 0
@@ -57,7 +57,7 @@ func fmkdir(L *lua.LState) int {
 		err = os.Mkdir(path, 0744)
 	}
 	if err != nil {
-		L.RaiseError(err.Error())
+		L.RaiseError(err.Error() + ": " + path)
 	}
 
 	return 0
@@ -70,7 +70,7 @@ func fstat(L *lua.LState) int {
 
 	pathinfo, err := os.Stat(path)
 	if err != nil {
-		L.RaiseError(err.Error())
+		L.RaiseError(err.Error() + ": " + path)
 		return 0
 	}
 	statTbl := L.NewTable()
@@ -91,7 +91,7 @@ func freaddir(L *lua.LState) int {
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
-		L.RaiseError(err.Error())
+		L.RaiseError(err.Error() + ": " + path)
 		return 0
 	}
 	for _, entry := range dirEntries {
