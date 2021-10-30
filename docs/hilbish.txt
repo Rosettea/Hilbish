@@ -2,5 +2,9 @@ cwd() > Returns the current directory of the shell
 
 flag(f) > Checks if the `f` flag has been passed to Hilbish.
 
+read(prompt) -> input? > Read input from the user, using Hilbish's line editor/input reader.
+This is a separate instance from the one Hilbish actually uses.
+Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
+
 run(cmd) > Runs `cmd` in Hilbish's sh interpreter
 

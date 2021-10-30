@@ -19,6 +19,7 @@ var exports = map[string]lua.LGFunction {
 	"run": hlrun,
 	"flag": hlflag,
 	"cwd": hlcwd,
+	"read": hlread,
 }
 
 func HilbishLoader(L *lua.LState) int {
@@ -36,6 +37,8 @@ func HilbishLoader(L *lua.LState) int {
 	L.SetField(mod, "host", lua.LString(host))
 	L.SetField(mod, "home", lua.LString(homedir))
 	L.SetField(mod, "dataDir", lua.LString(dataDir))
+	L.SetField(mod, "interactive", lua.LBool(interactive))
+	L.SetField(mod, "login", lua.LBool(interactive))
 
 	xdg := L.NewTable()
 	L.SetField(xdg, "config", lua.LString(confDir))
@@ -92,3 +95,22 @@ func getenv(key, fallback string) string {
     }
     return value
 }
+
+// read(prompt) -> input?
+// Read input from the user, using Hilbish's line editor/input reader.
+// This is a separate instance from the one Hilbish actually uses.
+// Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
+func hlread(L *lua.LState) int {
+	luaprompt := L.CheckString(1)
+	lualr := NewLineReader(luaprompt)
+
+	input, err := lualr.Read()
+	if err != nil {
+		L.Push(lua.LNil)
+		return 1
+	}
+
+	L.Push(lua.LString(input))
+	return 1
+}
+
