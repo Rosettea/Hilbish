@@ -10,8 +10,8 @@ a contribution. Be sure to read through it.
 Use GitHub Issues to report any bugs or to request any features
 that may be useful to *anyone* else.
 
-Check [currently open issues](https://github.com/Hilbis/Hilbish/issues)
-and [closed ones](https://github.com/Hilbis/Hilbish/issues?q=is%3Aissue+is%3Aclosed) to make sure someone else hasn't already made the issue.
+Check [currently open issues](https://github.com/Rosettea/Hilbish/issues)
+and [closed ones](https://github.com/Rosettea/Hilbish/issues?q=is%3Aissue+is%3Aclosed) to make sure someone else hasn't already made the issue.
 
 For bug reports, be sure to include:
 - Hilbish Version (`hilbish -v`)
@@ -40,8 +40,8 @@ your commits correctly.
 4. Finally, make the pull request to the **dev** branch.
 
 ## Finding Issues to Contribute to
-You can check out the [help wanted](https://github.com/Hilbis/Hilbish/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22+)
+You can check out the [help wanted](https://github.com/Rosettea/Hilbish/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22+)
 labels to figure out what we need your help working on.  
 
-The [up for grabs](https://github.com/Hilbis/Hilbish/issues?q=is%3Aissue+is%3Aopen+label%3A%22up+for+grabs%22+) labeled issues are low hanging fruit that should be
+The [up for grabs](https://github.com/Rosettea/Hilbish/issues?q=is%3Aissue+is%3Aopen+label%3A%22up+for+grabs%22+) labeled issues are low hanging fruit that should be
 easy for anyone. You can use this to get started on contributing!
