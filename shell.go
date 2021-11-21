@@ -8,9 +8,8 @@ import (
 	"strings"
 	"time"
 
-	//	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
-	//	"github.com/yuin/gopher-lua/parse"
+	//"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -150,7 +149,7 @@ func execCommand(cmd string) error {
 			hooks.Em.Emit("command.not-found", args[0])
 			return interp.NewExitStatus(127)
 		}
-		
+
 		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
 	}
 	runner, _ := interp.New(
