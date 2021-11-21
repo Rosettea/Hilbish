@@ -166,3 +166,7 @@ bait.catch('command.not-found', function(cmd)
 	print(string.format('hilbish: %s not found', cmd))
 end)
 
+bait.catch('command.no-perm', function(cmd)
+	print(string.format('hilbish: %s: no permission', cmd))
+end)
+

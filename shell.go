@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
-//	"github.com/bobappleyard/readline"
+	//	"github.com/bobappleyard/readline"
 	"github.com/yuin/gopher-lua"
-//	"github.com/yuin/gopher-lua/parse"
+	//	"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -95,7 +96,6 @@ func execCommand(cmd string) error {
 	}
 
 	exechandle := func(ctx context.Context, args []string) error {
-		hc := interp.HandlerCtx(ctx)
 		_, argstring := splitInput(strings.Join(args, " "))
 
 		// If alias was found, use command alias
@@ -142,11 +142,15 @@ func execCommand(cmd string) error {
 			return interp.NewExitStatus(exitcode)
 		}
 
-		if _, err := interp.LookPathDir(hc.Dir, hc.Env, args[0]); err != nil {
+		err := lookpath(args[0])
+		if err == os.ErrPermission {
+			hooks.Em.Emit("command.no-perm", args[0])
+			return interp.NewExitStatus(126)
+		} else if err != nil {
 			hooks.Em.Emit("command.not-found", args[0])
 			return interp.NewExitStatus(127)
 		}
-
+		
 		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
 	}
 	runner, _ := interp.New(
@@ -156,6 +160,31 @@ func execCommand(cmd string) error {
 	err = runner.Run(context.TODO(), file)
 
 	return err
+}
+
+// custom lookpath function so we know if a command is found *and* has execute permission
+func lookpath(file string) error {
+	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
+		path := filepath.Join(dir, file)
+		err := findExecutable(path)
+		if err == os.ErrPermission {
+			return err
+		} else if err == nil {
+			return nil
+		}
+	}
+
+	return os.ErrNotExist
+}
+func findExecutable(name string) error {
+	f, err := os.Stat(name)
+	if err != nil {
+		return err
+	}
+	if m := f.Mode(); !m.IsDir() && m & 0111 != 0 {
+		return nil
+	}
+	return os.ErrPermission
 }
 
 func splitInput(input string) ([]string, string) {
