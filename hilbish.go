@@ -32,13 +32,13 @@ func HilbishLoader(L *lua.LState) int {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	L.SetField(mod, "ver", lua.LString(version))
-	L.SetField(mod, "user", lua.LString(username))
-	L.SetField(mod, "host", lua.LString(host))
-	L.SetField(mod, "home", lua.LString(homedir))
-	L.SetField(mod, "dataDir", lua.LString(dataDir))
-	L.SetField(mod, "interactive", lua.LBool(interactive))
-	L.SetField(mod, "login", lua.LBool(interactive))
+	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
+	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
+	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
+	util.SetField(L, mod, "home", lua.LString(homedir), "Home directory of the user")
+	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
+	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
+	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
 
 	xdg := L.NewTable()
 	L.SetField(xdg, "config", lua.LString(confDir))

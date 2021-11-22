@@ -49,6 +49,15 @@ commander.register('doc', function(args)
 	local moddocPath = hilbish.dataDir .. '/docs/'
 	local globalDesc = [[
 These are the global Hilbish functions that are always available and not part of a module.]]
+	local modDocFormat = [[
+%s
+
+# Variables
+%s
+
+# Functions
+]]
+
 	if #args > 0 then
 		local mod = args[1]
 
@@ -82,18 +91,24 @@ These are the global Hilbish functions that are always available and not part of
 		end
 		local desc = ''
 		local ok = pcall(require, mod)
-		if ok then
-			desc = (mod == 'global' and globalDesc or getmetatable(require(mod)).__doc) .. '\n\n'
-		end
 		local backtickOccurence = 0
-		print(desc .. lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
+		local formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
 			backtickOccurence = backtickOccurence + 1
 			if backtickOccurence % 2 == 0 then
 				return '{reset}'
 			else
 				return '{underline}{green}'
 			end
-		end)))
+		end))
+
+		if ok then
+			local modmt = getmetatable(require(mod))
+			local props = table.map(modmt.__docProp, function(v, k)
+				return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
+			end)
+			desc = string.format(modDocFormat, (mod == 'global' and globalDesc or modmt.__doc), table.concat(props, "\n"))
+		end
+		print(desc .. formattedFuncs)
 		f:close()
 
 		return

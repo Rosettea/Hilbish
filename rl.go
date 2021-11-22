@@ -8,7 +8,6 @@ package main
 // this is normal readline
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
