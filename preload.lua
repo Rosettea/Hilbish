@@ -77,6 +77,9 @@ These are the global Hilbish functions that are always available and not part of
 			return 1
 		end
 
+		if not funcdocs then
+			funcdocs = f:read '*a'
+		end
 		local desc = ''
 		local ok = pcall(require, mod)
 		if ok then
