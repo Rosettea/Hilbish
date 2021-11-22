@@ -32,6 +32,7 @@ func LuaInit() {
 	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
 	l.SetGlobal("alias", l.NewFunction(hshalias))
 	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
+	l.SetGlobal("prependPath", l.NewFunction(hshprependPath))
 	l.SetGlobal("exec", l.NewFunction(hshexec))
 	l.SetGlobal("goro", luar.New(l, hshgoroutine))
 	l.SetGlobal("timeout", luar.New(l, hshtimeout))
@@ -223,6 +224,21 @@ func hshcomplete(L *lua.LState) int {
 	cb := L.CheckFunction(2)
 
 	luaCompletions[scope] = cb
+
+	return 0
+}
+
+// prependPath(dir)
+// Prepends `dir` to $PATH
+func hshprependPath(L *lua.LState) int {
+	dir := L.CheckString(1)
+	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
+	pathenv := os.Getenv("PATH")
+
+	// if dir isnt already in $PATH, add in
+	if !strings.Contains(pathenv, dir) {
+		os.Setenv("PATH", dir + string(os.PathListSeparator) + pathenv)
+	}
 
 	return 0
 }
