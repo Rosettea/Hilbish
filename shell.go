@@ -124,6 +124,13 @@ func execCommand(cmd string) error {
 				NRet:    1,
 				Protect: true,
 			}, luacmdArgs)
+			
+			if err != nil {
+				fmt.Fprintln(os.Stderr,
+					"Error in command:\n\n" + err.Error())
+				return interp.NewExitStatus(1)
+			}
+
 			luaexitcode := l.Get(-1)
 			var exitcode uint8 = 0
 
@@ -133,10 +140,6 @@ func execCommand(cmd string) error {
 				exitcode = uint8(code)
 			}
 
-			if err != nil {
-				fmt.Fprintln(os.Stderr,
-					"Error in command:\n\n" + err.Error())
-			}
 			cmdFinish(exitcode, argstring)
 			return interp.NewExitStatus(exitcode)
 		}
