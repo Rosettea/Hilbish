@@ -140,7 +140,7 @@ func hshappendPath(L *lua.LState) int {
 
 	// if dir isnt already in $PATH, add it
 	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", pathenv + ":" + dir)
+		os.Setenv("PATH", pathenv + string(os.PathListSeparator) + dir)
 	}
 
 	return 0
