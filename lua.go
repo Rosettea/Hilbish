@@ -59,6 +59,13 @@ func LuaInit() {
 	hooks = bait.New()
 	l.PreloadModule("bait", hooks.Loader)
 
+	// Add Ctrl-C handler
+	hooks.Em.On("signal.sigint", func() {
+		if !interactive {
+			os.Exit(0)
+		}
+	})
+
 	l.SetGlobal("complete", l.NewFunction(hshcomplete))
 
 	// Add more paths that Lua can require from

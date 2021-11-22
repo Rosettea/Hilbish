@@ -265,13 +265,12 @@ func HandleSignals() {
 	for s := range c {
 		switch s {
 		case os.Interrupt:
+			hooks.Em.Emit("signals.sigint")
 			if !running {
-				if !interactive {
-					os.Exit(0)
-				}
 				lr.ClearInput()
 			}
 		case syscall.SIGWINCH:
+			hooks.Em.Emit("signals.resize")
 			if !running {
 				lr.Resize()
 			}
