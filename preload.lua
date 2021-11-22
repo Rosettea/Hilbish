@@ -50,18 +50,40 @@ commander.register('doc', function(args)
 	local globalDesc = [[
 These are the global Hilbish functions that are always available and not part of a module.]]
 	if #args > 0 then
-		local mod = table.concat(args, ' '):gsub('^%s*(.-)%s*$', '%1')
+		local mod = args[1]
 
 		local f = io.open(moddocPath .. mod .. '.txt', 'rb')
-		if not f then 
+		local funcdocs = nil
+		if not f then
+			-- assume subdir
+			-- dataDir/docs/<mod>/<mod>.txt
+			moddocPath = moddocPath .. mod .. '/'
+			local subdocName = args[2]
+			if not subdocName then
+				subdocName = 'index'
+			end
+			f = io.open(moddocPath .. subdocName .. '.txt', 'rb')
+			funcdocs = f:read '*a'
+			local subdocs = table.map(fs.readdir(moddocPath), function(f)
+				return lunacolors.underline(lunacolors.blue(string.gsub(f, '.txt', '')))
+			end)
+			if subdocName == 'index' then
+				funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
+			end
+		end
+
+		if not f then
 			print('Could not find docs for module named ' .. mod .. '.')
 			return 1
 		end
 
-		local desc = (mod == 'global' and globalDesc or getmetatable(require(mod)).__doc)
-		local funcdocs = f:read '*a'
+		local desc = ''
+		local ok = pcall(require, mod)
+		if ok then
+			desc = (mod == 'global' and globalDesc or getmetatable(require(mod)).__doc) .. '\n\n'
+		end
 		local backtickOccurence = 0
-		print(desc .. '\n\n' .. lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
+		print(desc .. lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
 			backtickOccurence = backtickOccurence + 1
 			if backtickOccurence % 2 == 0 then
 				return '{reset}'
@@ -74,16 +96,17 @@ These are the global Hilbish functions that are always available and not part of
 		return
 	end
 	local modules = table.map(fs.readdir(moddocPath), function(f)
-		return lunacolors.underline(lunacolors.blue(f:sub(1, -5)))
+		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.txt', '')))
 	end)
 
 	io.write [[
 Welcome to Hilbish's doc tool! Here you can find documentation for builtin
 functions and other things.
 
-Usage: doc <module>
+Usage: doc <section> [subdoc]
+A section is a module or a literal section and a subdoc is a subsection for it.
 
-Available modules: ]]
+Available sections: ]]
 
 	print(table.concat(modules, ', '))
 

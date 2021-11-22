@@ -1,0 +1,3 @@
++ `signal.sigint` > Sent when Hilbish receives SIGINT (used to Ctrl-C).
+
++ `signal.resize` > Sent when the terminal is resized.
