@@ -37,3 +37,7 @@ func (lr *LineReader) ClearInput() {
 	return
 }
 
+func (lr *LineReader) Resize() {
+	return
+}
+

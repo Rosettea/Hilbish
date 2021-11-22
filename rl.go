@@ -1,3 +1,4 @@
+//go:build !hilbiline
 // +build !hilbiline
 
 package main
@@ -41,3 +42,6 @@ func (lr *LineReader) ClearInput() {
 	readline.RefreshLine()
 }
 
+func (lr *LineReader) Resize() {
+	readline.Resize()
+}

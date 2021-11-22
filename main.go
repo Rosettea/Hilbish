@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
-	"strings"
 	"os/signal"
 	"os/user"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"syscall"
 
 	"hilbish/golibs/bait"
 
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
 	"golang.org/x/term"
+	"layeh.com/gopher-luar"
 )
 
 var (
@@ -258,14 +259,21 @@ func fmtPrompt() string {
 // do i even have to say
 func HandleSignals() {
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGWINCH)
 
-	for range c {
-		if !running {
-			if !interactive {
-				os.Exit(0)
+	for s := range c {
+		switch s {
+		case os.Interrupt:
+			if !running {
+				if !interactive {
+					os.Exit(0)
+				}
+				lr.ClearInput()
 			}
-			lr.ClearInput()
+		case syscall.SIGWINCH:
+			if !running {
+				lr.Resize()
+			}
 		}
 	}
 }
