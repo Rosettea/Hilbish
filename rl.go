@@ -8,9 +8,10 @@ package main
 // this is normal readline
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
-	"os"
 
 	"github.com/Rosettea/readline"
 	"github.com/yuin/gopher-lua"
@@ -25,10 +26,22 @@ func NewLineReader(prompt string) *LineReader {
 		var completions []string
 		// trim whitespace from ctx
 		ctx = strings.TrimLeft(ctx, " ")
-		fields := strings.Split(ctx, " ")
-
+		fields, ctx := splitInput(ctx)
 		if len(fields) == 0 {
 			return nil
+		}
+
+		for aliases[fields[0]] != "" {
+			alias := aliases[fields[0]]
+			ctx = alias + strings.TrimPrefix(ctx, fields[0])
+			fields = strings.Split(ctx, " ")
+
+			if aliases[fields[0]] == alias {
+				break
+			}
+			if aliases[fields[0]] != "" {
+				continue
+			}
 		}
 
 		if len(fields) == 1 {
