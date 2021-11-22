@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Rosettea/Hilbiline v0.0.0-20210603231612-80054dac3650
+	github.com/Rosettea/readline v0.0.0-20211122152601-6d95ce44b7ed
 	github.com/bobappleyard/readline v0.0.0-20150707195538-7e300e02d38e
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/mattn/go-runewidth v0.0.13 // indirect

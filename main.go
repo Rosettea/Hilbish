@@ -26,6 +26,7 @@ var (
 
 	commands = map[string]*lua.LFunction{}
 	aliases = map[string]string{}
+	luaCompletions = map[string]*lua.LFunction{}
 
 	homedir string
 	confDir string

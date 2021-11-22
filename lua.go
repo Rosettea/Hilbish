@@ -58,6 +58,8 @@ func LuaInit() {
 	hooks = bait.New()
 	l.PreloadModule("bait", hooks.Loader)
 
+	l.SetGlobal("complete", l.NewFunction(hshcomplete))
+
 	// Add more paths that Lua can require from
 	l.DoString("package.path = package.path .. " + requirePaths)
 
@@ -210,3 +212,17 @@ func hshinterval(L *lua.LState) int {
 	return 1
 }
 
+// complete(scope, cb)
+// Registers a completion handler for `scope`.
+// A `scope` is currently only expected to be `command.<cmd>`,
+// replacing <cmd> with the name of the command (for example `command.git`).
+// `cb` must be a function that returns a table of the entries to complete.
+// Nested tables will be used as sub-completions.
+func hshcomplete(L *lua.LState) int {
+	scope := L.CheckString(1)
+	cb := L.CheckFunction(2)
+
+	luaCompletions[scope] = cb
+
+	return 0
+}
