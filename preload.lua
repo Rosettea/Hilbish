@@ -51,10 +51,7 @@ commander.register('doc', function(args)
 These are the global Hilbish functions that are always available and not part of a module.]]
 	local modDocFormat = [[
 %s
-
-# Variables
 %s
-
 # Functions
 ]]
 
@@ -85,11 +82,6 @@ These are the global Hilbish functions that are always available and not part of
 			end
 		end
 
-		if not f then
-			print('Could not find docs for module named ' .. mod .. '.')
-			return 1
-		end
-
 		if not funcdocs then
 			funcdocs = f:read '*a'
 		end
@@ -105,12 +97,24 @@ These are the global Hilbish functions that are always available and not part of
 			end
 		end))
 
-		if ok then
-			local modmt = getmetatable(require(mod))
-			local props = table.map(modmt.__docProp, function(v, k)
-				return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
-			end)
-			desc = string.format(modDocFormat, (mod == 'global' and globalDesc or modmt.__doc), table.concat(props, "\n"))
+		if mod == 'global' or ok then
+			local props = {}
+			local propstr = ''
+			local modDesc = globalDesc
+			if ok then
+				local modmt = getmetatable(require(mod))
+				modDesc = modmt.__doc
+				if modmt.__docProp then
+					-- not all modules have docs for properties
+					props = table.map(modmt.__docProp, function(v, k)
+						return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
+					end)
+				end
+			end
+			if #props > 0 then
+				propstr = '\n# Properties\n' .. table.concat(props, '\n') .. '\n'
+			end
+			desc = string.format(modDocFormat, modDesc, propstr)
 		end
 		print(desc .. formattedFuncs)
 		f:close()
