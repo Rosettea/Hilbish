@@ -2,6 +2,11 @@
 
 This is the changelog for the Hilbish shell made in Go and Lua.
 
+## [0.7.1] - 2021-11-22
+### Fixed
+- Tab complete absolute paths to binaries properly
+- Allow execution of absolute paths to binaries (https://github.com/Rosettea/Hilbish/commit/06272778f85dad04e0e7abffc78a5b9b0cebd067 regression)
+
 ## [0.7.0] - 2021-11-22
 ### Added
 - `hilbish.interactive` and `hilbish.login` properties to figure out if Hilbish is interactive or a login shell, respectively.
@@ -284,6 +289,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Rosettea/Hilbish/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Rosettea/Hilbish/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Rosettea/Hilbish/compare/v0.5.1...v0.6.0
