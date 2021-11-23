@@ -166,6 +166,13 @@ func execCommand(cmd string) error {
 
 // custom lookpath function so we know if a command is found *and* has execute permission
 func lookpath(file string) error {
+	skip := []string{"./", "/", "../", "~/"}
+	for _, s := range skip {
+		if strings.HasPrefix(file, s) {
+			err := findExecutable(file)
+			return err
+		}
+	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
 		err := findExecutable(path)
