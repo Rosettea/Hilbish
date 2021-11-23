@@ -25,7 +25,7 @@ func NewLineReader(prompt string) *LineReader {
 		var completions []string
 		// trim whitespace from ctx
 		ctx = strings.TrimLeft(ctx, " ")
-		fields, ctx := splitInput(ctx)
+		fields := strings.Split(ctx, " ")
 		if len(fields) == 0 {
 			return nil
 		}
@@ -68,7 +68,16 @@ func NewLineReader(prompt string) *LineReader {
 						if prefix != "./" {
 							completions[0] = filepath.Join(filepath.Dir(query), completions[0])
 						} else {
-							completions[0] = prefix + completions[0]
+							dirNest := strings.Count(query, "/")
+							if dirNest > 1 {
+								completions[0] = prefix + filepath.Join(filepath.Dir(query), completions[0])
+							} else {
+								completions[0] = prefix + completions[0]
+							}
+						}
+
+						if info, err := os.Stat(strings.Replace(completions[0], "~", homedir, 1)); err == nil && info.IsDir() {
+							completions[0] += "/"
 						}
 					}
 					return completions
