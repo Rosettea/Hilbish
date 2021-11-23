@@ -7,7 +7,7 @@ This is the changelog for the Hilbish shell made in Go and Lua.
 - `hilbish.interactive` and `hilbish.login` properties to figure out if Hilbish is interactive or a login shell, respectively.
 - `hilbish.read` function to take input more elegantly than Lua's `io.read`
 - Tab Completion Enhancements
-  - A new tab complete API has been added. It is the single `complete` function which takes a "scope" and a callback which is
+  - A new tab complete API has been added. It is the single `complete` function which takes a "scope" (example: `command.<cmdname>`) and a callback which is
   expected to return a table. Users can now add custom completions for specific commands.
   An example is:
   ```lua
