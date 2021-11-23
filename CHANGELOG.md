@@ -2,6 +2,42 @@
 
 This is the changelog for the Hilbish shell made in Go and Lua.
 
+## [0.7.0] - 2021-11-22
+### Added
+- `hilbish.interactive` and `hilbish.login` properties to figure out if Hilbish is interactive or a login shell, respectively.
+- `hilbish.read` function to take input more elegantly than Lua's `io.read`
+- Tab Completion Enhancements
+  - A new tab complete API has been added. It is the single `complete` function which takes a "scope" and a callback which is
+  expected to return a table. Users can now add custom completions for specific commands.
+  An example is:
+  ```lua
+  complete('command.git', function()
+	return {
+		'add',
+		'version',
+		commit = {
+			'--message',
+			'--verbose',
+			'<file>'
+		}
+	}
+  end)
+  ```
+  For `git`, Hilbish will complete commands add, version and commit. For the commit subcommand, it will complete the flags and/or files which `<file>` is used to represent.
+  - Hilbish will now complete binaries in $PATH, or any executable to a path (like `./` or `../`)
+  - Files with spaces will be automatically put in quotes and completions will work for them now.
+- `prependPath` function (#81)
+- Signal hooks (#80)
+  - This allows scripts to add their own way of handling terminal resizes (if you'd need that) or Ctrl-C
+- Module properties (like `hilbish.ver`) are documented with the `doc` command.
+- Document bait hooks
+
+# Fixed
+- The prompt won't come up on terminal resize anymore.
+- `appendPath` should work properly on Windows.
+- A panic when a commander has an error has been fixed.
+
+
 ## [0.6.1] - 2021-10-21
 ### Fixed
 - Require paths now use the `dataDir` variable so there is no need to change it anymore unless you want to add more paths
@@ -249,6 +285,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[0.7.0]: https://github.com/Rosettea/Hilbish/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Rosettea/Hilbish/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Rosettea/Hilbish/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Rosettea/Hilbish/compare/v0.5.0...v0.5.1
