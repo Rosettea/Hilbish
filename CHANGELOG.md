@@ -32,11 +32,10 @@ This is the changelog for the Hilbish shell made in Go and Lua.
 - Module properties (like `hilbish.ver`) are documented with the `doc` command.
 - Document bait hooks
 
-# Fixed
+### Fixed
 - The prompt won't come up on terminal resize anymore.
 - `appendPath` should work properly on Windows.
 - A panic when a commander has an error has been fixed.
-
 
 ## [0.6.1] - 2021-10-21
 ### Fixed
