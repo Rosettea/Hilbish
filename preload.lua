@@ -72,6 +72,10 @@ These are the global Hilbish functions that are always available and not part of
 				subdocName = 'index'
 			end
 			f = io.open(moddocPath .. subdocName .. '.txt', 'rb')
+			if not f then
+				print('No documentation found for ' .. mod .. '.')
+				return
+			end
 			funcdocs = f:read '*a'
 			local subdocs = table.map(fs.readdir(moddocPath), function(f)
 				return lunacolors.underline(lunacolors.blue(string.gsub(f, '.txt', '')))
