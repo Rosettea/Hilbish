@@ -2,6 +2,12 @@ alias(cmd, orig) > Sets an alias of `orig` to `cmd`
 
 appendPath(dir) > Appends `dir` to $PATH
 
+complete(scope, cb) > Registers a completion handler for `scope`.
+A `scope` is currently only expected to be `command.<cmd>`,
+replacing <cmd> with the name of the command (for example `command.git`).
+`cb` must be a function that returns a table of the entries to complete.
+Nested tables will be used as sub-completions.
+
 exec(cmd) > Replaces running hilbish with `cmd`
 
 goro(fn) > Puts `fn` in a goroutine
@@ -9,6 +15,8 @@ goro(fn) > Puts `fn` in a goroutine
 interval(cb, time) > Runs the `cb` function every `time` milliseconds
 
 multiprompt(str) > Changes the continued line prompt to `str`
+
+prependPath(dir) > Prepends `dir` to $PATH
 
  prompt(str) > Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
