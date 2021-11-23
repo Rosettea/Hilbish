@@ -44,46 +44,21 @@ func NewLineReader(prompt string) *LineReader {
 		}
 
 		if len(fields) == 1 {
-			prefixes := []string{"./", "../"}
-			for _, prefix := range prefixes {
-				if strings.HasPrefix(query, prefix) {
-					if matches, err := filepath.Glob(query + "*"); err == nil {
-						for _, match := range matches {
-							if info, err := os.Stat(match); err == nil && info.Mode().Perm() & 0100 == 0 {
-								continue
-							}
-							name := filepath.Base(match)
-							completions = append(completions, name)
-						}
-					}
-					if len(completions) == 1 {
-						// we have add the base dir of query since the completion entries are basename
-						// why? so readline will display just that
-						// and we want to complete the full path when its the only completion entry
-						// query will be incomplete so adding it will be broken
-						// also Dir doesn't have a trailing slash so we need to filepath join
-						// to account to windows
-						// AND ANOTHER THING is it returns . if the arg is ./ and Join will
-						// ignore that so we have to check and just add the prefix instead
-						if prefix != "./" {
-							completions[0] = filepath.Join(filepath.Dir(query), completions[0])
-						} else {
-							dirNest := strings.Count(query, "/")
-							if dirNest > 1 {
-								completions[0] = prefix + filepath.Join(filepath.Dir(query), completions[0])
-							} else {
-								completions[0] = prefix + completions[0]
-							}
-						}
-
-						if info, err := os.Stat(strings.Replace(completions[0], "~", homedir, 1)); err == nil && info.IsDir() {
-							completions[0] += "/"
-						}
-					}
-					return completions
+			fileCompletions := append(completions, readline.FilenameCompleter(query, ctx)...)
+			// filter out executables
+			for _, f := range fileCompletions {
+				name := strings.Replace(f, "~", homedir, 1)
+				if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
+					continue
 				}
+				completions = append(completions, f)
 			}
 
+			if len(completions) != 0 {
+				return completions
+			}
+
+			// filter out executables, but in path
 			for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 				// print dir to stderr for debugging
 				// search for an executable which matches our query string
