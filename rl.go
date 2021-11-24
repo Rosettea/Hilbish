@@ -25,9 +25,12 @@ func NewLineReader(prompt string) *LineReader {
 		var completions []string
 		// trim whitespace from ctx
 		ctx = strings.TrimLeft(ctx, " ")
+		if len(ctx) == 0 {
+			return []string{}
+		}
 		fields := strings.Split(ctx, " ")
 		if len(fields) == 0 {
-			return nil
+			return []string{}
 		}
 
 		for aliases[fields[0]] != "" {
@@ -44,18 +47,20 @@ func NewLineReader(prompt string) *LineReader {
 		}
 
 		if len(fields) == 1 {
-			fileCompletions := append(completions, readline.FilenameCompleter(query, ctx)...)
-			// filter out executables
-			for _, f := range fileCompletions {
-				name := strings.Replace(f, "~", homedir, 1)
-				if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
-					continue
+			prefixes := []string{"./", "../", "/", "~/"}
+			for _, prefix := range prefixes {
+				if strings.HasPrefix(fields[0], prefix) {
+					fileCompletions := append(completions, readline.FilenameCompleter(query, ctx)...)
+					// filter out executables
+					for _, f := range fileCompletions {
+						name := strings.Replace(f, "~", homedir, 1)
+						if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
+							continue
+						}
+						completions = append(completions, f)
+					}
+					return completions
 				}
-				completions = append(completions, f)
-			}
-
-			if len(completions) != 0 {
-				return completions
 			}
 
 			// filter out executables, but in path
@@ -100,7 +105,6 @@ func NewLineReader(prompt string) *LineReader {
 
 				if cmpTbl, ok := luacompleteTable.(*lua.LTable); ok {
 					cmpTbl.ForEach(func(key lua.LValue, value lua.LValue) {
-						// print key and value to stderr for debugging
 						// if key is a number (index), we just check and complete that
 						if key.Type() == lua.LTNumber {
 							// if we have only 2 fields then this is fine
