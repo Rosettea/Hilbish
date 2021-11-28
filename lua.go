@@ -17,12 +17,7 @@ import (
 	"layeh.com/gopher-luar"
 )
 
-var minimalconf = `
-lunacolors = require 'lunacolors'
-prompt(lunacolors.format(
-		'{blue}%u {cyan}%d {green}∆{reset} '
-))
-`
+var minimalconf = `prompt '& '`
 
 func LuaInit() {
 	l = lua.NewState()
