@@ -218,7 +218,6 @@ func ContinuePrompt(prev string) (string, error) {
 	lr.SetPrompt(multilinePrompt)
 	cont, err := lr.Read()
 	if err != nil {
-		fmt.Println("")
 		return "", err
 	}
 	cont = strings.TrimSpace(cont)
