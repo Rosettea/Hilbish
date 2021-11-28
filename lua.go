@@ -201,8 +201,8 @@ func hshinterval(L *lua.LState) int {
 					NRet: 0,
 					Protect: true,
 				}); err != nil {
-					fmt.Fprintln(os.Stderr,
-						"Error in interval function:\n\n", err)
+					fmt.Fprintln(os.Stderr, "Error in interval function:\n\n", err)
+					stop <- lua.LTrue // stop the interval
 				}
 			case <-stop:
 				ticker.Stop()
