@@ -230,7 +230,9 @@ func fmtPrompt() string {
 	host, _ := os.Hostname()
 	cwd, _ := os.Getwd()
 
-	cwd = strings.Replace(cwd, curuser.HomeDir, "~", 1)
+	if strings.HasPrefix(cwd, curuser.HomeDir) {
+		cwd = "~" + strings.TrimPrefix(cwd, curuser.HomeDir)
+	}
 	username := curuser.Username
 	// this will be baked into binary since GOOS is a constant
 	if runtime.GOOS == "windows" {
