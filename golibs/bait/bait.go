@@ -15,7 +15,8 @@ type Bait struct{
 
 func New() Bait {
 	emitter := emission.NewEmitter()
-	emitter.RecoverWith(func(_, _ interface{}, err error) {
+	emitter.RecoverWith(func(hookname, hookfunc interface{}, err error) {
+		emitter.Off(hookname, hookfunc)
 		fmt.Println(err)
 	})
 	return Bait{
