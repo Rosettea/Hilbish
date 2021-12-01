@@ -1,6 +1,7 @@
 package bait
 
 import (
+	"fmt"
 	"hilbish/util"
 
 	"github.com/chuckpreslar/emission"
@@ -13,8 +14,12 @@ type Bait struct{
 }
 
 func New() Bait {
+	emitter := emission.NewEmitter()
+	emitter.RecoverWith(func(_, _ interface{}, err error) {
+		fmt.Println(err)
+	})
 	return Bait{
-		Em: emission.NewEmitter(),
+		Em: emitter,
 	}
 }
 
