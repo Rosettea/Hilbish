@@ -89,13 +89,13 @@ func RunConfig(confpath string) {
 }
 
 func RunLogin() {
-	if _, err := os.Stat(homedir + "/.hprofile.lua"); os.IsNotExist(err) {
+	if _, err := os.Stat(curuser.HomeDir + "/.hprofile.lua"); os.IsNotExist(err) {
 		return
 	}
 	if !login {
 		return
 	}
-	err := l.DoFile(homedir + "/.hprofile.lua")
+	err := l.DoFile(curuser.HomeDir + "/.hprofile.lua")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
 			"\nAn error has occured while loading your login config!n")

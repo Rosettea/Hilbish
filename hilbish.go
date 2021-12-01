@@ -35,14 +35,14 @@ func HilbishLoader(L *lua.LState) int {
 	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
 	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
 	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
-	util.SetField(L, mod, "home", lua.LString(homedir), "Home directory of the user")
+	util.SetField(L, mod, "home", lua.LString(curuser.HomeDir), "Home directory of the user")
 	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
 
 	xdg := L.NewTable()
 	util.SetField(L, xdg, "config", lua.LString(confDir), "XDG config directory")
-	util.SetField(L, xdg, "data", lua.LString(getenv("XDG_DATA_HOME", homedir + "/.local/share")), "XDG data directory")
+	util.SetField(L, xdg, "data", lua.LString(getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")), "XDG data directory")
 	L.SetField(mod, "xdg", xdg)
 
 	util.Document(L, xdg, "Variables for the XDG base directory spec.")

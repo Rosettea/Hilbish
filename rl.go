@@ -53,7 +53,7 @@ func NewLineReader(prompt string) *LineReader {
 					fileCompletions := append(completions, readline.FilenameCompleter(query, ctx)...)
 					// filter out executables
 					for _, f := range fileCompletions {
-						name := strings.Replace(f, "~", homedir, 1)
+						name := strings.Replace(f, "~", curuser.HomeDir, 1)
 						if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
 							continue
 						}

@@ -28,7 +28,6 @@ var (
 	aliases = map[string]string{}
 	luaCompletions = map[string]*lua.LFunction{}
 
-	homedir string
 	confDir string
 	curuser *user.User
 
@@ -38,9 +37,9 @@ var (
 )
 
 func main() {
-	homedir, _ = os.UserHomeDir()
-	confDir = getenv("XDG_CONFIG_HOME", homedir + "/.config")
 	curuser, _ = user.Current()
+	homedir := curuser.HomeDir
+	confDir = getenv("XDG_CONFIG_HOME", homedir + "/.config")
 	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
 	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
