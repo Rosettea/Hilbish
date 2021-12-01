@@ -18,7 +18,7 @@ func New() Commander {
 }
 
 func (c *Commander) Loader(L *lua.LState) int {
-	var exports = map[string]lua.LGFunction{
+	exports := map[string]lua.LGFunction{
 		"register": c.cregister,
 		"deregister": c.cderegister,
 	}
