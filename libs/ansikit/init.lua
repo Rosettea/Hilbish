@@ -5,7 +5,7 @@ local lunacolors = require 'lunacolors'
 local ansikit = {}
 
 ansikit.clear = function(scrollback)
-	typ = (scrollback and 3 or 2)
+	local typ = (scrollback and 3 or 2)
 	return ansikit.printCSI(typ, 'J')
 end
 
