@@ -38,6 +38,7 @@ failed, etc. To find all available hooks, see doc hooks.`)
 
 	L.SetField(mod, "throw", luar.New(L, b.bthrow))
 	L.SetField(mod, "catch", luar.New(L, b.bcatch))
+	L.SetField(mod, "catchOnce", luar.New(L, b.bcatchOnce))
 
 	L.Push(mod)
 
@@ -54,4 +55,10 @@ func (b *Bait) bthrow(name string, args ...interface{}) {
 // Catches a hook with `name`. Runs the `cb` when it is thrown
 func (b *Bait) bcatch(name string, catcher func(...interface{})) {
 	b.Em.On(name, catcher)
+}
+
+// catchOnce(name, cb)
+// Same as catch, but only runs the `cb` once and then removes the hook
+func (b *Bait) bcatchOnce(name string, catcher func(...interface{})) {
+	b.Em.Once(name, catcher)
 }
