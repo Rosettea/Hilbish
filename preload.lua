@@ -1,9 +1,9 @@
 -- The preload file initializes everything else for our shell
-
-local fs = require 'fs'
-local commander = require 'commander'
 local bait = require 'bait'
-require 'succulent' -- Function additions
+local commander = require 'commander'
+local fs = require 'fs'
+local lunacolors = require 'lunacolors'
+local _ require 'succulent' -- Function additions
 local oldDir = hilbish.cwd()
 
 local shlvl = tonumber(os.getenv 'SHLVL')
