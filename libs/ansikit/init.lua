@@ -9,7 +9,7 @@ ansikit.clear = function(scrollback)
 	return ansikit.printCSI(typ, 'J')
 end
 
-ansikit.clearFromPos = function(scrollback)
+ansikit.clearFromPos = function()
 	return ansikit.printCSI(0, 'J')
 end
 
@@ -47,7 +47,7 @@ end
 ansikit.cursorStyle = function(style)
 	style = (style and style or ansikit.underlineCursor)
 	if style > 6 or style < 1 then style = ansikit.underlineCursor end
-	
+
 	return ansikit.printCSI(style, ' q')
 end
 
