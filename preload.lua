@@ -37,8 +37,6 @@ commander.register('cd', function (args)
 	end
 	fs.cd(hilbish.home)
 	bait.throw('cd', hilbish.home)
-
-	return
 end)
 
 commander.register('exit', function()
@@ -135,8 +133,6 @@ A section is a module or a literal section and a subdoc is a subsection for it.
 Available sections: ]]
 
 	print(table.concat(modules, ', '))
-
-	return
 end)
 
 do
@@ -207,7 +203,6 @@ to get a list of recent directories, use {green}{underline}cdr list{reset}]])
 	end
 
 	fs.cd(recentDirs[index])
-	return
 end)
 
 -- Hook handles
