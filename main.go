@@ -34,9 +34,6 @@ var (
 	hooks bait.Bait
 	defaultConfPath string
 	defaultHistPath string
-
-	resized bool
-	started bool
 )
 
 func main() {
@@ -170,18 +167,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	started = true
 input:
 	for interactive {
 		running = false
 
 		lr.SetPrompt(fmtPrompt())
 		input, err := lr.Read()
-
-		if resized {
-			resized = false
-			lr.Resize()
-		}
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
@@ -279,12 +270,8 @@ func HandleSignals() {
 			}
 		case syscall.SIGWINCH:
 			hooks.Em.Emit("signals.resize")
-			if interactive {
-				if !running && started {
-					lr.Resize()
-				} else {
-					resized = true
-				}
+			if !running && interactive {
+				lr.Resize()
 			}
 		}
 	}
