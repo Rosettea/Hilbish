@@ -200,7 +200,6 @@ input:
 				}
 			}
 		}
-		running = true
 		HandleHistory(input)
 		RunInput(input)
 
@@ -266,12 +265,12 @@ func HandleSignals() {
 		switch s {
 		case os.Interrupt:
 			hooks.Em.Emit("signals.sigint")
-			if !running {
+			if !running && interactive {
 				lr.ClearInput()
 			}
 		case syscall.SIGWINCH:
 			hooks.Em.Emit("signals.resize")
-			if !running {
+			if !running && interactive {
 				lr.Resize()
 			}
 		}

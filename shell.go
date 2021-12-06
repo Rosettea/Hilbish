@@ -15,6 +15,7 @@ import (
 )
 
 func RunInput(input string) {
+	running = true
 	cmdArgs, cmdString := splitInput(input)
 
 	// If alias was found, use command alias
