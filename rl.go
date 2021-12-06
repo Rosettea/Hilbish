@@ -21,6 +21,8 @@ type LineReader struct {
 }
 
 func NewLineReader(prompt string) *LineReader {
+	readline.Init()
+
 	readline.Completer = func(query string, ctx string) []string {
 		var completions []string
 		// trim whitespace from ctx

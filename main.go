@@ -144,7 +144,6 @@ func main() {
 	RunLogin()
 	RunConfig(*configflag)
 
-	lr = NewLineReader("")
 
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
@@ -167,6 +166,7 @@ func main() {
 		os.Exit(0)
 	}
 
+	lr = NewLineReader("")
 input:
 	for interactive {
 		running = false
