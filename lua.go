@@ -34,7 +34,7 @@ func LuaInit() {
 	l.SetGlobal("interval", l.NewFunction(hshinterval))
 
 	// yes this is stupid, i know
-	l.PreloadModule("hilbish", HilbishLoader)
+	l.PreloadModule("hilbish", hilbishLoader)
 	l.DoString("hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
@@ -75,7 +75,7 @@ func LuaInit() {
 		}
 	}
 }
-func RunConfig(confpath string) {
+func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
@@ -88,7 +88,7 @@ func RunConfig(confpath string) {
 	}
 }
 
-func RunLogin() {
+func runLogin() {
 	if _, err := os.Stat(curuser.HomeDir + "/.hprofile.lua"); os.IsNotExist(err) {
 		return
 	}

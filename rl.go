@@ -16,11 +16,11 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-type LineReader struct {
+type lineReader struct {
 	Prompt string
 }
 
-func NewLineReader(prompt string) *LineReader {
+func newLineReader(prompt string) *lineReader {
 	readline.Init()
 
 	readline.Completer = func(query string, ctx string) []string {
@@ -154,30 +154,30 @@ func NewLineReader(prompt string) *LineReader {
 	}
 	readline.LoadHistory(defaultHistPath)
 
-	return &LineReader{
+	return &lineReader{
 		Prompt: prompt,
 	}
 }
 
-func (lr *LineReader) Read() (string, error) {
+func (lr *lineReader) Read() (string, error) {
 	hooks.Em.Emit("command.precmd", nil)
 	return readline.String(lr.Prompt)
 }
 
-func (lr *LineReader) SetPrompt(prompt string) {
+func (lr *lineReader) SetPrompt(prompt string) {
 	lr.Prompt = prompt
 }
 
-func (lr *LineReader) AddHistory(cmd string) {
+func (lr *lineReader) AddHistory(cmd string) {
 	readline.AddHistory(cmd)
 	readline.SaveHistory(defaultHistPath)
 }
 
-func (lr *LineReader) ClearInput() {
+func (lr *lineReader) ClearInput() {
 	readline.ReplaceLine("", 0)
 	readline.RefreshLine()
 }
 
-func (lr *LineReader) Resize() {
+func (lr *lineReader) Resize() {
 	readline.Resize()
 }

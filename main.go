@@ -21,7 +21,7 @@ import (
 
 var (
 	l *lua.LState
-	lr *LineReader
+	lr *lineReader
 
 	commands = map[string]*lua.LFunction{}
 	aliases = map[string]string{}
@@ -138,20 +138,20 @@ func main() {
 		}
 	}
 
-	go HandleSignals()
+	go handleSignals()
 	LuaInit()
-	RunLogin()
-	RunConfig(*configflag)
+	runLogin()
+	runConfig(*configflag)
 
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 		for scanner.Scan() {
-			RunInput(scanner.Text())
+			runInput(scanner.Text())
 		}
 	}
 
 	if *cmdflag != "" {
-		RunInput(*cmdflag)
+		runInput(*cmdflag)
 	}
 
 	if getopt.NArgs() > 0 {
@@ -169,7 +169,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	lr = NewLineReader("")
+	lr = newLineReader("")
 input:
 	for interactive {
 		running = false
@@ -194,7 +194,7 @@ input:
 
 		if strings.HasSuffix(input, "\\") {
 			for {
-				input, err = ContinuePrompt(strings.TrimSuffix(input, "\\"))
+				input, err = continuePrompt(strings.TrimSuffix(input, "\\"))
 				if err != nil {
 					goto input // continue inside nested loop
 				}
@@ -203,8 +203,8 @@ input:
 				}
 			}
 		}
-		HandleHistory(input)
-		RunInput(input)
+		handleHistory(input)
+		runInput(input)
 
 		termwidth, _, err := term.GetSize(0)
 		if err != nil {
@@ -214,7 +214,7 @@ input:
 	}
 }
 
-func ContinuePrompt(prev string) (string, error) {
+func continuePrompt(prev string) (string, error) {
 	hooks.Em.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
 	cont, err := lr.Read()
@@ -259,8 +259,7 @@ func fmtPrompt() string {
 	return nprompt
 }
 
-// do i even have to say
-func HandleSignals() {
+func handleSignals() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGWINCH)
 
@@ -280,7 +279,7 @@ func HandleSignals() {
 	}
 }
 
-func HandleHistory(cmd string) {
+func handleHistory(cmd string) {
 	lr.AddHistory(cmd)
 	// TODO: load history again (history shared between sessions like this ye)
 }

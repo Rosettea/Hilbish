@@ -8,36 +8,36 @@ package main
 
 import "github.com/Rosettea/Hilbiline"
 
-type LineReader struct {
+type lineReader struct {
 	hl *hilbiline.HilbilineState
 }
 
 // other gophers might hate this naming but this is local, shut up
-func NewLineReader(prompt string) *LineReader {
+func newLineReader(prompt string) *lineReader {
 	hl := hilbiline.New(prompt)
 
-	return &LineReader{
+	return &lineReader{
 		&hl,
 	}
 }
 
-func (lr *LineReader) Read() (string, error) {
+func (lr *lineReader) Read() (string, error) {
 	return lr.hl.Read()
 }
 
-func (lr *LineReader) SetPrompt(prompt string) {
+func (lr *lineReader) SetPrompt(prompt string) {
 	lr.hl.SetPrompt(prompt)
 }
 
-func (lr *LineReader) AddHistory(cmd string) {
+func (lr *lineReader) AddHistory(cmd string) {
 	return
 }
 
-func (lr *LineReader) ClearInput() {
+func (lr *lineReader) ClearInput() {
 	return
 }
 
-func (lr *LineReader) Resize() {
+func (lr *lineReader) Resize() {
 	return
 }
 

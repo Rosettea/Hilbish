@@ -14,7 +14,7 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func RunInput(input string) {
+func runInput(input string) {
 	running = true
 	cmdArgs, cmdString := splitInput(input)
 
@@ -61,7 +61,7 @@ func RunInput(input string) {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			for {
-				cmdString, err = ContinuePrompt(strings.TrimSuffix(cmdString, "\\"))
+				cmdString, err = continuePrompt(strings.TrimSuffix(cmdString, "\\"))
 				if err != nil {
 					break
 				}

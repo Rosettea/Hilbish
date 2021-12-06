@@ -22,7 +22,7 @@ var exports = map[string]lua.LGFunction {
 	"read": hlread,
 }
 
-func HilbishLoader(L *lua.LState) int {
+func hilbishLoader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
 
 	host, _ := os.Hostname()
@@ -103,7 +103,7 @@ func getenv(key, fallback string) string {
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 func hlread(L *lua.LState) int {
 	luaprompt := L.CheckString(1)
-	lualr := NewLineReader(luaprompt)
+	lualr := newLineReader(luaprompt)
 
 	input, err := lualr.Read()
 	if err != nil {
