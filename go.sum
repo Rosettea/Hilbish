@@ -1,5 +1,7 @@
 github.com/Rosettea/Hilbiline v0.0.0-20210603231612-80054dac3650 h1:nzFJUdJU8UJ1DA8mSQp4eoBtQyOJyecekVWusjfQsqE=
 github.com/Rosettea/Hilbiline v0.0.0-20210603231612-80054dac3650/go.mod h1:/FFZ4cgR6TXXYaskRUxyLIYdfG0PS4BPtWjWRQms754=
+github.com/Rosettea/Hilbiline v0.0.0-20210624011007-8088a2d84b65 h1:z6alP313nLg1U/V3bKSd6849L/A2LxDSwKv4CPqqzDk=
+github.com/Rosettea/Hilbiline v0.0.0-20210624011007-8088a2d84b65/go.mod h1:/FFZ4cgR6TXXYaskRUxyLIYdfG0PS4BPtWjWRQms754=
 github.com/Rosettea/Hilbiline v0.0.0-20210710124707-aa6e3ff34cb2 h1:6f1umn6mkodpGf6rK9LZjr4Gut2uS+b8QLoFBFTeOE8=
 github.com/Rosettea/Hilbiline v0.0.0-20210710124707-aa6e3ff34cb2/go.mod h1:0J2+sRC+d4a3swcH20sVlFvYUEXASvGTHJnVTTI4S9w=
 github.com/Rosettea/readline v0.0.0-20211122152601-6d95ce44b7ed h1:sGsGPG+b5h9OR1GjM0PiM4iemB9hmi0o8cg2YRSRKko=

@@ -3,12 +3,16 @@ module hilbish
 go 1.16
 
 require (
-	github.com/Rosettea/Hilbiline v0.0.0-20210710124707-aa6e3ff34cb2
+	github.com/Rosettea/Hilbiline v0.0.0-20210624011007-8088a2d84b65
 	github.com/Rosettea/readline v0.0.0-20211206201906-5570232ed3b3
 	github.com/bobappleyard/readline v0.0.0-20150707195538-7e300e02d38e
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
+	github.com/creack/goselect v0.1.2 // indirect
+	github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 // indirect
+	github.com/kr/pty v1.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/pborman/ansi v1.0.0 // indirect
 	github.com/pborman/getopt v1.1.0
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
