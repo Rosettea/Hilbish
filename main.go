@@ -17,7 +17,6 @@ import (
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"golang.org/x/term"
-	"layeh.com/gopher-luar"
 )
 
 var (
@@ -156,7 +155,12 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		l.SetGlobal("args", luar.New(l, getopt.Args()))
+		luaArgs := l.NewTable()
+		for _, arg := range getopt.Args() {
+			luaArgs.Append(lua.LString(arg))
+		}
+
+		l.SetGlobal("args", luaArgs)
 		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
