@@ -37,6 +37,9 @@ commander.register('cd', function (args)
 	end
 	fs.cd(hilbish.home)
 	bait.throw('cd', hilbish.home)
+
+	table.insert(recentDirs, 1, hilbish.home)
+	recentDirs[11] = nil
 end)
 
 commander.register('exit', function()
