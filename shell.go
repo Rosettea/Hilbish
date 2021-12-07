@@ -133,7 +133,7 @@ func execCommand(cmd string) error {
 			}
 
 			luaexitcode := l.Get(-1)
-			var exitcode uint8 = 0
+			var exitcode uint8
 
 			l.Pop(1)
 

@@ -55,7 +55,7 @@ func hilbishLoader(L *lua.LState) int {
 // run(cmd)
 // Runs `cmd` in Hilbish's sh interpreter
 func hlrun(L *lua.LState) int {
-	var exitcode uint8 = 0
+	var exitcode uint8
 	cmd := L.CheckString(1)
 	err := execCommand(cmd)
 
