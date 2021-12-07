@@ -75,7 +75,8 @@ These are the global Hilbish functions that are always available and not part of
 				return
 			end
 			funcdocs = f:read '*a'
-			local subdocs = table.map(fs.readdir(moddocPath), function(fname)
+			local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= 'index.txt' end)
+			local subdocs = table.map(moddocs, function(fname)
 				return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.txt', '')))
 			end)
 			if subdocName == 'index' then
