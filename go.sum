@@ -1,7 +1,11 @@
+github.com/Rosettea/Hilbiline v0.0.0-20210624011007-8088a2d84b65 h1:z6alP313nLg1U/V3bKSd6849L/A2LxDSwKv4CPqqzDk=
+github.com/Rosettea/Hilbiline v0.0.0-20210624011007-8088a2d84b65/go.mod h1:/FFZ4cgR6TXXYaskRUxyLIYdfG0PS4BPtWjWRQms754=
 github.com/Rosettea/Hilbiline v0.0.0-20210710124707-aa6e3ff34cb2 h1:6f1umn6mkodpGf6rK9LZjr4Gut2uS+b8QLoFBFTeOE8=
 github.com/Rosettea/Hilbiline v0.0.0-20210710124707-aa6e3ff34cb2/go.mod h1:0J2+sRC+d4a3swcH20sVlFvYUEXASvGTHJnVTTI4S9w=
 github.com/Rosettea/readline v0.0.0-20211206201906-5570232ed3b3 h1:y+BeaQipF8CuIIkIjvGO7TWlA03t9Nlq+m+cSwXEJ7I=
 github.com/Rosettea/readline v0.0.0-20211206201906-5570232ed3b3/go.mod h1:OH+WJSCks0t2ISvaCFUT4ZxNGr4Etq4ju9JE/UxH/5o=
+github.com/Rosettea/readline-1 v0.1.0-beta.0.20211207003625-341c7985ad7d h1:KBttN41h/tPahmpaZavviwQ8q4rCkt5CD0HdVmfgPVA=
+github.com/Rosettea/readline-1 v0.1.0-beta.0.20211207003625-341c7985ad7d/go.mod h1:QiUAvbhg8PzCA4hlafCUl0bKD/0VmcocM4AjqtszAJs=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5 h1:ygwVRX8gf5MHA0VzSgOdscCEoAJLjM8joEotfQPgAd0=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5/go.mod h1:R09vh/04ILvP2Gj8/Z9Jd0Dh0ZIvaucowMEs6abQpWs=
 github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d h1:licZJFw2RwpHMqeKTCYkitsPqHNxTmd4SNR5r94FGM8=
