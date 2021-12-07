@@ -53,7 +53,8 @@ func main() {
 			mod := l
 			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
 			if !strings.HasPrefix(t.Name, prefix[mod]) || t.Name == "Loader" { continue }
-			parts := strings.Split(t.Doc, "\n")
+			docParts := strings.TrimSpace(t.Doc)
+			parts := strings.Split(docParts, "\n")
 			funcsig := parts[0]
 			doc := parts[1:]
 
@@ -62,7 +63,9 @@ func main() {
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
 				if !strings.HasPrefix(m.Name, prefix[l]) || m.Name == "Loader" { continue }
-				parts := strings.Split(m.Doc, "\n")
+				// trim extra spaces from the doc
+				docParts := strings.TrimSpace(m.Doc)
+				parts := strings.Split(docParts, "\n")
 				funcsig := parts[0]
 				doc := parts[1:]
 
