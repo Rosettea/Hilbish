@@ -1,5 +1,4 @@
-//go:build !hilbiline
-// +build !hilbiline
+// +build !hilbiline,!goreadline
 
 package main
 

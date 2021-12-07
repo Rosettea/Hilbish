@@ -1,4 +1,4 @@
-// +build hilbiline
+// +build hilbiline,!goreadline
 
 package main
 
