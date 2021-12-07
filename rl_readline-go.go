@@ -21,73 +21,8 @@ type lineReader struct {
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
 	rl := readline.NewInstance()
-	rl.TabCompleter = func(line []rune, pos int, dtx readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
-		var items = []string{
-	"abaya",
-	"abomasum",
-	"absquatulate",
-	"adscititious",
-	"afreet",
-	"Albertopolis",
-	"alcazar",
-	"amphibology",
-	"amphisbaena",
-	"anfractuous",
-	"anguilliform",
-	"apoptosis",
-	"apple-knocker",
-	"argle-bargle",
-	"Argus-eyed",
-	"argute",
-	"ariel",
-	"aristotle",
-	"aspergillum",
-	"astrobleme",
-	"Attic",
-	"autotomy",
-	"badmash",
-	"bandoline",
-	"bardolatry",
-	"Barmecide",
-	"barn",
-	"bashment",
-	"bawbee",
-	"benthos",
-	"bergschrund",
-	"bezoar",
-	"bibliopole",
-	"bichon",
-	"bilboes",
-	"bindlestiff",
-	"bingle",
-	"blatherskite",
-	"bleeding",
-	"blind",
-	"bobsy-die",
-	"boffola",
-	"boilover",
-	"borborygmus",
-	"breatharian",
-	"Brobdingnagian",
-	"bruxism",
-	"bumbo",
-}
-		var suggestions []string
-
-	for i := range items {
-		if strings.HasPrefix(items[i], string(line)) {
-			suggestions = append(suggestions, items[i][pos:])
-		}
-	}
-
-	return string(line[pos:]), []*readline.CompletionGroup{
-			{
-				Suggestions: suggestions,
-			},
-		}
-	}
-
 	rl.Multiline = true
+
 	return &lineReader{
 		rl,
 	}
