@@ -1,3 +1,4 @@
+//go:build !hilbiline && !goreadline
 // +build !hilbiline,!goreadline
 
 package main
@@ -126,18 +127,53 @@ func newLineReader(prompt string) *lineReader {
 								if key.String() == fields[1] {
 									// if value is a table, we need to iterate over it
 									// and add each value to completions
-									valueTbl := value.(*lua.LTable)
-									valueTbl.ForEach(func(key lua.LValue, value lua.LValue) {
-										val := value.String()
-										if val == "<file>" {
-											// complete files
-											completions = append(completions, readline.FilenameCompleter(query, ctx)...)
-										} else {
-											if strings.HasPrefix(val, query) {
-												completions = append(completions, val)
+									// check if value is either a table or function
+									if value.Type() == lua.LTTable {
+										valueTbl := value.(*lua.LTable)
+										valueTbl.ForEach(func(key lua.LValue, value lua.LValue) {
+											val := value.String()
+											if val == "<file>" {
+												// complete files
+												completions = append(completions, readline.FilenameCompleter(query, ctx)...)
+											} else {
+												if strings.HasPrefix(val, query) {
+													completions = append(completions, val)
+												}
 											}
+										})
+									} else if value.Type() == lua.LTFunction {
+										// if value is a function, we need to call it
+										// and add each value to completions
+										// completionsCtx is the context we pass to the function,
+										// removing 2 fields from the fields array
+										completionsCtx := strings.Join(fields[2:], " ")
+										err := l.CallByParam(lua.P{
+											Fn: value,
+											NRet: 1,
+											Protect: true,
+										}, lua.LString(query), lua.LString(completionsCtx))
+
+										if err != nil {
+											return
 										}
-									})
+
+										luacompleteTable := l.Get(-1)
+										l.Pop(1)
+
+										// just check if its actually a table and add it to the completions
+										if cmpTbl, ok := luacompleteTable.(*lua.LTable); ok {
+											cmpTbl.ForEach(func(key lua.LValue, value lua.LValue) {
+												val := value.String()
+												if strings.HasPrefix(val, query) {
+													completions = append(completions, val)
+												}
+											})
+										}
+									} else {
+										// throw lua error
+										// complete.cmdname: error message...
+										l.RaiseError("complete." + fields[0] + ": completion value is not a table or function")
+									}
 								}
 							}
 						}
