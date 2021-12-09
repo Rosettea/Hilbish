@@ -139,7 +139,7 @@ func main() {
 	}
 
 	go handleSignals()
-	LuaInit()
+	luaInit()
 	runLogin()
 	runConfig(*configflag)
 

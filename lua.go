@@ -19,7 +19,7 @@ import (
 
 var minimalconf = `prompt '& '`
 
-func LuaInit() {
+func luaInit() {
 	l = lua.NewState()
 	l.OpenLibs()
 
