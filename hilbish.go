@@ -46,7 +46,7 @@ func hilbishLoader(L *lua.LState) int {
 	L.SetField(mod, "xdg", xdg)
 
 	util.Document(L, xdg, "Variables for the XDG base directory spec.")
-	util.Document(L, mod, "A miscellaneous sort of \"core\" API for things that relate to the shell itself and others.")
+	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 	L.Push(mod)
 
 	return 1
