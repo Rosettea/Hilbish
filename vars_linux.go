@@ -8,12 +8,12 @@ var (
 	.. hilbish.dataDir .. '/libs/?/init.lua;'
 	.. hilbish.dataDir .. '/libs/?/?.lua;'` + linuxUserPaths
 	linuxUserPaths = `
-	.. hilbish.xdg.data .. '/hilbish/libs/?/init.lua;'
-	.. hilbish.xdg.data	.. '/hilbish/libs/?/?.lua;'
-	.. hilbish.xdg.data	.. '/hilbish/libs/?.lua;'
-	.. hilbish.xdg.config	.. '/hilbish/?/init.lua;'
-	.. hilbish.xdg.config	.. '/hilbish/?/?.lua;'
-	.. hilbish.xdg.config	.. '/hilbish/?.lua'`
+	.. hilbish.userDir.data     .. '/hilbish/libs/?/init.lua;'
+	.. hilbish.userDir.data	    .. '/hilbish/libs/?/?.lua;'
+	.. hilbish.userDir.data	    .. '/hilbish/libs/?.lua;'
+	.. hilbish.userDir.config	.. '/hilbish/?/init.lua;'
+	.. hilbish.userDir.config	.. '/hilbish/?/?.lua;'
+	.. hilbish.userDir.config	.. '/hilbish/?.lua'`
 	dataDir = "/usr/share/hilbish"
 	preloadPath = dataDir + "/preload.lua"
 	sampleConfPath = dataDir + "/.hilbishrc.lua" // Path to default/sample config

@@ -5,6 +5,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -40,12 +41,22 @@ func hilbishLoader(L *lua.LState) int {
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
 
-	xdg := L.NewTable()
-	util.SetField(L, xdg, "config", lua.LString(confDir), "XDG config directory")
-	util.SetField(L, xdg, "data", lua.LString(getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")), "XDG data directory")
-	L.SetField(mod, "xdg", xdg)
+	hshuser := L.NewTable()
+	userConfigDir, _ := os.UserConfigDir()
+	userDataDir := ""
+	// i honestly dont know what directories to use for this
+	switch runtime.GOOS {
+	case "linux":
+		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
+	default:
+		userDataDir = filepath.Join(userConfigDir, "data")
+	}
 
-	util.Document(L, xdg, "Variables for the XDG base directory spec.")
+	util.SetField(L, hshuser, "config", lua.LString(userConfigDir), "User's config directory")
+	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
+	util.Document(L, hshuser, "User directories to store configs and/or modules.")
+	L.SetField(mod, "userDir", hshuser)
+
 	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 	L.Push(mod)
 
@@ -53,7 +64,7 @@ func hilbishLoader(L *lua.LState) int {
 }
 
 // run(cmd)
-// Runs `cmd` in Hilbish's sh interpreter
+// Runs `cmd` in Hilbish's sh interpreter.
 func hlrun(L *lua.LState) int {
 	var exitcode uint8
 	cmd := L.CheckString(1)
@@ -74,7 +85,14 @@ func hlrun(L *lua.LState) int {
 func hlflag(L *lua.LState) int {
 	flagchar := L.CheckString(1)
 
-	L.Push(lua.LBool(getopt.Lookup([]rune(flagchar)[0]).Seen()))
+	flag := getopt.Lookup([]rune(flagchar)[0])
+	if flag == nil {
+		L.Push(lua.LNil)
+		return 1
+	}
+
+	passed := flag.Seen()
+	L.Push(lua.LBool(passed))
 
 	return 1
 }
