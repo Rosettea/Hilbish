@@ -49,7 +49,7 @@ func hilbishLoader(L *lua.LState) int {
 	case "linux":
 		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
 	default:
-		userDataDir = filepath.Join(userConfigDir, "data")
+		userDataDir = filepath.Join(userConfigDir)
 	}
 
 	util.SetField(L, hshuser, "config", lua.LString(userConfigDir), "User's config directory")
