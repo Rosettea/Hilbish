@@ -1,6 +1,6 @@
 <div align="center">
 	<img src="./assets/hilbish-flower.png" width=128><br>
-	<img src="./assets/hilbish-text.png" width=256><br><br>
+	<img src="./assets/hilbish-text.png" width=256><br>
 	<blockquote>
 	🌺 The flower shell. A comfy and nice little shell for Lua users and fans!
 	</blockquote><br>
@@ -14,9 +14,12 @@
 	</p>
 </div>
 
-Hilbish is a new, Unix-like shell which uses Lua as its configuration language.
-It's decently fast for interactive use and includes a bunch of utility functions and features
-to make your life in a terminal easier.
+Hilbish is a Unix-y shell which uses Lua for scripting. Things like the prompt,
+general configuration and such are done with Lua.
+
+For interactive use, it uses a library to run sh which works on all
+platforms Hilbish can be compiled for. It can also act as a Lua REPL if you want
+it to be.
 
 # Screenshots
 <div align="center">
@@ -102,7 +105,7 @@ After you did all that, run `sudo make install` to install Hilbish globally.
 Any kind of contributions to Hilbish are welcome!
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before getting started.
 
-##### Thanks to everyone below who's contributed!
+**Thanks to everyone below who's contributed!**  
 <a href="https://github.com/Hilbis/Hilbish/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Hilbis/Hilbish" />
 </a>
@@ -110,8 +113,5 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before getting started.
 *Made with [contributors-img](https://contrib.rocks).*
 
 # License
-Hilbish is licensed under the MIT license!
-Read the [license here](LICENSE) for more info. 
-
-Images in the [assets](assets/) folder are under CC-BY-SA 4.0
-
+Hilbish is licensed under the [MIT license](LICENSE).  
+[Images and assets](assets/) are licensed under CC-BY-SA 4.0
