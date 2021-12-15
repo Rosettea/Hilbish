@@ -16,21 +16,9 @@ import (
 
 func runInput(input string) {
 	running = true
-	cmdArgs, cmdString := splitInput(input)
+	cmdString := aliases.Resolve(input)
 
 	// If alias was found, use command alias
-	for aliases[cmdArgs[0]] != "" {
-		alias := aliases[cmdArgs[0]]
-		cmdString = alias + strings.TrimPrefix(cmdString, cmdArgs[0])
-		cmdArgs, cmdString = splitInput(cmdString)
-
-		if aliases[cmdArgs[0]] == alias {
-			break
-		}
-		if aliases[cmdArgs[0]] != "" {
-			continue
-		}
-	}
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
 	// First try to load input, essentially compiling to bytecode
@@ -99,19 +87,8 @@ func execCommand(cmd string) error {
 		_, argstring := splitInput(strings.Join(args, " "))
 
 		// If alias was found, use command alias
-		for aliases[args[0]] != "" {
-			alias := aliases[args[0]]
-			argstring = alias + strings.TrimPrefix(argstring, args[0])
-			cmdArgs, _ := splitInput(argstring)
-			args = cmdArgs
-
-			if aliases[args[0]] == alias {
-				break
-			}
-			if aliases[args[0]] != "" {
-				continue
-			}
-		}
+		argstring = aliases.Resolve(argstring)
+		args, _ = splitInput(argstring)
 
 		// If command is defined in Lua then run it
 		luacmdArgs := l.NewTable()

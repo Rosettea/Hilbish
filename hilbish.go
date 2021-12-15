@@ -28,7 +28,6 @@ func hilbishLoader(L *lua.LState) int {
 
 	host, _ := os.Hostname()
 	username := curuser.Username
-	// this will be baked into binary since GOOS is a constant
 	if runtime.GOOS == "windows" {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
@@ -40,7 +39,9 @@ func hilbishLoader(L *lua.LState) int {
 	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
+	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
+	// hilbish.userDir table
 	hshuser := L.NewTable()
 	userConfigDir, _ := os.UserConfigDir()
 	userDataDir := ""
@@ -57,7 +58,12 @@ func hilbishLoader(L *lua.LState) int {
 	util.Document(L, hshuser, "User directories to store configs and/or modules.")
 	L.SetField(mod, "userDir", hshuser)
 
-	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	// hilbish.aliases table
+	aliases = NewAliases()
+	aliasesModule := aliases.Loader(L)
+	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
+	L.SetField(mod, "aliases", aliasesModule)
+
 	L.Push(mod)
 
 	return 1

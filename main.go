@@ -24,7 +24,6 @@ var (
 	lr *lineReader
 
 	commands = map[string]*lua.LFunction{}
-	aliases = map[string]string{}
 	luaCompletions = map[string]*lua.LFunction{}
 
 	confDir string

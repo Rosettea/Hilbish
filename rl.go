@@ -35,18 +35,7 @@ func newLineReader(prompt string) *lineReader {
 			return []string{}
 		}
 
-		for aliases[fields[0]] != "" {
-			alias := aliases[fields[0]]
-			ctx = alias + strings.TrimPrefix(ctx, fields[0])
-			fields = strings.Split(ctx, " ")
-
-			if aliases[fields[0]] == alias {
-				break
-			}
-			if aliases[fields[0]] != "" {
-				continue
-			}
-		}
+		ctx = aliases.Resolve(ctx)
 
 		if len(fields) == 1 {
 			prefixes := []string{"./", "../", "/", "~/"}

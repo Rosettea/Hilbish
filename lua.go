@@ -129,7 +129,7 @@ func hshalias(L *lua.LState) int {
 	alias := L.CheckString(1)
 	source := L.CheckString(2)
 
-	aliases[alias] = source
+	aliases.Add(alias, source)
 
 	return 1
 }
