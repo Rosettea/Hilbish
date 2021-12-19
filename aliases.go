@@ -68,7 +68,6 @@ func (h *hilbishAliases) Loader(L *lua.LState) *lua.LTable {
 func (h *hilbishAliases) luaAdd(L *lua.LState) int {
 	alias := L.CheckString(1)
 	cmd := L.CheckString(2)
-
 	h.Add(alias, cmd)
 
 	return 0
@@ -80,12 +79,13 @@ func (h *hilbishAliases) luaList(L *lua.LState) int {
 		aliasesList.RawSetString(k, lua.LString(v))
 	}
 
+	L.Push(aliasesList)
+
 	return 1
 }
 
 func (h *hilbishAliases) luaDelete(L *lua.LState) int {
 	alias := L.CheckString(1)
-
 	h.Delete(alias)
 
 	return 0
