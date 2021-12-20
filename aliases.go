@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/yuin/gopher-lua"
 )
@@ -10,16 +11,21 @@ var aliases *hilbishAliases
 
 type hilbishAliases struct {
 	aliases map[string]string
+	mu *sync.RWMutex
 }
 
 // initialize aliases map
 func NewAliases() *hilbishAliases {
 	return &hilbishAliases{
 		aliases: make(map[string]string),
+		mu: &sync.RWMutex{},
 	}
 }
 
 func (h *hilbishAliases) Add(alias, cmd string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
 	h.aliases[alias] = cmd
 }
 
@@ -28,10 +34,16 @@ func (h *hilbishAliases) All() map[string]string {
 }
 
 func (h *hilbishAliases) Delete(alias string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
 	delete(h.aliases, alias)
 }
 
 func (h *hilbishAliases) Resolve(cmdstr string) string {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
 	args := strings.Split(cmdstr, " ")
 	for h.aliases[args[0]] != "" {
 		alias := h.aliases[args[0]]
