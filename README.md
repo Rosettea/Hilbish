@@ -31,7 +31,7 @@ it to be.
 # Installation
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
-### Prebuilt binaries
+## Prebuilt binaries
 Binaries are provided for the latest commit.  
 
 **Note that these use Hilbiline, not readline, and may be missing functionality
@@ -44,24 +44,25 @@ Then click on the artifacts drop down, and download artifact for your platform,
 like what is highlighted in the screenshot.  
 <br><img src="https://modeus.is-inside.me/KJ0Puceb.png"><br>
 
-### AUR
-![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)  
+## AUR
+[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish)
 Arch Linux users can install Hilbish from the AUR with the following command:  
 ```sh
 yay -S hilbish
 ```
+
+[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish-git)
 Or from the latest `master` commit with:  
 ```sh
 yay -S hilbish-git
 ```
 
-### Nixpkgs
+## Nixpkgs
 Nix/NixOS users can install Hilbish from the central repository, nixpkgs, through the usual ways.
-
 If you're new to nix you should probably read up on how to do that [here](https://nixos.wiki/wiki/Cheatsheet).
 
-### Manual Build
-#### Prerequisites
+## Manual Build
+### Prerequisites
 - [Go 1.16+](https://go.dev)
 - GNU Readline
 
