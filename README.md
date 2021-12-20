@@ -45,13 +45,13 @@ like what is highlighted in the screenshot.
 <br><img src="https://modeus.is-inside.me/KJ0Puceb.png"><br>
 
 ## AUR
-[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish)
+[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish)  
 Arch Linux users can install Hilbish from the AUR with the following command:  
 ```sh
 yay -S hilbish
 ```
 
-[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish-git)
+[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish-git)  
 Or from the latest `master` commit with:  
 ```sh
 yay -S hilbish-git
