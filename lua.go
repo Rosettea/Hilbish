@@ -137,7 +137,23 @@ func hshalias(L *lua.LState) int {
 // appendPath(dir)
 // Appends `dir` to $PATH
 func hshappendPath(L *lua.LState) int {
-	dir := L.CheckString(1)
+	// check if dir is a table or a string
+	arg := L.Get(1)
+	fmt.Println(arg.Type())
+	if arg.Type() == lua.LTTable {
+		arg.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
+			appendPath(v.String())
+		})
+	} else if arg.Type() == lua.LTString {
+		appendPath(arg.String())
+	} else {
+		L.RaiseError("bad argument to appendPath (expected string or table, got %v)", L.Get(1).Type().String())
+	}
+
+	return 0
+}
+
+func appendPath(dir string) {
 	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
 	pathenv := os.Getenv("PATH")
 
@@ -145,8 +161,6 @@ func hshappendPath(L *lua.LState) int {
 	if !strings.Contains(pathenv, dir) {
 		os.Setenv("PATH", pathenv + string(os.PathListSeparator) + dir)
 	}
-
-	return 0
 }
 
 // exec(cmd)
