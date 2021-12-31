@@ -23,11 +23,18 @@ var exports = map[string]lua.LGFunction {
 	"read": hlread,
 }
 
+var greeting string
+
 func hilbishLoader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
 
 	host, _ := os.Hostname()
 	username := curuser.Username
+
+	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + curuser.Username + `{reset}.
+The nice lil shell for {blue}Lua{reset} fanatics!
+`
+
 	if runtime.GOOS == "windows" {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
@@ -39,6 +46,7 @@ func hilbishLoader(L *lua.LState) int {
 	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
+	util.SetField(L, mod, "greeting", lua.LString(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
