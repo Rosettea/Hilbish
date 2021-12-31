@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/yuin/gopher-lua"
+	"mvdan.cc/sh/v3/shell"
 	//"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -85,10 +86,19 @@ func execCommand(cmd string) error {
 
 	exechandle := func(ctx context.Context, args []string) error {
 		_, argstring := splitInput(strings.Join(args, " "))
+		// i dont really like this but it works
+		if aliases.All()[args[0]] != "" {
+			for i, arg := range args {
+				if strings.Contains(arg, " ") {
+					args[i] = fmt.Sprintf("\"%s\"", arg)
+				}
+			}
+			_, argstring = splitInput(strings.Join(args, " "))
 
-		// If alias was found, use command alias
-		argstring = aliases.Resolve(argstring)
-		args, _ = splitInput(argstring)
+			// If alias was found, use command alias
+			argstring = aliases.Resolve(argstring)
+			args, _ = shell.Fields(argstring, nil)
+		}
 
 		// If command is defined in Lua then run it
 		luacmdArgs := l.NewTable()
