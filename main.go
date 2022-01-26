@@ -260,7 +260,7 @@ func fmtPrompt() string {
 
 func handleSignals() {
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGWINCH)
+	signal.Notify(c, os.Interrupt, syscall.SIGWINCH, syscall.SIGUSR1, syscall.SIGUSR2)
 
 	for s := range c {
 		switch s {
@@ -274,6 +274,8 @@ func handleSignals() {
 			if !running && interactive {
 				lr.Resize()
 			}
+		case syscall.SIGUSR1: hooks.Em.Emit("signals.sigusr1")
+		case syscall.SIGUSR2: hooks.Em.Emit("signals.sigusr2")
 		}
 	}
 }
