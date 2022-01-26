@@ -3,10 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
-	"syscall"
-	"time"
 
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
@@ -14,7 +10,6 @@ import (
 	"hilbish/golibs/terminal"
 
 	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
 )
 
 var minimalconf = `prompt '& '`
@@ -22,16 +17,6 @@ var minimalconf = `prompt '& '`
 func luaInit() {
 	l = lua.NewState()
 	l.OpenLibs()
-
-	l.SetGlobal("prompt", l.NewFunction(hshprompt))
-	l.SetGlobal("multiprompt", l.NewFunction(hshmlprompt))
-	l.SetGlobal("alias", l.NewFunction(hshalias))
-	l.SetGlobal("appendPath", l.NewFunction(hshappendPath))
-	l.SetGlobal("prependPath", l.NewFunction(hshprependPath))
-	l.SetGlobal("exec", l.NewFunction(hshexec))
-	l.SetGlobal("goro", luar.New(l, hshgoroutine))
-	l.SetGlobal("timeout", luar.New(l, hshtimeout))
-	l.SetGlobal("interval", l.NewFunction(hshinterval))
 
 	// yes this is stupid, i know
 	l.PreloadModule("hilbish", hilbishLoader)
@@ -61,7 +46,7 @@ func luaInit() {
 		}
 	})
 
-	l.SetGlobal("complete", l.NewFunction(hshcomplete))
+	l.SetGlobal("complete", l.NewFunction(hlcomplete))
 
 	// Add more paths that Lua can require from
 	l.DoString("package.path = package.path .. " + requirePaths)
@@ -102,159 +87,3 @@ func runLogin() {
 	}
 }
 
-/* prompt(str)
-Changes the shell prompt to `str`
-There are a few verbs that can be used in the prompt text.
-These will be formatted and replaced with the appropriate values.
-`%d` - Current working directory
-`%u` - Name of current user
-`%h` - Hostname of device */
-func hshprompt(L *lua.LState) int {
-	prompt = L.CheckString(1)
-
-	return 0
-}
-
-// multiprompt(str)
-// Changes the continued line prompt to `str`
-func hshmlprompt(L *lua.LState) int {
-	multilinePrompt = L.CheckString(1)
-
-	return 0
-}
-
-// alias(cmd, orig)
-// Sets an alias of `orig` to `cmd`
-func hshalias(L *lua.LState) int {
-	alias := L.CheckString(1)
-	source := L.CheckString(2)
-
-	aliases.Add(alias, source)
-
-	return 1
-}
-
-// appendPath(dir)
-// Appends `dir` to $PATH
-func hshappendPath(L *lua.LState) int {
-	// check if dir is a table or a string
-	arg := L.Get(1)
-	fmt.Println(arg.Type())
-	if arg.Type() == lua.LTTable {
-		arg.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
-			appendPath(v.String())
-		})
-	} else if arg.Type() == lua.LTString {
-		appendPath(arg.String())
-	} else {
-		L.RaiseError("bad argument to appendPath (expected string or table, got %v)", L.Get(1).Type().String())
-	}
-
-	return 0
-}
-
-func appendPath(dir string) {
-	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
-	pathenv := os.Getenv("PATH")
-
-	// if dir isnt already in $PATH, add it
-	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", pathenv + string(os.PathListSeparator) + dir)
-	}
-}
-
-// exec(cmd)
-// Replaces running hilbish with `cmd`
-func hshexec(L *lua.LState) int {
-	cmd := L.CheckString(1)
-	cmdArgs, _ := splitInput(cmd)
-	cmdPath, err := exec.LookPath(cmdArgs[0])
-	if err != nil {
-		fmt.Println(err)
-		// if we get here, cmdPath will be nothing
-		// therefore nothing will run
-	}
-
-	// syscall.Exec requires an absolute path to a binary
-	// path, args, string slice of environments
-	// TODO: alternative for windows
-	syscall.Exec(cmdPath, cmdArgs, os.Environ())
-	return 0 // random thought: does this ever return?
-}
-
-// goro(fn)
-// Puts `fn` in a goroutine
-func hshgoroutine(gofunc func()) {
-	go gofunc()
-}
-
-// timeout(cb, time)
-// Runs the `cb` function after `time` in milliseconds
-func hshtimeout(timeoutfunc func(), ms int) {
-	timeout := time.Duration(ms) * time.Millisecond
-	time.Sleep(timeout)
-	timeoutfunc()
-}
-
-// interval(cb, time)
-// Runs the `cb` function every `time` milliseconds
-func hshinterval(L *lua.LState) int {
-	intervalfunc := L.CheckFunction(1)
-	ms := L.CheckInt(2)
-	interval := time.Duration(ms) * time.Millisecond
-
-	ticker := time.NewTicker(interval)
-	stop := make(chan lua.LValue)
-
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				if err := L.CallByParam(lua.P{
-					Fn: intervalfunc,
-					NRet: 0,
-					Protect: true,
-				}); err != nil {
-					fmt.Fprintln(os.Stderr, "Error in interval function:\n\n", err)
-					stop <- lua.LTrue // stop the interval
-				}
-			case <-stop:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-
-	L.Push(lua.LChannel(stop))
-	return 1
-}
-
-// complete(scope, cb)
-// Registers a completion handler for `scope`.
-// A `scope` is currently only expected to be `command.<cmd>`,
-// replacing <cmd> with the name of the command (for example `command.git`).
-// `cb` must be a function that returns a table of the entries to complete.
-// Nested tables will be used as sub-completions.
-func hshcomplete(L *lua.LState) int {
-	scope := L.CheckString(1)
-	cb := L.CheckFunction(2)
-
-	luaCompletions[scope] = cb
-
-	return 0
-}
-
-// prependPath(dir)
-// Prepends `dir` to $PATH
-func hshprependPath(L *lua.LState) int {
-	dir := L.CheckString(1)
-	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
-	pathenv := os.Getenv("PATH")
-
-	// if dir isnt already in $PATH, add in
-	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", dir + string(os.PathListSeparator) + pathenv)
-	}
-
-	return 0
-}
