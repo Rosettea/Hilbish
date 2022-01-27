@@ -184,6 +184,7 @@ input:
 			// If we get a completely random error, print
 			fmt.Fprintln(os.Stderr, err)
 		}
+		oldInput := input
 
 		input = strings.TrimSpace(input)
 		if len(input) == 0 {
@@ -202,7 +203,11 @@ input:
 				}
 			}
 		}
-		handleHistory(input)
+
+		// if input has space at the beginning, dont put in history
+		if !strings.HasPrefix(oldInput, " ") {
+			handleHistory(input)
+		}
 		runInput(input)
 
 		termwidth, _, err := term.GetSize(0)
