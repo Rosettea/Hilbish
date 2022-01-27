@@ -41,3 +41,40 @@ func (lr *lineReader) Resize() {
 	return
 }
 
+// lua module
+func (lr *lineReader) Loader() *lua.LTable {
+	lrLua := map[string]lua.LGFunction{
+		"add": lr.luaAddHistory,
+		"all": lr.luaAllHistory,
+		"clear": lr.luaClearHistory,
+		"get": lr.luaGetHistory,
+		"size": lr.luaSize,
+	}
+
+	mod := l.SetFuncs(l.NewTable(), lrLua)
+
+	return mod
+}
+
+func (lr *lineReader) luaAddHistory(l *lua.LState) int {
+	cmd := l.CheckString(1)
+	lr.AddHistory(cmd)
+
+	return 0
+}
+
+func (lr *lineReader) luaSize(l *lua.LState) int {
+	return 0
+}
+
+func (lr *lineReader) luaGetHistory(l *lua.LState) int {
+	return 0
+}
+
+func (lr *lineReader) luaAllHistory(l *lua.LState) int {
+	return 0
+}
+
+func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+	return 0
+}

@@ -84,6 +84,11 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
 	L.SetField(mod, "aliases", aliasesModule)
 
+	// hilbish.history table
+	historyModule := lr.Loader(L)
+	util.Document(L, historyModule, "History interface for Hilbish.")
+	L.SetField(mod, "history", historyModule)
+
 	L.Push(mod)
 
 	return 1

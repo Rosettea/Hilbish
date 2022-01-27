@@ -205,3 +205,60 @@ func (lr *lineReader) ClearInput() {
 func (lr *lineReader) Resize() {
 	readline.Resize()
 }
+
+// lua module
+func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
+	lrLua := map[string]lua.LGFunction{
+		"add": lr.luaAddHistory,
+		"all": lr.luaAllHistory,
+		"clear": lr.luaClearHistory,
+		"get": lr.luaGetHistory,
+		"size": lr.luaSize,
+	}
+
+	mod := L.SetFuncs(L.NewTable(), lrLua)
+
+	return mod
+}
+
+func (lr *lineReader) luaAddHistory(l *lua.LState) int {
+	cmd := l.CheckString(1)
+	lr.AddHistory(cmd)
+
+	return 0
+}
+
+func (lr *lineReader) luaSize(l *lua.LState) int {
+	l.Push(lua.LNumber(readline.HistorySize()))
+
+	return 1
+}
+
+func (lr *lineReader) luaGetHistory(l *lua.LState) int {
+	idx := l.CheckInt(1)
+	cmd := readline.GetHistory(idx)
+	l.Push(lua.LString(cmd))
+
+	return 1
+}
+
+func (lr *lineReader) luaAllHistory(l *lua.LState) int {
+	tbl := l.NewTable()
+	size := readline.HistorySize()
+
+	for i := 0; i < size; i++ {
+		cmd := readline.GetHistory(i)
+		tbl.Append(lua.LString(cmd))
+	}
+
+	l.Push(tbl)
+
+	return 1
+}
+
+func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+	readline.ClearHistory()
+	readline.SaveHistory(defaultHistPath)
+
+	return 0
+}
