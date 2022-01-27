@@ -12,7 +12,7 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-var minimalconf = `prompt '& '`
+var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
 	l = lua.NewState()
