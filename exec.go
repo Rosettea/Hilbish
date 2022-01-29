@@ -173,6 +173,7 @@ func lookpath(file string) error {
 
 	return os.ErrNotExist
 }
+
 func findExecutable(name string) error {
 	f, err := os.Stat(name)
 	if err != nil {
