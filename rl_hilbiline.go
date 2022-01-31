@@ -6,7 +6,10 @@ package main
 // making them interchangable during build time
 // this is hilbiline's, as is obvious by the filename
 
-import "github.com/Rosettea/Hilbiline"
+import (
+	"github.com/Rosettea/Hilbiline"
+	"github.com/yuin/gopher-lua"
+)
 
 type lineReader struct {
 	hl *hilbiline.HilbilineState

@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/maxlandon/readline"
+	"github.com/yuin/gopher-lua"
 )
 
 type lineReader struct {
