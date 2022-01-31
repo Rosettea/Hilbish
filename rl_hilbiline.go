@@ -45,7 +45,7 @@ func (lr *lineReader) Resize() {
 }
 
 // lua module
-func (lr *lineReader) Loader() *lua.LTable {
+func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
 	lrLua := map[string]lua.LGFunction{
 		"add": lr.luaAddHistory,
 		"all": lr.luaAllHistory,
