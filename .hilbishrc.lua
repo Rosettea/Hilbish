@@ -1,9 +1,9 @@
 -- Default Hilbish config
-lunacolors = require 'lunacolors'
-bait = require 'bait'
+local lunacolors = require 'lunacolors'
+local bait = require 'bait'
 
 function doPrompt(fail)
-	prompt(lunacolors.format(
+	hilbish.prompt(lunacolors.format(
 		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
 	))
 end
