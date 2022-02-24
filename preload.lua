@@ -50,8 +50,6 @@ end)
 
 commander.register('doc', function(args)
 	local moddocPath = hilbish.dataDir .. '/docs/'
-	local globalDesc = [[
-These are the global Hilbish functions that are always available and not part of a module.]]
 	local modDocFormat = [[
 %s
 %s
@@ -101,19 +99,17 @@ These are the global Hilbish functions that are always available and not part of
 			end
 		end))
 
-		if mod == 'global' or ok then
+		if ok then
 			local props = {}
 			local propstr = ''
-			local modDesc = globalDesc
-			if ok then
-				local modmt = getmetatable(require(mod))
-				modDesc = modmt.__doc
-				if modmt.__docProp then
-					-- not all modules have docs for properties
-					props = table.map(modmt.__docProp, function(v, k)
-						return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
-					end)
-				end
+			local modDesc = ''
+			local modmt = getmetatable(require(mod))
+			modDesc = modmt.__doc
+			if modmt.__docProp then
+				-- not all modules have docs for properties
+				props = table.map(modmt.__docProp, function(v, k)
+					return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
+				end)
 			end
 			if #props > 0 then
 				propstr = '\n# Properties\n' .. table.concat(props, '\n') .. '\n'
