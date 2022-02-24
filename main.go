@@ -60,8 +60,7 @@ func main() {
 			defaultHistPath = filepath.Join(confDir, "hilbish", ".hilbish-history")
 		}
 	} else {
-		// else do ~ substitution
-		defaultHistPath = filepath.Join(strings.Replace(defaultHistDir, "~", homedir, 1), ".hilbishrc.lua")
+		defaultHistPath = filepath.Join(strings.Replace(defaultHistDir, "~", homedir, 1), ".hilbish-history")
 	}
 	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
