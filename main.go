@@ -37,7 +37,7 @@ var (
 func main() {
 	curuser, _ = user.Current()
 	homedir := curuser.HomeDir
-	confDir = getenv("XDG_CONFIG_HOME", homedir + "/.config")
+	confDir, _ = os.UserConfigDir()
 	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
 	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
