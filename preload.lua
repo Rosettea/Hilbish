@@ -30,8 +30,10 @@ commander.register('cd', function (args)
 		bait.throw('cd', path)
 
 		-- add to table of recent dirs
-		table.insert(recentDirs, 1, path)
 		recentDirs[11] = nil
+		if recentDirs[#recentDirs - 1] ~= path then
+			table.insert(recentDirs, 1, path)
+		end
 
 		return
 	end
