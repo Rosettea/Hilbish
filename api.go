@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
@@ -63,17 +62,8 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 
 	// hilbish.userDir table
 	hshuser := L.NewTable()
-	userConfigDir, _ := os.UserConfigDir()
-	userDataDir := ""
-	// i honestly dont know what directories to use for this
-	switch runtime.GOOS {
-	case "linux":
-		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
-	default:
-		userDataDir = filepath.Join(userConfigDir)
-	}
 
-	util.SetField(L, hshuser, "config", lua.LString(userConfigDir), "User's config directory")
+	util.SetField(L, hshuser, "config", lua.LString(confDir), "User's config directory")
 	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
 	util.Document(L, hshuser, "User directories to store configs and/or modules.")
 	L.SetField(mod, "userDir", hshuser)

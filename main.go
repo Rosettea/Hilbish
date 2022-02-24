@@ -27,6 +27,7 @@ var (
 	luaCompletions = map[string]*lua.LFunction{}
 
 	confDir string
+	userDataDir string
 	curuser *user.User
 
 	hooks bait.Bait
@@ -40,25 +41,25 @@ func main() {
 	confDir, _ = os.UserConfigDir()
 	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
 	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
+	
+	// i honestly dont know what directories to use for this
+	switch runtime.GOOS {
+	case "linux":
+		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
+	default:
+		// this is fine on windows, dont know about others
+		userDataDir = confDir
+	}
 
 	if defaultConfDir == "" {
 		// we'll add *our* default if its empty (wont be if its changed comptime)
-		if _, err := os.Stat(filepath.Join(confDir, "hilbish")); os.IsNotExist(err) {
-			defaultConfPath = filepath.Join(homedir, "/.hilbishrc.lua")
-		} else {
-			defaultConfPath = filepath.Join(confDir, "hilbish", "init.lua")
-		}
+		defaultConfPath = filepath.Join(confDir, "hilbish", "init.lua")
 	} else {
 		// else do ~ substitution
 		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
 	}
 	if defaultHistDir == "" {
-		// we'll add *our* default if its empty (wont be if its changed comptime)
-		if _, err := os.Stat(filepath.Join(confDir, "hilbish")); os.IsNotExist(err) {
-			defaultHistPath = filepath.Join(homedir, "/.hilbish-history")
-		} else {
-			defaultHistPath = filepath.Join(confDir, "hilbish", ".hilbish-history")
-		}
+		defaultHistPath = filepath.Join(userDataDir, "hilbish", ".hilbish-history")
 	} else {
 		defaultHistPath = filepath.Join(strings.Replace(defaultHistDir, "~", homedir, 1), ".hilbish-history")
 	}
