@@ -113,34 +113,29 @@ func main() {
 		os.Setenv("SHELL", os.Args[0])
 	}
 
+	go handleSignals()
+	luaInit()
+	runLogin()
 	// If user's config doesn't exixt,
-	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) {
+	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
 		// (this is assuming the current dir is Hilbish's git)
-		input, err := os.ReadFile(".hilbishrc.lua")
+		_, err := os.ReadFile(".hilbishrc.lua")
+		confpath := ".hilbishrc.lua"
 		if err != nil {
 			// If it wasnt found, go to the real sample conf
-			input, err = os.ReadFile(sampleConfPath)
+			_, err = os.ReadFile(sampleConfPath)
+			confpath = sampleConfPath
 			if err != nil {
 				fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
 				return
 			}
 		}
 
-		// Create it using either default config we found
-		err = os.WriteFile(defaultConfPath, input, 0644)
-		if err != nil {
-			// If that fails, bail
-			fmt.Println("Error creating config file")
-			fmt.Println(err)
-			return
-		}
+		runConfig(confpath)
+	} else {
+		runConfig(*configflag)
 	}
-
-	go handleSignals()
-	luaInit()
-	runLogin()
-	runConfig(*configflag)
 
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
