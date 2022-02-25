@@ -1,0 +1,19 @@
+name: Regenerate docs
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  reorganize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run docgen
+        uses: actions/setup-go@v2
+        run: go run cmd/docgen/docgen.go
+      - name: Commit new docs
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs: [ci] regenerate new docs"
+          file_pattern: docs/ emmyLuaDocs/
