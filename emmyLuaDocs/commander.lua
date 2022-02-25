@@ -3,9 +3,12 @@
 local commander = {}
 
 --- Deregisters any command registered with `name`
-function commander.deregister() end
+--- @param name string
+function commander.deregister(name) end
 
 --- Register a command with `name` that runs `cb` when ran
-function commander.register() end
+--- @param name string
+--- @param cb function
+function commander.register(name, cb) end
 
 return commander
