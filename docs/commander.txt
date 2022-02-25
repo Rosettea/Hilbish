@@ -1,3 +1,4 @@
 deregister(name) > Deregisters any command registered with `name`
 
 register(name, cb) > Register a command with `name` that runs `cb` when ran
+

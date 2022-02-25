@@ -36,3 +36,4 @@ Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which s
 run(cmd) > Runs `cmd` in Hilbish's sh interpreter.
 
 timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
+

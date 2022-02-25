@@ -5,3 +5,4 @@ mkdir(name, recursive) > Makes a directory called `name`. If `recursive` is true
 readdir(dir) > Returns a table of files in `dir`
 
 stat(path) > Returns info about `path`
+
