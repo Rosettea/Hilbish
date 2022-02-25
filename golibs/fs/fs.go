@@ -47,7 +47,7 @@ func fcd(L *lua.LState) int {
 // mkdir(name, recursive)
 // Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
 // --- @param name string
-// --- @param recursive bool
+// --- @param recursive boolean
 func fmkdir(L *lua.LState) int {
 	dirname := L.CheckString(1)
 	recursive := L.ToBool(2)
