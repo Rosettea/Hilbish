@@ -1,11 +1,11 @@
-name: Regenerate docs
+name: Generate docs
 
 on:
   push:
     branches: [master]
 
 jobs:
-  regen:
+  gen:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,5 +15,5 @@ jobs:
       - name: Commit new docs
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "docs: [ci] regenerate new docs"
+          commit_message: "docs: [ci] generate new docs"
           file_pattern: docs/ emmyLuaDocs/
