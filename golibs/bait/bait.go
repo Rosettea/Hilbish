@@ -47,18 +47,24 @@ failed, etc. To find all available hooks, see doc hooks.`)
 
 // throw(name, ...args)
 // Throws a hook with `name` with the provided `args`
+// --- @param name string
+// --- @vararg any
 func (b *Bait) bthrow(name string, args ...interface{}) {
 	b.Em.Emit(name, args...)
 }
 
 // catch(name, cb)
 // Catches a hook with `name`. Runs the `cb` when it is thrown
+// --- @param name string
+// --- @param cb function
 func (b *Bait) bcatch(name string, catcher func(...interface{})) {
 	b.Em.On(name, catcher)
 }
 
 // catchOnce(name, cb)
 // Same as catch, but only runs the `cb` once and then removes the hook
+// --- @param name string
+// --- @param cb function
 func (b *Bait) bcatchOnce(name string, catcher func(...interface{})) {
 	b.Em.Once(name, catcher)
 }

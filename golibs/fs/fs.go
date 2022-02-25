@@ -31,6 +31,7 @@ var exports = map[string]lua.LGFunction{
 
 // cd(dir)
 // Changes directory to `dir`
+// --- @param dir string
 func fcd(L *lua.LState) int {
 	path := L.CheckString(1)
 
@@ -45,6 +46,8 @@ func fcd(L *lua.LState) int {
 
 // mkdir(name, recursive)
 // Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
+// --- @param name string
+// --- @param recursive bool
 func fmkdir(L *lua.LState) int {
 	dirname := L.CheckString(1)
 	recursive := L.ToBool(2)
@@ -65,6 +68,7 @@ func fmkdir(L *lua.LState) int {
 
 // stat(path)
 // Returns info about `path`
+// --- @param path string
 func fstat(L *lua.LState) int {
 	path := L.CheckString(1)
 
@@ -85,6 +89,8 @@ func fstat(L *lua.LState) int {
 
 // readdir(dir)
 // Returns a table of files in `dir`
+// --- @param dir string
+// --- @return table
 func freaddir(L *lua.LState) int {
 	dir := L.CheckString(1)
 	names := L.NewTable()

@@ -31,6 +31,8 @@ func (c *Commander) Loader(L *lua.LState) int {
 
 // register(name, cb)
 // Register a command with `name` that runs `cb` when ran
+// --- @param name string
+// --- @param cb function
 func (c *Commander) cregister(L *lua.LState) int {
 	cmdName := L.CheckString(1)
 	cmd := L.CheckFunction(2)
@@ -42,6 +44,7 @@ func (c *Commander) cregister(L *lua.LState) int {
 
 // deregister(name)
 // Deregisters any command registered with `name`
+// --- @param name string
 func (c *Commander) cderegister(L *lua.LState) int {
 	cmdName := L.CheckString(1)
 
