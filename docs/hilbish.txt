@@ -22,7 +22,7 @@ multiprompt(str) > Changes the continued line prompt to `str`
 
 prependPath(dir) > Prepends `dir` to $PATH
 
- prompt(str) > Changes the shell prompt to `str`
+prompt(str) > Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory
@@ -36,4 +36,3 @@ Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which s
 run(cmd) > Runs `cmd` in Hilbish's sh interpreter.
 
 timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
-

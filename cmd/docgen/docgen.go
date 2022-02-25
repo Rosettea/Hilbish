@@ -52,7 +52,7 @@ func main() {
 			mod := l
 			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
 			if !strings.HasPrefix(t.Name, prefix[mod]) || t.Name == "Loader" { continue }
-			parts := strings.Split(t.Doc, "\n")
+			parts := strings.Split(strings.TrimSpace(t.Doc), "\n")
 			funcsig := parts[0]
 			doc := parts[1:]
 
@@ -61,7 +61,7 @@ func main() {
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
 				if !strings.HasPrefix(m.Name, prefix[l]) || m.Name == "Loader" { continue }
-				parts := strings.Split(m.Doc, "\n")
+				parts := strings.Split(strings.TrimSpace(m.Doc), "\n")
 				funcsig := parts[0]
 				doc := parts[1:]
 
@@ -73,6 +73,6 @@ func main() {
 	for mod, v := range docs {
 		os.Mkdir("docs", 0777)
 		f, _ := os.Create("docs/" + mod + ".txt")
-		f.WriteString(strings.Join(v, "\n") + "\n")
+		f.WriteString(strings.Join(v, "\n\n") + "\n")
 	}
 }
