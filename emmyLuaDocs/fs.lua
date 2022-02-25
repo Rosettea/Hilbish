@@ -8,7 +8,7 @@ function fs.cd(dir) end
 
 --- Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
 --- @param name string
---- @param recursive bool
+--- @param recursive boolean
 function fs.mkdir(name, recursive) end
 
 --- Returns a table of files in `dir`
