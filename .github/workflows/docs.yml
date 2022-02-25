@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
       - name: Run docgen
-        uses: actions/setup-go@v2
         run: go run cmd/docgen/docgen.go
       - name: Commit new docs
         uses: stefanzweifel/git-auto-commit-action@v4
