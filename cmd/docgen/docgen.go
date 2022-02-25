@@ -38,7 +38,6 @@ func main() {
 	}
 
 	prefix := map[string]string{
-		"main": "hsh",
 		"hilbish": "hl",
 		"fs": "f",
 		"commander": "c",
@@ -72,7 +71,6 @@ func main() {
 	}
 
 	for mod, v := range docs {
-		if mod == "main" { mod = "global" }
 		os.Mkdir("docs", 0777)
 		f, _ := os.Create("docs/" + mod + ".txt")
 		f.WriteString(strings.Join(v, "\n") + "\n")
