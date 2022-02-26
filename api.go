@@ -14,7 +14,6 @@ import (
 
 	"hilbish/util"
 
-	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"mvdan.cc/sh/v3/interp"
 )
@@ -24,7 +23,6 @@ var exports = map[string]lua.LGFunction {
 	"appendPath": hlappendPath,
 	"cwd": hlcwd,
 	"exec": hlexec,
-	"flag": hlflag,
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
 	"prompt": hlprompt,
@@ -98,23 +96,6 @@ func hlrun(L *lua.LState) int {
 	}
 
 	L.Push(lua.LNumber(exitcode))
-	return 1
-}
-
-// flag(f)
-// Checks if the `f` flag has been passed to Hilbish.
-func hlflag(L *lua.LState) int {
-	flagchar := L.CheckString(1)
-
-	flag := getopt.Lookup([]rune(flagchar)[0])
-	if flag == nil {
-		L.Push(lua.LNil)
-		return 1
-	}
-
-	passed := flag.Seen()
-	L.Push(lua.LBool(passed))
-
 	return 1
 }
 
