@@ -21,9 +21,6 @@ function hilbish.cwd() end
 --- Replaces running hilbish with `cmd`
 function hilbish.exec() end
 
---- Checks if the `f` flag has been passed to Hilbish.
-function hilbish.flag() end
-
 --- Puts `fn` in a goroutine
 function hilbish.goroutine() end
 
