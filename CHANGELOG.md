@@ -38,6 +38,8 @@ the config path.
 - `hilbish.xdg` no longer exists, use `hilbish.userDir` instead,
 as it functions the same and is OS agnostic
 - `hilbish.flag` has been removed
+- `~/.hprofile.lua` has been removed, instead check in your config if `hilbish.login`
+is true
 
 ## [0.7.1] - 2021-11-22
 ### Fixed
