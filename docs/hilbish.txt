@@ -12,8 +12,6 @@ cwd() > Returns the current directory of the shell
 
 exec(cmd) > Replaces running hilbish with `cmd`
 
-flag(f) > Checks if the `f` flag has been passed to Hilbish.
-
 goro(fn) > Puts `fn` in a goroutine
 
 interval(cb, time) > Runs the `cb` function every `time` milliseconds
