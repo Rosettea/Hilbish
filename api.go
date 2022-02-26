@@ -84,6 +84,7 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 
 // run(cmd)
 // Runs `cmd` in Hilbish's sh interpreter.
+// --- @param cmd string
 func hlrun(L *lua.LState) int {
 	var exitcode uint8
 	cmd := L.CheckString(1)
@@ -121,6 +122,7 @@ func getenv(key, fallback string) string {
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
+// --- @param prompt string
 func hlread(L *lua.LState) int {
 	luaprompt := L.CheckString(1)
 	lualr := newLineReader(luaprompt)
@@ -135,13 +137,16 @@ func hlread(L *lua.LState) int {
 	return 1
 }
 
-/* prompt(str)
+/*
+prompt(str)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory
 `%u` - Name of current user
-`%h` - Hostname of device */
+`%h` - Hostname of device
+--- @param str string
+*/
 func hlprompt(L *lua.LState) int {
 	prompt = L.CheckString(1)
 
@@ -150,6 +155,7 @@ func hlprompt(L *lua.LState) int {
 
 // multiprompt(str)
 // Changes the continued line prompt to `str`
+// --- @param str string
 func hlmlprompt(L *lua.LState) int {
 	multilinePrompt = L.CheckString(1)
 
@@ -158,6 +164,8 @@ func hlmlprompt(L *lua.LState) int {
 
 // alias(cmd, orig)
 // Sets an alias of `orig` to `cmd`
+// --- @param cmd string
+// --- @param orig string
 func hlalias(L *lua.LState) int {
 	alias := L.CheckString(1)
 	source := L.CheckString(2)
@@ -169,6 +177,7 @@ func hlalias(L *lua.LState) int {
 
 // appendPath(dir)
 // Appends `dir` to $PATH
+// --- @param dir string|table
 func hlappendPath(L *lua.LState) int {
 	// check if dir is a table or a string
 	arg := L.Get(1)
@@ -198,6 +207,7 @@ func appendPath(dir string) {
 
 // exec(cmd)
 // Replaces running hilbish with `cmd`
+// --- @param cmd string
 func hlexec(L *lua.LState) int {
 	cmd := L.CheckString(1)
 	cmdArgs, _ := splitInput(cmd)
@@ -217,6 +227,7 @@ func hlexec(L *lua.LState) int {
 
 // goro(fn)
 // Puts `fn` in a goroutine
+// --- @param fn function
 func hlgoroutine(L *lua.LState) int {
 	fn := L.CheckFunction(1)
 	argnum := L.GetTop()
@@ -239,6 +250,8 @@ func hlgoroutine(L *lua.LState) int {
 
 // timeout(cb, time)
 // Runs the `cb` function after `time` in milliseconds
+// --- @param cb function
+// --- @param time number
 func hltimeout(L *lua.LState) int {
 	cb := L.CheckFunction(1)
 	ms := L.CheckInt(2)
@@ -256,6 +269,8 @@ func hltimeout(L *lua.LState) int {
 
 // interval(cb, time)
 // Runs the `cb` function every `time` milliseconds
+// --- @param cb function
+// --- @param time number
 func hlinterval(L *lua.LState) int {
 	intervalfunc := L.CheckFunction(1)
 	ms := L.CheckInt(2)
