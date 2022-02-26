@@ -22,19 +22,22 @@ with Lua
 
 ### Changed
 - The minimal config is truly minimal now
-- (Possibly) **Breaking Change:** Change default SHLVL to 0 instead of 1
-- **Breaking Change:** ~/.hilbishrc.lua will no longer be run by default, it now
+#### Breaking Changes
+(there were a lot...)  
+- Change default SHLVL to 0 instead of 1
+- ~/.hilbishrc.lua will no longer be run by default, it now
 only uses the paths mentioned below.
-- **Breaking Change:** Changed Hilbish's config path to something more suited
+- Changed Hilbish's config path to something more suited
 according to the OS (`$XDG_CONFIG_HOME/hilbish/init.lua` on Linux,
 `~/Library/Application Support/hilbish/init.lua` on MacOs and
 (`%APPDATA%/hilbish/init.lua` on Windows). Previously on Unix-like it was 
 `$XDG_CONFIG_HOME/hilbish/hilbishrc.lua`
-- **Breaking Change:** The history path has been changed to a better suited path.
+- The history path has been changed to a better suited path.
 On Linux, it is `$XDG_DATA_HOME/hilbish/.hilbish-history` and for others it is
 the config path.
-- **Breaking Change:** `hilbish.xdg` no longer exists, use `hilbish.userDir` instead,
+- `hilbish.xdg` no longer exists, use `hilbish.userDir` instead,
 as it functions the same and is OS agnostic
+- `hilbish.flag` has been removed
 
 ## [0.7.1] - 2021-11-22
 ### Fixed
