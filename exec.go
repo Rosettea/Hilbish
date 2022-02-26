@@ -19,7 +19,6 @@ func runInput(input string) {
 	running = true
 	cmdString := aliases.Resolve(input)
 
-	// If alias was found, use command alias
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
 	// First try to load input, essentially compiling to bytecode

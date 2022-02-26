@@ -72,18 +72,3 @@ func runConfig(confpath string) {
 		l.DoString(minimalconf)
 	}
 }
-
-func runLogin() {
-	if _, err := os.Stat(curuser.HomeDir + "/.hprofile.lua"); os.IsNotExist(err) {
-		return
-	}
-	if !login {
-		return
-	}
-	err := l.DoFile(curuser.HomeDir + "/.hprofile.lua")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err,
-			"\nAn error has occured while loading your login config!n")
-	}
-}
-
