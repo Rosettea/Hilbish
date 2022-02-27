@@ -1,4 +1,3 @@
-//go:build gnurl
 // +build gnurl
 
 package main
