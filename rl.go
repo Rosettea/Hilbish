@@ -1,5 +1,3 @@
-// +build !gnurl
-
 package main
 
 // Here we define a generic interface for readline and hilbiline,
