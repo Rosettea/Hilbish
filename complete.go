@@ -32,6 +32,10 @@ func matchPath(path, pref string) ([]string, error) {
 			"'", "\\'",
 			"`", "\\`",
 			" ", "\\ ",
+			"(", "\\(",
+			")", "\\)",
+			"[", "\\[",
+			"]", "\\]"
 		}
 
 		r := strings.NewReplacer(args...)
