@@ -1,59 +1,68 @@
-//go:build !hilbiline && !goreadline
-// +build !hilbiline,!goreadline
+// +build !gnurl
 
 package main
 
 // Here we define a generic interface for readline and hilbiline,
 // making them interchangable during build time
-// this is normal readline
+// this is hilbiline's, as is obvious by the filename
 
 import (
-	"os"
+	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
+	"os"
 
-	"github.com/Rosettea/readline"
+	"github.com/maxlandon/readline"
 	"github.com/yuin/gopher-lua"
 )
 
 type lineReader struct {
-	Prompt string
+	rl *readline.Instance
 }
 
+// other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
-	readline.Init()
-
-	readline.Completer = func(query string, ctx string) []string {
+	rl := readline.NewInstance()
+	rl.Multiline = true
+	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
+		ctx := string(line)
 		var completions []string
-		// trim whitespace from ctx
+		
+		compGroup := []*readline.CompletionGroup{
+			&readline.CompletionGroup{
+				TrimSlash: false,
+				NoSpace: true,
+			},
+		}
+
 		ctx = strings.TrimLeft(ctx, " ")
 		if len(ctx) == 0 {
-			return []string{}
+			return "", compGroup
 		}
+
 		fields := strings.Split(ctx, " ")
 		if len(fields) == 0 {
-			return []string{}
+			return "", compGroup
 		}
+		query := fields[len(fields) - 1]
 
 		ctx = aliases.Resolve(ctx)
-
+		
 		if len(fields) == 1 {
-			prefixes := []string{"./", "../", "/", "~/"}
-			for _, prefix := range prefixes {
-				if strings.HasPrefix(fields[0], prefix) {
-					fileCompletions := append(completions, readline.FilenameCompleter(query, ctx)...)
-					// filter out executables
-					for _, f := range fileCompletions {
-						name := strings.Replace(f, "~", curuser.HomeDir, 1)
-						if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
-							continue
-						}
-						completions = append(completions, f)
+			fileCompletions := fileComplete(query, ctx, fields)
+			if len(fileCompletions) != 0 {
+				for _, f := range fileCompletions {
+					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
+					if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
+						continue
 					}
-					return completions
+					completions = append(completions, f)
 				}
+				compGroup[0].Suggestions = completions
+				return "", compGroup
 			}
-
+			
 			// filter out executables, but in path
 			for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 				// print dir to stderr for debugging
@@ -73,12 +82,16 @@ func newLineReader(prompt string) *lineReader {
 					}
 				}
 			}
+			
 			// add lua registered commands to completions
 			for cmdName := range commands {
 				if strings.HasPrefix(cmdName, query) {
 					completions = append(completions, cmdName)
 				}
 			}
+			
+			compGroup[0].Suggestions = completions
+			return query, compGroup
 		} else {
 			if completecb, ok := luaCompletions["command." + fields[0]]; ok {
 				err := l.CallByParam(lua.P{
@@ -88,7 +101,7 @@ func newLineReader(prompt string) *lineReader {
 				})
 
 				if err != nil {
-					return []string{}
+					return "", compGroup
 				}
 
 				luacompleteTable := l.Get(-1)
@@ -123,7 +136,7 @@ func newLineReader(prompt string) *lineReader {
 											val := value.String()
 											if val == "<file>" {
 												// complete files
-												completions = append(completions, readline.FilenameCompleter(query, ctx)...)
+												completions = append(completions, fileComplete(query, ctx, fields)...)
 											} else {
 												if strings.HasPrefix(val, query) {
 													completions = append(completions, val)
@@ -171,39 +184,52 @@ func newLineReader(prompt string) *lineReader {
 			}
 
 			if len(completions) == 0 {
-				completions = readline.FilenameCompleter(query, ctx)
+				completions = fileComplete(query, ctx, fields)
 			}
 		}
-		return completions
+
+		compGroup[0].Suggestions = completions
+		return "", compGroup
 	}
-	readline.LoadHistory(defaultHistPath)
 
 	return &lineReader{
-		Prompt: prompt,
+		rl,
 	}
 }
 
 func (lr *lineReader) Read() (string, error) {
-	hooks.Em.Emit("command.precmd", nil)
-	return readline.String(lr.Prompt)
+	s, err := lr.rl.Readline()
+	// this is so dumb
+	if err == readline.EOF {
+		return "", io.EOF
+	}
+
+	return s, err // might get another error
 }
 
 func (lr *lineReader) SetPrompt(prompt string) {
-	lr.Prompt = prompt
+	halfPrompt := strings.Split(prompt, "\n")
+	if len(halfPrompt) > 1 {
+		lr.rl.SetPrompt(strings.Join(halfPrompt[:len(halfPrompt) - 1], "\n"))
+		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
+	} else {
+		// print cursor up ansi code
+		fmt.Printf("\033[1A")
+		lr.rl.SetPrompt("")
+		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
+	}
 }
 
 func (lr *lineReader) AddHistory(cmd string) {
-	readline.AddHistory(cmd)
-	readline.SaveHistory(defaultHistPath)
+	return
 }
 
 func (lr *lineReader) ClearInput() {
-	readline.ReplaceLine("", 0)
-	readline.RefreshLine()
+	return
 }
 
 func (lr *lineReader) Resize() {
-	readline.Resize()
+	return
 }
 
 // lua module
@@ -216,7 +242,7 @@ func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
 		"size": lr.luaSize,
 	}
 
-	mod := L.SetFuncs(L.NewTable(), lrLua)
+	mod := l.SetFuncs(l.NewTable(), lrLua)
 
 	return mod
 }
@@ -229,36 +255,17 @@ func (lr *lineReader) luaAddHistory(l *lua.LState) int {
 }
 
 func (lr *lineReader) luaSize(l *lua.LState) int {
-	l.Push(lua.LNumber(readline.HistorySize()))
-
-	return 1
+	return 0
 }
 
 func (lr *lineReader) luaGetHistory(l *lua.LState) int {
-	idx := l.CheckInt(1)
-	cmd := readline.GetHistory(idx)
-	l.Push(lua.LString(cmd))
-
-	return 1
+	return 0
 }
 
 func (lr *lineReader) luaAllHistory(l *lua.LState) int {
-	tbl := l.NewTable()
-	size := readline.HistorySize()
-
-	for i := 0; i < size; i++ {
-		cmd := readline.GetHistory(i)
-		tbl.Append(lua.LString(cmd))
-	}
-
-	l.Push(tbl)
-
-	return 1
+	return 0
 }
 
 func (lr *lineReader) luaClearHistory(l *lua.LState) int {
-	readline.ClearHistory()
-	readline.SaveHistory(defaultHistPath)
-
 	return 0
 }

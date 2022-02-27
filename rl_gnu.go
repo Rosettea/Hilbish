@@ -1,68 +1,48 @@
-// +build goreadline,!hilbiline
+//go:build gnurl
+// +build gnurl
 
 package main
 
 // Here we define a generic interface for readline and hilbiline,
 // making them interchangable during build time
-// this is hilbiline's, as is obvious by the filename
+// this is normal readline
 
 import (
-	"fmt"
-	"io"
+	"os"
 	"path/filepath"
 	"strings"
-	"os"
 
-	"github.com/maxlandon/readline"
+	"github.com/Rosettea/readline"
 	"github.com/yuin/gopher-lua"
 )
 
 type lineReader struct {
-	rl *readline.Instance
+	Prompt string
 }
 
-// other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
-	rl := readline.NewInstance()
-	rl.Multiline = true
-	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
-		ctx := string(line)
-		var completions []string
-		
-		compGroup := []*readline.CompletionGroup{
-			&readline.CompletionGroup{
-				TrimSlash: false,
-				NoSpace: true,
-			},
-		}
+	readline.Init()
 
+	readline.Completer = func(query string, ctx string) []string {
+		var completions []string
+		// trim whitespace from ctx
 		ctx = strings.TrimLeft(ctx, " ")
 		if len(ctx) == 0 {
-			return "", compGroup
+			return []string{}
 		}
-
 		fields := strings.Split(ctx, " ")
 		if len(fields) == 0 {
-			return "", compGroup
+			return []string{}
 		}
-		query := fields[len(fields) - 1]
 
 		ctx = aliases.Resolve(ctx)
-		
+
 		if len(fields) == 1 {
 			fileCompletions := fileComplete(query, ctx, fields)
 			if len(fileCompletions) != 0 {
-				for _, f := range fileCompletions {
-					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
-					if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
-						continue
-					}
-					completions = append(completions, f)
-				}
-				compGroup[0].Suggestions = completions
-				return "", compGroup
+				return fileCompletions
 			}
-			
+
 			// filter out executables, but in path
 			for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 				// print dir to stderr for debugging
@@ -82,16 +62,12 @@ func newLineReader(prompt string) *lineReader {
 					}
 				}
 			}
-			
 			// add lua registered commands to completions
 			for cmdName := range commands {
 				if strings.HasPrefix(cmdName, query) {
 					completions = append(completions, cmdName)
 				}
 			}
-			
-			compGroup[0].Suggestions = completions
-			return query, compGroup
 		} else {
 			if completecb, ok := luaCompletions["command." + fields[0]]; ok {
 				err := l.CallByParam(lua.P{
@@ -101,7 +77,7 @@ func newLineReader(prompt string) *lineReader {
 				})
 
 				if err != nil {
-					return "", compGroup
+					return []string{}
 				}
 
 				luacompleteTable := l.Get(-1)
@@ -136,7 +112,7 @@ func newLineReader(prompt string) *lineReader {
 											val := value.String()
 											if val == "<file>" {
 												// complete files
-												completions = append(completions, fileComplete(query, ctx, fields)...)
+												completions = append(completions, readline.FilenameCompleter(query, ctx)...)
 											} else {
 												if strings.HasPrefix(val, query) {
 													completions = append(completions, val)
@@ -184,52 +160,39 @@ func newLineReader(prompt string) *lineReader {
 			}
 
 			if len(completions) == 0 {
-				completions = fileComplete(query, ctx, fields)
+				completions = readline.FilenameCompleter(query, ctx)
 			}
 		}
-
-		compGroup[0].Suggestions = completions
-		return "", compGroup
+		return completions
 	}
+	readline.LoadHistory(defaultHistPath)
 
 	return &lineReader{
-		rl,
+		Prompt: prompt,
 	}
 }
 
 func (lr *lineReader) Read() (string, error) {
-	s, err := lr.rl.Readline()
-	// this is so dumb
-	if err == readline.EOF {
-		return "", io.EOF
-	}
-
-	return s, err // might get another error
+	hooks.Em.Emit("command.precmd", nil)
+	return readline.String(lr.Prompt)
 }
 
 func (lr *lineReader) SetPrompt(prompt string) {
-	halfPrompt := strings.Split(prompt, "\n")
-	if len(halfPrompt) > 1 {
-		lr.rl.SetPrompt(strings.Join(halfPrompt[:len(halfPrompt) - 1], "\n"))
-		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
-	} else {
-		// print cursor up ansi code
-		fmt.Printf("\033[1A")
-		lr.rl.SetPrompt("")
-		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
-	}
+	lr.Prompt = prompt
 }
 
 func (lr *lineReader) AddHistory(cmd string) {
-	return
+	readline.AddHistory(cmd)
+	readline.SaveHistory(defaultHistPath)
 }
 
 func (lr *lineReader) ClearInput() {
-	return
+	readline.ReplaceLine("", 0)
+	readline.RefreshLine()
 }
 
 func (lr *lineReader) Resize() {
-	return
+	readline.Resize()
 }
 
 // lua module
@@ -242,7 +205,7 @@ func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
 		"size": lr.luaSize,
 	}
 
-	mod := l.SetFuncs(l.NewTable(), lrLua)
+	mod := L.SetFuncs(L.NewTable(), lrLua)
 
 	return mod
 }
@@ -255,17 +218,36 @@ func (lr *lineReader) luaAddHistory(l *lua.LState) int {
 }
 
 func (lr *lineReader) luaSize(l *lua.LState) int {
-	return 0
+	l.Push(lua.LNumber(readline.HistorySize()))
+
+	return 1
 }
 
 func (lr *lineReader) luaGetHistory(l *lua.LState) int {
-	return 0
+	idx := l.CheckInt(1)
+	cmd := readline.GetHistory(idx)
+	l.Push(lua.LString(cmd))
+
+	return 1
 }
 
 func (lr *lineReader) luaAllHistory(l *lua.LState) int {
-	return 0
+	tbl := l.NewTable()
+	size := readline.HistorySize()
+
+	for i := 0; i < size; i++ {
+		cmd := readline.GetHistory(i)
+		tbl.Append(lua.LString(cmd))
+	}
+
+	l.Push(tbl)
+
+	return 1
 }
 
 func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+	readline.ClearHistory()
+	readline.SaveHistory(defaultHistPath)
+
 	return 0
 }
