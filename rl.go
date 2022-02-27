@@ -198,6 +198,7 @@ func newLineReader(prompt string) *lineReader {
 }
 
 func (lr *lineReader) Read() (string, error) {
+	hooks.Em.Emit("command.precmd", nil)
 	s, err := lr.rl.Readline()
 	// this is so dumb
 	if err == readline.EOF {

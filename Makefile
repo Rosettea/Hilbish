@@ -9,9 +9,6 @@ build:
 dev:
 	@go build -ldflags "-s -w -X main.version=$(shell git describe --tags)"
 
-gnurl:
-	@go build -ldflags "-s -w -X main.version=$(shell git describe --tags)+grnurl" -tags gnurl
-
 install:
 	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"

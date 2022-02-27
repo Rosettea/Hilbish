@@ -3,7 +3,6 @@ module hilbish
 go 1.16
 
 require (
-	github.com/Rosettea/readline v0.0.0-20211207004608-4afb088da503
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/maxlandon/readline v0.1.0-beta.0.20211027085530-2b76cabb8036
 	github.com/pborman/getopt v1.1.0

@@ -1,5 +1,3 @@
-github.com/Rosettea/readline v0.0.0-20211207004608-4afb088da503 h1:hA2kXBwY8SFH3+PT67CkoUjlMuRN08RSEtsKjwQ+of4=
-github.com/Rosettea/readline v0.0.0-20211207004608-4afb088da503/go.mod h1:OH+WJSCks0t2ISvaCFUT4ZxNGr4Etq4ju9JE/UxH/5o=
 github.com/Rosettea/readline-1 v0.1.0-beta.0.20211207003625-341c7985ad7d h1:KBttN41h/tPahmpaZavviwQ8q4rCkt5CD0HdVmfgPVA=
 github.com/Rosettea/readline-1 v0.1.0-beta.0.20211207003625-341c7985ad7d/go.mod h1:QiUAvbhg8PzCA4hlafCUl0bKD/0VmcocM4AjqtszAJs=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5 h1:ygwVRX8gf5MHA0VzSgOdscCEoAJLjM8joEotfQPgAd0=
