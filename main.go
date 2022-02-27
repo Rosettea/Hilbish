@@ -139,12 +139,13 @@ func main() {
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 		for scanner.Scan() {
-			runInput(scanner.Text())
+			text := scanner.Text()
+			runInput(text, text)
 		}
 	}
 
 	if *cmdflag != "" {
-		runInput(*cmdflag)
+		runInput(*cmdflag, *cmdflag)
 	}
 
 	if getopt.NArgs() > 0 {
@@ -188,7 +189,7 @@ input:
 
 		if strings.HasSuffix(input, "\\") {
 			for {
-				input, err = continuePrompt(strings.TrimSuffix(input, "\\"))
+				input, err = continuePrompt(input)
 				if err != nil {
 					goto input // continue inside nested loop
 				}
@@ -198,11 +199,7 @@ input:
 			}
 		}
 
-		// if input has space at the beginning, dont put in history
-		if !strings.HasPrefix(oldInput, " ") {
-			handleHistory(input)
-		}
-		runInput(input)
+		runInput(input, oldInput)
 
 		termwidth, _, err := term.GetSize(0)
 		if err != nil {

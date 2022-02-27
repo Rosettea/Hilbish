@@ -19,6 +19,7 @@ with Lua
 - Home dir is now added to recent dirs (the case of cd with no arg)
 - `index` subdoc will no longer appear
 - Alias expansion with quotes
+- Add full command to history in the case of incomplete input
 
 ### Changed
 - The minimal config is truly minimal now

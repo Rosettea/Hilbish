@@ -88,7 +88,7 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 func hlrun(L *lua.LState) int {
 	var exitcode uint8
 	cmd := L.CheckString(1)
-	err := execCommand(cmd)
+	err := execCommand(cmd, cmd)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code

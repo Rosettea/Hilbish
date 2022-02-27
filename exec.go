@@ -15,7 +15,7 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func runInput(input string) {
+func runInput(input, origInput string) {
 	running = true
 	cmdString := aliases.Resolve(input)
 
@@ -39,12 +39,12 @@ func runInput(input string) {
 		err = l.PCall(0, lua.MultRet, nil)
 	}
 	if err == nil {
-		cmdFinish(0, cmdString)
+		cmdFinish(0, cmdString, origInput)
 		return
 	}
 
 	// Last option: use sh interpreter
-	err = execCommand(cmdString)
+	err = execCommand(cmdString, origInput)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -53,31 +53,31 @@ func runInput(input string) {
 				if err != nil {
 					break
 				}
-				err = execCommand(cmdString)
+				err = execCommand(cmdString, origInput)
 				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					cmdFinish(code, cmdString)
+					cmdFinish(code, cmdString, origInput)
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, err)
-					cmdFinish(1, cmdString)
+					cmdFinish(1, cmdString, origInput)
 				}
 				break
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				cmdFinish(code, cmdString)
+				cmdFinish(code, cmdString, origInput)
 			} else {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
 	} else {
-		cmdFinish(0, cmdString)
+		cmdFinish(0, cmdString, origInput)
 	}
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string) error {
+func execCommand(cmd, old string) error {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return err
@@ -127,7 +127,7 @@ func execCommand(cmd string) error {
 				exitcode = uint8(code)
 			}
 
-			cmdFinish(exitcode, argstring)
+			cmdFinish(exitcode, argstring, old)
 			return interp.NewExitStatus(exitcode)
 		}
 
@@ -237,6 +237,10 @@ func splitInput(input string) ([]string, string) {
 	return cmdArgs, cmdstr.String()
 }
 
-func cmdFinish(code uint8, cmdstr string) {
+func cmdFinish(code uint8, cmdstr, oldInput string) {
+	// if input has space at the beginning, dont put in history
+	if !strings.HasPrefix(oldInput, " ") || interactive {
+		handleHistory(cmdstr)
+	}
 	hooks.Em.Emit("command.exit", code, cmdstr)
 }
