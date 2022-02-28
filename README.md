@@ -63,7 +63,7 @@ If you're new to nix you should probably read up on how to do that [here](https:
 
 ## Manual Build
 ### Prerequisites
-- [Go 1.16+](https://go.dev)
+- [Go 1.17+](https://go.dev)
 - GNU Readline
 
 On Fedora or other RPM based distros, readline can be installed with:  
