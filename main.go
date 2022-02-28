@@ -14,6 +14,7 @@ import (
 
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
+	"github.com/maxlandon/readline"
 	"golang.org/x/term"
 )
 
@@ -174,8 +175,12 @@ input:
 			break
 		}
 		if err != nil {
-			// If we get a completely random error, print
-			fmt.Fprintln(os.Stderr, err)
+			if err != readline.CtrlC {
+				// If we get a completely random error, print
+				fmt.Fprintln(os.Stderr, err)
+			}
+			fmt.Println("^C")
+			continue
 		}
 		oldInput := input
 
