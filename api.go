@@ -30,6 +30,7 @@ var exports = map[string]lua.LGFunction {
 	"read": hlread,
 	"run": hlrun,
 	"timeout": hltimeout,
+	"which": hlwhich,
 }
 
 var greeting string
@@ -330,4 +331,18 @@ func hlprependPath(L *lua.LState) int {
 	}
 
 	return 0
+}
+
+// which(binName)
+// Searches for an executable called `binName` in the directories of $PATH
+func hlwhich(L *lua.LState) int {
+	binName := L.CheckString(1)
+	path, err := exec.LookPath(binName)
+	if err != nil {
+		l.Push(lua.LNil)
+		return 1
+	}
+	
+	l.Push(path)
+	return 1
 }
