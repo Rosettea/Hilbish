@@ -343,6 +343,6 @@ func hlwhich(L *lua.LState) int {
 		return 1
 	}
 	
-	l.Push(path)
+	l.Push(lua.LString(path))
 	return 1
 }
