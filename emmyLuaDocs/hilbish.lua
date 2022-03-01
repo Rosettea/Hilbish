@@ -65,4 +65,7 @@ function hilbish.run(cmd) end
 --- @param time number
 function hilbish.timeout(cb, time) end
 
+--- Searches for an executable called `binName` in the directories of $PATH
+function hilbish.which() end
+
 return hilbish

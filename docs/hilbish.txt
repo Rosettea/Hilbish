@@ -35,3 +35,5 @@ run(cmd) > Runs `cmd` in Hilbish's sh interpreter.
 
 timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
 
+which(binName) > Searches for an executable called `binName` in the directories of $PATH
+
