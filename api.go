@@ -326,6 +326,8 @@ func hlinterval(L *lua.LState) int {
 // replacing <cmd> with the name of the command (for example `command.git`).
 // `cb` must be a function that returns a table of the entries to complete.
 // Nested tables will be used as sub-completions.
+// --- @param scope string
+// --- @param cb function
 func hlcomplete(L *lua.LState) int {
 	scope := L.CheckString(1)
 	cb := L.CheckFunction(2)
@@ -337,6 +339,7 @@ func hlcomplete(L *lua.LState) int {
 
 // prependPath(dir)
 // Prepends `dir` to $PATH
+// --- @param dir string
 func hlprependPath(L *lua.LState) int {
 	dir := L.CheckString(1)
 	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
@@ -352,6 +355,7 @@ func hlprependPath(L *lua.LState) int {
 
 // which(binName)
 // Searches for an executable called `binName` in the directories of $PATH
+// --- @param binName string
 func hlwhich(L *lua.LState) int {
 	binName := L.CheckString(1)
 	path, err := exec.LookPath(binName)
@@ -366,6 +370,7 @@ func hlwhich(L *lua.LState) int {
 
 // inputMode(mode)
 // Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+// --- @param mode string
 func hlinputMode(L *lua.LState) int {
 	mode := L.CheckString(1)
 	switch mode {
