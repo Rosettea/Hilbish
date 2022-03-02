@@ -16,6 +16,7 @@ import (
 
 	"github.com/yuin/gopher-lua"
 	"github.com/maxlandon/readline"
+	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -71,6 +72,15 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
 	util.Document(L, hshuser, "User directories to store configs and/or modules.")
 	L.SetField(mod, "userDir", hshuser)
+	
+	hshos := L.NewTable()
+	info, _ := osinfo.GetOSInfo()
+	
+	util.SetField(L, hshos, "family", lua.LString(info.Family), "Family name of the current OS")
+	util.SetField(L, hshos, "name", lua.LString(info.Name), "Pretty name of the current OS")
+	util.SetField(L, hshos, "version", lua.LString(info.Version), "Version of the current OS")
+	util.Document(L, hshos, "OS info interface")
+	L.SetField(mod, "os", hshos)
 
 	// hilbish.aliases table
 	aliases = NewAliases()
