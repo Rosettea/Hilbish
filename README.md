@@ -32,17 +32,8 @@ it to be.
 **NOTE:** Hilbish is currently only officially supported and tested on Linux
 
 ## Prebuilt binaries
-Binaries are provided for the latest commit.  
-
-**Note that these use Hilbiline, not readline, and may be missing functionality
-(moving the cursor, proper unicode support and backspace working properly)**  
-
-Click on the checkmark (or x) near the commit hash, then details for your platform  
-<br><img src="https://modeus.is-inside.me/dyr8UGGq.png"><br>
-
-Then click on the artifacts drop down, and download artifact for your platform,
-like what is highlighted in the screenshot.  
-<br><img src="https://modeus.is-inside.me/KJ0Puceb.png"><br>
+Go [here](https://nightly.link/Rosettea/Hilbish/workflows/build/master) for
+builds on the master branch.
 
 ## AUR
 [![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish)  
@@ -64,25 +55,10 @@ If you're new to nix you should probably read up on how to do that [here](https:
 ## Manual Build
 ### Prerequisites
 - [Go 1.17+](https://go.dev)
-- GNU Readline
-
-On Fedora or other RPM based distros, readline can be installed with:  
-```
-sudo dnf install readline-devel
-```  
-
-On Debian/Ubuntu and distros based on them, it can be installed with:  
-```
-sudo apt install libreadline-dev
-```
-
-On Arch Linux, it can be installed with:
-```
-sudo pacman -S readline
-```
 
 #### Build
-First, clone Hilbish:
+First, clone Hilbish. The recursive is required, as some Lua libraries
+are submodules.  
 ```sh
 git clone --recursive https://github.com/Rosettea/Hilbish
 cd Hilbish
