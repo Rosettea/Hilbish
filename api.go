@@ -15,6 +15,7 @@ import (
 	"hilbish/util"
 
 	"github.com/yuin/gopher-lua"
+	"github.com/maxlandon/readline"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -26,6 +27,7 @@ var exports = map[string]lua.LGFunction {
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
 	"prompt": hlprompt,
+	"inputMode": hlinputMode,
 	"interval": hlinterval,
 	"read": hlread,
 	"run": hlrun,
@@ -34,9 +36,11 @@ var exports = map[string]lua.LGFunction {
 }
 
 var greeting string
+var hshMod *lua.LTable
 
 func hilbishLoader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), exports)
+	hshMod = mod
 
 	host, _ := os.Hostname()
 	username := curuser.Username
@@ -57,6 +61,7 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
 	util.SetField(L, mod, "greeting", lua.LString(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
+	util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
@@ -81,6 +86,15 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	L.Push(mod)
 
 	return 1
+}
+
+func setVimMode(mode string) {
+	hooks.Em.Emit("hilbish.vimMode", mode)
+	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+}
+
+func unsetVimMode() {
+	util.SetField(l, hshMod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 }
 
 // run(cmd)
@@ -150,6 +164,9 @@ These will be formatted and replaced with the appropriate values.
 */
 func hlprompt(L *lua.LState) int {
 	prompt = L.CheckString(1)
+	if lr != nil {
+		lr.SetPrompt(fmtPrompt())
+	}
 
 	return 0
 }
@@ -345,4 +362,20 @@ func hlwhich(L *lua.LState) int {
 	
 	l.Push(lua.LString(path))
 	return 1
+}
+
+// inputMode(mode)
+// Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+func hlinputMode(L *lua.LState) int {
+	mode := L.CheckString(1)
+	switch mode {
+		case "emacs":
+			unsetVimMode()
+			lr.rl.InputMode = readline.Emacs
+		case "vim":
+			setVimMode("insert")
+			lr.rl.InputMode = readline.Vim
+		default: L.RaiseError("inputMode: expected vim or emacs, received " + mode)
+	}
+	return 0
 }

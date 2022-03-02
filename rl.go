@@ -18,7 +18,18 @@ type lineReader struct {
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
 	rl := readline.NewInstance()
-	rl.Multiline = true
+	rl.ShowVimMode = false
+	rl.ViModeCallback = func(mode readline.ViMode) {
+		modeStr := ""
+		switch mode {
+			case readline.VimKeys: modeStr = "normal"
+			case readline.VimInsert: modeStr = "insert"
+			case readline.VimDelete: modeStr = "delete"
+			case readline.VimReplaceOnce:
+			case readline.VimReplaceMany: modeStr = "replace"
+		}
+		setVimMode(modeStr)
+	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
 		var completions []string
@@ -196,6 +207,7 @@ func (lr *lineReader) Read() (string, error) {
 	s, err := lr.rl.Readline()
 	// this is so dumb
 	if err == readline.EOF {
+		fmt.Println("")
 		return "", io.EOF
 	}
 
@@ -209,9 +221,12 @@ func (lr *lineReader) SetPrompt(prompt string) {
 		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
 	} else {
 		// print cursor up ansi code
-		fmt.Printf("\033[1A")
+		//fmt.Printf("\033[1A")
 		lr.rl.SetPrompt("")
 		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
+	}
+	if !running {
+		lr.rl.RefreshPromptInPlace("")
 	}
 }
 
