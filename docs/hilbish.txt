@@ -14,6 +14,8 @@ exec(cmd) > Replaces running hilbish with `cmd`
 
 goro(fn) > Puts `fn` in a goroutine
 
+inputMode(mode) > Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+
 interval(cb, time) > Runs the `cb` function every `time` milliseconds
 
 multiprompt(str) > Changes the continued line prompt to `str`

@@ -29,6 +29,9 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goroutine(fn) end
 
+--- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+function hilbish.inputMode() end
+
 --- Runs the `cb` function every `time` milliseconds
 --- @param cb function
 --- @param time number
