@@ -16,7 +16,9 @@ function hilbish.appendPath(dir) end
 --- replacing <cmd> with the name of the command (for example `command.git`).
 --- `cb` must be a function that returns a table of the entries to complete.
 --- Nested tables will be used as sub-completions.
-function hilbish.complete() end
+--- @param scope string
+--- @param cb function
+function hilbish.complete(scope, cb) end
 
 --- Returns the current directory of the shell
 function hilbish.cwd() end
@@ -30,7 +32,8 @@ function hilbish.exec(cmd) end
 function hilbish.goroutine(fn) end
 
 --- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
-function hilbish.inputMode() end
+--- @param mode string
+function hilbish.inputMode(mode) end
 
 --- Runs the `cb` function every `time` milliseconds
 --- @param cb function
@@ -42,7 +45,8 @@ function hilbish.interval(cb, time) end
 function hilbish.mlprompt(str) end
 
 --- Prepends `dir` to $PATH
-function hilbish.prependPath() end
+--- @param dir string
+function hilbish.prependPath(dir) end
 
 --- Changes the shell prompt to `str`
 --- There are a few verbs that can be used in the prompt text.
@@ -69,6 +73,7 @@ function hilbish.run(cmd) end
 function hilbish.timeout(cb, time) end
 
 --- Searches for an executable called `binName` in the directories of $PATH
-function hilbish.which() end
+--- @param binName string
+function hilbish.which(binName) end
 
 return hilbish
