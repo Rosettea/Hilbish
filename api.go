@@ -229,18 +229,27 @@ func appendPath(dir string) {
 func hlexec(L *lua.LState) int {
 	cmd := L.CheckString(1)
 	cmdArgs, _ := splitInput(cmd)
-	cmdPath, err := exec.LookPath(cmdArgs[0])
-	if err != nil {
-		fmt.Println(err)
-		// if we get here, cmdPath will be nothing
-		// therefore nothing will run
+	if runtime.GOOS != "windows" {
+		cmdPath, err := exec.LookPath(cmdArgs[0])
+		if err != nil {
+			fmt.Println(err)
+			// if we get here, cmdPath will be nothing
+			// therefore nothing will run
+		}
+
+		// syscall.Exec requires an absolute path to a binary
+		// path, args, string slice of environments
+		syscall.Exec(cmdPath, cmdArgs, os.Environ())
+	} else {
+		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		cmd.Run()
+		os.Exit(0)
 	}
 
-	// syscall.Exec requires an absolute path to a binary
-	// path, args, string slice of environments
-	// TODO: alternative for windows
-	syscall.Exec(cmdPath, cmdArgs, os.Environ())
-	return 0 // random thought: does this ever return?
+	return 0
 }
 
 // goro(fn)
