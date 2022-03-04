@@ -29,7 +29,7 @@ function hilbish.exec(cmd) end
 
 --- Puts `fn` in a goroutine
 --- @param fn function
-function hilbish.goroutine(fn) end
+function hilbish.goro(fn) end
 
 --- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 --- @param mode string
