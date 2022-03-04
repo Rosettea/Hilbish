@@ -2,16 +2,26 @@
 
 ## Unreleased
 ### Added
+- MacOS is now officialy supported, default compile time vars have been added
+for it
+- Windows is properly supported as well
 - `catchOnce()` to bait - catches a hook once
 - `hilbish.aliases` interface - allows you to add, delete and list all aliases
 with Lua
-- `appendPath()` can now take a table of arguments for ease of use
-- Signal hooks `sigusr1` and `sigusr2`
+- `hilbish.appendPath()` can now take a table of arguments for ease of use
+- `hilbish.which(binName)` acts as the which builtin for other shells,
+it finds the path to `binName` in $PATH
+- Signal hooks `sigusr1` and `sigusr2` (unavailable on Windows)
 - Commands starting with a space won't be added to history
+- Vim input mode
+  - Hilbish's input mode for text can now be changed to either Emacs
+  (like it always was) or Vim via `hilbish.inputMode()`
+  - Changing Vim mode throws a `hilbish.vimMode` hook
+  - The current Vim mode is also accessible with the `hilbish.vimMode` property
 
 ### Fixed
 - Tab completion for executables
-- Stop interval (`interval()`) when an error occurs
+- Stop interval (`hilbish.interval()`) when an error occurs
 - Errors in bait hooks no longer cause a panic, and remove the handler for the hook as well
 - Formatting of home dir to ~
 - Check if Hilbish is in interactive before trying to use its handlers for signals
@@ -20,9 +30,11 @@ with Lua
 - `index` subdoc will no longer appear
 - Alias expansion with quotes
 - Add full command to history in the case of incomplete input
+- `hilbish.exec()` now has a windows substitute
 
 ### Changed
 - The minimal config is truly minimal now
+- Default config is no longer copied to user's config and is instead ran its location
 #### Breaking Changes
 (there were a lot...)  
 - Change default SHLVL to 0 instead of 1
@@ -30,15 +42,15 @@ with Lua
 only uses the paths mentioned below.
 - Changed Hilbish's config path to something more suited
 according to the OS (`$XDG_CONFIG_HOME/hilbish/init.lua` on Linux,
-`~/Library/Application Support/hilbish/init.lua` on MacOs and
+`~/Library/Application Support/hilbish/init.lua` on MacOS and
 (`%APPDATA%/hilbish/init.lua` on Windows). Previously on Unix-like it was 
 `$XDG_CONFIG_HOME/hilbish/hilbishrc.lua`
 - The history path has been changed to a better suited path.
 On Linux, it is `$XDG_DATA_HOME/hilbish/.hilbish-history` and for others it is
 the config path.
 - `hilbish.xdg` no longer exists, use `hilbish.userDir` instead,
-as it functions the same and is OS agnostic
-- `hilbish.flag` has been removed
+as it functions the same but is OS agnostic
+- `hilbish.flag()` has been removed
 - `~/.hprofile.lua` has been removed, instead check in your config if `hilbish.login`
 is true
 
