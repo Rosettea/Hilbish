@@ -25,6 +25,7 @@ var exports = map[string]lua.LGFunction {
 	"appendPath": hlappendPath,
 	"cwd": hlcwd,
 	"exec": hlexec,
+	"goro": hlgoro,
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
 	"prompt": hlprompt,
@@ -265,7 +266,7 @@ func hlexec(L *lua.LState) int {
 // goro(fn)
 // Puts `fn` in a goroutine
 // --- @param fn function
-func hlgoroutine(L *lua.LState) int {
+func hlgoro(L *lua.LState) int {
 	fn := L.CheckFunction(1)
 	argnum := L.GetTop()
 	args := make([]lua.LValue, argnum)
