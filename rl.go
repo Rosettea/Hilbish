@@ -18,6 +18,11 @@ type lineReader struct {
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
 	rl := readline.NewInstance()
+	fileHist, err := newFileHistory()
+	if err != nil {
+		panic(err)
+	}
+	rl.SetHistoryCtrlR("file", fileHist)
 	rl.ShowVimMode = false
 	rl.ViModeCallback = func(mode readline.ViMode) {
 		modeStr := ""
