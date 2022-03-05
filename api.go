@@ -400,8 +400,10 @@ func hlinterval(L *lua.LState) int {
 // Registers a completion handler for `scope`.
 // A `scope` is currently only expected to be `command.<cmd>`,
 // replacing <cmd> with the name of the command (for example `command.git`).
-// `cb` must be a function that returns a table of the entries to complete.
-// Nested tables will be used as sub-completions.
+// `cb` must be a function that returns a table of "completion groups."
+// A completion group is a table with the keys `items` and `type`.
+// `items` being a table of items and `type` being the display type of
+// `grid` (the normal file completion display) or `list` (with a description)
 // --- @param scope string
 // --- @param cb function
 func hlcomplete(L *lua.LState) int {
