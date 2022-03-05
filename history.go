@@ -38,6 +38,10 @@ func newFileHistory() (*fileHistory, error) {
 }
 
 func (h *fileHistory) Write(line string) (int, error) {
+	if line == "" {
+		return len(h.items), nil
+	}
+
 	_, err := h.f.WriteString(line + "\n")
 	if err != nil {
 		return 0, err
