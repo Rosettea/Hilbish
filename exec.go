@@ -111,7 +111,7 @@ func execCommand(cmd, old string) error {
 				NRet:    1,
 				Protect: true,
 			}, luacmdArgs)
-			
+
 			if err != nil {
 				fmt.Fprintln(os.Stderr,
 					"Error in command:\n\n" + err.Error())

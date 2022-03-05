@@ -74,10 +74,11 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
 	util.Document(L, hshuser, "User directories to store configs and/or modules.")
 	L.SetField(mod, "userDir", hshuser)
-	
+
+	// hilbish.os table
 	hshos := L.NewTable()
 	info, _ := osinfo.GetOSInfo()
-	
+
 	util.SetField(L, hshos, "family", lua.LString(info.Family), "Family name of the current OS")
 	util.SetField(L, hshos, "name", lua.LString(info.Name), "Pretty name of the current OS")
 	util.SetField(L, hshos, "version", lua.LString(info.Version), "Version of the current OS")
@@ -95,7 +96,59 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.Document(L, historyModule, "History interface for Hilbish.")
 	L.SetField(mod, "history", historyModule)
 
+	// hilbish.completions table
+	hshcomp := L.NewTable()
+
+	util.SetField(L, hshcomp, "files", L.NewFunction(luaFileComplete), "Completer for files")
+	util.SetField(L, hshcomp, "bins", L.NewFunction(luaBinaryComplete), "Completer for executables/binaries")
+	util.Document(L, hshcomp, "Completions interface for Hilbish.")
+	L.SetField(mod, "completion", hshcomp)
+
 	L.Push(mod)
+
+	return 1
+}
+
+func luaFileComplete(L *lua.LState) int {
+	query := L.CheckString(1)
+	ctx := L.CheckString(2)
+	fields := L.CheckTable(3)
+
+	var fds []string
+	fields.ForEach(func(k lua.LValue, v lua.LValue) {
+		fds = append(fds, v.String())
+	})
+
+	completions := fileComplete(query, ctx, fds)
+	luaComps := L.NewTable()
+
+	for _, comp := range completions {
+		luaComps.Append(lua.LString(comp))
+	}
+
+	L.Push(luaComps)
+
+	return 1
+}
+
+func luaBinaryComplete(L *lua.LState) int {
+	query := L.CheckString(1)
+	ctx := L.CheckString(2)
+	fields := L.CheckTable(3)
+
+	var fds []string
+	fields.ForEach(func(k lua.LValue, v lua.LValue) {
+		fds = append(fds, v.String())
+	})
+
+	completions, _ := binaryComplete(query, ctx, fds)
+	luaComps := L.NewTable()
+
+	for _, comp := range completions {
+		luaComps.Append(lua.LString(comp))
+	}
+
+	L.Push(luaComps)
 
 	return 1
 }
