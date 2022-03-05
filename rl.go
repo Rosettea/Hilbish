@@ -14,11 +14,13 @@ import (
 type lineReader struct {
 	rl *readline.Instance
 }
+var fileHist *fileHistory
 
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string) *lineReader {
 	rl := readline.NewInstance()
-	fileHist, err := newFileHistory()
+	fh, err := newFileHistory()
+	fileHist = fh // go stupid
 	if err != nil {
 		panic(err)
 	}
@@ -240,7 +242,7 @@ func (lr *lineReader) SetPrompt(prompt string) {
 }
 
 func (lr *lineReader) AddHistory(cmd string) {
-	return
+	fileHist.Write(cmd)
 }
 
 func (lr *lineReader) ClearInput() {
@@ -273,18 +275,35 @@ func (lr *lineReader) luaAddHistory(l *lua.LState) int {
 	return 0
 }
 
-func (lr *lineReader) luaSize(l *lua.LState) int {
+func (lr *lineReader) luaSize(L *lua.LState) int {
+	L.Push(lua.LNumber(fileHist.Len()))
+
+	return 1
+}
+
+func (lr *lineReader) luaGetHistory(L *lua.LState) int {
+	idx := L.CheckInt(1)
+	cmd, _ := fileHist.GetLine(idx)
+	L.Push(lua.LString(cmd))
+
 	return 0
 }
 
-func (lr *lineReader) luaGetHistory(l *lua.LState) int {
-	return 0
-}
+func (lr *lineReader) luaAllHistory(L *lua.LState) int {
+	tbl := L.NewTable()
+	size := fileHist.Len()
 
-func (lr *lineReader) luaAllHistory(l *lua.LState) int {
+	for i := 1; i < size; i++ {
+		cmd, _ := fileHist.GetLine(i)
+		tbl.Append(lua.LString(cmd))
+	}
+
+	L.Push(tbl)
+
 	return 0
 }
 
 func (lr *lineReader) luaClearHistory(l *lua.LState) int {
 	return 0
+
 }
