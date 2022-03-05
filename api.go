@@ -23,6 +23,7 @@ import (
 var exports = map[string]lua.LGFunction {
 	"alias": hlalias,
 	"appendPath": hlappendPath,
+	"complete": hlcomplete,
 	"cwd": hlcwd,
 	"exec": hlexec,
 	"goro": hlgoro,
