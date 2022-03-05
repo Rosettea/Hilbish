@@ -19,12 +19,11 @@ func newFileHistory() (*fileHistory, error) {
 			return nil, err
 		}
 	}
-	
+
 	itms := []string{""}
 	lines := strings.Split(string(data), "\n")
 	for i, l := range lines {
 		if i == len(lines) - 1 {
-			println(i, l)
 			continue
 		}
 		itms = append(itms, l)
@@ -33,12 +32,12 @@ func newFileHistory() (*fileHistory, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	fh := &fileHistory{
 		items: itms,
 		f: f,
 	}
-	
+
 	return fh, nil
 }
 
@@ -52,7 +51,7 @@ func (h *fileHistory) Write(line string) (int, error) {
 		return 0, err
 	}
 	h.f.Sync()
-	
+
 	h.items = append(h.items, line)
 	return len(h.items), nil
 }
