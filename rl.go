@@ -60,19 +60,24 @@ func newLineReader(prompt string) *lineReader {
 		ctx = aliases.Resolve(ctx)
 		
 		if len(fields) == 1 {
-			fileCompletions := fileComplete(query, ctx, fields)
-			if len(fileCompletions) != 0 {
-				for _, f := range fileCompletions {
-					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
-					if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
-						continue
+			prefixes := []string{"./", "../", "/", "~/"}
+			for _, prefix := range prefixes {
+				if strings.HasPrefix(query, prefix) {
+					fileCompletions := fileComplete(query, ctx, fields)
+					if len(fileCompletions) != 0 {
+						for _, f := range fileCompletions {
+							name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
+							if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
+								continue
+							}
+							completions = append(completions, f)
+						}
+						compGroup[0].Suggestions = completions
 					}
-					completions = append(completions, f)
+					return "", compGroup
 				}
-				compGroup[0].Suggestions = completions
-				return "", compGroup
 			}
-			
+
 			// filter out executables, but in path
 			for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 				// print dir to stderr for debugging
