@@ -7,7 +7,6 @@ var (
 	defaultHistDir = ""
 	commonRequirePaths = "';./libs/?/init.lua;./?/init.lua;./?/?.lua'"
 
-	prompt string // Prompt will always get changed anyway
 	multilinePrompt = "> "
 )
 
