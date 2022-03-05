@@ -40,7 +40,7 @@ func main() {
 	confDir, _ = os.UserConfigDir()
 	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
 	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
-	
+
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
 	case "linux":
@@ -165,6 +165,7 @@ func main() {
 
 input:
 	for interactive {
+		lr.SetPrompt(fmtPrompt(prompt))
 		running = false
 
 		input, err := lr.Read()

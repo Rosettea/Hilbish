@@ -71,5 +71,5 @@ func (h *fileHistory) Len() int {
 }
 
 func (h *fileHistory) Dump() interface{} {
-	return nil
+	return h.items
 }

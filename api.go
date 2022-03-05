@@ -175,7 +175,7 @@ These will be formatted and replaced with the appropriate values.
 --- @param str string
 */
 func hlprompt(L *lua.LState) int {
-	prompt := L.CheckString(1)
+	prompt = L.CheckString(1)
 	lr.SetPrompt(fmtPrompt(prompt))
 
 	return 0
@@ -386,7 +386,7 @@ func hlwhich(L *lua.LState) int {
 		l.Push(lua.LNil)
 		return 1
 	}
-	
+
 	l.Push(lua.LString(path))
 	return 1
 }
