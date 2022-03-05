@@ -217,13 +217,12 @@ func (lr *lineReader) Read() (string, error) {
 func (lr *lineReader) SetPrompt(prompt string) {
 	halfPrompt := strings.Split(prompt, "\n")
 	if len(halfPrompt) > 1 {
+		lr.rl.Multiline = true
 		lr.rl.SetPrompt(strings.Join(halfPrompt[:len(halfPrompt) - 1], "\n"))
 		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
 	} else {
-		// print cursor up ansi code
-		//fmt.Printf("\033[1A")
-		lr.rl.SetPrompt("")
-		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
+		lr.rl.Multiline = false
+		lr.rl.SetPrompt(prompt)
 	}
 	if !running {
 		lr.rl.RefreshPromptInPlace("")
