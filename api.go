@@ -274,11 +274,13 @@ func hlgoro(L *lua.LState) int {
 
 	// call fn
 	go func() {
-		L.CallByParam(lua.P{
-			Fn:      fn,
-			NRet:    0,
+		if err := L.CallByParam(lua.P{
+			Fn: fn,
+			NRet: 0,
 			Protect: true,
-		}, args...)
+		}, args...); err != nil {
+			fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
+		}
 	}()
 
 	return 0
@@ -295,11 +297,13 @@ func hltimeout(L *lua.LState) int {
 	timeout := time.Duration(ms) * time.Millisecond
 	time.Sleep(timeout)
 
-	L.CallByParam(lua.P{
-		Fn:      cb,
-		NRet:    0,
+	if err := L.CallByParam(lua.P{
+		Fn: cb,
+		NRet: 0,
 		Protect: true,
-	})
+	}); err != nil {
+		fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
+	}
 	return 0
 }
 
