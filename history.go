@@ -20,8 +20,13 @@ func newFileHistory() (*fileHistory, error) {
 		}
 	}
 	
-	var itms []string
-	for _, l := range strings.Split(string(data), "\n") {
+	itms := []string{""}
+	lines := strings.Split(string(data), "\n")
+	for i, l := range lines {
+		if i == len(lines) - 1 {
+			println(i, l)
+			continue
+		}
 		itms = append(itms, l)
 	}
 	f, err := os.OpenFile(defaultHistPath, os.O_RDWR | os.O_CREATE, 0755)
