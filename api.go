@@ -174,10 +174,8 @@ These will be formatted and replaced with the appropriate values.
 --- @param str string
 */
 func hlprompt(L *lua.LState) int {
-	prompt = L.CheckString(1)
-	if lr != nil {
-		lr.SetPrompt(fmtPrompt())
-	}
+	prompt := L.CheckString(1)
+	lr.SetPrompt(fmtPrompt(prompt))
 
 	return 0
 }

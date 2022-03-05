@@ -114,6 +114,7 @@ func main() {
 
 	go handleSignals()
 	luaInit()
+	lr = newLineReader("")
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
@@ -162,12 +163,10 @@ func main() {
 		os.Exit(0)
 	}
 
-	lr = newLineReader("")
 input:
 	for interactive {
 		running = false
 
-		lr.SetPrompt(fmtPrompt())
 		input, err := lr.Read()
 
 		if err == io.EOF {
@@ -225,7 +224,7 @@ func continuePrompt(prev string) (string, error) {
 }
 
 // This semi cursed function formats our prompt (obviously)
-func fmtPrompt() string {
+func fmtPrompt(prompt string) string {
 	host, _ := os.Hostname()
 	cwd, _ := os.Getwd()
 
