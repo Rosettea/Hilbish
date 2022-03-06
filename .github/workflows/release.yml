@@ -1,0 +1,38 @@
+on:
+  push:
+    tags:
+      - v[0-9]+.*
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: taiki-e/create-gh-release-action@v1
+        with:
+          title: Hilbish $tag
+          changelog: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  releases-matrix:
+    name: Build Release Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+    steps:
+    - uses: actions/checkout@v2
+    - uses: wangyoucao577/go-release-action@v1.21
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        binary_name: hilbish
+        extra_files: LICENSE README.md CHANGELOG.md .hilbishrc.lua prelude docs emmyLuaDocs
