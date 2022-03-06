@@ -135,6 +135,15 @@ ansikit.saveState = function()
 	return ansikit.printCode(7)
 end
 
+ansikit.screenMain = function()
+	return ansikit.printCSI('?1049', 'l')
+end
+
+ansikit.screenAlt = function()
+	ansikit.cursorTo(0, 0)
+	return ansikit.printCSI('?1049', 'h')
+end
+
 ansikit.setTitle = function(text)
 	return ansikit.printCode(']2;' .. text, true)
 end
