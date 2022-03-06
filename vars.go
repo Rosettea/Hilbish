@@ -2,7 +2,7 @@ package main
 
 // String vars that are free to be changed at compile time
 var (
-	version = "v0.7.1"
+	version = "v1.0.0"
 	defaultConfDir = "" // ~ will be substituted for home, path for user's default config
 	defaultHistDir = ""
 	commonRequirePaths = "';./libs/?/init.lua;./?/init.lua;./?/?.lua'"

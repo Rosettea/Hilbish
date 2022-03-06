@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## Unreleased
+## [1.0.0] - 2021-03-04
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
 for it
@@ -18,6 +18,7 @@ it finds the path to `binName` in $PATH
   (like it always was) or Vim via `hilbish.inputMode()`
   - Changing Vim mode throws a `hilbish.vimMode` hook
   - The current Vim mode is also accessible with the `hilbish.vimMode` property
+- Print errors in `hilbish.timeout()` and `hilbish.goro()` callbacks
 
 ### Fixed
 - Tab completion for executables
@@ -341,6 +342,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Rosettea/Hilbish/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Rosettea/Hilbish/compare/v0.6.0...v0.6.1
