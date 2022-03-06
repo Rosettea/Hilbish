@@ -165,7 +165,6 @@ func main() {
 
 input:
 	for interactive {
-		lr.SetPrompt(fmtPrompt(prompt))
 		running = false
 
 		input, err := lr.Read()
