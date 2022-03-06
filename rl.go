@@ -23,6 +23,7 @@ func newLineReader(prompt string) *lineReader {
 		panic(err)
 	}
 	rl.SetHistoryCtrlR("file", fileHist)
+	rl.HistoryAutoWrite = false
 	rl.ShowVimMode = false
 	rl.ViModeCallback = func(mode readline.ViMode) {
 		modeStr := ""
