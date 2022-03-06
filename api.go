@@ -206,7 +206,8 @@ func getenv(key, fallback string) string {
 // --- @param prompt string
 func hlread(L *lua.LState) int {
 	luaprompt := L.CheckString(1)
-	lualr := newLineReader(luaprompt)
+	lualr := newLineReader("")
+	lualr.SetPrompt(luaprompt)
 
 	input, err := lualr.Read()
 	if err != nil {
