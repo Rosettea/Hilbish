@@ -14,7 +14,7 @@ require (
 	mvdan.cc/sh/v3 v3.4.3
 )
 
-replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5
+replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e
 
 replace github.com/maxlandon/readline => github.com/Rosettea/readline-1 v0.0.0-20220305123014-31d4d4214c93
 

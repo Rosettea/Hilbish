@@ -10,6 +10,8 @@ github.com/Rosettea/readline-1 v0.1.0-beta.0.20220228022904-61f5e4493011 h1:+a61
 github.com/Rosettea/readline-1 v0.1.0-beta.0.20220228022904-61f5e4493011/go.mod h1:QiUAvbhg8PzCA4hlafCUl0bKD/0VmcocM4AjqtszAJs=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5 h1:ygwVRX8gf5MHA0VzSgOdscCEoAJLjM8joEotfQPgAd0=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20211022004519-f67a49cb50f5/go.mod h1:R09vh/04ILvP2Gj8/Z9Jd0Dh0ZIvaucowMEs6abQpWs=
+github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e h1:P2XupP8SaylWaudD1DqbWtZ3mIa8OsE9635LmR+Q+lg=
+github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e/go.mod h1:R09vh/04ILvP2Gj8/Z9Jd0Dh0ZIvaucowMEs6abQpWs=
 github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d h1:licZJFw2RwpHMqeKTCYkitsPqHNxTmd4SNR5r94FGM8=
 github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d/go.mod h1:asat636LX7Bqt5lYEZ27JNDcqxfjdBQuJ/MM4CN/Lzo=
 github.com/blackfireio/osinfo v1.0.3 h1:Yk2t2GTPjBcESv6nDSWZKO87bGMQgO+Hi9OoXPpxX8c=
