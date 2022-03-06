@@ -1,8 +1,12 @@
--- We're basically porting Ansikit to lua
--- https://github.com/Luvella/AnsiKit/blob/master/lib/index.js
--- which is made by yours truly sammy :^)
 local lunacolors = require 'lunacolors'
-local ansikit = {}
+local ansikit = {
+	blockCursor = 1,
+	blockCursorSteady = 2,
+	underlineCursor = 3,
+	underlineCursorSteady = 4,
+	lineCursor = 5,
+	lineCursorSteady = 6,
+}
 
 ansikit.clear = function(scrollback)
 	local typ = (scrollback and 3 or 2)
