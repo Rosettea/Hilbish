@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## [1.0.0] - 2021-03-04
+## [1.0.0] - 2021-03-05
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
 for it
