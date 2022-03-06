@@ -50,6 +50,7 @@ func hilbishLoader(L *lua.LState) int {
 
 	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + curuser.Username + `{reset}.
 The nice lil shell for {blue}Lua{reset} fanatics!
+Check out the {blue}{bold}guide{reset} command to get started.
 `
 
 	if runtime.GOOS == "windows" {
