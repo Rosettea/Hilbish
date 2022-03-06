@@ -61,6 +61,8 @@ func runInput(input, origInput string) {
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 					cmdFinish(1, cmdString, origInput)
+				} else {
+					cmdFinish(0, cmdString, origInput)
 				}
 				break
 			}
