@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## [1.0.0] - 2021-03-05
+## [1.0.0] - 2021-03-06
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
 for it
@@ -19,6 +19,10 @@ it finds the path to `binName` in $PATH
   - Changing Vim mode throws a `hilbish.vimMode` hook
   - The current Vim mode is also accessible with the `hilbish.vimMode` property
 - Print errors in `hilbish.timeout()` and `hilbish.goro()` callbacks
+- `hilbish.exit` hook is thrown when Hilbish is going to exit
+- `hilbish.exitCode` property to get the exit code of the last executed command
+- `screenMain` and `screenAlt` functions have been added to Ansikit to switch
+to the terminal's main and alt buffer respectively
 
 ### Fixed
 - Tab completion for executables
@@ -33,6 +37,8 @@ it finds the path to `binName` in $PATH
 - Add full command to history in the case of incomplete input
 - `hilbish.exec()` now has a windows substitute
 - Fixed case of successful command after prompted for more input not writing to history
+- `command.exit` is thrown when sh input is incorrect and when command executed after continue
+prompt exits successfully
 
 ### Changed
 - The minimal config is truly minimal now
