@@ -72,6 +72,7 @@ func runInput(input, origInput string) {
 			if code, ok := interp.IsExitStatus(err); ok {
 				cmdFinish(code, cmdString, origInput)
 			} else {
+				cmdFinish(126, cmdString, origInput)
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
