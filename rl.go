@@ -15,15 +15,19 @@ type lineReader struct {
 var fileHist *fileHistory
 
 // other gophers might hate this naming but this is local, shut up
-func newLineReader(prompt string) *lineReader {
+func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
-	fh, err := newFileHistory()
-	fileHist = fh // go stupid
-	if err != nil {
-		panic(err)
+	// we don't mind hilbish.read rl instances having completion,
+	// but it cant have shared history
+	if !noHist {
+		fh, err := newFileHistory()
+		fileHist = fh // go stupid
+		if err != nil {
+			panic(err)
+		}
+		rl.SetHistoryCtrlR("file", fileHist)
+		rl.HistoryAutoWrite = false
 	}
-	rl.SetHistoryCtrlR("file", fileHist)
-	rl.HistoryAutoWrite = false
 	rl.ShowVimMode = false
 	rl.ViModeCallback = func(mode readline.ViMode) {
 		modeStr := ""
