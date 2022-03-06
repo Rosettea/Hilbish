@@ -65,6 +65,7 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
 	util.SetField(L, mod, "greeting", lua.LString(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "exitCode", lua.LNumber(0), "Exit code of last exected command")
 	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table

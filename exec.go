@@ -244,5 +244,6 @@ func cmdFinish(code uint8, cmdstr, oldInput string) {
 	if !strings.HasPrefix(oldInput, " ") || interactive {
 		handleHistory(cmdstr)
 	}
+	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
 	hooks.Em.Emit("command.exit", code, cmdstr)
 }
