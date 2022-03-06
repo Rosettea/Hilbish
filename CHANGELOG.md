@@ -58,27 +58,27 @@ is true
 - `hilbish.complete()` has had a slight refactor to fit with the new readline library.
 It now expects a table of "completion groups" which are just tables with the
 `type` and `items` keys. Here is a (more or less) complete example of how it works now:
-  ```lua
-    hilbish.complete('command.git', function()
-      return {
-        {
-          items = {
-            'add',
-            'clone'
-          },
-          type = 'grid'
-        },
-        {
-          items = {
-            ['--git-dir'] = {'Description of flag'},
-            '-c'
-          },
-          type = 'list'
-        }
-      }
-    end)
-  ```
-  Completer functions are now also expected to handle subcommands/subcompletions
+	```lua
+	hilbish.complete('command.git', function()
+		return {
+			{
+				items = {
+					'add',
+					'clone'
+				},
+				type = 'grid'
+			},
+			{
+				items = {
+					['--git-dir'] = {'Description of flag'},
+					'-c'
+				},
+				type = 'list'
+			}
+		}
+	end)
+	```
+	Completer functions are now also expected to handle subcommands/subcompletions
 
 ## [0.7.1] - 2021-11-22
 ### Fixed
