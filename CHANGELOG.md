@@ -1,5 +1,10 @@
 # 🎀 Changelog
 
+## [1.0.1] - 2021-03-06
+### Fixed
+- Using `hilbish.appendPath` will no longer result in string spam (debugging thing left being)
+- Prompt gets set properly on startup
+
 ## [1.0.0] - 2021-03-06
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
@@ -373,6 +378,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[1.0.1]: https://github.com/Rosettea/Hilbish/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Rosettea/Hilbish/compare/v0.6.1...v0.7.0
