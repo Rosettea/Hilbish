@@ -265,7 +265,6 @@ func hlalias(L *lua.LState) int {
 func hlappendPath(L *lua.LState) int {
 	// check if dir is a table or a string
 	arg := L.Get(1)
-	fmt.Println(arg.Type())
 	if arg.Type() == lua.LTTable {
 		arg.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
 			appendPath(v.String())
