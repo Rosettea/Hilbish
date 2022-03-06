@@ -367,7 +367,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
-[0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
+[1.0.0]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
 [0.7.1]: https://github.com/Rosettea/Hilbish/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Rosettea/Hilbish/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Rosettea/Hilbish/compare/v0.6.0...v0.6.1
