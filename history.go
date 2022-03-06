@@ -28,7 +28,7 @@ func newFileHistory() (*fileHistory, error) {
 		}
 		itms = append(itms, l)
 	}
-	f, err := os.OpenFile(defaultHistPath, os.O_RDWR | os.O_CREATE, 0755)
+	f, err := os.OpenFile(defaultHistPath, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0755)
 	if err != nil {
 		return nil, err
 	}
