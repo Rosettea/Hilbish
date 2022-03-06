@@ -5,7 +5,7 @@ local ansikit = require 'ansikit'
 
 local function doPrompt(fail, mode)
 	hilbish.prompt(lunacolors.format(
-		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
+		'{blue}%u {cyan}%d\n' .. (fail and '{red}' or '{green}') .. '∆ '
 	))
 end
 

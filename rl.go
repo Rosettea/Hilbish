@@ -188,17 +188,17 @@ func (lr *lineReader) Read() (string, error) {
 	return s, err // might get another error
 }
 
-func (lr *lineReader) SetPrompt(prompt string) {
-	halfPrompt := strings.Split(prompt, "\n")
+func (lr *lineReader) SetPrompt(p string) {
+	halfPrompt := strings.Split(p, "\n")
 	if len(halfPrompt) > 1 {
 		lr.rl.Multiline = true
 		lr.rl.SetPrompt(strings.Join(halfPrompt[:len(halfPrompt) - 1], "\n"))
 		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
 	} else {
 		lr.rl.Multiline = false
-		lr.rl.SetPrompt(prompt)
+		lr.rl.SetPrompt(p)
 	}
-	if !running {
+	if initialized && !running {
 		lr.rl.RefreshPromptInPlace("")
 	}
 }

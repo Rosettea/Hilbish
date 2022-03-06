@@ -163,6 +163,7 @@ func main() {
 		os.Exit(0)
 	}
 
+	initialized = true
 input:
 	for interactive {
 		running = false
