@@ -55,7 +55,7 @@ func main() {
 		defaultConfPath = filepath.Join(confDir, "hilbish", "init.lua")
 	} else {
 		// else do ~ substitution
-		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), ".hilbishrc.lua")
+		defaultConfPath = filepath.Join(strings.Replace(defaultConfDir, "~", homedir, 1), "init.lua")
 	}
 	if defaultHistDir == "" {
 		defaultHistPath = filepath.Join(userDataDir, "hilbish", ".hilbish-history")
