@@ -45,6 +45,7 @@ commander.register('cd', function (args)
 end)
 
 commander.register('exit', function()
+	bait.throw('hilbish.exit')
 	os.exit(0)
 end)
 

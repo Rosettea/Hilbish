@@ -172,6 +172,7 @@ input:
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
+			hooks.Em.Emit("hilbish.exit")
 			break
 		}
 		if err != nil {
