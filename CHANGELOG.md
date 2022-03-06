@@ -32,19 +32,20 @@ it finds the path to `binName` in $PATH
 - Alias expansion with quotes
 - Add full command to history in the case of incomplete input
 - `hilbish.exec()` now has a windows substitute
+- Fixed case of successful command after prompted for more input not writing to history
 
 ### Changed
 - The minimal config is truly minimal now
 - Default config is no longer copied to user's config and is instead ran its location
 #### Breaking Changes
-(there were a lot...)  
+(there were a lot...)
 - Change default SHLVL to 0 instead of 1
 - ~/.hilbishrc.lua will no longer be run by default, it now
 only uses the paths mentioned below.
 - Changed Hilbish's config path to something more suited
 according to the OS (`$XDG_CONFIG_HOME/hilbish/init.lua` on Linux,
 `~/Library/Application Support/hilbish/init.lua` on MacOS and
-(`%APPDATA%/hilbish/init.lua` on Windows). Previously on Unix-like it was 
+(`%APPDATA%/hilbish/init.lua` on Windows). Previously on Unix-like it was
 `$XDG_CONFIG_HOME/hilbish/hilbishrc.lua`
 - The history path has been changed to a better suited path.
 On Linux, it is `$XDG_DATA_HOME/hilbish/.hilbish-history` and for others it is
@@ -54,6 +55,30 @@ as it functions the same but is OS agnostic
 - `hilbish.flag()` has been removed
 - `~/.hprofile.lua` has been removed, instead check in your config if `hilbish.login`
 is true
+- `hilbish.complete()` has had a slight refactor to fit with the new readline library.
+It now expects a table of "completion groups" which are just tables with the
+`type` and `items` keys. Here is a (more or less) complete example of how it works now:
+  ```lua
+    hilbish.complete('command.git', function()
+      return {
+        {
+          items = {
+            'add',
+            'clone'
+          },
+          type = 'grid'
+        },
+        {
+          items = {
+            ['--git-dir'] = {'Description of flag'},
+            '-c'
+          },
+          type = 'list'
+        }
+      }
+    end)
+  ```
+  Completer functions are now also expected to handle subcommands/subcompletions
 
 ## [0.7.1] - 2021-11-22
 ### Fixed
@@ -162,9 +187,9 @@ An absolutely massive release. Probably the biggest yet, includes a bunch of fix
 ### Added
 
 - `-n` flag, which checks Lua for syntax errors without running it
-- `exec(command)` function, acts like the `exec` builtin in sh 
+- `exec(command)` function, acts like the `exec` builtin in sh
     - Example: `exec 'awesome'` in an .xinitrc file with Hilbish as shebang
-- Commands from commander can now `return` an exit code 
+- Commands from commander can now `return` an exit code
 ```lua
 commander.register('false', function()
 return 1
@@ -177,7 +202,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 - Recursive aliases
     - At the moment this only works for the first argument
 - Hilbish can now be used with Hilbiline if compiled to do so (currently only for testing purposes)
-- `goro(func)` runs a `func`tion in a goroutine. With channels that gopher-lua also provides, one can do parallelism and concurrency in Lua (but go style). 
+- `goro(func)` runs a `func`tion in a goroutine. With channels that gopher-lua also provides, one can do parallelism and concurrency in Lua (but go style).
     - `coroutine` no those dont exist they dont matter `goro` is easier
 - `cd -` will change to the previous directory
 - `hilbish.cwd()` gets the current working directory
@@ -216,7 +241,7 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 
 ### Added
 - Ctrl C in the prompt now cancels/clear input (I've needed this for so long also)
-- Made Hilbish act like a login shell on login 
+- Made Hilbish act like a login shell on login
     - If Hilbish is the login shell, or the `-l`/`--login` flags are used, Hilbish will use an additional `~/.hprofile.lua` file, you can use this to set environment variables once on login
 - `-c` has been added to run a single command (this works exactly like being in the prompt would, so Lua works as well)
 - `-i` (also `--interactive`) has been added to force Hilbish to be an interactive shell in cases where it usually wont be (like with `-c`)
@@ -224,13 +249,13 @@ When `false` is run, it will have the exit code of `1`, this is shorter/easier t
 - Added a `mulitline` hook that's thrown when in the continue/multiline prompt
 - Added `appendPath` function to append a directory to `$PATH`
     - `~` will be expanded to `$HOME` as well
-- A utility `string.split` function is now added 
+- A utility `string.split` function is now added
     - `string.split(str, delimiter)`
 - Added a `_user` variable to easily get current user's name
 
 ### Changed
 
-- **BREAKING Change**: [Lunacolors](https://github.com/Hilbis/Lunacolors) has replaced ansikit for formatting colors, which means the format function has been removed from ansikit and moved to Lunacolors. 
+- **BREAKING Change**: [Lunacolors](https://github.com/Hilbis/Lunacolors) has replaced ansikit for formatting colors, which means the format function has been removed from ansikit and moved to Lunacolors.
     - Users must replace ansikit with `lunacolors` in their config files
 - A getopt-like library is now used for command line flag parsing
 - `cd` builtin now supports using environment variables
@@ -356,5 +381,5 @@ First "stable" release of Hilbish.
 [0.2.0]: https://github.com/Rosettea/Hilbish/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/Rosettea/Hilbish/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Rosettea/Hilbish/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/Rosettea/Hilbish/compare/v0.0.12...v0.1.0 
+[0.1.0]: https://github.com/Rosettea/Hilbish/compare/v0.0.12...v0.1.0
 [0.0.12]: https://github.com/Rosettea/Hilbish/releases/tag/v0.0.12
