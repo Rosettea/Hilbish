@@ -154,8 +154,8 @@ func luaBinaryComplete(L *lua.LState) int {
 }
 
 func setVimMode(mode string) {
-	hooks.Em.Emit("hilbish.vimMode", mode)
 	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	hooks.Em.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
