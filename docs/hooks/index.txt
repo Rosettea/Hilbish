@@ -1,5 +1,5 @@
-Here is listed all scopes for bait hooks. If a hook is related to a command,
-it will have the `command` scope, as example.
+Here is a list of bait hooks that are thrown by Hilbish. If a hook is related
+to a command, it will have the `command` scope, as example.
 
 Here is the format for a doc for a hook:
 + <hook name> -> <args> > <description>
