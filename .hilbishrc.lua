@@ -1,8 +1,9 @@
 -- Default Hilbish config
 local lunacolors = require 'lunacolors'
 local bait = require 'bait'
+local ansikit = require 'ansikit'
 
-function doPrompt(fail)
+local function doPrompt(fail, mode)
 	hilbish.prompt(lunacolors.format(
 		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
 	))
@@ -16,3 +17,12 @@ bait.catch('command.exit', function(code)
 	doPrompt(code ~= 0)
 end)
 
+bait.catch('hilbish.vimMode', function(mode)
+	if mode ~= 'insert' then
+		ansikit.cursorStyle(ansikit.blockCursor)
+	else
+		ansikit.cursorStyle(ansikit.lineCursor)
+	end
+
+	doPrompt(false, mode)
+end)
