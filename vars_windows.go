@@ -9,6 +9,6 @@ var (
 	.. hilbish.userDir.config .. '\\Hilbish\\libs\\?\\?.lua;'
 	.. hilbish.userDir.config .. '\\Hilbish\\libs\\?.lua;'`
 	dataDir = "~\\Appdata\\Roaming\\Hilbish" // ~ and \ gonna cry?
-	preloadPath = dataDir + "\\preload.lua"
+	preloadPath = dataDir + "\\prelude\\init.lua"
 	sampleConfPath = dataDir + "\\hilbishrc.lua" // Path to default/sample config
 )

@@ -51,7 +51,7 @@ func luaInit() {
 	// Add more paths that Lua can require from
 	l.DoString("package.path = package.path .. " + requirePaths)
 
-	err := l.DoFile("preload.lua")
+	err := l.DoFile("prelude/init.lua")
 	if err != nil {
 		err = l.DoFile(preloadPath)
 		if err != nil {
