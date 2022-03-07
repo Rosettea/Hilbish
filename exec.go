@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"hilbish/util"
-	
+
 	"github.com/yuin/gopher-lua"
 	"mvdan.cc/sh/v3/shell"
 	//"github.com/yuin/gopher-lua/parse"
@@ -245,7 +245,7 @@ func splitInput(input string) ([]string, string) {
 func cmdFinish(code uint8, cmdstr, oldInput string) {
 	// if input has space at the beginning, dont put in history
 	if !strings.HasPrefix(oldInput, " ") || interactive {
-		handleHistory(cmdstr)
+		handleHistory(strings.TrimSpace(oldInput))
 	}
 	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
 	hooks.Em.Emit("command.exit", code, cmdstr)
