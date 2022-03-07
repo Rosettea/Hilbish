@@ -268,3 +268,16 @@ func expandHome(path string) string {
 
 	return strings.Replace(defaultHistDir, "~", homedir, 1)
 }
+
+func removeDupes(slice []string) []string {
+	all := make(map[string]bool)
+	newSlice := []string{}
+	for _, item := range slice {
+		if _, val := all[item]; !val {
+			all[item] = true
+			newSlice = append(newSlice, item)
+		}
+	}
+
+	return newSlice
+}

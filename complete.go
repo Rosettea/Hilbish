@@ -69,6 +69,8 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 		}
 	}
 
+	completions = removeDupes(completions)
+
 	return completions, query
 }
 
