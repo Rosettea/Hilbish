@@ -187,6 +187,7 @@ input:
 
 		input = strings.TrimSpace(input)
 		if len(input) == 0 {
+			running = true
 			hooks.Em.Emit("command.exit", 0)
 			continue
 		}
