@@ -1,5 +1,11 @@
 # 🎀 Changelog
 
+## [1.0.3] - 2021-03-12
+### Fixed
+- Removed duplicate executable suggestions
+- User input is added to history now instead of what's ran by Hilbish
+- Formatting issue with prompt on no input
+
 ## [1.0.2] - 2021-03-06
 ### Fixed
 - Cases where Hilbish's history directory doesn't exist will no longer cause a panic
@@ -382,6 +388,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Rosettea/Hilbish/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
