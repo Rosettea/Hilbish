@@ -16,6 +16,6 @@ require (
 
 replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e
 
-replace github.com/maxlandon/readline => github.com/Rosettea/readline-1 v0.0.0-20220305123014-31d4d4214c93
+replace github.com/maxlandon/readline => ./readline
 
 replace layeh.com/gopher-luar => github.com/layeh/gopher-luar v1.0.10
