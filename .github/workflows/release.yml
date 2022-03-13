@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: taiki-e/create-gh-release-action@v1
         with:
           title: Hilbish $tag
@@ -31,7 +32,6 @@ jobs:
           - goarch: arm64
             goos: windows
     steps:
-    - uses: actions/checkout@v2
     - uses: wangyoucao577/go-release-action@v1.25
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
