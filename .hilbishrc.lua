@@ -3,7 +3,7 @@ local lunacolors = require 'lunacolors'
 local bait = require 'bait'
 local ansikit = require 'ansikit'
 
-local function doPrompt(fail, mode)
+local function doPrompt(fail)
 	hilbish.prompt(lunacolors.format(
 		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
 	))
@@ -23,6 +23,4 @@ bait.catch('hilbish.vimMode', function(mode)
 	else
 		ansikit.cursorStyle(ansikit.lineCursor)
 	end
-
-	doPrompt(false, mode)
 end)
