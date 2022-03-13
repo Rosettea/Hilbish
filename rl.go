@@ -192,6 +192,7 @@ func (lr *lineReader) SetPrompt(p string) {
 		lr.rl.MultilinePrompt = halfPrompt[len(halfPrompt) - 1:][0]
 	} else {
 		lr.rl.Multiline = false
+		lr.rl.MultilinePrompt = ""
 		lr.rl.SetPrompt(p)
 	}
 	if initialized && !running {
