@@ -244,7 +244,7 @@ func splitInput(input string) ([]string, string) {
 
 func cmdFinish(code uint8, cmdstr, oldInput string) {
 	// if input has space at the beginning, dont put in history
-	if !strings.HasPrefix(oldInput, " ") || interactive {
+	if interactive && !strings.HasPrefix(oldInput, " ") {
 		handleHistory(strings.TrimSpace(oldInput))
 	}
 	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
