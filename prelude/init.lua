@@ -60,10 +60,12 @@ commander.register('doc', function(args)
 
 	if #args > 0 then
 		local mod = args[1]
+		local formattedFuncs = ''
 
+		local iface = mod:match '%w+%.%w+'
 		local f = io.open(moddocPath .. mod .. '.txt', 'rb')
 		local funcdocs = nil
-		if not f then
+		if not f and not iface then
 			-- assume subdir
 			-- dataDir/docs/<mod>/<mod>.txt
 			moddocPath = moddocPath .. mod .. '/'
@@ -84,28 +86,41 @@ commander.register('doc', function(args)
 			if subdocName == 'index' then
 				funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
 			end
-		end
 
-		if not funcdocs then
-			funcdocs = f:read '*a'
-		end
-		local desc = ''
-		local ok = pcall(require, mod)
-		local backtickOccurence = 0
-		local formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
-			backtickOccurence = backtickOccurence + 1
-			if backtickOccurence % 2 == 0 then
-				return '{reset}'
-			else
-				return '{underline}{green}'
+			if not funcdocs then
+				funcdocs = f:read '*a'
 			end
-		end))
 
+			local desc = ''
+			local backtickOccurence = 0
+			formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
+				backtickOccurence = backtickOccurence + 1
+				if backtickOccurence % 2 == 0 then
+					return '{reset}'
+				else
+					return '{underline}{green}'
+				end
+			end))
+
+			f:close()
+		end
+
+		local ok, lmod
+		if iface then
+			modName = mod:match '%w+'
+			local okk, module = pcall(require, modName)
+			ok = okk
+			if ok then
+				lmod = module[iface:sub(modName:len() + 2)]
+			end
+		else
+			ok, lmod = pcall(require, mod)
+		end
 		if ok then
 			local props = {}
 			local propstr = ''
 			local modDesc = ''
-			local modmt = getmetatable(require(mod))
+			local modmt = getmetatable(lmod)
 			modDesc = modmt.__doc
 			if modmt.__docProp then
 				-- not all modules have docs for properties
@@ -119,7 +134,6 @@ commander.register('doc', function(args)
 			desc = string.format(modDocFormat, modDesc, propstr)
 		end
 		print(desc .. formattedFuncs)
-		f:close()
 
 		return
 	end
