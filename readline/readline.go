@@ -543,7 +543,7 @@ func (rl *Instance) viEscape(r []rune) {
 
 	// Sometimes the escape sequence is interleaved with another one,
 	// but key strokes might be in the wrong order, so we double check
-	// and escape the Insert mode only if needed.
+	// and escape the mode only if needed.
 	if rl.modeViMode == VimInsert && len(r) == 1 && r[0] == 27 {
 		if len(rl.line) > 0 && rl.pos > 0 {
 			rl.pos--
