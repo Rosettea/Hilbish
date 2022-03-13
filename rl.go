@@ -36,6 +36,14 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		}
 		setVimMode(modeStr)
 	}
+	rl.ViActionCallback = func(action readline.ViAction, args []string) {
+		actionStr := ""
+		switch action {
+			case readline.VimActionPaste: actionStr = "paste"
+			case readline.VimActionYank: actionStr = "yank"
+		}
+		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
+	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
 		var completions []string

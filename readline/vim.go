@@ -33,6 +33,12 @@ var (
 	VimKeysStr        = "[N]"
 )
 
+type ViAction int
+const (
+	VimActionYank = iota
+	VimActionPaste
+)
+
 var (
 	// registerFreeKeys - Some Vim keys don't act on/ aren't affected by registers,
 	// and using these keys will automatically cancel any active register.
@@ -47,6 +53,7 @@ var (
 // have been moved away, and only the rl.pos is adjusted: when echoing the input line, the shell
 // will compute the new cursor pos accordingly.
 func (rl *Instance) vi(r rune) {
+	activeRegister := string(rl.registers.currentRegister)
 
 	// Check if we are in register mode. If yes, and for some characters,
 	// we select the register and exit this func immediately.
@@ -198,6 +205,7 @@ func (rl *Instance) vi(r rune) {
 
 		buffer := rl.pasteFromRegister()
 		vii := rl.getViIterations()
+		rl.ViActionCallback(VimActionPaste, []string{activeRegister, string(buffer)})
 		for i := 1; i <= vii; i++ {
 			rl.insert(buffer)
 		}
@@ -208,6 +216,7 @@ func (rl *Instance) vi(r rune) {
 		rl.viUndoSkipAppend = true
 		buffer := rl.pasteFromRegister()
 		vii := rl.getViIterations()
+		rl.ViActionCallback(VimActionPaste, []string{activeRegister, string(buffer)})
 		for i := 1; i <= vii; i++ {
 			rl.insert(buffer)
 		}
@@ -311,6 +320,7 @@ func (rl *Instance) vi(r rune) {
 
 	case 'y':
 		if rl.viIsYanking {
+			rl.ViActionCallback(VimActionYank, []string{activeRegister, string(rl.line)})
 			rl.saveBufToRegister(rl.line)
 			rl.viIsYanking = false
 		}
@@ -318,6 +328,7 @@ func (rl *Instance) vi(r rune) {
 		rl.viUndoSkipAppend = true
 
 	case 'Y':
+		rl.ViActionCallback(VimActionYank, []string{activeRegister, string(rl.line)})
 		rl.saveBufToRegister(rl.line)
 		rl.viUndoSkipAppend = true
 

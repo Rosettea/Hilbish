@@ -180,6 +180,7 @@ type Instance struct {
 	mutex sync.Mutex
 
 	ViModeCallback func(ViMode)
+	ViActionCallback func(ViAction, []string)
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
