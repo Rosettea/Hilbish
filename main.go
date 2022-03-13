@@ -52,16 +52,18 @@ func main() {
 
 	if defaultConfDir == "" {
 		// we'll add *our* default if its empty (wont be if its changed comptime)
-		defaultConfPath = filepath.Join(confDir, "hilbish", "init.lua")
+		defaultConfDir = filepath.Join(confDir, "hilbish")
 	} else {
 		// else do ~ substitution
-		defaultConfPath = filepath.Join(expandHome(defaultHistDir), "init.lua")
+		defaultConfDir = expandHome(defaultHistDir)
 	}
+	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {
-		defaultHistPath = filepath.Join(userDataDir, "hilbish", ".hilbish-history")
+		defaultHistDir = filepath.Join(userDataDir, "hilbish")
 	} else {
-		defaultHistPath = filepath.Join(expandHome(defaultHistDir), ".hilbish-history")
+		defaultHistDir = expandHome(defaultHistDir)
 	}
+	defaultHistPath = filepath.Join(defaultHistDir, ".hilbish-history")
 	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
 	verflag := getopt.BoolLong("version", 'v', "Prints Hilbish version")
 	setshflag := getopt.BoolLong("setshellenv", 'S', "Sets $SHELL to Hilbish's executed path")

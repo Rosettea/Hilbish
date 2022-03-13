@@ -13,6 +13,11 @@ type fileHistory struct {
 }
 
 func newFileHistory() *fileHistory {
+	err := os.MkdirAll(defaultHistDir, 0755)
+	if err != nil {
+		panic(err)
+	}
+
 	data, err := os.ReadFile(defaultHistPath)
 	if err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
