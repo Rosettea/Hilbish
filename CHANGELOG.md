@@ -1,5 +1,9 @@
 # 🎀 Changelog
 
+## [1.0.4] - 2021-03-12
+### Fixed
+- Panic when history directory doesn't exist
+
 ## [1.0.3] - 2021-03-12
 ### Fixed
 - Removed duplicate executable suggestions
@@ -388,7 +392,8 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
-[1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
+[1.0.4]: https://github.com/Rosettea/Hilbish/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Rosettea/Hilbish/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Rosettea/Hilbish/compare/v0.7.1...v1.0.0
