@@ -194,7 +194,7 @@ func (rl *Instance) vi(r rune) {
 	case 'p':
 		// paste after the cursor position
 		rl.viUndoSkipAppend = true
-		rl.pos += 2
+		rl.pos++
 
 		buffer := rl.pasteFromRegister()
 		vii := rl.getViIterations()
