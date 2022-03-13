@@ -20,11 +20,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	// we don't mind hilbish.read rl instances having completion,
 	// but it cant have shared history
 	if !noHist {
-		fh, err := newFileHistory()
-		fileHist = fh // go stupid
-		if err != nil {
-			panic(err)
-		}
+		fileHist = newFileHistory()
 		rl.SetHistoryCtrlR("file", fileHist)
 		rl.HistoryAutoWrite = false
 	}

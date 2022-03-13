@@ -12,11 +12,11 @@ type fileHistory struct {
 	f *os.File
 }
 
-func newFileHistory() (*fileHistory, error) {
+func newFileHistory() *fileHistory {
 	data, err := os.ReadFile(defaultHistPath)
 	if err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
-			return nil, err
+			panic(err)
 		}
 	}
 
@@ -30,7 +30,7 @@ func newFileHistory() (*fileHistory, error) {
 	}
 	f, err := os.OpenFile(defaultHistPath, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0755)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	fh := &fileHistory{
@@ -38,7 +38,7 @@ func newFileHistory() (*fileHistory, error) {
 		f: f,
 	}
 
-	return fh, nil
+	return fh
 }
 
 func (h *fileHistory) Write(line string) (int, error) {
