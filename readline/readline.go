@@ -214,7 +214,7 @@ func (rl *Instance) Readline() (string, error) {
 				if rl.InputMode == Vim {
 					if rl.modeViMode == VimInsert {
 						rl.backspace()
-					} else {
+					} else if rl.pos != 0 {
 						rl.pos--
 					}
 					rl.renderHelpers()
