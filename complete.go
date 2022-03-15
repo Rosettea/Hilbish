@@ -2,8 +2,10 @@ package main
 
 import (
 	"path/filepath"
+	"runtime"
 	"strings"
 	"os"
+	"unicode"
 )
 
 func fileComplete(query, ctx string, fields []string) []string {
@@ -76,7 +78,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 
 func matchPath(path, pref string) ([]string, error) {
 	var entries []string
-	matches, err := filepath.Glob(path + "*")
+	matches, err := filepath.Glob(desensitize(path) + "*")
 	if err == nil {
 		args := []string{
 			"\"", "\\\"",
@@ -107,4 +109,22 @@ func matchPath(path, pref string) ([]string, error) {
 	}
 
 	return entries, err
+}
+
+func desensitize(text string) string {
+	if runtime.GOOS == "windows" {
+		return text
+	}
+
+	p := strings.Builder{}
+
+	for _, r := range text {
+		if unicode.IsLetter(r) {
+			p.WriteString("[" + string(unicode.ToLower(r)) + string(unicode.ToUpper(r)) + "]")
+		} else {
+			p.WriteString(string(r))
+		}
+	}
+
+	return p.String()
 }
