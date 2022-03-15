@@ -163,7 +163,7 @@ func (rl *Instance) getNormalCompletion() {
 	// escape the completion mode from here directly.
 	var items bool
 	for _, group := range rl.tcGroups {
-		if len(group.Suggestions) > 0 {
+		if len(group.Suggestions) > 1 {
 			items = true
 		}
 	}
