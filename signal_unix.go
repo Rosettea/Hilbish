@@ -10,7 +10,7 @@ import (
 
 func handleSignals() {
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGWINCH, syscall.SIGUSR1, syscall.SIGUSR2)
+	signal.Notify(c, os.Interrupt, syscall.SIGWINCH, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGQUIT)
 
 	for s := range c {
 		switch s {
