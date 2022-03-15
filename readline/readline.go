@@ -38,6 +38,7 @@ func (rl *Instance) Readline() (string, error) {
 	rl.modeViMode = VimInsert
 	rl.pos = 0
 	rl.posY = 0
+	rl.tcPrefix = ""
 
 	// Completion && hints init
 	rl.resetHintText()
