@@ -29,8 +29,6 @@ it to be.
 </div>
 
 # Installation
-**NOTE:** Hilbish is currently only officially supported and tested on Linux
-
 ## Prebuilt binaries
 Go [here](https://nightly.link/Rosettea/Hilbish/workflows/build/master) for
 builds on the master branch.
