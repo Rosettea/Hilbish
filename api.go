@@ -48,14 +48,14 @@ func hilbishLoader(L *lua.LState) int {
 	host, _ := os.Hostname()
 	username := curuser.Username
 
-	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + curuser.Username + `{reset}.
-The nice lil shell for {blue}Lua{reset} fanatics!
-Check out the {blue}{bold}guide{reset} command to get started.
-`
-
 	if runtime.GOOS == "windows" {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
+
+	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + username + `{reset}.
+The nice lil shell for {blue}Lua{reset} fanatics!
+Check out the {blue}{bold}guide{reset} command to get started.
+`
 
 	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
 	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
