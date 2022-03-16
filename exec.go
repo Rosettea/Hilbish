@@ -172,7 +172,7 @@ func lookpath(file string) error { // custom lookpath function so we know if a c
 		if err == errNotExec {
 			return err
 		} else if err == nil {
-			return execName, nil
+			return nil
 		}
 	}
 
