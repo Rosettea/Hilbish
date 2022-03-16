@@ -3,7 +3,6 @@
 package main
 
 import (
-	"path/filepath"
 	"os"
 )
 
