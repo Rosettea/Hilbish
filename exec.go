@@ -142,6 +142,7 @@ func execCommand(cmd, old string) error {
 		err := lookpath(args[0])
 		if err == errNotExec {
 			hooks.Em.Emit("command.no-perm", args[0])
+			hooks.Em.Emit("command.not-executable", args[0])
 			return interp.NewExitStatus(126)
 		} else if err != nil {
 			hooks.Em.Emit("command.not-found", args[0])
