@@ -139,7 +139,7 @@ func execCommand(cmd, old string) error {
 			return interp.NewExitStatus(exitcode)
 		}
 
-		err, execName := lookpath(args[0])
+		err := lookpath(args[0])
 		if err == errNotExec {
 			hooks.Em.Emit("command.no-perm", args[0])
 			return interp.NewExitStatus(126)
@@ -147,8 +147,6 @@ func execCommand(cmd, old string) error {
 			hooks.Em.Emit("command.not-found", args[0])
 			return interp.NewExitStatus(127)
 		}
-
-		args[0] = execName // windows, thanks
 
 		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
 	}
@@ -161,7 +159,7 @@ func execCommand(cmd, old string) error {
 	return err
 }
 
-func lookpath(file string) (error, string) { // custom lookpath function so we know if a command is found *and* is executable
+func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
 	skip := []string{"./", "/", "../", "~/"}
 	for _, s := range skip {
 		if strings.HasPrefix(file, s) {
@@ -170,15 +168,15 @@ func lookpath(file string) (error, string) { // custom lookpath function so we k
 	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
-		err, execName := findExecutable(path)
+		err := findExecutable(path)
 		if err == errNotExec {
-			return err, ""
+			return err
 		} else if err == nil {
-			return nil, execName
+			return execName, nil
 		}
 	}
 
-	return os.ErrNotExist, ""
+	return os.ErrNotExist
 }
 
 func splitInput(input string) ([]string, string) {

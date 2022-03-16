@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-func findExecutable(path string) (error, string) {
+func findExecutable(path string) error {
 	f, err := os.Stat(path)
 	if err != nil {
-		return err, ""
+		return err
 	}
 	if m := f.Mode(); !m.IsDir() && m & 0111 != 0 {
-		return nil, filepath.Base(path)
+		return nil
 	}
-	return errNotExec, ""
+	return errNotExec
 }
