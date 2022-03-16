@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,6 +17,8 @@ import (
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
+
+var errNotExec = errors.New("not executable")
 
 func runInput(input, origInput string) {
 	running = true
@@ -137,7 +140,7 @@ func execCommand(cmd, old string) error {
 		}
 
 		err := lookpath(args[0])
-		if err == os.ErrPermission {
+		if err == errNotExec {
 			hooks.Em.Emit("command.no-perm", args[0])
 			return interp.NewExitStatus(126)
 		} else if err != nil {
@@ -156,19 +159,17 @@ func execCommand(cmd, old string) error {
 	return err
 }
 
-// custom lookpath function so we know if a command is found *and* has execute permission
-func lookpath(file string) error {
+func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
 	skip := []string{"./", "/", "../", "~/"}
 	for _, s := range skip {
 		if strings.HasPrefix(file, s) {
-			err := findExecutable(file)
-			return err
+			return findExecutable(file)
 		}
 	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
 		err := findExecutable(path)
-		if err == os.ErrPermission {
+		if err == errNotExec {
 			return err
 		} else if err == nil {
 			return nil
@@ -176,17 +177,6 @@ func lookpath(file string) error {
 	}
 
 	return os.ErrNotExist
-}
-
-func findExecutable(name string) error {
-	f, err := os.Stat(name)
-	if err != nil {
-		return err
-	}
-	if m := f.Mode(); !m.IsDir() && m & 0111 != 0 {
-		return nil
-	}
-	return os.ErrPermission
 }
 
 func splitInput(input string) ([]string, string) {
