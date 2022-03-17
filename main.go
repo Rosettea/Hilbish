@@ -198,6 +198,8 @@ input:
 			for {
 				input, err = continuePrompt(input)
 				if err != nil {
+					running = true
+					lr.SetPrompt(fmtPrompt(prompt))
 					goto input // continue inside nested loop
 				}
 				if !strings.HasSuffix(input, "\\") {
