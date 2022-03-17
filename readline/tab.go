@@ -96,9 +96,6 @@ func (rl *Instance) getTabSearchCompletion() {
 	// Set the hint for this completion mode
 	rl.hintText = append([]rune("Completion search: "), rl.tfLine...)
 
-	// Set the hint for this completion mode
-	rl.hintText = append([]rune("Completion search: "), rl.tfLine...)
-
 	for _, g := range rl.tcGroups {
 		g.updateTabFind(rl)
 	}
