@@ -93,7 +93,7 @@ func matchPath(path, pref string) ([]string, error) {
 		for _, match := range matches {
 			name := filepath.Base(match)
 			p := filepath.Base(pref)
-			if pref == "" {
+			if pref == "" || pref == "./" {
 				p = ""
 			}
 			name = strings.TrimPrefix(name, p)
