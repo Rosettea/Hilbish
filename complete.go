@@ -33,7 +33,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
-					if info, err := os.Stat(name); err == nil && info.Mode().Perm() & 0100 == 0 {
+					if err := findExecutable(name, false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
@@ -51,7 +51,8 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			// get basename from matches
 			for _, match := range matches {
 				// check if we have execute permissions for our match
-				if info, err := os.Stat(match); err == nil && info.Mode().Perm() & 0100 == 0 {
+				err := findExecutable(match, true, false)
+				if err != nil {
 					continue
 				}
 				// get basename from match

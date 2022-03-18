@@ -7,20 +7,30 @@ import (
 	"os"
 )
 
-func findExecutable(path string) error {
+func findExecutable(path string, inPath, dirs bool) error {
 	nameExt := filepath.Ext(path)
-	if nameExt == "" {
-		for _, ext := range filepath.SplitList(os.Getenv("PATHEXT")) {
-			_, err := os.Stat(path + ext)
+	pathExts := filepath.SplitList(os.Getenv("PATHEXT"))
+	if inPath {
+		if nameExt == "" {
+			for _, ext := range pathExts {
+				_, err := os.Stat(path + ext)
+				if err == nil {
+					return nil
+				}
+			}
+		} else {
+			_, err := os.Stat(path)
 			if err == nil {
-				return nil
+				if contains(pathExts, nameExt) { return nil }
+				return errNotExec
 			}
 		}
-	}
-
-	_, err := os.Stat(path)
-	if err == nil {
-		return errNotExec
+	} else {
+		_, err := os.Stat(path)
+		if err == nil {
+			if contains(pathExts, nameExt) { return nil }
+			return errNotExec
+		}
 	}
 
 	return os.ErrNotExist

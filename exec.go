@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -161,15 +162,20 @@ func execCommand(cmd, old string) error {
 }
 
 func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
-	skip := []string{"./", "/", "../", "~/"}
+	var skip []string
+	if runtime.GOOS == "windows" {
+		skip = []string{"./", "../", "~/", "C:"}
+	} else {
+		skip = []string{"./", "/", "../", "~/"}
+	}
 	for _, s := range skip {
 		if strings.HasPrefix(file, s) {
-			return findExecutable(file)
+			return findExecutable(file, false, false)
 		}
 	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
-		err := findExecutable(path)
+		err := findExecutable(path, true, false)
 		if err == errNotExec {
 			return err
 		} else if err == nil {
