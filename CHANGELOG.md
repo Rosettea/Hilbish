@@ -1,5 +1,21 @@
 # 🎀 Changelog
 
+## [1.1.0] - 2021-03-17
+### Added
+- `hilbish.vimAction` hook (`doc vimMode actions`)
+- `command.not-executable` hook (will replace `command.no-perm` in a future release)
+
+### Fixed
+- Check if interactive before adding to history
+- Escape in vim mode exits all modes and not only insert
+- Make 2nd line in prompt empty if entire prompt is 1 line
+- Completion menu doesnt appear if there is only 1 result
+- Ignore SIGQUIT, which caused a panic unhandled
+- Remove hostname in greeting on Windows
+- Handle PATH binaries properly on Windows
+- Fix removal of dot in the beginning of folders/files that have them for file complete
+- Fix prompt being set to the continue prompt even when exited
+
 ## [1.0.4] - 2021-03-12
 ### Fixed
 - Panic when history directory doesn't exist
@@ -392,6 +408,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[1.1.0]: https://github.com/Rosettea/Hilbish/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/Rosettea/Hilbish/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.1...v1.0.2
