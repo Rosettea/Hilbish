@@ -7,54 +7,54 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-var aliases *hilbishAliases
+var aliases *aliasHandler
 
-type hilbishAliases struct {
+type aliasHandler struct {
 	aliases map[string]string
 	mu *sync.RWMutex
 }
 
 // initialize aliases map
-func NewAliases() *hilbishAliases {
-	return &hilbishAliases{
+func newAliases() *aliasHandler {
+	return &aliasHandler{
 		aliases: make(map[string]string),
 		mu: &sync.RWMutex{},
 	}
 }
 
-func (h *hilbishAliases) Add(alias, cmd string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+func (a *aliasHandler) Add(alias, cmd string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 
-	h.aliases[alias] = cmd
+	a.aliases[alias] = cmd
 }
 
-func (h *hilbishAliases) All() map[string]string {
-	return h.aliases
+func (a *aliasHandler) All() map[string]string {
+	return a.aliases
 }
 
-func (h *hilbishAliases) Delete(alias string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+func (a *aliasHandler) Delete(alias string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 
-	delete(h.aliases, alias)
+	delete(a.aliases, alias)
 }
 
-func (h *hilbishAliases) Resolve(cmdstr string) string {
-	h.mu.RLock()
-	defer h.mu.RUnlock()
+func (a *aliasHandler) Resolve(cmdstr string) string {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 
 	args := strings.Split(cmdstr, " ")
-	for h.aliases[args[0]] != "" {
-		alias := h.aliases[args[0]]
+	for a.aliases[args[0]] != "" {
+		alias := a.aliases[args[0]]
 		cmdstr = alias + strings.TrimPrefix(cmdstr, args[0])
 		cmdArgs, _ := splitInput(cmdstr)
 		args = cmdArgs
 
-		if h.aliases[args[0]] == alias {
+		if a.aliases[args[0]] == alias {
 			break
 		}
-		if h.aliases[args[0]] != "" {
+		if a.aliases[args[0]] != "" {
 			continue
 		}
 	}
@@ -64,12 +64,12 @@ func (h *hilbishAliases) Resolve(cmdstr string) string {
 
 // lua section
 
-func (h *hilbishAliases) Loader(L *lua.LState) *lua.LTable {
+func (a *aliasHandler) Loader(L *lua.LState) *lua.LTable {
 	// create a lua module with our functions
 	hshaliasesLua := map[string]lua.LGFunction{
-		"add": h.luaAdd,
-		"list": h.luaList,
-		"del": h.luaDelete,
+		"add": a.luaAdd,
+		"list": a.luaList,
+		"del": a.luaDelete,
 	}
 
 	mod := L.SetFuncs(L.NewTable(), hshaliasesLua)
@@ -77,17 +77,17 @@ func (h *hilbishAliases) Loader(L *lua.LState) *lua.LTable {
 	return mod
 }
 
-func (h *hilbishAliases) luaAdd(L *lua.LState) int {
+func (a *aliasHandler) luaAdd(L *lua.LState) int {
 	alias := L.CheckString(1)
 	cmd := L.CheckString(2)
-	h.Add(alias, cmd)
+	a.Add(alias, cmd)
 
 	return 0
 }
 
-func (h *hilbishAliases) luaList(L *lua.LState) int {
+func (a *aliasHandler) luaList(L *lua.LState) int {
 	aliasesList := L.NewTable()
-	for k, v := range h.All() {
+	for k, v := range a.All() {
 		aliasesList.RawSetString(k, lua.LString(v))
 	}
 
@@ -96,9 +96,9 @@ func (h *hilbishAliases) luaList(L *lua.LState) int {
 	return 1
 }
 
-func (h *hilbishAliases) luaDelete(L *lua.LState) int {
+func (a *aliasHandler) luaDelete(L *lua.LState) int {
 	alias := L.CheckString(1)
-	h.Delete(alias)
+	a.Delete(alias)
 
 	return 0
 }
