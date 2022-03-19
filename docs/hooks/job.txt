@@ -1,0 +1,12 @@
+Note: A `job` is a table with the following keys:
+- cmd: command string
+- running: boolean whether the job is running
+- id: unique id for the job
+- pid: process id for the job
+In ordinary cases you'd prefer to use the id instead of pid. The id is unique to
+Hilbish and is how you get jobs with the `hilbish.jobs` interface.
+
++ `job.start` -> job > Thrown when a new background job starts.
+
++ `job.done` -> job > Thrown when a background jobs exits.
+

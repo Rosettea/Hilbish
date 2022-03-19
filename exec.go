@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"os/exec"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 
 	"hilbish/util"
@@ -17,6 +20,7 @@ import (
 	//"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
+	"mvdan.cc/sh/v3/expand"
 )
 
 var errNotExec = errors.New("not executable")
@@ -92,6 +96,7 @@ func execCommand(cmd, old string) error {
 		return err
 	}
 
+	var bg bool
 	exechandle := func(ctx context.Context, args []string) error {
 		_, argstring := splitInput(strings.Join(args, " "))
 		// i dont really like this but it works
@@ -150,15 +155,138 @@ func execCommand(cmd, old string) error {
 			return interp.NewExitStatus(127)
 		}
 
-		return interp.DefaultExecHandler(2 * time.Second)(ctx, args)
+		killTimeout := 2 * time.Second
+		// from here is basically copy-paste of the default exec handler from
+		// sh/interp but with our job handling
+		hc := interp.HandlerCtx(ctx)
+		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
+		if err != nil {
+			fmt.Fprintln(hc.Stderr, err)
+			return interp.NewExitStatus(127)
+		}
+
+		env := hc.Env
+		envList := make([]string, 0, 64)
+		env.Each(func(name string, vr expand.Variable) bool {
+			if !vr.IsSet() {
+				// If a variable is set globally but unset in the
+				// runner, we need to ensure it's not part of the final
+				// list. Seems like zeroing the element is enough.
+				// This is a linear search, but this scenario should be
+				// rare, and the number of variables shouldn't be large.
+				for i, kv := range envList {
+					if strings.HasPrefix(kv, name+"=") {
+						envList[i] = ""
+					}
+				}
+			}
+			if vr.Exported && vr.Kind == expand.String {
+				envList = append(envList, name+"="+vr.String())
+			}
+			return true
+		})
+		cmd := exec.Cmd{
+			Path: path,
+			Args: args,
+			Env: envList,
+			Dir: hc.Dir,
+			Stdin: hc.Stdin,
+			Stdout: hc.Stdout,
+			Stderr: hc.Stderr,
+		}
+
+		err = cmd.Start()
+		job := jobs.getLatest()
+		if err == nil {
+			if bg {
+				job.start(cmd.Process.Pid)
+			}
+
+			if done := ctx.Done(); done != nil {
+				go func() {
+					<-done
+
+					if killTimeout <= 0 || runtime.GOOS == "windows" {
+						cmd.Process.Signal(os.Kill)
+						return
+					}
+
+					// TODO: don't temporarily leak this goroutine
+					// if the program stops itself with the
+					// interrupt.
+					go func() {
+						time.Sleep(killTimeout)
+						cmd.Process.Signal(os.Kill)
+					}()
+					cmd.Process.Signal(os.Interrupt)
+				}()
+			}
+
+			err = cmd.Wait()
+		}
+
+		var exit uint8
+		switch x := err.(type) {
+		case *exec.ExitError:
+			// started, but errored - default to 1 if OS
+			// doesn't have exit statuses
+			if status, ok := x.Sys().(syscall.WaitStatus); ok {
+				if status.Signaled() {
+					if ctx.Err() != nil {
+						return ctx.Err()
+					}
+					exit = uint8(128 + status.Signal())
+					goto end
+				}
+				exit = uint8(status.ExitStatus())
+				goto end
+			}
+			exit = 1
+			goto end
+		case *exec.Error:
+			// did not start
+			fmt.Fprintf(hc.Stderr, "%v\n", err)
+			exit = 127
+			goto end
+		case nil:
+			goto end
+		default:
+			return err
+		}
+		end:
+		if bg {
+			job.exitCode = int(exit)
+			job.finish()
+		}
+		return interp.NewExitStatus(exit)
 	}
+
 	runner, _ := interp.New(
 		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
 		interp.ExecHandler(exechandle),
 	)
-	err = runner.Run(context.TODO(), file)
 
-	return err
+	buf := new(bytes.Buffer)
+	printer := syntax.NewPrinter()
+
+	for _, stmt := range file.Stmts {
+		bg = false
+		if stmt.Background {
+			bg = true
+			printer.Print(buf, stmt.Cmd)
+
+			stmtStr := buf.String()
+			buf.Reset()
+			jobs.add(stmtStr)
+		}
+
+		err = runner.Run(context.TODO(), stmt)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable

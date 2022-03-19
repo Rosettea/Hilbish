@@ -106,6 +106,8 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(L, hshcomp, "Completions interface for Hilbish.")
 	L.SetField(mod, "completion", hshcomp)
 
+	jobs = newJobHandler()
+
 	L.Push(mod)
 
 	return 1
