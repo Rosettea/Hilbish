@@ -3,6 +3,7 @@ Note: A `job` is a table with the following keys:
 - running: boolean whether the job is running
 - id: unique id for the job
 - pid: process id for the job
+- exitCode: exit code of the job
 In ordinary cases you'd prefer to use the id instead of pid. The id is unique to
 Hilbish and is how you get jobs with the `hilbish.jobs` interface.
 
