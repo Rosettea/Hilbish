@@ -168,6 +168,9 @@ hilbish.userDir.config .. '/hilbish/init.lua' ..
 and also change all global functions (prompt, alias) to be
 in the hilbish module (hilbish.prompt, hilbish.alias as examples).
 
+And if this is your first time (most likely), you can copy a config
+from ]] .. hilbish.dataDir,
+[[
 Since 1.0 is a big release, you'll want to check the changelog
 at https://github.com/Rosettea/Hilbish/releases/tag/v1.0.0
 to find more breaking changes.
