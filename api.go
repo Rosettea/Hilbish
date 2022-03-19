@@ -88,7 +88,7 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	L.SetField(mod, "os", hshos)
 
 	// hilbish.aliases table
-	aliases = NewAliases()
+	aliases = newAliases()
 	aliasesModule := aliases.Loader(L)
 	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
 	L.SetField(mod, "aliases", aliasesModule)
