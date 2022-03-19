@@ -172,7 +172,7 @@ func unsetVimMode() {
 func hlrun(L *lua.LState) int {
 	var exitcode uint8
 	cmd := L.CheckString(1)
-	err := execCommand(cmd, cmd)
+	err := execCommand(cmd, true)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code

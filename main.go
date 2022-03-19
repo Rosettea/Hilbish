@@ -142,12 +142,12 @@ func main() {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 		for scanner.Scan() {
 			text := scanner.Text()
-			runInput(text, text)
+			runInput(text, true)
 		}
 	}
 
 	if *cmdflag != "" {
-		runInput(*cmdflag, *cmdflag)
+		runInput(*cmdflag, true)
 	}
 
 	if getopt.NArgs() > 0 {
@@ -185,7 +185,10 @@ input:
 			fmt.Println("^C")
 			continue
 		}
-		oldInput := input
+		var priv bool
+		if strings.HasPrefix(input, " ") {
+			priv = true
+		}
 
 		input = strings.TrimSpace(input)
 		if len(input) == 0 {
@@ -208,7 +211,7 @@ input:
 			}
 		}
 
-		runInput(input, oldInput)
+		runInput(input, priv)
 
 		termwidth, _, err := term.GetSize(0)
 		if err != nil {

@@ -25,7 +25,7 @@ import (
 
 var errNotExec = errors.New("not executable")
 
-func runInput(input, origInput string) {
+func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
 
@@ -49,12 +49,12 @@ func runInput(input, origInput string) {
 		err = l.PCall(0, lua.MultRet, nil)
 	}
 	if err == nil {
-		cmdFinish(0, cmdString, origInput)
+		cmdFinish(0, cmdString, priv)
 		return
 	}
 
 	// Last option: use sh interpreter
-	err = execCommand(cmdString, origInput)
+	err = execCommand(cmdString, priv)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -63,34 +63,34 @@ func runInput(input, origInput string) {
 				if err != nil {
 					break
 				}
-				err = execCommand(cmdString, origInput)
+				err = execCommand(cmdString, priv)
 				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					cmdFinish(code, cmdString, origInput)
+					cmdFinish(code, cmdString, priv)
 				} else if err != nil {
+					cmdFinish(1, cmdString, priv)
 					fmt.Fprintln(os.Stderr, err)
-					cmdFinish(1, cmdString, origInput)
 				} else {
-					cmdFinish(0, cmdString, origInput)
+					cmdFinish(0, cmdString, priv)
 				}
 				break
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				cmdFinish(code, cmdString, origInput)
+				cmdFinish(code, cmdString, priv)
 			} else {
-				cmdFinish(126, cmdString, origInput)
+				cmdFinish(126, cmdString, priv)
 				fmt.Fprintln(os.Stderr, err)
 			}
 		}
 	} else {
-		cmdFinish(0, cmdString, origInput)
+		cmdFinish(0, cmdString, priv)
 	}
 }
 
 // Run command in sh interpreter
-func execCommand(cmd, old string) error {
+func execCommand(cmd string, priv bool) error {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func execCommand(cmd, old string) error {
 				exitcode = uint8(code)
 			}
 
-			cmdFinish(exitcode, argstring, old)
+			cmdFinish(exitcode, argstring, priv)
 			return interp.NewExitStatus(exitcode)
 		}
 
@@ -367,10 +367,10 @@ func splitInput(input string) ([]string, string) {
 	return cmdArgs, cmdstr.String()
 }
 
-func cmdFinish(code uint8, cmdstr, oldInput string) {
+func cmdFinish(code uint8, cmdstr string, private bool) {
 	// if input has space at the beginning, dont put in history
-	if interactive && !strings.HasPrefix(oldInput, " ") {
-		handleHistory(strings.TrimSpace(oldInput))
+	if interactive && !private {
+		handleHistory(cmdstr)
 	}
 	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
 	hooks.Em.Emit("command.exit", code, cmdstr)
