@@ -21,7 +21,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	// but it cant have shared history
 	if !noHist {
 		fileHist = newFileHistory()
-		rl.SetHistoryCtrlR("file", fileHist)
+		rl.SetHistoryCtrlR("History", fileHist)
 		rl.HistoryAutoWrite = false
 	}
 	rl.ShowVimMode = false
