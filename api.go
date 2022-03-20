@@ -254,7 +254,7 @@ func hlmlprompt(L *lua.LState) int {
 }
 
 // alias(cmd, orig)
-// Sets an alias of `orig` to `cmd`
+// Sets an alias of `cmd` to `orig`
 // --- @param cmd string
 // --- @param orig string
 func hlalias(L *lua.LState) int {
