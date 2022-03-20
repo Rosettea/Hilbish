@@ -1,0 +1,33 @@
+Hilbish is *unique,* when interactive it first attempts to run input as
+Lua and then tries shell script. But if you're normal, you wouldn't
+really be using Hilbish anyway but you'd also not want this
+(or maybe want Lua only in some cases.)
+
+The "runner mode" of Hilbish is customizable via `hilbish.runnerMode`,
+which determines how Hilbish will run user input. By default, this is
+set to `hybrid` which is the previously mentioned behaviour of running Lua
+first then going to shell script. If you want the reverse order, you can
+set it to `hybridRev` and for isolated modes there is `sh` and `lua`
+respectively.
+
+You can also set it to a function, which will be called everytime Hilbish
+needs to run interactive input. For example, you can set this to a simple
+function to compile and evaluate Fennel, and now you can run Fennel.
+You can even mix it with sh to make a hybrid mode with Lua replaced by
+Fennel.
+
+An example:
+hilbish.runnerMode(function(input)
+	local ok = pcall(fennel.eval, input)
+	if ok then
+		return 0, nil
+	end
+
+	return hilbish.runner.sh(input)
+end)
+
+The `hilbish.runner` interface is an alternative to using `hilbish.runnerMode`
+and also provides the sh and Lua runner functions that Hilbish itself uses.
+A runner function is expected to return 2 values: the exit code, and an error.
+The exit code has to be a number, it will be 0 otherwise and the error can be
+`nil` to indicate no error.

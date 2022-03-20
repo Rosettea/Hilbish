@@ -26,6 +26,7 @@ var exports = map[string]lua.LGFunction {
 	"complete": hlcomplete,
 	"cwd": hlcwd,
 	"exec": hlexec,
+	"runnerMode": hlrunnerMode,
 	"goro": hlgoro,
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
@@ -106,6 +107,10 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(L, hshcomp, "Completions interface for Hilbish.")
 	L.SetField(mod, "completion", hshcomp)
 
+	runnerModule := runnerModeLoader(L)
+	util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
+	L.SetField(mod, "runner", runnerModule)
+
 	jobs = newJobHandler()
 
 	L.Push(mod)
@@ -172,7 +177,7 @@ func unsetVimMode() {
 func hlrun(L *lua.LState) int {
 	var exitcode uint8
 	cmd := L.CheckString(1)
-	err := execCommand(cmd, true)
+	err := execCommand(cmd)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -464,5 +469,31 @@ func hlinputMode(L *lua.LState) int {
 			lr.rl.InputMode = readline.Vim
 		default: L.RaiseError("inputMode: expected vim or emacs, received " + mode)
 	}
+	return 0
+}
+
+// runnerMode(mode)
+// Sets the execution/runner mode for interactive Hilbish. This determines whether
+// Hilbish wll try to run input as Lua and/or sh or only do one of either.
+// Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
+// sh, and lua. It also accepts a function, to which if it is passed one
+// will call it to execute user input instead.
+func hlrunnerMode(L *lua.LState) int {
+	mode := L.CheckAny(1)
+	switch mode.Type() {
+		case lua.LTString:
+			switch mode.String() {
+				// no fallthrough doesnt work so eh
+				case "hybrid": fallthrough
+				case "hybridRev": fallthrough
+				case "lua": fallthrough
+				case "sh":
+					runnerMode = mode
+				default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+			}
+		case lua.LTFunction: runnerMode = mode
+		default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+	}
+
 	return 0
 }

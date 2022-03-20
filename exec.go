@@ -24,13 +24,80 @@ import (
 )
 
 var errNotExec = errors.New("not executable")
+var runnerMode lua.LValue = lua.LString("hybrid")
 
 func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
-
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
+	if runnerMode.Type() == lua.LTString {
+		switch runnerMode.String() {
+			case "hybrid":
+				_, err := handleLua(cmdString)
+				if err == nil {
+					cmdFinish(0, cmdString, priv)
+					return
+				}
+				exitCode, err := handleSh(cmdString)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				cmdFinish(exitCode, cmdString, priv)
+			case "hybridRev":
+				_, err := handleSh(cmdString)
+				if err == nil {
+					cmdFinish(0, cmdString, priv)
+					return
+				}
+				exitCode, err := handleLua(cmdString)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				cmdFinish(exitCode, cmdString, priv)
+			case "lua":
+				exitCode, err := handleLua(cmdString)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				cmdFinish(exitCode, cmdString, priv)
+			case "sh":
+				exitCode, err := handleSh(cmdString)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				cmdFinish(exitCode, cmdString, priv)
+		}
+	} else {
+		// can only be a string or function so
+		err := l.CallByParam(lua.P{
+			Fn: runnerMode,
+			NRet: 2,
+			Protect: true,
+		}, lua.LString(cmdString))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			cmdFinish(124, cmdString, priv)
+			return
+		}
+
+		luaexitcode := l.Get(-2) // first return value (makes sense right i love stacks)
+		runErr := l.Get(-1)
+		l.Pop(2)
+
+		var exitCode uint8
+		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+			exitCode = uint8(code)
+		}
+
+		if runErr != lua.LNil {
+			fmt.Fprintln(os.Stderr, runErr)
+		}
+		cmdFinish(exitCode, cmdString, priv)
+	}
+}
+
+func handleLua(cmdString string) (uint8, error) {
 	// First try to load input, essentially compiling to bytecode
 	fn, err := l.LoadString(cmdString)
 	if err != nil && noexecute {
@@ -41,7 +108,7 @@ func runInput(input string, priv bool) {
 			}
 		}
 	*/
-		return
+		return 125, err
 	}
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
@@ -49,12 +116,14 @@ func runInput(input string, priv bool) {
 		err = l.PCall(0, lua.MultRet, nil)
 	}
 	if err == nil {
-		cmdFinish(0, cmdString, priv)
-		return
+		return 0, nil
 	}
 
-	// Last option: use sh interpreter
-	err = execCommand(cmdString, priv)
+	return 125, err
+}
+
+func handleSh(cmdString string) (uint8, error) {
+	err := execCommand(cmdString)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -63,34 +132,31 @@ func runInput(input string, priv bool) {
 				if err != nil {
 					break
 				}
-				err = execCommand(cmdString, priv)
-				if syntax.IsIncomplete(err) || strings.HasSuffix(input, "\\") {
+				err = execCommand(cmdString)
+				if syntax.IsIncomplete(err) || strings.HasSuffix(cmdString, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					cmdFinish(code, cmdString, priv)
+					return code, nil
 				} else if err != nil {
-					cmdFinish(1, cmdString, priv)
-					fmt.Fprintln(os.Stderr, err)
+					return 126, err
 				} else {
-					cmdFinish(0, cmdString, priv)
+					return 0, nil
 				}
-				break
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				cmdFinish(code, cmdString, priv)
+				return code, nil
 			} else {
-				cmdFinish(126, cmdString, priv)
-				fmt.Fprintln(os.Stderr, err)
+				return 126, err
 			}
 		}
-	} else {
-		cmdFinish(0, cmdString, priv)
 	}
+
+	return 0, nil
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string, priv bool) error {
+func execCommand(cmd string) error {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return err
@@ -141,7 +207,6 @@ func execCommand(cmd string, priv bool) error {
 				exitcode = uint8(code)
 			}
 
-			cmdFinish(exitcode, argstring, priv)
 			return interp.NewExitStatus(exitcode)
 		}
 
