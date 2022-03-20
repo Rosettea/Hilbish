@@ -2,7 +2,7 @@
 
 local hilbish = {}
 
---- Sets an alias of `orig` to `cmd`
+--- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
 function hilbish.alias(cmd, orig) end
