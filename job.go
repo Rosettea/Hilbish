@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"os"
 
 	"github.com/yuin/gopher-lua"
 )
@@ -14,6 +15,7 @@ type job struct {
 	id int
 	pid int
 	exitCode int
+	proc *os.Process
 }
 
 func (j *job) start(pid int) {
@@ -22,15 +24,27 @@ func (j *job) start(pid int) {
 	hooks.Em.Emit("job.start", j.lua())
 }
 
+func (j *job) stop() {
+	// finish will be called in exec handle
+	j.proc.Kill()
+}
+
 func (j *job) finish() {
 	j.running = false
 	hooks.Em.Emit("job.done", j.lua())
 }
 
+func (j *job) setHandle(handle *os.Process) {
+	j.proc = handle
+}
+
 func (j *job) lua() *lua.LTable {
 	// returns lua table for job
 	// because userdata is gross
-	luaJob := l.NewTable()
+	jobFuncs := map[string]lua.LGFunction{
+		"stop": j.luaStop,
+	}
+	luaJob := l.SetFuncs(l.NewTable(), jobFuncs)
 
 	l.SetField(luaJob, "cmd", lua.LString(j.cmd))
 	l.SetField(luaJob, "running", lua.LBool(j.running))
@@ -39,6 +53,14 @@ func (j *job) lua() *lua.LTable {
 	l.SetField(luaJob, "exitCode", lua.LNumber(j.exitCode))
 
 	return luaJob
+}
+
+func (j *job) luaStop(L *lua.LState) int {
+	if j.running {
+		j.stop()
+	}
+
+	return 0
 }
 
 type jobHandler struct {
@@ -72,4 +94,43 @@ func (j *jobHandler) getLatest() *job {
 	defer j.mu.RUnlock()
 
 	return j.jobs[j.latestID]
+}
+
+
+func (j *jobHandler) loader(L *lua.LState) *lua.LTable {
+	jobFuncs := map[string]lua.LGFunction{
+		"all": j.luaAllJobs,
+		"get": j.luaGetJob,
+	}
+
+	luaJob := l.SetFuncs(l.NewTable(), jobFuncs)
+
+	return luaJob
+}
+
+func (j *jobHandler) luaGetJob(L *lua.LState) int {
+	j.mu.RLock()
+	defer j.mu.RUnlock()
+
+	jobID := L.CheckInt(1)
+	job := j.jobs[jobID]
+	if job != nil {
+		return 0
+	}
+	L.Push(job.lua())
+
+	return 1
+}
+
+func (j *jobHandler) luaAllJobs(L *lua.LState) int {
+	j.mu.RLock()
+	defer j.mu.RUnlock()
+
+	jobTbl := L.NewTable()
+	for id, job := range j.jobs {
+		jobTbl.Insert(id, job.lua())
+	}
+
+	L.Push(jobTbl)
+	return 1
 }

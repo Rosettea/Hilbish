@@ -262,6 +262,7 @@ func execCommand(cmd string) error {
 
 		err = cmd.Start()
 		job := jobs.getLatest()
+		job.setHandle(cmd.Process)
 		if err == nil {
 			if bg {
 				job.start(cmd.Process.Pid)
