@@ -1,4 +1,4 @@
-alias(cmd, orig) > Sets an alias of `orig` to `cmd`
+alias(cmd, orig) > Sets an alias of `cmd` to `orig`
 
 appendPath(dir) > Appends `dir` to $PATH
 
