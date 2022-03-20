@@ -69,6 +69,13 @@ function hilbish.read(prompt) end
 --- @param cmd string
 function hilbish.run(cmd) end
 
+--- Sets the execution/runner mode for interactive Hilbish. This determines whether
+--- Hilbish wll try to run input as Lua and/or sh or only do one of either.
+--- Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
+--- sh, and lua. It also accepts a function, to which if it is passed one
+--- will call it to execute user input instead.
+function hilbish.runnerMode() end
+
 --- Runs the `cb` function after `time` in milliseconds
 --- @param cb function
 --- @param time number
