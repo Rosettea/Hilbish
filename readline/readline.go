@@ -626,6 +626,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		rl.mainHist = true
 		rl.walkHistory(1)
+		moveCursorForwards(len(rl.line) - rl.pos)
+		rl.pos = len(rl.line)
 
 	case seqDown:
 		if rl.modeTabCompletion {
@@ -637,6 +639,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		rl.mainHist = true
 		rl.walkHistory(-1)
+		moveCursorForwards(len(rl.line) - rl.pos)
+		rl.pos = len(rl.line)
 
 	case seqForwards:
 		if rl.modeTabCompletion {
