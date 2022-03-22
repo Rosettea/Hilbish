@@ -78,3 +78,9 @@ func (h *fileHistory) Len() int {
 func (h *fileHistory) Dump() interface{} {
 	return h.items
 }
+
+func (h *fileHistory) clear() {
+	h.items = []string{}
+	h.f.Truncate(0)
+	h.f.Sync()
+}

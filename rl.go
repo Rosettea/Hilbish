@@ -271,6 +271,6 @@ func (lr *lineReader) luaAllHistory(L *lua.LState) int {
 }
 
 func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+	fileHist.clear()
 	return 0
-
 }
