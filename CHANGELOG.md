@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## [1.1.0] - 2021-03-17
+## [1.1.0] - 2022-03-17
 ### Added
 - `hilbish.vimAction` hook (`doc vimMode actions`)
 - `command.not-executable` hook (will replace `command.no-perm` in a future release)
@@ -16,26 +16,26 @@
 - Fix removal of dot in the beginning of folders/files that have them for file complete
 - Fix prompt being set to the continue prompt even when exited
 
-## [1.0.4] - 2021-03-12
+## [1.0.4] - 2022-03-12
 ### Fixed
 - Panic when history directory doesn't exist
 
-## [1.0.3] - 2021-03-12
+## [1.0.3] - 2022-03-12
 ### Fixed
 - Removed duplicate executable suggestions
 - User input is added to history now instead of what's ran by Hilbish
 - Formatting issue with prompt on no input
 
-## [1.0.2] - 2021-03-06
+## [1.0.2] - 2022-03-06
 ### Fixed
 - Cases where Hilbish's history directory doesn't exist will no longer cause a panic
 
-## [1.0.1] - 2021-03-06
+## [1.0.1] - 2022-03-06
 ### Fixed
 - Using `hilbish.appendPath` will no longer result in string spam (debugging thing left being)
 - Prompt gets set properly on startup
 
-## [1.0.0] - 2021-03-06
+## [1.0.0] - 2022-03-06
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
 for it
