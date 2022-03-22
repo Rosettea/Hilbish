@@ -261,11 +261,14 @@ func execCommand(cmd string) error {
 		}
 
 		err = cmd.Start()
-		job := jobs.getLatest()
-		job.setHandle(cmd.Process)
+		var j *job
+		if bg {
+			j = jobs.getLatest()
+			j.setHandle(cmd.Process)
+		}
 		if err == nil {
 			if bg {
-				job.start(cmd.Process.Pid)
+				j.start(cmd.Process.Pid)
 			}
 
 			if done := ctx.Done(); done != nil {
@@ -321,8 +324,8 @@ func execCommand(cmd string) error {
 		}
 		end:
 		if bg {
-			job.exitCode = int(exit)
-			job.finish()
+			j.exitCode = int(exit)
+			j.finish()
 		}
 		return interp.NewExitStatus(exit)
 	}
