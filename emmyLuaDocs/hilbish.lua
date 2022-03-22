@@ -74,7 +74,8 @@ function hilbish.run(cmd) end
 --- Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 --- sh, and lua. It also accepts a function, to which if it is passed one
 --- will call it to execute user input instead.
-function hilbish.runnerMode() end
+--- @param mode string|function
+function hilbish.runnerMode(mode) end
 
 --- Runs the `cb` function after `time` in milliseconds
 --- @param cb function
