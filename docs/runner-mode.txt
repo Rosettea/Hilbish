@@ -31,3 +31,10 @@ and also provides the sh and Lua runner functions that Hilbish itself uses.
 A runner function is expected to return 2 values: the exit code, and an error.
 The exit code has to be a number, it will be 0 otherwise and the error can be
 `nil` to indicate no error.
+
+## Functions
+These are the functions for the `hilbish.runner` interface
+
++ setMode(mode) > The same as `hilbish.runnerMode`
++ sh(input) -> code, err > Runs `input` in Hilbish's sh interpreter
++ lua(input) -> code, err > Evals `input` as Lua code
