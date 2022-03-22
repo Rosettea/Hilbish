@@ -483,6 +483,7 @@ func hlinputMode(L *lua.LState) int {
 // Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
+// --- @param mode string|function
 func hlrunnerMode(L *lua.LState) int {
 	mode := L.CheckAny(1)
 	switch mode.Type() {
