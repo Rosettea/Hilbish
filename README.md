@@ -4,6 +4,7 @@
 	<i>
 	🌺 The flower shell. A comfy and nice little shell for Lua fans!
 	</i>
+	<br>
 	<p align="center">
 		<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Rosettea/Hilbish?style=flat-square">
 		<img alt="GitHub commits since latest release (by date)" src="https://img.shields.io/github/commits-since/Rosettea/Hilbish/latest?style=flat-square">
