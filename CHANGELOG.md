@@ -1,5 +1,20 @@
 # 🎀 Changelog
 
+## [1.2.0] - 2022-03-17
+### Added
+- Job Management additions
+  - `job.start` and `job.done` hooks (`doc hooks job`)
+  - `hilbish.jobs` interface (`get(id)` function gets a job object via `id`, `all()` gets all)
+- Customizable runner/exec mode
+  - However Hilbish runs interactive user input can now be changed Lua side (`doc runner-mode`)
+
+### Changed
+- `vimMode` doc is now `vim-mode`
+
+### Fixed
+- Make sure input which is supposed to go in history goes there
+- Cursor is right at the end of input on history search
+
 ## [1.1.0] - 2022-03-17
 ### Added
 - `hilbish.vimAction` hook (`doc vimMode actions`)
