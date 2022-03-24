@@ -100,12 +100,12 @@ func moveCursorBackwards(i int) {
 	printf("\x1b[%dD", i)
 }
 
-func (rl *Instance) backspace() {
+func (rl *Instance) backspace(forward bool) {
 	if len(rl.line) == 0 || rl.pos == 0 {
 		return
 	}
 
-	rl.deleteBackspace()
+	rl.deleteBackspace(forward)
 }
 
 func (rl *Instance) moveCursorByAdjust(adjust int) {

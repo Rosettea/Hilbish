@@ -125,14 +125,14 @@ func (rl *Instance) deleteX() {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) deleteBackspace() {
+func (rl *Instance) deleteBackspace(forward bool) {
 	switch {
 	case len(rl.line) == 0:
 		return
-	case rl.pos == 0:
-		rl.line = rl.line[1:]
+	case forward:
+		rl.line = append(rl.line[:rl.pos], rl.line[rl.pos+1:]...)
 	case rl.pos > len(rl.line):
-		rl.backspace() // There is an infite loop going on here...
+		rl.backspace(forward) // There is an infite loop going on here...
 	case rl.pos == len(rl.line):
 		rl.pos--
 		rl.line = rl.line[:rl.pos]

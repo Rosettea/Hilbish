@@ -214,7 +214,7 @@ func (rl *Instance) Readline() (string, error) {
 				// Vim mode has different behaviors
 				if rl.InputMode == Vim {
 					if rl.modeViMode == VimInsert {
-						rl.backspace()
+						rl.backspace(false)
 					} else if rl.pos != 0 {
 						rl.pos--
 					}
@@ -223,7 +223,7 @@ func (rl *Instance) Readline() (string, error) {
 				}
 
 				// Else emacs deletes a character
-				rl.backspace()
+				rl.backspace(false)
 				rl.renderHelpers()
 			}
 
@@ -704,7 +704,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
-			rl.deleteBackspace()
+			rl.deleteBackspace(true)
 		}
 	case seqHome, seqHomeSc:
 		if rl.modeTabCompletion {
