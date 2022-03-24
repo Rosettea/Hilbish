@@ -517,7 +517,9 @@ func (rl *Instance) editorInput(r []rune) {
 
 	case VimReplaceMany:
 		for _, char := range r {
-			rl.deleteX()
+			if rl.pos != len(rl.line) {
+				rl.deleteX()
+			}
 			rl.insert([]rune{char})
 		}
 		rl.refreshVimStatus()
