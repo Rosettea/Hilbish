@@ -33,8 +33,12 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goro(fn) end
 
---- 
-function hilbish.highlighter() end
+--- Sets the highlighter function. This is mainly for syntax hightlighting, but in
+--- reality could set the input of the prompt to display anything. The callback
+--- is passed the current line as typed and is expected to return a line that will
+--- be used to display in the line.
+--- @param cb function
+function hilbish.highlighter(cb) end
 
 --- Sets the hinter function. This will be called on every key insert to determine
 --- what text to use as an inline hint. The callback is passed 2 arguments:
