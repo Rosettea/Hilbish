@@ -20,7 +20,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-		// Account for the hint line
+		// Account for the info line
 	} else if rl.modeTabCompletion && rl.modeAutoFind {
 		rl.tcUsedY = 0
 	} else {
@@ -40,7 +40,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 		moveCursorUp(1)
 	}
 	rl.stillOnRefresh = true
-	moveCursorUp(rl.hintY + rl.tcUsedY)
+	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
 	print("\r\n" + seqClearScreenBelow)
 
@@ -73,7 +73,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-		// Account for the hint line
+		// Account for the info line
 	} else if rl.modeTabCompletion && rl.modeAutoFind {
 		rl.tcUsedY = 0
 	} else {
@@ -91,7 +91,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 
 	// Clear the input line and everything below
 	print(seqClearLine)
-	moveCursorUp(rl.hintY + rl.tcUsedY)
+	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
 	print("\r\n" + seqClearScreenBelow)
 
@@ -118,7 +118,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-	} else if rl.modeTabCompletion && rl.modeAutoFind { // Account for the hint line
+	} else if rl.modeTabCompletion && rl.modeAutoFind { // Account for the info line
 		rl.tcUsedY = 0
 	} else {
 		rl.tcUsedY = 1

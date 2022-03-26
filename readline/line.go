@@ -57,9 +57,9 @@ func (rl *Instance) echo() {
 
 		// Print the input line with optional syntax highlighting
 		if rl.SyntaxHighlighter != nil {
-			print(rl.SyntaxHighlighter(line) + " ")
+			print(rl.SyntaxHighlighter(line))
 		} else {
-			print(string(line) + " ")
+			print(string(line))
 		}
 	}
 

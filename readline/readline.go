@@ -40,10 +40,10 @@ func (rl *Instance) Readline() (string, error) {
 	rl.posY = 0
 	rl.tcPrefix = ""
 
-	// Completion && hints init
-	rl.resetHintText()
+	// Completion && infos init
+	rl.resetInfoText()
 	rl.resetTabCompletion()
-	rl.getHintText()
+	rl.getInfoText()
 
 	// History Init
 	// We need this set to the last command, so that we can access it quickly
@@ -63,7 +63,7 @@ func (rl *Instance) Readline() (string, error) {
 		return string(rl.line), nil
 	}
 
-	// Finally, print any hints or completions
+	// Finally, print any info or completions
 	// if the TabCompletion engines so desires
 	rl.renderHelpers()
 
@@ -128,8 +128,8 @@ func (rl *Instance) Readline() (string, error) {
 				rl.updateHelpers()
 			}
 
-			if len(ret.HintText) > 0 {
-				rl.hintText = ret.HintText
+			if len(ret.InfoText) > 0 {
+				rl.infoText = ret.InfoText
 				rl.clearHelpers()
 				rl.renderHelpers()
 			}
@@ -174,8 +174,8 @@ func (rl *Instance) Readline() (string, error) {
 			}
 			print(seqClearScreenBelow)
 
-			rl.resetHintText()
-			rl.getHintText()
+			rl.resetInfoText()
+			rl.getInfoText()
 			rl.renderHelpers()
 
 		// Line Editing ------------------------------------------------------------------------------------
@@ -533,6 +533,7 @@ func (rl *Instance) editorInput(r []rune) {
 		// We don't need it when inserting text.
 		rl.histNavIdx = 0
 		rl.insert(r)
+		rl.writeHintText()
 	}
 
 	if len(rl.multisplit) == 0 {
@@ -696,6 +697,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 		return
 	case seqCtrlRightArrow:
+		rl.insert(rl.hintText)
 		rl.moveCursorByAdjust(rl.viJumpW(tokeniseLine))
 		rl.updateHelpers()
 		return

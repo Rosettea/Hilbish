@@ -7,7 +7,7 @@ type EventReturn struct {
 	ForwardKey    bool
 	ClearHelpers  bool
 	CloseReadline bool
-	HintText      []rune
+	InfoText      []rune
 	NewLine       []rune
 	NewPos        int
 }

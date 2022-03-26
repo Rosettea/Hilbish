@@ -93,16 +93,16 @@ func (rl *Instance) getTabSearchCompletion() {
 	}
 	rl.getCurrentGroup()
 
-	// Set the hint for this completion mode
-	rl.hintText = append([]rune("Completion search: "), rl.tfLine...)
+	// Set the info for this completion mode
+	rl.infoText = append([]rune("Completion search: "), rl.tfLine...)
 
 	for _, g := range rl.tcGroups {
 		g.updateTabFind(rl)
 	}
 
-	// If total number of matches is zero, we directly change the hint, and return
+	// If total number of matches is zero, we directly change the info, and return
 	if comps, _, _ := rl.getCompletionCount(); comps == 0 {
-		rl.hintText = append(rl.hintText, []rune(DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
+		rl.infoText = append(rl.infoText, []rune(DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
 	}
 }
 
@@ -117,25 +117,25 @@ func (rl *Instance) getHistorySearchCompletion() {
 	rl.tcGroups = checkNilItems(rl.tcGroups) // Avoid nil maps in groups
 	rl.getCurrentGroup()                     // Make sure there is a current group
 
-	// The history hint is already set, but overwrite it if we don't have completions
+	// The history info is already set, but overwrite it if we don't have completions
 	if len(rl.tcGroups[0].Suggestions) == 0 {
-		rl.histHint = []rune(fmt.Sprintf("%s%s%s %s", DIM, RED,
+		rl.histInfo = []rune(fmt.Sprintf("%s%s%s %s", DIM, RED,
 			"No command history source, or empty (Ctrl-G/Esc to cancel)", RESET))
-		rl.hintText = rl.histHint
+		rl.infoText = rl.histInfo
 		return
 	}
 
-	// Set the hint line with everything
-	rl.histHint = append([]rune("\033[38;5;183m"+string(rl.histHint)+RESET), rl.tfLine...)
-	rl.histHint = append(rl.histHint, []rune(RESET)...)
-	rl.hintText = rl.histHint
+	// Set the info line with everything
+	rl.histInfo = append([]rune("\033[38;5;183m"+string(rl.histInfo)+RESET), rl.tfLine...)
+	rl.histInfo = append(rl.histInfo, []rune(RESET)...)
+	rl.infoText = rl.histInfo
 
 	// Refresh filtered candidates
 	rl.tcGroups[0].updateTabFind(rl)
 
-	// If no items matched history, add hint text that we failed to search
+	// If no items matched history, add info text that we failed to search
 	if len(rl.tcGroups[0].Suggestions) == 0 {
-		rl.hintText = append(rl.histHint, []rune(DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
+		rl.infoText = append(rl.histInfo, []rune(DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
 		return
 	}
 }
@@ -298,15 +298,15 @@ func (rl *Instance) cropCompletions(comps string) (cropped string, usedY int) {
 	// Else we go on, but we have more comps than what allowed:
 	// we will add a line to the end of the comps, giving the actualized
 	// number of completions remaining and not printed
-	var moreComps = func(cropped string, offset int) (hinted string, noHint bool) {
+	var moreComps = func(cropped string, offset int) (infoed string, noInfo bool) {
 		_, _, adjusted := rl.getCompletionCount()
 		remain := adjusted - offset
 		if remain == 0 {
 			return cropped, true
 		}
-		hint := fmt.Sprintf(DIM+YELLOW+" %d more completions... (scroll down to show)"+RESET+"\n", remain)
-		hinted = cropped + hint
-		return hinted, false
+		info := fmt.Sprintf(DIM+YELLOW+" %d more completions... (scroll down to show)"+RESET+"\n", remain)
+		infoed = cropped + info
+		return infoed, false
 	}
 
 	// Get the current absolute candidate position (prev groups x suggestions + curGroup.tcPosY)
@@ -509,7 +509,7 @@ func (rl *Instance) hasOneCandidate() bool {
 // - The terminal lengh
 // we use this function to prompt for confirmation before printing comps.
 func (rl *Instance) promptCompletionConfirm(sentence string) {
-	rl.hintText = []rune(sentence)
+	rl.infoText = []rune(sentence)
 
 	rl.compConfirmWait = true
 	rl.viUndoSkipAppend = true

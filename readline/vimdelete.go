@@ -33,7 +33,7 @@ func (rl *Instance) viDelete(r rune) {
 		rl.saveBufToRegister(rl.line)
 		rl.clearLine()
 		rl.resetHelpers()
-		rl.getHintText()
+		rl.getInfoText()
 
 	case 'e':
 		vii := rl.getViIterations()

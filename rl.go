@@ -13,6 +13,7 @@ type lineReader struct {
 	rl *readline.Instance
 }
 var fileHist *fileHistory
+var hinter lua.LValue
 
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
@@ -43,6 +44,25 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			case readline.VimActionYank: actionStr = "yank"
 		}
 		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
+	}
+	rl.HintText = func(line []rune, pos int) []rune {
+		err := l.CallByParam(lua.P{
+			Fn: hinter,
+			NRet: 1,
+			Protect: true,
+		}, lua.LString(string(line)), lua.LNumber(pos))
+		if err != nil {
+			fmt.Println(err)
+			return []rune{}
+		}
+		
+		retVal := l.Get(-1)
+		hintText := ""
+		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
+			hintText = luaStr.String()
+		}
+		
+		return []rune(hintText)
 	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
@@ -253,7 +273,7 @@ func (lr *lineReader) luaGetHistory(L *lua.LState) int {
 	cmd, _ := fileHist.GetLine(idx)
 	L.Push(lua.LString(cmd))
 
-	return 0
+	return 1
 }
 
 func (lr *lineReader) luaAllHistory(L *lua.LState) int {
@@ -267,7 +287,7 @@ func (lr *lineReader) luaAllHistory(L *lua.LState) int {
 
 	L.Push(tbl)
 
-	return 0
+	return 1
 }
 
 func (lr *lineReader) luaClearHistory(l *lua.LState) int {

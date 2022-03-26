@@ -28,6 +28,7 @@ var exports = map[string]lua.LGFunction {
 	"exec": hlexec,
 	"runnerMode": hlrunnerMode,
 	"goro": hlgoro,
+	"hinter": hlhinter,
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
 	"prompt": hlprompt,
@@ -501,5 +502,18 @@ func hlrunnerMode(L *lua.LState) int {
 		default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
 	}
 
+	return 0
+}
+
+// hinter(cb)
+// Sets the hinter function. This will be called on every key insert to determine
+// what text to use as an inline hint. The callback is passed 2 arguments:
+// the current line and the position. It is expected to return a string
+// which will be used for the hint.
+// --- @param cb function
+func hlhinter(L *lua.LState) int {
+	hinterCb := L.CheckFunction(1)
+	hinter = hinterCb
+	
 	return 0
 }

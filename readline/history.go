@@ -183,13 +183,13 @@ func (rl *Instance) completeHistory() (hist []*CompletionGroup) {
 			return
 		}
 		history = rl.altHistory
-		rl.histHint = []rune(rl.altHistName + ": ")
+		rl.histInfo = []rune(rl.altHistName + ": ")
 	} else {
 		if rl.mainHistory == nil {
 			return
 		}
 		history = rl.mainHistory
-		rl.histHint = []rune(rl.mainHistName + ": ")
+		rl.histInfo = []rune(rl.mainHistName + ": ")
 	}
 
 	hist[0].init(rl)
