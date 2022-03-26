@@ -33,6 +33,9 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goro(fn) end
 
+--- 
+function hilbish.highlighter() end
+
 --- Sets the hinter function. This will be called on every key insert to determine
 --- what text to use as an inline hint. The callback is passed 2 arguments:
 --- the current line and the position. It is expected to return a string
