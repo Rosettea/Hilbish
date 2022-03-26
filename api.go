@@ -28,6 +28,7 @@ var exports = map[string]lua.LGFunction {
 	"exec": hlexec,
 	"runnerMode": hlrunnerMode,
 	"goro": hlgoro,
+	"highlighter": hlhighlighter,
 	"hinter": hlhinter,
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
@@ -515,5 +516,12 @@ func hlhinter(L *lua.LState) int {
 	hinterCb := L.CheckFunction(1)
 	hinter = hinterCb
 	
+	return 0
+}
+
+func hlhighlighter(L *lua.LState) int {
+	highlighterCb := L.CheckFunction(1)
+	highlighter = highlighterCb
+
 	return 0
 }

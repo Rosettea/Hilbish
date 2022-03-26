@@ -14,6 +14,7 @@ type lineReader struct {
 }
 var fileHist *fileHistory
 var hinter lua.LValue = lua.LNil
+var highlighter lua.LValue = lua.LNil
 
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
@@ -67,6 +68,28 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		}
 		
 		return []rune(hintText)
+	}
+	rl.SyntaxHighlighter = func(line []rune) string {
+		if highlighter == lua.LNil {
+			return string(line)
+		}
+		err := l.CallByParam(lua.P{
+			Fn: highlighter,
+			NRet: 1,
+			Protect: true,
+		}, lua.LString(string(line)))
+		if err != nil {
+			fmt.Println(err)
+			return string(line)
+		}
+		
+		retVal := l.Get(-1)
+		highlighted := ""
+		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
+			highlighted = luaStr.String()
+		}
+		
+		return highlighted
 	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
