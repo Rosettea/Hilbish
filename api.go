@@ -519,6 +519,12 @@ func hlhinter(L *lua.LState) int {
 	return 0
 }
 
+// highlighter(cb)
+// Sets the highlighter function. This is mainly for syntax hightlighting, but in
+// reality could set the input of the prompt to display anything. The callback
+// is passed the current line as typed and is expected to return a line that will
+// be used to display in the line.
+// --- @param cb function
 func hlhighlighter(L *lua.LState) int {
 	highlighterCb := L.CheckFunction(1)
 	highlighter = highlighterCb
