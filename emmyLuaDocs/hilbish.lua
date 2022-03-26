@@ -33,6 +33,13 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goro(fn) end
 
+--- Sets the hinter function. This will be called on every key insert to determine
+--- what text to use as an inline hint. The callback is passed 2 arguments:
+--- the current line and the position. It is expected to return a string
+--- which will be used for the hint.
+--- @param cb function
+function hilbish.hinter(cb) end
+
 --- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 --- @param mode string
 function hilbish.inputMode(mode) end
