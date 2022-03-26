@@ -13,7 +13,7 @@ type lineReader struct {
 	rl *readline.Instance
 }
 var fileHist *fileHistory
-var hinter lua.LValue
+var hinter lua.LValue = lua.LNil
 
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
@@ -46,6 +46,10 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
+		if hinter == lua.LNil {
+			return []rune{}
+		}
+
 		err := l.CallByParam(lua.P{
 			Fn: hinter,
 			NRet: 1,
