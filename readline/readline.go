@@ -189,6 +189,16 @@ func (rl *Instance) Readline() (string, error) {
 			rl.resetHelpers()
 			rl.updateHelpers()
 
+		case charCtrlK:
+			if rl.modeTabCompletion {
+				rl.resetVirtualComp(true)
+			}
+			// Delete everything after the cursor position
+			rl.saveBufToRegister(rl.line[rl.pos:])
+			rl.deleteToEnd()
+			rl.resetHelpers()
+			rl.updateHelpers()
+
 		case charBackspace, charBackspace2:
 			// When currently in history completion, we refresh and automatically
 			// insert the first (filtered) candidate, virtually

@@ -176,3 +176,9 @@ func (rl *Instance) deleteToBeginning() {
 	rl.line = rl.line[rl.pos:]
 	rl.pos = 0
 }
+
+func (rl *Instance) deleteToEnd() {
+	rl.resetVirtualComp(false)
+	// Keep everything before the cursor
+	rl.line = rl.line[:rl.pos]
+}
