@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 /*
 	"hilbish/golibs/commander"
@@ -71,14 +72,9 @@ func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	data, err := os.ReadFile(confpath)
+	err := util.DoFile(l, confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err, "\nAn error has occured while loading your config! Falling back to minimal default config.")
-		chunk, _ := l.CompileAndLoadLuaChunk("", []byte(minimalconf), rt.TableValue(l.GlobalEnv()))
-		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
-		fmt.Println(err)
+		util.DoString(l, minimalconf)
 	}
-	chunk, _ := l.CompileAndLoadLuaChunk("", data, rt.TableValue(l.GlobalEnv()))
-	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
-	fmt.Println("config", err)
 }

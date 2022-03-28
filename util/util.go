@@ -1,6 +1,8 @@
 package util
 
 import (
+	"os"
+
 	"github.com/yuin/gopher-lua"
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -36,3 +38,20 @@ func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, d
 	module.Set(rt.StringValue(field), value)
 }
 
+func DoString(rtm *rt.Runtime, code string) error {
+	chunk, err := rtm.CompileAndLoadLuaChunk("", []byte(code), rt.TableValue(rtm.GlobalEnv()))
+	if chunk != nil {
+		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
+	}
+
+	return err
+}
+
+func DoFile(rtm *rt.Runtime, filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	return DoString(rtm, string(data))
+}
