@@ -23,9 +23,7 @@ func luaInit() {
 
 	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
-	chunk, _ := l.CompileAndLoadLuaChunk("", []byte("hilbish = require 'hilbish'"), rt.TableValue(l.GlobalEnv()))
-	_, err := rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
-	fmt.Println("hsh load", err)
+	util.DoString(l, "hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
 /*	l.PreloadModule("fs", fs.Loader)
@@ -53,20 +51,18 @@ func luaInit() {
 	})
 
 	// Add more paths that Lua can require from
-	chunk, _ = l.CompileAndLoadLuaChunk("", []byte("package.path = package.path .. " + requirePaths), rt.TableValue(l.GlobalEnv()))
-	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
-	fmt.Println("package path", err)
-
-	data, err := os.ReadFile("prelude/init.lua")
+	err := util.DoString(l, "package.path = package.path .. " + requirePaths)
 	if err != nil {
-		data, err = os.ReadFile(preloadPath)
+		fmt.Fprintln(os.Stderr, "Could not add preload paths! Libraries will be missing. This shouldn't happen.")
+	}
+
+	err = util.DoFile(l, "prelude/init.lua")
+	if err != nil {
+		err = util.DoFile(l, preloadPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
 		}
 	}
-	chunk, _ = l.CompileAndLoadLuaChunk("", data, rt.TableValue(l.GlobalEnv()))
-	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
-	fmt.Println("prelude", err)
 }
 
 func runConfig(confpath string) {
