@@ -1,6 +1,6 @@
 -- Default Hilbish config
 local lunacolors = require 'lunacolors'
---local bait = require 'bait'
+local bait = require 'bait'
 local ansikit = require 'ansikit'
 
 local function doPrompt(fail)
@@ -13,7 +13,6 @@ print(lunacolors.format(hilbish.greeting))
 
 doPrompt()
 
---[[
 bait.catch('command.exit', function(code)
 	doPrompt(code ~= 0)
 end)
@@ -25,4 +24,3 @@ bait.catch('hilbish.vimMode', function(mode)
 		ansikit.cursorStyle(ansikit.lineCursor)
 	end
 end)
-]]--

@@ -43,7 +43,8 @@ func luaInit() {
 */
 
 	hooks = bait.New()
-//	l.PreloadModule("bait", hooks.Loader)
+	lib.LoadLibs(l, hooks.Loader)
+
 	// Add Ctrl-C handler
 	hooks.Em.On("signal.sigint", func() {
 		if !interactive {

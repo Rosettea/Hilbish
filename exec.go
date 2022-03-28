@@ -447,5 +447,6 @@ func cmdFinish(code uint8, cmdstr string, private bool) {
 		handleHistory(cmdstr)
 	}
 //	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
-	hooks.Em.Emit("command.exit", code, cmdstr)
+	// using AsValue on an interface which is an int results in it being unknown .... ????
+	hooks.Em.Emit("command.exit", rt.IntValue(int64(code)), cmdstr)
 }
