@@ -7,8 +7,8 @@ import (
 	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
-/*
 	"hilbish/golibs/fs"
+/*
 	"hilbish/golibs/terminal"
 */
 	rt "github.com/arnodel/golua/runtime"
@@ -26,7 +26,8 @@ func luaInit() {
 	util.DoString(l, "hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
-/*	l.PreloadModule("fs", fs.Loader)
+	lib.LoadLibs(l, fs.Loader)
+/*
 	l.PreloadModule("terminal", terminal.Loader)
 */
 
@@ -63,6 +64,7 @@ func luaInit() {
 			fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
 		}
 	}
+	fmt.Println(err)
 }
 
 func runConfig(confpath string) {

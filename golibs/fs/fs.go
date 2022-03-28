@@ -8,51 +8,71 @@ import (
 	"strings"
 
 	"hilbish/util"
-	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/packagelib"
 )
 
-func Loader(L *lua.LState) int {
-	mod := L.SetFuncs(L.NewTable(), exports)
+var Loader = packagelib.Loader{
+	Load: LoaderFunc,
+	Name: "fs",
+}
 
+func LoaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+	exports := map[string]util.LuaExport{
+		"cd": util.LuaExport{fcd, 1, false},
+		"mkdir": util.LuaExport{fmkdir, 2, false},
+		"stat": util.LuaExport{fstat, 1, false},
+		"readdir": util.LuaExport{freaddir, 1, false},
+	}
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+
+/*
 	util.Document(L, mod, `The fs module provides easy and simple access to
 filesystem functions and other things, and acts an
 addition to the Lua standard library's I/O and fs functions.`)
+*/
 
-	L.Push(mod)
-	return 1
-}
-
-var exports = map[string]lua.LGFunction{
-	"cd": fcd,
-	"mkdir": fmkdir,
-	"stat": fstat,
-	"readdir": freaddir,
+	return rt.TableValue(mod), nil
 }
 
 // cd(dir)
 // Changes directory to `dir`
 // --- @param dir string
-func fcd(L *lua.LState) int {
-	path := L.CheckString(1)
-
-	err := os.Chdir(strings.TrimSpace(path))
+func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	path, err := c.StringArg(0)
 	if err != nil {
-		e := err.(*os.PathError).Err.Error()
-		L.RaiseError(e + ": " + path)
+		return nil, err
 	}
 
-	return 0
+	err = os.Chdir(strings.TrimSpace(path))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Next(), err
 }
 
 // mkdir(name, recursive)
 // Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
 // --- @param name string
 // --- @param recursive boolean
-func fmkdir(L *lua.LState) int {
-	dirname := L.CheckString(1)
-	recursive := L.ToBool(2)
+func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	dirname, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	recursive, err := c.BoolArg(1)
+	if err != nil {
+		return nil, err
+	}
 	path := strings.TrimSpace(dirname)
-	var err error
 
 	if recursive {
 		err = os.MkdirAll(path, 0744)
@@ -60,51 +80,58 @@ func fmkdir(L *lua.LState) int {
 		err = os.Mkdir(path, 0744)
 	}
 	if err != nil {
-		L.RaiseError(err.Error() + ": " + path)
+		return nil, err
 	}
 
-	return 0
+	return c.Next(), err
 }
 
 // stat(path)
 // Returns info about `path`
 // --- @param path string
-func fstat(L *lua.LState) int {
-	path := L.CheckString(1)
+func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	path, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 
 	pathinfo, err := os.Stat(path)
 	if err != nil {
-		L.RaiseError(err.Error() + ": " + path)
-		return 0
+		return nil, err
 	}
-	statTbl := L.NewTable()
-	L.SetField(statTbl, "name", lua.LString(pathinfo.Name()))
-	L.SetField(statTbl, "size", lua.LNumber(pathinfo.Size()))
-	L.SetField(statTbl, "mode", lua.LString("0" + strconv.FormatInt(int64(pathinfo.Mode().Perm()), 8)))
-	L.SetField(statTbl, "isDir", lua.LBool(pathinfo.IsDir()))
-	L.Push(statTbl)
-
-	return 1
+	statTbl := rt.NewTable()
+	statTbl.Set(rt.StringValue("name"), rt.StringValue(pathinfo.Name()))
+	statTbl.Set(rt.StringValue("size"), rt.IntValue(pathinfo.Size()))
+	statTbl.Set(rt.StringValue("mode"), rt.StringValue("0" + strconv.FormatInt(int64(pathinfo.Mode().Perm()), 8)))
+	statTbl.Set(rt.StringValue("isDir"), rt.BoolValue(pathinfo.IsDir()))
+	
+	return c.PushingNext1(t.Runtime, rt.TableValue(statTbl)), nil
 }
 
 // readdir(dir)
 // Returns a table of files in `dir`
 // --- @param dir string
 // --- @return table
-func freaddir(L *lua.LState) int {
-	dir := L.CheckString(1)
-	names := L.NewTable()
+func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	dir, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	names := rt.NewTable()
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
-		L.RaiseError(err.Error() + ": " + dir)
-		return 0
+		return nil, err
 	}
-	for _, entry := range dirEntries {
-		names.Append(lua.LString(entry.Name()))
+	for i, entry := range dirEntries {
+		names.Set(rt.IntValue(int64(i + 1)), rt.StringValue(entry.Name()))
 	}
 
-	L.Push(names)
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(names)), nil
 }
