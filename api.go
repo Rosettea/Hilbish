@@ -271,7 +271,7 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 	lr.SetPrompt(fmtPrompt(prompt))
 
-	return nil, nil
+	return c.Next(), nil
 }
 
 // multiprompt(str)
