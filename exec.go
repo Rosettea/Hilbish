@@ -183,37 +183,27 @@ func execCommand(cmd string) error {
 		}
 
 		// If command is defined in Lua then run it
-		/*
-		luacmdArgs := l.NewTable()
-		for _, str := range args[1:] {
-			luacmdArgs.Append(lua.LString(str))
+		luacmdArgs := rt.NewTable()
+		for i, str := range args[1:] {
+			luacmdArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(str))
 		}
 
 		if commands[args[0]] != nil {
-			err := l.CallByParam(lua.P{
-				Fn: commands[args[0]],
-				NRet:    1,
-				Protect: true,
-			}, luacmdArgs)
-
+			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs))
 			if err != nil {
 				fmt.Fprintln(os.Stderr,
 					"Error in command:\n\n" + err.Error())
 				return interp.NewExitStatus(1)
 			}
 
-			luaexitcode := l.Get(-1)
 			var exitcode uint8
 
-			l.Pop(1)
-
-			if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+			if code, ok := luaexitcode.TryInt(); ok {
 				exitcode = uint8(code)
-			}
+			} // TODO: deregister commander if return isnt number
 
 			return interp.NewExitStatus(exitcode)
 		}
-		*/
 
 		err := lookpath(args[0])
 		if err == errNotExec {
@@ -447,6 +437,8 @@ func cmdFinish(code uint8, cmdstr string, private bool) {
 		handleHistory(cmdstr)
 	}
 //	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
-	// using AsValue on an interface which is an int results in it being unknown .... ????
+	// using AsValue (to convert to lua type) on an interface which is an int
+	// results in it being unknown in lua .... ????
+	// so we allow the hook handler to take lua runtime Values
 	hooks.Em.Emit("command.exit", rt.IntValue(int64(code)), cmdstr)
 }

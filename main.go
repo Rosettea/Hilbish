@@ -23,7 +23,7 @@ var (
 	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*lua.LFunction{}
+	commands = map[string]*rt.Closure{}
 	luaCompletions = map[string]*lua.LFunction{}
 
 	confDir string

@@ -6,8 +6,8 @@ import (
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
-/*
 	"hilbish/golibs/commander"
+/*
 	"hilbish/golibs/fs"
 	"hilbish/golibs/terminal"
 */
@@ -28,17 +28,17 @@ func luaInit() {
 	// Add fs and terminal module module to Lua
 /*	l.PreloadModule("fs", fs.Loader)
 	l.PreloadModule("terminal", terminal.Loader)
+*/
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
-	cmds.Events.On("commandRegister", func(cmdName string, cmd *lua.LFunction) {
+	cmds.Events.On("commandRegister", func(cmdName string, cmd *rt.Closure) {
 		commands[cmdName] = cmd
 	})
 	cmds.Events.On("commandDeregister", func(cmdName string) {
 		delete(commands, cmdName)
 	})
-	l.PreloadModule("commander", cmds.Loader)
-*/
+	lib.LoadLibs(l, cmds.Loader)
 
 	hooks = bait.New()
 	lib.LoadLibs(l, hooks.Loader)
