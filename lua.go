@@ -46,8 +46,6 @@ func luaInit() {
 		}
 	})
 
-	l.SetGlobal("complete", l.NewFunction(hlcomplete))
-
 	// Add more paths that Lua can require from
 	l.DoString("package.path = package.path .. " + requirePaths)
 
