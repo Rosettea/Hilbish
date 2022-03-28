@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"hilbish/util"
 
-	"github.com/chuckpreslar/emission"
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/chuckpreslar/emission"
 )
 
 type Bait struct{
@@ -52,22 +52,6 @@ failed, etc. To find all available hooks, see doc hooks.`)
 */
 
 	return rt.TableValue(mod), nil
-}
-
-func handleArgs(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) {
-	if err := c.CheckNArgs(2); err != nil {
-		return "", nil, err
-	}
-	name, err := c.StringArg(0)
-	if err != nil {
-		return "", nil, err
-	}
-	catcher, err := c.ClosureArg(1)
-	if err != nil {
-		return "", nil, err
-	}
-
-	return name, catcher, err
 }
 
 func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, args ...interface{}) {
@@ -117,7 +101,7 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // --- @param name string
 // --- @param cb function
 func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := handleArgs(t, c)
+	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +118,7 @@ func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // --- @param name string
 // --- @param cb function
 func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := handleArgs(t, c)
+	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
 		return nil, err
 	}

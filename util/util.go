@@ -55,3 +55,19 @@ func DoFile(rtm *rt.Runtime, filename string) error {
 
 	return DoString(rtm, string(data))
 }
+
+func HandleStrCallback(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return "", nil, err
+	}
+	name, err := c.StringArg(0)
+	if err != nil {
+		return "", nil, err
+	}
+	cb, err := c.ClosureArg(1)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return name, cb, err
+}
