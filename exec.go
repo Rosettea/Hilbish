@@ -114,7 +114,9 @@ func handleLua(cmdString string) (uint8, error) {
 	}
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
-		_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+		if chunk != nil {
+			_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+		}
 	}
 	if err == nil {
 		return 0, nil
