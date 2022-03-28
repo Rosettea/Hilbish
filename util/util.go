@@ -1,32 +1,38 @@
 package util
 
-import "github.com/yuin/gopher-lua"
+import (
+	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
+)
 
 // Document adds a documentation string to a module.
 // It is accessible via the __doc metatable.
 func Document(L *lua.LState, module lua.LValue, doc string) {
+/*
 	mt := L.GetMetatable(module)
 	if mt == lua.LNil {
 		mt = L.NewTable()
 		L.SetMetatable(module, mt)
 	}
 	L.SetField(mt, "__doc", lua.LString(doc))
+*/
 }
 
 // SetField sets a field in a table, adding docs for it.
 // It is accessible via the __docProp metatable. It is a table of the names of the fields.
-func SetField(L *lua.LState, module lua.LValue, field string, value lua.LValue, doc string) {
-	mt := L.GetMetatable(module)
-	if mt == lua.LNil {
-		mt = L.NewTable()
-		docProp := L.NewTable()
-		L.SetField(mt, "__docProp", docProp)
+func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, doc string) {
+	mt := module.Metatable()
+	
+	if mt == nil {
+		mt = rt.NewTable()
+		docProp := rt.NewTable()
+		mt.Set(rt.StringValue("__docProp"), rt.TableValue(docProp))
 
-		L.SetMetatable(module, mt)
+		module.SetMetatable(mt)
 	}
-	docProp := L.GetTable(mt, lua.LString("__docProp"))
+	docProp := mt.Get(rt.StringValue("__docProp"))
 
-	L.SetField(docProp, field, lua.LString(doc))
-	L.SetField(module, field, value)
+	docProp.AsTable().Set(rt.StringValue(field), rt.StringValue(doc))
+	module.Set(rt.StringValue(field), value)
 }
 

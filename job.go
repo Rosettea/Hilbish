@@ -3,8 +3,6 @@ package main
 import (
 	"sync"
 	"os"
-
-	"github.com/yuin/gopher-lua"
 )
 
 var jobs *jobHandler
@@ -21,7 +19,7 @@ type job struct {
 func (j *job) start(pid int) {
 	j.pid = pid
 	j.running = true
-	hooks.Em.Emit("job.start", j.lua())
+//	hooks.Em.Emit("job.start", j.lua())
 }
 
 func (j *job) stop() {
@@ -31,13 +29,14 @@ func (j *job) stop() {
 
 func (j *job) finish() {
 	j.running = false
-	hooks.Em.Emit("job.done", j.lua())
+//	hooks.Em.Emit("job.done", j.lua())
 }
 
 func (j *job) setHandle(handle *os.Process) {
 	j.proc = handle
 }
 
+/*
 func (j *job) lua() *lua.LTable {
 	// returns lua table for job
 	// because userdata is gross
@@ -62,6 +61,7 @@ func (j *job) luaStop(L *lua.LState) int {
 
 	return 0
 }
+*/
 
 type jobHandler struct {
 	jobs map[int]*job
@@ -96,7 +96,7 @@ func (j *jobHandler) getLatest() *job {
 	return j.jobs[j.latestID]
 }
 
-
+/*
 func (j *jobHandler) loader(L *lua.LState) *lua.LTable {
 	jobFuncs := map[string]lua.LGFunction{
 		"all": j.luaAllJobs,
@@ -134,3 +134,4 @@ func (j *jobHandler) luaAllJobs(L *lua.LState) int {
 	L.Push(jobTbl)
 	return 1
 }
+*/

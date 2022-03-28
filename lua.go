@@ -5,25 +5,29 @@ import (
 	"os"
 
 	"hilbish/golibs/bait"
+/*
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
 	"hilbish/golibs/terminal"
-
-	"github.com/yuin/gopher-lua"
+*/
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
-	l = lua.NewState()
-	l.OpenLibs()
+	l = rt.New(os.Stdout)
+	lib.LoadAll(l)
 
+	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
-	l.PreloadModule("hilbish", hilbishLoader)
-	l.DoString("hilbish = require 'hilbish'")
+	chunk, _ := l.CompileAndLoadLuaChunk("", []byte("hilbish = require 'hilbish'"), rt.TableValue(l.GlobalEnv()))
+	_, err := rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+	fmt.Println("hsh load", err)
 
 	// Add fs and terminal module module to Lua
-	l.PreloadModule("fs", fs.Loader)
+/*	l.PreloadModule("fs", fs.Loader)
 	l.PreloadModule("terminal", terminal.Loader)
 
 	cmds := commander.New()
@@ -35,10 +39,10 @@ func luaInit() {
 		delete(commands, cmdName)
 	})
 	l.PreloadModule("commander", cmds.Loader)
+*/
 
 	hooks = bait.New()
-	l.PreloadModule("bait", hooks.Loader)
-
+//	l.PreloadModule("bait", hooks.Loader)
 	// Add Ctrl-C handler
 	hooks.Em.On("signal.sigint", func() {
 		if !interactive {
@@ -46,29 +50,35 @@ func luaInit() {
 		}
 	})
 
-	l.SetGlobal("complete", l.NewFunction(hlcomplete))
-
 	// Add more paths that Lua can require from
-	l.DoString("package.path = package.path .. " + requirePaths)
+	chunk, _ = l.CompileAndLoadLuaChunk("", []byte("package.path = package.path .. " + requirePaths), rt.TableValue(l.GlobalEnv()))
+	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+	fmt.Println("package path", err)
 
-	err := l.DoFile("prelude/init.lua")
+	data, err := os.ReadFile("prelude/init.lua")
 	if err != nil {
-		err = l.DoFile(preloadPath)
+		data, err = os.ReadFile(preloadPath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"Missing preload file, builtins may be missing.")
+			fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
 		}
 	}
+	chunk, _ = l.CompileAndLoadLuaChunk("", data, rt.TableValue(l.GlobalEnv()))
+	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+	fmt.Println("prelude", err)
 }
+
 func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	err := l.DoFile(confpath)
+	data, err := os.ReadFile(confpath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err,
-			"\nAn error has occured while loading your config! Falling back to minimal default config.")
-
-		l.DoString(minimalconf)
+		fmt.Fprintln(os.Stderr, err, "\nAn error has occured while loading your config! Falling back to minimal default config.")
+		chunk, _ := l.CompileAndLoadLuaChunk("", []byte(minimalconf), rt.TableValue(l.GlobalEnv()))
+		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+		fmt.Println(err)
 	}
+	chunk, _ := l.CompileAndLoadLuaChunk("", data, rt.TableValue(l.GlobalEnv()))
+	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+	fmt.Println("config", err)
 }

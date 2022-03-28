@@ -4,24 +4,25 @@
 package main
 
 import (
-	"fmt"
+//	"fmt"
 	"os"
-	"os/exec"
+//	"os/exec"
 	"runtime"
 	"strings"
-	"syscall"
-	"time"
+//	"syscall"
+//	"time"
 
 	"hilbish/util"
 
-	"github.com/yuin/gopher-lua"
-	"github.com/maxlandon/readline"
-	"github.com/blackfireio/osinfo"
-	"mvdan.cc/sh/v3/interp"
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/packagelib"
+//	"github.com/maxlandon/readline"
+//	"github.com/blackfireio/osinfo"
+//	"mvdan.cc/sh/v3/interp"
 )
 
-var exports = map[string]lua.LGFunction {
-	"alias": hlalias,
+var exports = map[string]util.LuaExport{
+	/*"alias": hlalias,
 	"appendPath": hlappendPath,
 	"complete": hlcomplete,
 	"cwd": hlcwd,
@@ -31,24 +32,29 @@ var exports = map[string]lua.LGFunction {
 	"highlighter": hlhighlighter,
 	"hinter": hlhinter,
 	"multiprompt": hlmlprompt,
-	"prependPath": hlprependPath,
-	"prompt": hlprompt,
-	"inputMode": hlinputMode,
+	"prependPath": hlprependPath,*/
+	"prompt": util.LuaExport{hlprompt, 1, false},
+	/*"inputMode": hlinputMode,
 	"interval": hlinterval,
 	"read": hlread,
 	"run": hlrun,
 	"timeout": hltimeout,
-	"which": hlwhich,
+	"which": hlwhich,*/
 }
 
 var greeting string
-var hshMod *lua.LTable
+//var hshMod *lua.LTable
+var hilbishLoader = packagelib.Loader{
+	Load: hilbishLoad,
+	Name: "hilbish",
+}
 
-func hilbishLoader(L *lua.LState) int {
-	mod := L.SetFuncs(L.NewTable(), exports)
-	hshMod = mod
+func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+//	hshMod = mod
 
-	host, _ := os.Hostname()
+//	host, _ := os.Hostname()
 	username := curuser.Username
 
 	if runtime.GOOS == "windows" {
@@ -59,27 +65,31 @@ func hilbishLoader(L *lua.LState) int {
 The nice lil shell for {blue}Lua{reset} fanatics!
 Check out the {blue}{bold}guide{reset} command to get started.
 `
-
+/*
 	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
 	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
 	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
 	util.SetField(L, mod, "home", lua.LString(curuser.HomeDir), "Home directory of the user")
-	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
+*/
+	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
+/*
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
-	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
-	util.SetField(L, mod, "greeting", lua.LString(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
-	util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")*/
+	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
+	/*util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.SetField(l, hshMod, "exitCode", lua.LNumber(0), "Exit code of last exected command")
 	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+*/
 
 	// hilbish.userDir table
-	hshuser := L.NewTable()
+	hshuser := rt.NewTable()
 
-	util.SetField(L, hshuser, "config", lua.LString(confDir), "User's config directory")
-	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
-	util.Document(L, hshuser, "User directories to store configs and/or modules.")
-	L.SetField(mod, "userDir", hshuser)
+	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
+	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
+	//util.Document(rtm, hshuser, "User directories to store configs and/or modules.")
+	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
+/*
 	// hilbish.os table
 	hshos := L.NewTable()
 	info, _ := osinfo.GetOSInfo()
@@ -89,9 +99,11 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(L, hshos, "version", lua.LString(info.Version), "Version of the current OS")
 	util.Document(L, hshos, "OS info interface")
 	L.SetField(mod, "os", hshos)
+*/
 
 	// hilbish.aliases table
 	aliases = newAliases()
+/*
 	aliasesModule := aliases.Loader(L)
 	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
 	L.SetField(mod, "aliases", aliasesModule)
@@ -113,18 +125,28 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	runnerModule := runnerModeLoader(L)
 	util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
 	L.SetField(mod, "runner", runnerModule)
+*/
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
+/*
 	jobModule := jobs.loader(L)
 	util.Document(L, jobModule, "(Background) job interface.")
 	L.SetField(mod, "jobs", jobModule)
+*/
 
-	L.Push(mod)
-
-	return 1
+	return rt.TableValue(mod), nil
 }
 
+func getenv(key, fallback string) string {
+    value := os.Getenv(key)
+    if len(value) == 0 {
+        return fallback
+    }
+    return value
+}
+
+/*
 func luaFileComplete(L *lua.LState) int {
 	query := L.CheckString(1)
 	ctx := L.CheckString(2)
@@ -168,16 +190,17 @@ func luaBinaryComplete(L *lua.LState) int {
 
 	return 1
 }
-
+*/
 func setVimMode(mode string) {
-	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	hooks.Em.Emit("hilbish.vimMode", mode)
+//	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+//	hooks.Em.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
-	util.SetField(l, hshMod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+//	util.SetField(l, hshMod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 }
 
+/*
 // run(cmd)
 // Runs `cmd` in Hilbish's sh interpreter.
 // --- @param cmd string
@@ -206,14 +229,6 @@ func hlcwd(L *lua.LState) int {
 	return 1
 }
 
-func getenv(key, fallback string) string {
-    value := os.Getenv(key)
-    if len(value) == 0 {
-        return fallback
-    }
-    return value
-}
-
 // read(prompt) -> input?
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
@@ -233,6 +248,7 @@ func hlread(L *lua.LState) int {
 	L.Push(lua.LString(input))
 	return 1
 }
+*/
 
 /*
 prompt(str)
@@ -244,16 +260,24 @@ These will be formatted and replaced with the appropriate values.
 `%h` - Hostname of device
 --- @param str string
 */
-func hlprompt(L *lua.LState) int {
-	prompt = L.CheckString(1)
+func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	var prompt string
+	err := c.Check1Arg()
+	if err == nil {
+		prompt, err = c.StringArg(0)
+	}
+	if err != nil {
+		return nil, err
+	}
 	lr.SetPrompt(fmtPrompt(prompt))
 
-	return 0
+	return nil, nil
 }
 
 // multiprompt(str)
 // Changes the continued line prompt to `str`
 // --- @param str string
+/*
 func hlmlprompt(L *lua.LState) int {
 	multilinePrompt = L.CheckString(1)
 
@@ -531,3 +555,4 @@ func hlhighlighter(L *lua.LState) int {
 
 	return 0
 }
+*/

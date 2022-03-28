@@ -1,7 +1,7 @@
 package main
 
+/*
 import (
-	"github.com/yuin/gopher-lua"
 )
 
 func runnerModeLoader(L *lua.LState) *lua.LTable {
@@ -44,3 +44,4 @@ func luaRunner(L *lua.LState) int {
 
 	return 2
 }
+*/

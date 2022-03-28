@@ -6,15 +6,16 @@ import (
 	"strings"
 
 	"github.com/maxlandon/readline"
-	"github.com/yuin/gopher-lua"
 )
 
 type lineReader struct {
 	rl *readline.Instance
 }
 var fileHist *fileHistory
+/*
 var hinter lua.LValue = lua.LNil
 var highlighter lua.LValue = lua.LNil
+*/
 
 // other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
@@ -46,6 +47,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		}
 		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
 	}
+	/*
 	rl.HintText = func(line []rune, pos int) []rune {
 		if hinter == lua.LNil {
 			return []rune{}
@@ -163,6 +165,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 					it is the responsibility of the completer
 					to work on subcommands and subcompletions
 				*/
+				/*
 				if cmpTbl, ok := luacompleteTable.(*lua.LTable); ok {
 					cmpTbl.ForEach(func(key lua.LValue, value lua.LValue) {
 						if key.Type() == lua.LTNumber {
@@ -220,7 +223,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			}
 		}
 		return "", compGroup
-	}
+	}*/
 
 	return &lineReader{
 		rl,
@@ -268,6 +271,7 @@ func (lr *lineReader) Resize() {
 }
 
 // lua module
+/*
 func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
 	lrLua := map[string]lua.LGFunction{
 		"add": lr.luaAddHistory,
@@ -321,3 +325,4 @@ func (lr *lineReader) luaClearHistory(l *lua.LState) int {
 	fileHist.clear()
 	return 0
 }
+*/

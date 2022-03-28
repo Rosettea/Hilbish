@@ -12,6 +12,7 @@ import (
 
 	"hilbish/golibs/bait"
 
+	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
 	"github.com/yuin/gopher-lua"
 	"github.com/maxlandon/readline"
@@ -19,7 +20,7 @@ import (
 )
 
 var (
-	l *lua.LState
+	l *rt.Runtime
 	lr *lineReader
 
 	commands = map[string]*lua.LFunction{}
@@ -151,7 +152,7 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		luaArgs := l.NewTable()
+		/*luaArgs := l.NewTable()
 		for _, arg := range getopt.Args() {
 			luaArgs.Append(lua.LString(arg))
 		}
@@ -161,7 +162,7 @@ func main() {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
-		}
+		}*/
 		os.Exit(0)
 	}
 

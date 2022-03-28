@@ -13,9 +13,9 @@ import (
 	"syscall"
 	"time"
 
-	"hilbish/util"
+//	"hilbish/util"
 
-	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
 	"mvdan.cc/sh/v3/shell"
 	//"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
@@ -24,15 +24,15 @@ import (
 )
 
 var errNotExec = errors.New("not executable")
-var runnerMode lua.LValue = lua.LString("hybrid")
+//var runnerMode lua.LValue = lua.LString("hybrid")
 
 func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
-	if runnerMode.Type() == lua.LTString {
-		switch runnerMode.String() {
+//	if runnerMode.Type() == lua.LTString {
+		switch /*runnerMode.String()*/ "hybrid" {
 			case "hybrid":
 				_, err := handleLua(cmdString)
 				if err == nil {
@@ -68,8 +68,9 @@ func runInput(input string, priv bool) {
 				}
 				cmdFinish(exitCode, cmdString, priv)
 		}
-	} else {
+//	} else {
 		// can only be a string or function so
+		/*
 		err := l.CallByParam(lua.P{
 			Fn: runnerMode,
 			NRet: 2,
@@ -94,12 +95,13 @@ func runInput(input string, priv bool) {
 			fmt.Fprintln(os.Stderr, runErr)
 		}
 		cmdFinish(exitCode, cmdString, priv)
-	}
+		*/
+//	}
 }
 
 func handleLua(cmdString string) (uint8, error) {
 	// First try to load input, essentially compiling to bytecode
-	fn, err := l.LoadString(cmdString)
+	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
 		fmt.Println(err)
 	/*	if lerr, ok := err.(*lua.ApiError); ok {
@@ -112,8 +114,7 @@ func handleLua(cmdString string) (uint8, error) {
 	}
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
-		l.Push(fn)
-		err = l.PCall(0, lua.MultRet, nil)
+		_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
 	}
 	if err == nil {
 		return 0, nil
@@ -180,6 +181,7 @@ func execCommand(cmd string) error {
 		}
 
 		// If command is defined in Lua then run it
+		/*
 		luacmdArgs := l.NewTable()
 		for _, str := range args[1:] {
 			luacmdArgs.Append(lua.LString(str))
@@ -209,6 +211,7 @@ func execCommand(cmd string) error {
 
 			return interp.NewExitStatus(exitcode)
 		}
+		*/
 
 		err := lookpath(args[0])
 		if err == errNotExec {
@@ -441,6 +444,6 @@ func cmdFinish(code uint8, cmdstr string, private bool) {
 	if interactive && !private {
 		handleHistory(cmdstr)
 	}
-	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
+//	util.SetField(l, hshMod, "exitCode", lua.LNumber(code), "Exit code of last exected command")
 	hooks.Em.Emit("command.exit", code, cmdstr)
 }
