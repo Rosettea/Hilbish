@@ -8,7 +8,7 @@ local _ = require 'succulent' -- Function additions
 local oldDir = hilbish.cwd()
 
 local shlvl = tonumber(os.getenv 'SHLVL')
-if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 0) end
+if shlvl ~= nil then os.setenv('SHLVL', tostring(shlvl + 1)) else os.setenv('SHLVL', '0') end
 
 -- Builtins
 local recentDirs = {}
