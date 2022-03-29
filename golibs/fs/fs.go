@@ -1,5 +1,3 @@
-// The fs module provides easy and simple access to filesystem functions and other
-// things, and acts an addition to the Lua standard library's I/O and fs functions.
 package fs
 
 import (
@@ -8,6 +6,7 @@ import (
 	"strings"
 
 	"hilbish/util"
+
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
 )

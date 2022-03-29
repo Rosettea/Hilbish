@@ -8,9 +8,8 @@ import (
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
-/*
 	"hilbish/golibs/terminal"
-*/
+
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
 )
@@ -27,9 +26,7 @@ func luaInit() {
 
 	// Add fs and terminal module module to Lua
 	lib.LoadLibs(l, fs.Loader)
-/*
-	l.PreloadModule("terminal", terminal.Loader)
-*/
+	lib.LoadLibs(l, terminal.Loader)
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
