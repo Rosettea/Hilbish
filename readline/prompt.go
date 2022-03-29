@@ -11,6 +11,7 @@ import (
 // It also calculates the runes in the string as well as any non-printable escape codes.
 func (rl *Instance) SetPrompt(s string) {
 	rl.mainPrompt = s
+	rl.computePrompt()
 }
 
 // RefreshPromptLog - A simple function to print a string message (a log, or more broadly,
@@ -68,7 +69,6 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 
 // RefreshPromptInPlace - Refreshes the prompt in the very same place he is.
 func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
-
 	// We adjust cursor movement, depending on which mode we're currently in.
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
@@ -82,7 +82,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 
 	// Update the prompt if a special has been passed.
 	if prompt != "" {
-		rl.mainPrompt = prompt
+		rl.SetPrompt(prompt)
 	}
 
 	if rl.Multiline {
@@ -137,7 +137,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 
 	// Update the prompt if a special has been passed.
 	if prompt != "" {
-		rl.mainPrompt = prompt
+		rl.SetPrompt(prompt)
 	}
 
 	// Add a new line if needed
