@@ -4,6 +4,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 //	"os/exec"
@@ -16,7 +17,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
-//	"github.com/maxlandon/readline"
+	"github.com/maxlandon/readline"
 //	"github.com/blackfireio/osinfo"
 //	"mvdan.cc/sh/v3/interp"
 )
@@ -38,11 +39,9 @@ var exports = map[string]util.LuaExport{
 	"prependPath": hlprependPath,
 */
 	"prompt": util.LuaExport{hlprompt, 1, false},
-/*
-	"inputMode": hlinputMode,
-*/
+	"inputMode": util.LuaExport{hlinputMode, 1, false},
 	"interval": util.LuaExport{hlinterval, 2, false},
-	"read": util.LuaExport{hlprompt, 1, false},
+	"read": util.LuaExport{hlread, 1, false},
 /*
 	"run": hlrun,
 	"timeout": hltimeout,
@@ -51,7 +50,7 @@ var exports = map[string]util.LuaExport{
 }
 
 var greeting string
-//var hshMod *lua.LTable
+var hshMod *rt.Table
 var hilbishLoader = packagelib.Loader{
 	Load: hilbishLoad,
 	Name: "hilbish",
@@ -60,7 +59,7 @@ var hilbishLoader = packagelib.Loader{
 func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
-//	hshMod = mod
+	hshMod = mod
 
 //	host, _ := os.Hostname()
 	username := curuser.Username
@@ -200,13 +199,14 @@ func luaBinaryComplete(L *lua.LState) int {
 	return 1
 }
 */
+
 func setVimMode(mode string) {
-//	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
-//	hooks.Em.Emit("hilbish.vimMode", mode)
+	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	hooks.Em.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
-//	util.SetField(l, hshMod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 }
 
 /*
@@ -517,12 +517,20 @@ func hlwhich(L *lua.LState) int {
 	l.Push(lua.LString(path))
 	return 1
 }
+*/
 
 // inputMode(mode)
 // Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 // --- @param mode string
-func hlinputMode(L *lua.LState) int {
-	mode := L.CheckString(1)
+func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	mode, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
 	switch mode {
 		case "emacs":
 			unsetVimMode()
@@ -530,11 +538,14 @@ func hlinputMode(L *lua.LState) int {
 		case "vim":
 			setVimMode("insert")
 			lr.rl.InputMode = readline.Vim
-		default: L.RaiseError("inputMode: expected vim or emacs, received " + mode)
+		default:
+			return nil, errors.New("inputMode: expected vim or emacs, received " + mode)
 	}
-	return 0
+
+	return c.Next(), nil
 }
 
+/*
 // runnerMode(mode)
 // Sets the execution/runner mode for interactive Hilbish. This determines whether
 // Hilbish wll try to run input as Lua and/or sh or only do one of either.
