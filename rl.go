@@ -18,7 +18,6 @@ var hinter lua.LValue = lua.LNil
 var highlighter lua.LValue = lua.LNil
 */
 
-// other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
 	// we don't mind hilbish.read rl instances having completion,
