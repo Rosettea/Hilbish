@@ -57,9 +57,9 @@ const (
 	seqPosSave    = "\x1b[s"
 	seqPosRestore = "\x1b[u"
 
-	seqClearLineAfer    = "\x1b[0k"
-	seqClearLineBefore  = "\x1b[1k"
-	seqClearLine        = "\x1b[2k"
+	seqClearLineAfer    = "\x1b[0K"
+	seqClearLineBefore  = "\x1b[1K"
+	seqClearLine        = "\x1b[2K"
 	seqClearScreenBelow = "\x1b[0J"
 	seqClearScreen      = "\x1b[2J" // Clears screen fully
 	seqCursorTopLeft    = "\x1b[H"  // Clears screen and places cursor on top-left
