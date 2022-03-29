@@ -4,7 +4,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yuin/gopher-lua"
+	"hilbish/util"
+
+	rt "github.com/arnodel/golua/runtime"
 )
 
 var aliases *aliasHandler
@@ -64,41 +66,55 @@ func (a *aliasHandler) Resolve(cmdstr string) string {
 
 // lua section
 
-func (a *aliasHandler) Loader(L *lua.LState) *lua.LTable {
+func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table  {
 	// create a lua module with our functions
-	hshaliasesLua := map[string]lua.LGFunction{
-		"add": a.luaAdd,
-		"list": a.luaList,
-		"del": a.luaDelete,
+	hshaliasesLua := map[string]util.LuaExport{
+		"add": util.LuaExport{a.luaAdd, 2, false},
+		"list": util.LuaExport{a.luaList, 0, false},
+		"del": util.LuaExport{a.luaDelete, 1, false},
 	}
-
-	mod := L.SetFuncs(L.NewTable(), hshaliasesLua)
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, hshaliasesLua)
 
 	return mod
 }
 
-func (a *aliasHandler) luaAdd(L *lua.LState) int {
-	alias := L.CheckString(1)
-	cmd := L.CheckString(2)
-	a.Add(alias, cmd)
-
-	return 0
-}
-
-func (a *aliasHandler) luaList(L *lua.LState) int {
-	aliasesList := L.NewTable()
-	for k, v := range a.All() {
-		aliasesList.RawSetString(k, lua.LString(v))
+func (a *aliasHandler) luaAdd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	alias, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
 	}
 
-	L.Push(aliasesList)
+	a.Add(alias, cmd)
 
-	return 1
+	return c.Next(), nil
 }
 
-func (a *aliasHandler) luaDelete(L *lua.LState) int {
-	alias := L.CheckString(1)
+func (a *aliasHandler) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	aliasesList := rt.NewTable()
+	for k, v := range a.All() {
+		aliasesList.Set(rt.StringValue(k), rt.StringValue(v))
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(aliasesList)), nil
+}
+
+func (a *aliasHandler) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	alias, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	a.Delete(alias)
 
-	return 0
+	return c.Next(), nil
 }

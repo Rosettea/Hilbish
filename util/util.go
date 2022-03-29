@@ -23,6 +23,7 @@ func Document(L *lua.LState, module lua.LValue, doc string) {
 // SetField sets a field in a table, adding docs for it.
 // It is accessible via the __docProp metatable. It is a table of the names of the fields.
 func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, doc string) {
+	// TODO:    ^ rtm isnt needed, i should remove it
 	mt := module.Metatable()
 	
 	if mt == nil {

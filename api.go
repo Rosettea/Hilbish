@@ -22,8 +22,8 @@ import (
 )
 
 var exports = map[string]util.LuaExport{
+	"alias": util.LuaExport{hlalias, 2, false},
 /*
-	"alias": hlalias,
 	"appendPath": hlappendPath,
 */
 	"complete": util.LuaExport{hlcomplete, 2, false},
@@ -82,7 +82,8 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
 /*
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
-	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")*/
+	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
+*/
 	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	/*util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.SetField(l, hshMod, "exitCode", lua.LNumber(0), "Exit code of last exected command")
@@ -111,11 +112,11 @@ Check out the {blue}{bold}guide{reset} command to get started.
 
 	// hilbish.aliases table
 	aliases = newAliases()
-/*
-	aliasesModule := aliases.Loader(L)
-	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
-	L.SetField(mod, "aliases", aliasesModule)
+	aliasesModule := aliases.Loader(rtm)
+	//util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
+	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
+/*
 	// hilbish.history table
 	historyModule := lr.Loader(L)
 	util.Document(L, historyModule, "History interface for Hilbish.")
@@ -294,20 +295,31 @@ func hlmlprompt(L *lua.LState) int {
 
 	return 0
 }
+*/
 
 // alias(cmd, orig)
 // Sets an alias of `cmd` to `orig`
 // --- @param cmd string
 // --- @param orig string
-func hlalias(L *lua.LState) int {
-	alias := L.CheckString(1)
-	source := L.CheckString(2)
+func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	orig, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
 
-	aliases.Add(alias, source)
+	aliases.Add(cmd, orig)
 
-	return 1
+	return c.Next(), nil
 }
 
+/*
 // appendPath(dir)
 // Appends `dir` to $PATH
 // --- @param dir string|table
