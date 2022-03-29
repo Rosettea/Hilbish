@@ -14,7 +14,6 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
-	"github.com/yuin/gopher-lua"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
 )
@@ -24,7 +23,7 @@ var (
 	lr *lineReader
 
 	commands = map[string]*rt.Closure{}
-	luaCompletions = map[string]*lua.LFunction{}
+	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
 	userDataDir string

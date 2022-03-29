@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/maxlandon/readline"
+	rt "github.com/arnodel/golua/runtime"
 )
 
 type lineReader struct {
@@ -93,6 +94,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		
 		return highlighted
 	}
+	*/
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
 		var completions []string
@@ -124,22 +126,19 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			return prefix, compGroup
 		} else {
 			if completecb, ok := luaCompletions["command." + fields[0]]; ok {
-				luaFields := l.NewTable()
-				for _, f := range fields {
-					luaFields.Append(lua.LString(f))
+				luaFields := rt.NewTable()
+				for i, f := range fields {
+					luaFields.Set(rt.IntValue(int64(i + 1)), rt.StringValue(f))
 				}
-				err := l.CallByParam(lua.P{
-					Fn: completecb,
-					NRet: 1,
-					Protect: true,
-				}, lua.LString(query), lua.LString(ctx), luaFields)
+
+				// we must keep the holy 80 cols
+				luacompleteTable, err := rt.Call1(l.MainThread(), 
+				rt.FunctionValue(completecb), rt.StringValue(query),
+				rt.StringValue(ctx), rt.TableValue(luaFields))
 
 				if err != nil {
 					return "", compGroup
 				}
-
-				luacompleteTable := l.Get(-1)
-				l.Pop(1)
 
 				/*
 					as an example with git,
@@ -165,51 +164,86 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 					it is the responsibility of the completer
 					to work on subcommands and subcompletions
 				*/
-				/*
-				if cmpTbl, ok := luacompleteTable.(*lua.LTable); ok {
-					cmpTbl.ForEach(func(key lua.LValue, value lua.LValue) {
-						if key.Type() == lua.LTNumber {
-							// completion group
-							if value.Type() == lua.LTTable {
-								luaCmpGroup := value.(*lua.LTable)
-								compType := luaCmpGroup.RawGet(lua.LString("type"))
-								compItems := luaCmpGroup.RawGet(lua.LString("items"))
-								if compType.Type() != lua.LTString {
-									l.RaiseError("bad type name for completion (expected string, got %v)", compType.Type().String())
-								}
-								if compItems.Type() != lua.LTTable {
-									l.RaiseError("bad items for completion (expected table, got %v)", compItems.Type().String())
-								}
-								var items []string
-								itemDescriptions := make(map[string]string)
-								compItems.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
-									if k.Type() == lua.LTString {
-										// ['--flag'] = {'description', '--flag-alias'}
-										itm := v.(*lua.LTable)
-										items = append(items, k.String())
-										itemDescriptions[k.String()] = itm.RawGet(lua.LNumber(1)).String()
-									} else {
-										items = append(items, v.String())
-									}
-								})
+				if cmpTbl, ok := luacompleteTable.TryTable(); ok {
+					nextVal := rt.NilValue
+					for {
+						next, val, ok := cmpTbl.Next(nextVal)
+						if next == rt.NilValue {
+							break
+						}
+						nextVal = next
 
-								var dispType readline.TabDisplayType
-								switch compType.String() {
-									case "grid": dispType = readline.TabDisplayGrid
-									case "list": dispType = readline.TabDisplayList
-									// need special cases, will implement later
-									//case "map": dispType = readline.TabDisplayMap
+						_, ok = next.TryInt()
+						valTbl, okk := val.TryTable()
+						if !ok || !okk {
+							// TODO: error?
+							break
+						}
+
+						luaCompType := valTbl.Get(rt.StringValue("type"))
+						luaCompItems := valTbl.Get(rt.StringValue("items"))
+
+						compType, ok := luaCompType.TryString()
+						compItems, okk := luaCompItems.TryTable()
+						if !ok || !okk {
+							// TODO: error
+							break
+						}
+
+						var items []string
+						itemDescriptions := make(map[string]string)
+						nxVal := rt.NilValue
+						for {
+							nx, vl, _ := compItems.Next(nxVal)
+							if nx == rt.NilValue {
+								break
+							}
+							nxVal = nx
+
+							if tstr := nx.Type(); tstr == rt.StringType {
+								// ['--flag'] = {'description', '--flag-alias'}
+								nxStr, ok := nx.TryString()
+								vlTbl, okk := vl.TryTable()
+								if !ok || !okk {
+									// TODO: error
+									continue
 								}
-								compGroup = append(compGroup, &readline.CompletionGroup{
-									DisplayType: dispType,
-									Descriptions: itemDescriptions,
-									Suggestions: items,
-									TrimSlash: false,
-									NoSpace: true,
-								})
+								items = append(items, nxStr)
+								itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
+								if !ok {
+									// TODO: error
+									continue
+								}
+								itemDescriptions[nxStr] = itemDescription
+							} else if tstr == rt.IntType {
+								vlStr, okk := vl.TryString()
+								if !okk {
+									// TODO: error
+									continue
+								}
+								items = append(items, vlStr)
+							} else {
+								// TODO: error
+								continue
 							}
 						}
-					})
+
+						var dispType readline.TabDisplayType
+						switch compType {
+							case "grid": dispType = readline.TabDisplayGrid
+							case "list": dispType = readline.TabDisplayList
+							// need special cases, will implement later
+							//case "map": dispType = readline.TabDisplayMap
+						}
+
+						compGroup = append(compGroup, &readline.CompletionGroup{
+							DisplayType: dispType,
+							Descriptions: itemDescriptions,
+							Suggestions: items,
+							TrimSlash: false,
+							NoSpace: true,
+						})
+					}
 				}
 			}
 
@@ -223,7 +257,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			}
 		}
 		return "", compGroup
-	}*/
+	}
 
 	return &lineReader{
 		rl,

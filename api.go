@@ -25,8 +25,8 @@ var exports = map[string]util.LuaExport{
 /*
 	"alias": hlalias,
 	"appendPath": hlappendPath,
-	"complete": hlcomplete,
-	*/
+*/
+	"complete": util.LuaExport{hlcomplete, 2, false},
 	"cwd": util.LuaExport{hlcwd, 0, false},
 /*
 	"exec": hlexec,
@@ -121,7 +121,7 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(L, historyModule, "History interface for Hilbish.")
 	L.SetField(mod, "history", historyModule)
 
-	// hilbish.completions table
+	// hilbish.completion table
 	hshcomp := L.NewTable()
 
 	util.SetField(L, hshcomp, "files", L.NewFunction(luaFileComplete), "Completer for files")
@@ -446,6 +446,7 @@ func hlinterval(L *lua.LState) int {
 	L.Push(lua.LChannel(stop))
 	return 1
 }
+*/
 
 // complete(scope, cb)
 // Registers a completion handler for `scope`.
@@ -457,15 +458,17 @@ func hlinterval(L *lua.LState) int {
 // `grid` (the normal file completion display) or `list` (with a description)
 // --- @param scope string
 // --- @param cb function
-func hlcomplete(L *lua.LState) int {
-	scope := L.CheckString(1)
-	cb := L.CheckFunction(2)
-
+func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	scope, cb, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
 	luaCompletions[scope] = cb
 
-	return 0
+	return c.Next(), nil
 }
 
+/*
 // prependPath(dir)
 // Prepends `dir` to $PATH
 // --- @param dir string
