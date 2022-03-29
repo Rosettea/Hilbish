@@ -4,13 +4,13 @@
 package main
 
 import (
-//	"fmt"
+	"fmt"
 	"os"
 //	"os/exec"
 	"runtime"
 	"strings"
 //	"syscall"
-//	"time"
+	"time"
 
 	"hilbish/util"
 
@@ -40,8 +40,8 @@ var exports = map[string]util.LuaExport{
 	"prompt": util.LuaExport{hlprompt, 1, false},
 /*
 	"inputMode": hlinputMode,
-	"interval": hlinterval,
 */
+	"interval": util.LuaExport{hlinterval, 2, false},
 	"read": util.LuaExport{hlprompt, 1, false},
 /*
 	"run": hlrun,
@@ -411,30 +411,37 @@ func hltimeout(L *lua.LState) int {
 	}
 	return 0
 }
+*/
 
 // interval(cb, time)
 // Runs the `cb` function every `time` milliseconds
 // --- @param cb function
 // --- @param time number
-func hlinterval(L *lua.LState) int {
-	intervalfunc := L.CheckFunction(1)
-	ms := L.CheckInt(2)
+func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
+	ms, err := c.IntArg(1)
+	if err != nil {
+		return nil, err
+	}
 	interval := time.Duration(ms) * time.Millisecond
 
 	ticker := time.NewTicker(interval)
-	stop := make(chan lua.LValue)
+	stop := make(chan rt.Value)
 
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				if err := L.CallByParam(lua.P{
-					Fn: intervalfunc,
-					NRet: 0,
-					Protect: true,
-				}); err != nil {
+				_, err := rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
+				if err != nil {
 					fmt.Fprintln(os.Stderr, "Error in interval function:\n\n", err)
-					stop <- lua.LTrue // stop the interval
+					stop <- rt.BoolValue(true) // stop the interval
 				}
 			case <-stop:
 				ticker.Stop()
@@ -443,10 +450,9 @@ func hlinterval(L *lua.LState) int {
 		}
 	}()
 
-	L.Push(lua.LChannel(stop))
-	return 1
+	// TODO: return channel
+	return c.Next(), nil
 }
-*/
 
 // complete(scope, cb)
 // Registers a completion handler for `scope`.
