@@ -22,24 +22,32 @@ import (
 )
 
 var exports = map[string]util.LuaExport{
-	/*"alias": hlalias,
+/*
+	"alias": hlalias,
 	"appendPath": hlappendPath,
 	"complete": hlcomplete,
-	"cwd": hlcwd,
+	*/
+	"cwd": util.LuaExport{hlcwd, 0, false},
+/*
 	"exec": hlexec,
 	"runnerMode": hlrunnerMode,
 	"goro": hlgoro,
 	"highlighter": hlhighlighter,
 	"hinter": hlhinter,
 	"multiprompt": hlmlprompt,
-	"prependPath": hlprependPath,*/
+	"prependPath": hlprependPath,
+*/
 	"prompt": util.LuaExport{hlprompt, 1, false},
-	/*"inputMode": hlinputMode,
+/*
+	"inputMode": hlinputMode,
 	"interval": hlinterval,
-	"read": hlread,
+*/
+	"read": util.LuaExport{hlprompt, 1, false},
+/*
 	"run": hlrun,
 	"timeout": hltimeout,
-	"which": hlwhich,*/
+	"which": hlwhich,
+*/
 }
 
 var greeting string
@@ -69,8 +77,8 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
 	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
 	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
-	util.SetField(L, mod, "home", lua.LString(curuser.HomeDir), "Home directory of the user")
 */
+	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
 	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
 /*
 	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
@@ -218,37 +226,40 @@ func hlrun(L *lua.LState) int {
 	L.Push(lua.LNumber(exitcode))
 	return 1
 }
+*/
 
 // cwd()
 // Returns the current directory of the shell
-func hlcwd(L *lua.LState) int {
+func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
 
-	L.Push(lua.LString(cwd))
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.StringValue(cwd)), nil
 }
+
 
 // read(prompt) -> input?
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 // --- @param prompt string
-func hlread(L *lua.LState) int {
-	luaprompt := L.CheckString(1)
+func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	luaprompt, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	lualr := newLineReader("", true)
 	lualr.SetPrompt(luaprompt)
 
 	input, err := lualr.Read()
 	if err != nil {
-		L.Push(lua.LNil)
-		return 1
+		return c.Next(), nil
 	}
 
-	L.Push(lua.LString(input))
-	return 1
+	return c.PushingNext1(t.Runtime, rt.StringValue(input)), nil
 }
-*/
 
 /*
 prompt(str)
