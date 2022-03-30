@@ -141,11 +141,9 @@ Check out the {blue}{bold}guide{reset} command to get started.
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
-/*
-	jobModule := jobs.loader(L)
-	util.Document(L, jobModule, "(Background) job interface.")
-	L.SetField(mod, "jobs", jobModule)
-*/
+	jobModule := jobs.loader(rtm)
+//	util.Document(L, jobModule, "(Background) job interface.")
+	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	return rt.TableValue(mod), nil
 }

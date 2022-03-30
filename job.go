@@ -3,6 +3,10 @@ package main
 import (
 	"sync"
 	"os"
+
+	"hilbish/util"
+
+	rt "github.com/arnodel/golua/runtime"
 )
 
 var jobs *jobHandler
@@ -19,7 +23,7 @@ type job struct {
 func (j *job) start(pid int) {
 	j.pid = pid
 	j.running = true
-//	hooks.Em.Emit("job.start", j.lua())
+	hooks.Em.Emit("job.start", j.lua())
 }
 
 func (j *job) stop() {
@@ -29,39 +33,36 @@ func (j *job) stop() {
 
 func (j *job) finish() {
 	j.running = false
-//	hooks.Em.Emit("job.done", j.lua())
+	hooks.Em.Emit("job.done", j.lua())
 }
 
 func (j *job) setHandle(handle *os.Process) {
 	j.proc = handle
 }
 
-/*
-func (j *job) lua() *lua.LTable {
-	// returns lua table for job
-	// because userdata is gross
-	jobFuncs := map[string]lua.LGFunction{
-		"stop": j.luaStop,
+func (j *job) lua() rt.Value {
+	jobFuncs := map[string]util.LuaExport{
+		"stop": {j.luaStop, 0, false},
 	}
-	luaJob := l.SetFuncs(l.NewTable(), jobFuncs)
+	luaJob := rt.NewTable()
+	util.SetExports(l, luaJob, jobFuncs)
 
-	l.SetField(luaJob, "cmd", lua.LString(j.cmd))
-	l.SetField(luaJob, "running", lua.LBool(j.running))
-	l.SetField(luaJob, "id", lua.LNumber(j.id))
-	l.SetField(luaJob, "pid", lua.LNumber(j.pid))
-	l.SetField(luaJob, "exitCode", lua.LNumber(j.exitCode))
+	luaJob.Set(rt.StringValue("cmd"), rt.StringValue(j.cmd))
+	luaJob.Set(rt.StringValue("running"), rt.BoolValue(j.running))
+	luaJob.Set(rt.StringValue("id"), rt.IntValue(int64(j.id)))
+	luaJob.Set(rt.StringValue("pid"), rt.IntValue(int64(j.pid)))
+	luaJob.Set(rt.StringValue("exitCode"), rt.IntValue(int64(j.exitCode)))
 
-	return luaJob
+	return rt.TableValue(luaJob)
 }
 
-func (j *job) luaStop(L *lua.LState) int {
+func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if j.running {
 		j.stop()
 	}
 
-	return 0
+	return c.Next(), nil
 }
-*/
 
 type jobHandler struct {
 	jobs map[int]*job
@@ -96,42 +97,46 @@ func (j *jobHandler) getLatest() *job {
 	return j.jobs[j.latestID]
 }
 
-/*
-func (j *jobHandler) loader(L *lua.LState) *lua.LTable {
-	jobFuncs := map[string]lua.LGFunction{
-		"all": j.luaAllJobs,
-		"get": j.luaGetJob,
+func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
+	jobFuncs := map[string]util.LuaExport{
+		"all": {j.luaAllJobs, 0, false},
+		"get": {j.luaGetJob, 1, false},
 	}
 
-	luaJob := l.SetFuncs(l.NewTable(), jobFuncs)
+	luaJob := rt.NewTable()
+	util.SetExports(rtm, luaJob, jobFuncs)
 
 	return luaJob
 }
 
-func (j *jobHandler) luaGetJob(L *lua.LState) int {
+func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
 
-	jobID := L.CheckInt(1)
-	job := j.jobs[jobID]
-	if job != nil {
-		return 0
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
 	}
-	L.Push(job.lua())
+	jobID, err := c.IntArg(0)
+	if err != nil {
+		return nil, err
+	}
 
-	return 1
+	job := j.jobs[int(jobID)]
+	if job == nil {
+		return c.Next(), nil
+	}
+
+	return c.PushingNext1(t.Runtime, job.lua()), nil
 }
 
-func (j *jobHandler) luaAllJobs(L *lua.LState) int {
+func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
 
-	jobTbl := L.NewTable()
+	jobTbl := rt.NewTable()
 	for id, job := range j.jobs {
-		jobTbl.Insert(id, job.lua())
+		jobTbl.Set(rt.IntValue(int64(id)), job.lua())
 	}
 
-	L.Push(jobTbl)
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(jobTbl)), nil
 }
-*/
