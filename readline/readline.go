@@ -712,12 +712,13 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 		return
 
-	case seqDelete:
+	case seqDelete,seqDelete2:
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
 			rl.deleteBackspace(true)
 		}
+
 	case seqHome, seqHomeSc:
 		if rl.modeTabCompletion {
 			return
