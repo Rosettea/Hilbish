@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
-//	"os/exec"
+	"os/exec"
 	"runtime"
 	"strings"
-//	"syscall"
+	"syscall"
 	"time"
 
 	"hilbish/util"
@@ -19,38 +19,28 @@ import (
 	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/maxlandon/readline"
 //	"github.com/blackfireio/osinfo"
-//	"mvdan.cc/sh/v3/interp"
+	"mvdan.cc/sh/v3/interp"
 )
 
 var exports = map[string]util.LuaExport{
-	"alias": util.LuaExport{hlalias, 2, false},
-/*
-	"appendPath": hlappendPath,
-*/
-	"complete": util.LuaExport{hlcomplete, 2, false},
-	"cwd": util.LuaExport{hlcwd, 0, false},
-/*
-	"exec": hlexec,
-*/
-	"runnerMode": util.LuaExport{hlrunnerMode, 1, false},
-/*
-	"goro": hlgoro,
-*/
-	"highlighter": util.LuaExport{hlhighlighter, 1, false},
-	"hinter": util.LuaExport{hlhinter, 1, false},
-/*
-	"multiprompt": hlmlprompt,
-	"prependPath": hlprependPath,
-*/
-	"prompt": util.LuaExport{hlprompt, 1, false},
-	"inputMode": util.LuaExport{hlinputMode, 1, false},
-	"interval": util.LuaExport{hlinterval, 2, false},
-	"read": util.LuaExport{hlread, 1, false},
-/*
-	"run": hlrun,
-	"timeout": hltimeout,
-	"which": hlwhich,
-*/
+	"alias": {hlalias, 2, false},
+	"appendPath": {hlappendPath, 1, false},
+	"complete": {hlcomplete, 2, false},
+	"cwd": {hlcwd, 0, false},
+	"exec": {hlexec, 1, false},
+	"runnerMode": {hlrunnerMode, 1, false},
+	"goro": {hlgoro, 1, true},
+	"highlighter": {hlhighlighter, 1, false},
+	"hinter": {hlhinter, 1, false},
+	"multiprompt": {hlmultiprompt, 1, false},
+	"prependPath": {hlprependPath, 1, false},
+	"prompt": {hlprompt, 1, false},
+	"inputMode": {hlinputMode, 1, false},
+	"interval": {hlinterval, 2, false},
+	"read": {hlread, 1, false},
+	"run": {hlrun, 1, false},
+	"timeout": {hltimeout, 2, false},
+	"which": {hlwhich, 1, false},
 }
 
 var greeting string
@@ -151,51 +141,74 @@ func getenv(key, fallback string) string {
     return value
 }
 
-/*
-func luaFileComplete(L *lua.LState) int {
-	query := L.CheckString(1)
-	ctx := L.CheckString(2)
-	fields := L.CheckTable(3)
-
-	var fds []string
-	fields.ForEach(func(k lua.LValue, v lua.LValue) {
-		fds = append(fds, v.String())
-	})
+func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
 
 	completions := fileComplete(query, ctx, fds)
-	luaComps := L.NewTable()
+	luaComps := rt.NewTable()
 
-	for _, comp := range completions {
-		luaComps.Append(lua.LString(comp))
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
 	}
 
-	L.Push(luaComps)
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
 }
 
-func luaBinaryComplete(L *lua.LState) int {
-	query := L.CheckString(1)
-	ctx := L.CheckString(2)
-	fields := L.CheckTable(3)
-
-	var fds []string
-	fields.ForEach(func(k lua.LValue, v lua.LValue) {
-		fds = append(fds, v.String())
-	})
+func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
 
 	completions, _ := binaryComplete(query, ctx, fds)
-	luaComps := L.NewTable()
+	luaComps := rt.NewTable()
 
-	for _, comp := range completions {
-		luaComps.Append(lua.LString(comp))
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
 	}
 
-	L.Push(luaComps)
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
 }
-*/
+
+func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
+	if err := c.CheckNArgs(3); err != nil {
+		return "", "", []string{}, err
+	}
+	query, err := c.StringArg(0)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	ctx, err := c.StringArg(1)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	fields, err := c.TableArg(2)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+
+	var fds []string
+	nextVal := rt.NilValue
+	for {
+		next, val, ok := fields.Next(nextVal)
+		if next == rt.NilValue {
+			break
+		}
+		nextVal = next
+
+		valStr, ok := val.TryString()
+		if !ok {
+			continue
+		}
+
+		fds = append(fds, valStr)
+	}
+
+	return query, ctx, fds, err
+}
 
 func setVimMode(mode string) {
 	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
@@ -206,14 +219,19 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 }
 
-/*
 // run(cmd)
 // Runs `cmd` in Hilbish's sh interpreter.
 // --- @param cmd string
-func hlrun(L *lua.LState) int {
+func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	var exitcode uint8
-	cmd := L.CheckString(1)
-	err := execCommand(cmd)
+	err = execCommand(cmd)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -221,10 +239,8 @@ func hlrun(L *lua.LState) int {
 		exitcode = 1
 	}
 
-	L.Push(lua.LNumber(exitcode))
-	return 1
+	return c.PushingNext1(t.Runtime, rt.IntValue(int64(exitcode))), nil
 }
-*/
 
 // cwd()
 // Returns the current directory of the shell
@@ -286,13 +302,18 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // multiprompt(str)
 // Changes the continued line prompt to `str`
 // --- @param str string
-/*
-func hlmlprompt(L *lua.LState) int {
-	multilinePrompt = L.CheckString(1)
+func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	prompt, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	multilinePrompt = prompt
 
-	return 0
+	return c.Next(), nil
 }
-*/
 
 // alias(cmd, orig)
 // Sets an alias of `cmd` to `orig`
@@ -316,24 +337,39 @@ func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-/*
 // appendPath(dir)
 // Appends `dir` to $PATH
 // --- @param dir string|table
-func hlappendPath(L *lua.LState) int {
+func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	arg := c.Arg(0)
+
 	// check if dir is a table or a string
-	arg := L.Get(1)
-	if arg.Type() == lua.LTTable {
-		arg.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
-			appendPath(v.String())
-		})
-	} else if arg.Type() == lua.LTString {
-		appendPath(arg.String())
+	if arg.Type() == rt.TableType {
+		nextVal := rt.NilValue
+		for {
+			next, val, ok := arg.AsTable().Next(nextVal)
+			if next == rt.NilValue {
+				break
+			}
+			nextVal = next
+
+			valStr, ok := val.TryString()
+			if !ok {
+				continue
+			}
+
+			appendPath(valStr)
+		}
+	} else if arg.Type() == rt.StringType {
+		appendPath(arg.AsString())
 	} else {
-		L.RaiseError("bad argument to appendPath (expected string or table, got %v)", L.Get(1).Type().String())
+		return nil, errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 func appendPath(dir string) {
@@ -349,8 +385,14 @@ func appendPath(dir string) {
 // exec(cmd)
 // Replaces running hilbish with `cmd`
 // --- @param cmd string
-func hlexec(L *lua.LState) int {
-	cmd := L.CheckString(1)
+func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	cmdArgs, _ := splitInput(cmd)
 	if runtime.GOOS != "windows" {
 		cmdPath, err := exec.LookPath(cmdArgs[0])
@@ -372,55 +414,59 @@ func hlexec(L *lua.LState) int {
 		os.Exit(0)
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // goro(fn)
 // Puts `fn` in a goroutine
 // --- @param fn function
-func hlgoro(L *lua.LState) int {
-	fn := L.CheckFunction(1)
-	argnum := L.GetTop()
-	args := make([]lua.LValue, argnum)
-	for i := 1; i <= argnum; i++ {
-		args[i - 1] = L.Get(i)
+func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	fn, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
 	}
 
 	// call fn
 	go func() {
-		if err := L.CallByParam(lua.P{
-			Fn: fn,
-			NRet: 0,
-			Protect: true,
-		}, args...); err != nil {
+		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(fn), c.Etc()...)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
 		}
 	}()
 
-	return 0
+	return c.Next(), nil
 }
 
 // timeout(cb, time)
 // Runs the `cb` function after `time` in milliseconds
 // --- @param cb function
 // --- @param time number
-func hltimeout(L *lua.LState) int {
-	cb := L.CheckFunction(1)
-	ms := L.CheckInt(2)
+func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
+	ms, err := c.IntArg(1)
+	if err != nil {
+		return nil, err
+	}
 
 	timeout := time.Duration(ms) * time.Millisecond
 	time.Sleep(timeout)
 
-	if err := L.CallByParam(lua.P{
-		Fn: cb,
-		NRet: 0,
-		Protect: true,
-	}); err != nil {
-		fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
+	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
+	if err != nil {
+		return nil, err
 	}
-	return 0
+
+	return c.Next(), nil
 }
-*/
 
 // interval(cb, time)
 // Runs the `cb` function every `time` milliseconds
@@ -483,12 +529,17 @@ func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-/*
 // prependPath(dir)
 // Prepends `dir` to $PATH
 // --- @param dir string
-func hlprependPath(L *lua.LState) int {
-	dir := L.CheckString(1)
+func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	dir, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
 	pathenv := os.Getenv("PATH")
 
@@ -497,24 +548,27 @@ func hlprependPath(L *lua.LState) int {
 		os.Setenv("PATH", dir + string(os.PathListSeparator) + pathenv)
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // which(binName)
 // Searches for an executable called `binName` in the directories of $PATH
 // --- @param binName string
-func hlwhich(L *lua.LState) int {
-	binName := L.CheckString(1)
+func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	binName, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	path, err := exec.LookPath(binName)
 	if err != nil {
-		l.Push(lua.LNil)
-		return 1
+		return c.Next(), nil
 	}
 
-	l.Push(lua.LString(path))
-	return 1
+	return c.PushingNext1(t.Runtime, rt.StringValue(path)), nil
 }
-*/
 
 // inputMode(mode)
 // Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
