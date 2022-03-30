@@ -12,11 +12,11 @@ import (
 )
 
 var Loader = packagelib.Loader{
-	Load: LoaderFunc,
+	Load: loaderFunc,
 	Name: "fs",
 }
 
-func LoaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	exports := map[string]util.LuaExport{
 		"cd": util.LuaExport{fcd, 1, false},
 		"mkdir": util.LuaExport{fmkdir, 2, false},

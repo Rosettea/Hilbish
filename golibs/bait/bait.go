@@ -24,14 +24,14 @@ func New() Bait {
 		Em: emitter,
 	}
 	b.Loader = packagelib.Loader{
-		Load: b.LoaderFunc,
+		Load: b.loaderFunc,
 		Name: "bait",
 	}
 
 	return b
 }
 
-func (b *Bait) LoaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	exports := map[string]util.LuaExport{
 		"catch": util.LuaExport{b.bcatch, 2, false},
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},

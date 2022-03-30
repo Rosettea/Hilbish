@@ -18,14 +18,14 @@ func New() Commander {
 		Events: emission.NewEmitter(),
 	}
 	c.Loader = packagelib.Loader{
-		Load: c.LoaderFunc,
+		Load: c.loaderFunc,
 		Name: "commander",
 	}
 
 	return c
 }
 
-func (c *Commander) LoaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+func (c *Commander) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	exports := map[string]util.LuaExport{
 		"register": util.LuaExport{c.cregister, 2, false},
 		"deregister": util.LuaExport{c.cderegister, 1, false},
