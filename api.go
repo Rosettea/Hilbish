@@ -65,7 +65,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	util.SetExports(rtm, mod, exports)
 	hshMod = mod
 
-//	host, _ := os.Hostname()
+	host, _ := os.Hostname()
 	username := curuser.Username
 
 	if runtime.GOOS == "windows" {
@@ -76,22 +76,17 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 The nice lil shell for {blue}Lua{reset} fanatics!
 Check out the {blue}{bold}guide{reset} command to get started.
 `
-/*
-	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
-	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
-	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
-*/
+	util.SetField(rtm, mod, "ver", rt.StringValue(version), "Hilbish version")
+	util.SetField(rtm, mod, "user", rt.StringValue(username), "Username of user")
+	util.SetField(rtm, mod, "host", rt.StringValue(host), "Host name of the machine")
 	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
 	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
-/*
-	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
-	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
-*/
+	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
+	util.SetField(rtm, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
 	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
-	/*util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetField(l, hshMod, "exitCode", lua.LNumber(0), "Exit code of last exected command")
-	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
-*/
+	util.SetField(rtm, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(rtm, hshMod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
+	//util.Document(rtm, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
 	hshuser := rt.NewTable()
