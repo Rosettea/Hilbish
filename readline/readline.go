@@ -716,7 +716,9 @@ func (rl *Instance) escapeSeq(r []rune) {
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
-			rl.deleteBackspace(true)
+			if (rl.pos < len(rl.line)) {
+				rl.deleteBackspace(true)
+			}
 		}
 
 	case seqHome, seqHomeSc:
