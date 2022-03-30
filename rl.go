@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"hilbish/util"
+
 	"github.com/maxlandon/readline"
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -292,58 +294,65 @@ func (lr *lineReader) Resize() {
 }
 
 // lua module
-/*
-func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
-	lrLua := map[string]lua.LGFunction{
-		"add": lr.luaAddHistory,
-		"all": lr.luaAllHistory,
-		"clear": lr.luaClearHistory,
-		"get": lr.luaGetHistory,
-		"size": lr.luaSize,
+func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
+	lrLua := map[string]util.LuaExport{
+		"add": {lr.luaAddHistory, 1, false},
+		"all": {lr.luaAllHistory, 0, false},
+		"clear": {lr.luaClearHistory, 0, false},
+		"get": {lr.luaGetHistory, 1, false},
+		"size": {lr.luaSize, 0, false},
 	}
 
-	mod := l.SetFuncs(l.NewTable(), lrLua)
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, lrLua)
 
 	return mod
 }
 
-func (lr *lineReader) luaAddHistory(l *lua.LState) int {
-	cmd := l.CheckString(1)
+func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	lr.AddHistory(cmd)
 
-	return 0
+	return c.Next(), nil
 }
 
-func (lr *lineReader) luaSize(L *lua.LState) int {
-	L.Push(lua.LNumber(fileHist.Len()))
-
-	return 1
+func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	return c.PushingNext1(t.Runtime, rt.IntValue(int64(fileHist.Len()))), nil
 }
 
-func (lr *lineReader) luaGetHistory(L *lua.LState) int {
-	idx := L.CheckInt(1)
-	cmd, _ := fileHist.GetLine(idx)
-	L.Push(lua.LString(cmd))
+func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	idx, err := c.IntArg(0)
+	if err != nil {
+		return nil, err
+	}
 
-	return 1
+	cmd, _ := fileHist.GetLine(int(idx))
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 }
 
-func (lr *lineReader) luaAllHistory(L *lua.LState) int {
-	tbl := L.NewTable()
+func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	tbl := rt.NewTable()
 	size := fileHist.Len()
 
 	for i := 1; i < size; i++ {
 		cmd, _ := fileHist.GetLine(i)
-		tbl.Append(lua.LString(cmd))
+		tbl.Set(rt.IntValue(int64(i)), rt.StringValue(cmd))
 	}
 
-	L.Push(tbl)
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(tbl)), nil
 }
 
-func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+func (lr *lineReader) luaClearHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	fileHist.clear()
-	return 0
+	return c.Next(), nil
 }
-*/

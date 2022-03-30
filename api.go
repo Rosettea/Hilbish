@@ -104,12 +104,12 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	//util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
 	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
-/*
 	// hilbish.history table
-	historyModule := lr.Loader(L)
-	util.Document(L, historyModule, "History interface for Hilbish.")
-	L.SetField(mod, "history", historyModule)
+	historyModule := lr.Loader(rtm)
+	//util.Document(L, historyModule, "History interface for Hilbish.")
+	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
 
+/*
 	// hilbish.completion table
 	hshcomp := L.NewTable()
 
