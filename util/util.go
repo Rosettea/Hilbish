@@ -49,7 +49,7 @@ func DoString(rtm *rt.Runtime, code string) error {
 	return err
 }
 
-// DoString runs the contents of the file in the Lua runtime.
+// DoFile runs the contents of the file in the Lua runtime.
 func DoFile(rtm *rt.Runtime, filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
