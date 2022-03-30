@@ -24,15 +24,15 @@ import (
 )
 
 var errNotExec = errors.New("not executable")
-//var runnerMode lua.LValue = lua.LString("hybrid")
+var runnerMode rt.Value = rt.StringValue("hybrid")
 
 func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
-//	if runnerMode.Type() == lua.LTString {
-		switch /*runnerMode.String()*/ "hybrid" {
+	if runnerMode.Type() == rt.StringType {
+		switch runnerMode.AsString() {
 			case "hybrid":
 				_, err := handleLua(cmdString)
 				if err == nil {
@@ -68,35 +68,29 @@ func runInput(input string, priv bool) {
 				}
 				cmdFinish(exitCode, cmdString, priv)
 		}
-//	} else {
+	} else {
 		// can only be a string or function so
-		/*
-		err := l.CallByParam(lua.P{
-			Fn: runnerMode,
-			NRet: 2,
-			Protect: true,
-		}, lua.LString(cmdString))
+		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 2, false)
+		err := rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, cmdString, priv)
 			return
 		}
 
-		luaexitcode := l.Get(-2) // first return value (makes sense right i love stacks)
-		runErr := l.Get(-1)
-		l.Pop(2)
+		luaexitcode := term.Get(0) // first return value (makes sense right i love stacks)
+		runErr := term.Get(1)
 
 		var exitCode uint8
-		if code, ok := luaexitcode.(lua.LNumber); luaexitcode != lua.LNil && ok {
+		if code, ok := luaexitcode.TryInt(); ok {
 			exitCode = uint8(code)
 		}
 
-		if runErr != lua.LNil {
+		if runErr != rt.NilValue {
 			fmt.Fprintln(os.Stderr, runErr)
 		}
 		cmdFinish(exitCode, cmdString, priv)
-		*/
-//	}
+	}
 }
 
 func handleLua(cmdString string) (uint8, error) {

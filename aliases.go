@@ -66,13 +66,14 @@ func (a *aliasHandler) Resolve(cmdstr string) string {
 
 // lua section
 
-func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table  {
+func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
 	// create a lua module with our functions
 	hshaliasesLua := map[string]util.LuaExport{
 		"add": util.LuaExport{a.luaAdd, 2, false},
 		"list": util.LuaExport{a.luaList, 0, false},
 		"del": util.LuaExport{a.luaDelete, 1, false},
 	}
+
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, hshaliasesLua)
 

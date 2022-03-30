@@ -31,7 +31,9 @@ var exports = map[string]util.LuaExport{
 	"cwd": util.LuaExport{hlcwd, 0, false},
 /*
 	"exec": hlexec,
-	"runnerMode": hlrunnerMode,
+*/
+	"runnerMode": util.LuaExport{hlrunnerMode, 1, false},
+/*
 	"goro": hlgoro,
 	"highlighter": hlhighlighter,
 	"hinter": hlhinter,
@@ -129,11 +131,11 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(L, hshcomp, "Completions interface for Hilbish.")
 	L.SetField(mod, "completion", hshcomp)
 
-	// hilbish.runner table
-	runnerModule := runnerModeLoader(L)
-	util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
-	L.SetField(mod, "runner", runnerModule)
 */
+	// hilbish.runner table
+	runnerModule := runnerModeLoader(rtm)
+	//util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
+	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
@@ -545,7 +547,6 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-/*
 // runnerMode(mode)
 // Sets the execution/runner mode for interactive Hilbish. This determines whether
 // Hilbish wll try to run input as Lua and/or sh or only do one of either.
@@ -553,25 +554,31 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
 // --- @param mode string|function
-func hlrunnerMode(L *lua.LState) int {
-	mode := L.CheckAny(1)
+func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	mode := c.Arg(0)
+
 	switch mode.Type() {
-		case lua.LTString:
-			switch mode.String() {
+		case rt.StringType:
+			switch mode.AsString() {
 				// no fallthrough doesnt work so eh
 				case "hybrid": fallthrough
 				case "hybridRev": fallthrough
 				case "lua": fallthrough
 				case "sh":
 					runnerMode = mode
-				default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 			}
-		case lua.LTFunction: runnerMode = mode
-		default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+		case rt.FunctionType: runnerMode = mode
+		default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
-	return 0
+	return c.Next(), nil
 }
+
+/*
 
 // hinter(cb)
 // Sets the hinter function. This will be called on every key insert to determine

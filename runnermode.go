@@ -1,47 +1,56 @@
 package main
 
-/*
 import (
+	"hilbish/util"
+
+	rt "github.com/arnodel/golua/runtime"
 )
 
-func runnerModeLoader(L *lua.LState) *lua.LTable {
-	exports := map[string]lua.LGFunction{
-		"sh": shRunner,
-		"lua": luaRunner,
-		"setMode": hlrunnerMode,
+func runnerModeLoader(rtm *rt.Runtime) *rt.Table {
+	exports := map[string]util.LuaExport{
+		"sh": {shRunner, 1, false},
+		"lua": {luaRunner, 1, false},
+		"setMode": {hlrunnerMode, 1, false},
 	}
 
-	mod := L.SetFuncs(L.NewTable(), exports)
-	L.SetField(mod, "mode", runnerMode)
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
 
 	return mod
 }
 
-func shRunner(L *lua.LState) int {
-	cmd := L.CheckString(1)
+func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
 	exitCode, err := handleSh(cmd)
-	var luaErr lua.LValue = lua.LNil
+	var luaErr rt.Value = rt.NilValue
 	if err != nil {
-		luaErr = lua.LString(err.Error())
+		luaErr = rt.StringValue(err.Error())
 	}
 
-	L.Push(lua.LNumber(exitCode))
-	L.Push(luaErr)
-
-	return 2
+	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitCode)), luaErr), nil
 }
 
-func luaRunner(L *lua.LState) int {
-	cmd := L.CheckString(1)
+func luaRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
 	exitCode, err := handleLua(cmd)
-	var luaErr lua.LValue = lua.LNil
+	var luaErr rt.Value = rt.NilValue
 	if err != nil {
-		luaErr = lua.LString(err.Error())
+		luaErr = rt.StringValue(err.Error())
 	}
 
-	L.Push(lua.LNumber(exitCode))
-	L.Push(luaErr)
-
-	return 2
+	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitCode)), luaErr), nil
 }
-*/
