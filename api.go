@@ -564,11 +564,7 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		case rt.StringType:
 			switch mode.AsString() {
 				// no fallthrough doesnt work so eh
-				case "hybrid": fallthrough
-				case "hybridRev": fallthrough
-				case "lua": fallthrough
-				case "sh":
-					runnerMode = mode
+				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
 				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 			}
 		case rt.FunctionType: runnerMode = mode
