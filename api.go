@@ -35,8 +35,10 @@ var exports = map[string]util.LuaExport{
 	"runnerMode": util.LuaExport{hlrunnerMode, 1, false},
 /*
 	"goro": hlgoro,
-	"highlighter": hlhighlighter,
-	"hinter": hlhinter,
+*/
+	"highlighter": util.LuaExport{hlhighlighter, 1, false},
+	"hinter": util.LuaExport{hlhinter, 1, false},
+/*
 	"multiprompt": hlmlprompt,
 	"prependPath": hlprependPath,
 */
@@ -574,19 +576,23 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-/*
-
 // hinter(cb)
 // Sets the hinter function. This will be called on every key insert to determine
 // what text to use as an inline hint. The callback is passed 2 arguments:
 // the current line and the position. It is expected to return a string
 // which will be used for the hint.
 // --- @param cb function
-func hlhinter(L *lua.LState) int {
-	hinterCb := L.CheckFunction(1)
+func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	hinterCb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
 	hinter = hinterCb
 	
-	return 0
+	return c.Next(), err
 }
 
 // highlighter(cb)
@@ -595,10 +601,15 @@ func hlhinter(L *lua.LState) int {
 // is passed the current line as typed and is expected to return a line that will
 // be used to display in the line.
 // --- @param cb function
-func hlhighlighter(L *lua.LState) int {
-	highlighterCb := L.CheckFunction(1)
+func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	highlighterCb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
 	highlighter = highlighterCb
 
-	return 0
+	return c.Next(), err
 }
-*/

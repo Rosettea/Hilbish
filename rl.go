@@ -13,10 +13,8 @@ type lineReader struct {
 	rl *readline.Instance
 }
 var fileHist *fileHistory
-/*
-var hinter lua.LValue = lua.LNil
-var highlighter lua.LValue = lua.LNil
-*/
+var hinter *rt.Closure
+var highlighter *rt.Closure
 
 func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
@@ -47,53 +45,43 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		}
 		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
 	}
-	/*
 	rl.HintText = func(line []rune, pos int) []rune {
-		if hinter == lua.LNil {
+		if hinter == nil {
 			return []rune{}
 		}
 
-		err := l.CallByParam(lua.P{
-			Fn: hinter,
-			NRet: 1,
-			Protect: true,
-		}, lua.LString(string(line)), lua.LNumber(pos))
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
 			return []rune{}
 		}
 		
-		retVal := l.Get(-1)
 		hintText := ""
-		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
-			hintText = luaStr.String()
+		if luaStr, ok := retVal.TryString(); ok {
+			hintText = luaStr
 		}
 		
 		return []rune(hintText)
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
-		if highlighter == lua.LNil {
+		if highlighter == nil {
 			return string(line)
 		}
-		err := l.CallByParam(lua.P{
-			Fn: highlighter,
-			NRet: 1,
-			Protect: true,
-		}, lua.LString(string(line)))
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		rt.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
 			return string(line)
 		}
 		
-		retVal := l.Get(-1)
 		highlighted := ""
-		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
-			highlighted = luaStr.String()
+		if luaStr, ok := retVal.TryString(); ok {
+			highlighted = luaStr
 		}
 		
 		return highlighted
 	}
-	*/
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
 		var completions []string
