@@ -39,6 +39,7 @@ func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, d
 	module.Set(rt.StringValue(field), value)
 }
 
+// DoString runs the code string in the Lua runtime.
 func DoString(rtm *rt.Runtime, code string) error {
 	chunk, err := rtm.CompileAndLoadLuaChunk("", []byte(code), rt.TableValue(rtm.GlobalEnv()))
 	if chunk != nil {
@@ -48,6 +49,7 @@ func DoString(rtm *rt.Runtime, code string) error {
 	return err
 }
 
+// DoString runs the contents of the file in the Lua runtime.
 func DoFile(rtm *rt.Runtime, filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -57,6 +59,8 @@ func DoFile(rtm *rt.Runtime, filename string) error {
 	return DoString(rtm, string(data))
 }
 
+// HandleStrCallback handles function parameters for Go functions which take
+// a string and a closure.
 func HandleStrCallback(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return "", nil, err
