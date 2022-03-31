@@ -18,7 +18,7 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/maxlandon/readline"
-//	"github.com/blackfireio/osinfo"
+	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -86,17 +86,15 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(hshuser, "User directories to store configs and/or modules.")
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
-/*
 	// hilbish.os table
-	hshos := L.NewTable()
+	hshos := rt.NewTable()
 	info, _ := osinfo.GetOSInfo()
 
-	util.SetField(L, hshos, "family", lua.LString(info.Family), "Family name of the current OS")
-	util.SetField(L, hshos, "name", lua.LString(info.Name), "Pretty name of the current OS")
-	util.SetField(L, hshos, "version", lua.LString(info.Version), "Version of the current OS")
-	util.Document(L, hshos, "OS info interface")
-	L.SetField(mod, "os", hshos)
-*/
+	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
+	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
+	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
+	util.Document(hshos, "OS info interface")
+	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
 	// hilbish.aliases table
 	aliases = newAliases()
