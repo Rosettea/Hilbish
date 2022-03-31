@@ -76,14 +76,14 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.SetField(rtm, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.SetField(rtm, hshMod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
-	//util.Document(rtm, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	util.Document(mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
 	hshuser := rt.NewTable()
 
 	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
 	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
-	//util.Document(rtm, hshuser, "User directories to store configs and/or modules.")
+	util.Document(hshuser, "User directories to store configs and/or modules.")
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 /*
@@ -101,35 +101,36 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	// hilbish.aliases table
 	aliases = newAliases()
 	aliasesModule := aliases.Loader(rtm)
-	//util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
+	util.Document(aliasesModule, "Alias inferface for Hilbish.")
 	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
 	// hilbish.history table
 	historyModule := lr.Loader(rtm)
-	//util.Document(L, historyModule, "History interface for Hilbish.")
 	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
+	util.Document(historyModule, "History interface for Hilbish.")
 
 	// hilbish.completion table
 	hshcomp := rt.NewTable()
-
 	util.SetField(rtm, hshcomp, "files",
 	rt.FunctionValue(rt.NewGoFunction(luaFileComplete, "files", 3, false)),
 	"Completer for files")
+
 	util.SetField(rtm, hshcomp, "bins",
 	rt.FunctionValue(rt.NewGoFunction(luaBinaryComplete, "bins", 3, false)),
 	"Completer for executables/binaries")
-	//util.Document(L, hshcomp, "Completions interface for Hilbish.")
+
+	util.Document(hshcomp, "Completions interface for Hilbish.")
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
 	runnerModule := runnerModeLoader(rtm)
-	//util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
+	util.Document(runnerModule, "Runner/exec interface for Hilbish.")
 	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
 	jobModule := jobs.loader(rtm)
-//	util.Document(L, jobModule, "(Background) job interface.")
+	util.Document(jobModule, "(Background) job interface.")
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	return rt.TableValue(mod), nil

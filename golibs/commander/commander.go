@@ -32,7 +32,7 @@ func (c *Commander) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
-//	util.Document(L, mod, "Commander is Hilbish's custom command library, a way to write commands in Lua.")
+	util.Document(mod, "Commander is Hilbish's custom command library, a way to write commands in Lua.")
 
 	return rt.TableValue(mod), nil
 }

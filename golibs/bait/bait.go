@@ -40,8 +40,7 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
 
-/*
-	util.Document(L, mod,
+	util.Document(mod,
 `Bait is the event emitter for Hilbish. Why name it bait?
 Because it throws hooks that you can catch (emits events
 that you can listen to) and because why not, fun naming
@@ -49,7 +48,6 @@ is fun. This is what you will use if you want to listen
 in on hooks to know when certain things have happened,
 like when you've changed directory, a command has
 failed, etc. To find all available hooks, see doc hooks.`)
-*/
 
 	return rt.TableValue(mod), nil
 }
