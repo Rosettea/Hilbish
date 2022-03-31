@@ -39,18 +39,20 @@ const (
 
 // Escape sequences
 var (
-	seqUp        = string([]byte{27, 91, 65})
-	seqDown      = string([]byte{27, 91, 66})
-	seqForwards  = string([]byte{27, 91, 67})
-	seqBackwards = string([]byte{27, 91, 68})
-	seqHome      = string([]byte{27, 91, 72})
-	seqHomeSc    = string([]byte{27, 91, 49, 126})
-	seqEnd       = string([]byte{27, 91, 70})
-	seqEndSc     = string([]byte{27, 91, 52, 126})
-	seqDelete    = string([]byte{27, 91, 51, 126})
-	seqShiftTab  = string([]byte{27, 91, 90})
-	seqAltQuote  = string([]byte{27, 34})  // Added for showing registers ^["
-	seqAltR      = string([]byte{27, 114}) // Used for alternative history
+	seqUp           = string([]byte{27, 91, 65})
+	seqDown         = string([]byte{27, 91, 66})
+	seqForwards     = string([]byte{27, 91, 67})
+	seqBackwards    = string([]byte{27, 91, 68})
+	seqHome         = string([]byte{27, 91, 72})
+	seqHomeSc       = string([]byte{27, 91, 49, 126})
+	seqEnd          = string([]byte{27, 91, 70})
+	seqEndSc        = string([]byte{27, 91, 52, 126})
+	seqDelete       = string([]byte{27, 91, 51, 126})
+	seqDelete2      = string([]byte{27, 91, 80})
+	seqShiftTab     = string([]byte{27, 91, 90})
+	seqAltQuote     = string([]byte{27, 34})  // Added for showing registers ^["
+	seqAltR         = string([]byte{27, 114}) // Used for alternative history
+	seqAltBackspace = string([]byte{27, 127})
 )
 
 const (

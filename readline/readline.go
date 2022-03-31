@@ -712,12 +712,15 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 		return
 
-	case seqDelete:
+	case seqDelete,seqDelete2:
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
-			rl.deleteBackspace(true)
+			if (rl.pos < len(rl.line)) {
+				rl.deleteBackspace(true)
+			}
 		}
+
 	case seqHome, seqHomeSc:
 		if rl.modeTabCompletion {
 			return
@@ -751,6 +754,19 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.modeTabFind = true
 		rl.updateTabFind([]rune{})
 		rl.viUndoSkipAppend = true
+
+	case seqAltBackspace:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		rl.saveToRegister(rl.viJumpB(tokeniseLine))
+		rl.viDeleteByAdjust(rl.viJumpB(tokeniseLine))
+		rl.updateHelpers()
 
 	default:
 		if rl.modeTabFind {
