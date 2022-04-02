@@ -1,6 +1,8 @@
 package util
 
 import (
+	"bufio"
+	"io"
 	"os"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -49,13 +51,47 @@ func DoString(rtm *rt.Runtime, code string) error {
 }
 
 // DoFile runs the contents of the file in the Lua runtime.
-func DoFile(rtm *rt.Runtime, filename string) error {
-	data, err := os.ReadFile(filename)
+func DoFile(rtm *rt.Runtime, path string) error {
+	f, err := os.Open(path)
+	defer f.Close()
+
+	if err != nil {
+		return err
+	}
+	
+	reader := bufio.NewReader(f)
+	c, err := reader.ReadByte()
+	if err != nil && err != io.EOF {
+		return err
+	}
+
+	err = reader.UnreadByte()
 	if err != nil {
 		return err
 	}
 
-	return DoString(rtm, string(data))
+	if c == byte('#') {
+		// shebang - skip that line
+		_, err := reader.ReadBytes('\n')
+		if err != nil && err != io.EOF {
+			return err
+		}
+	}
+
+	var buf []byte
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+		
+		buf = append(buf, line...)
+	}
+
+	return DoString(rtm, string(buf))
 }
 
 // HandleStrCallback handles function parameters for Go functions which take
