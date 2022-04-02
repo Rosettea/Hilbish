@@ -61,7 +61,6 @@ func luaInit() {
 			fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
 		}
 	}
-	fmt.Println(err)
 }
 
 func runConfig(confpath string) {
