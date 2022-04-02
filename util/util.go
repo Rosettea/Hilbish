@@ -42,7 +42,7 @@ func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, d
 
 // DoString runs the code string in the Lua runtime.
 func DoString(rtm *rt.Runtime, code string) error {
-	chunk, err := rtm.CompileAndLoadLuaChunk("", []byte(code), rt.TableValue(rtm.GlobalEnv()))
+	chunk, err := rtm.CompileAndLoadLuaChunk("<string>", []byte(code), rt.TableValue(rtm.GlobalEnv()))
 	if chunk != nil {
 		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
 	}
@@ -92,7 +92,12 @@ func DoFile(rtm *rt.Runtime, path string) error {
 		buf = append(buf, line...)
 	}
 
-	return DoString(rtm, string(buf))
+	chunk, err := rtm.CompileAndLoadLuaChunk(path, buf, rt.TableValue(rtm.GlobalEnv()))
+	if chunk != nil {
+		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
+	}
+
+	return err
 }
 
 // HandleStrCallback handles function parameters for Go functions which take
