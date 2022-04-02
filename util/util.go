@@ -65,6 +65,7 @@ func DoFile(rtm *rt.Runtime, path string) error {
 		return err
 	}
 
+	// unread so a char won't be missing
 	err = reader.UnreadByte()
 	if err != nil {
 		return err
