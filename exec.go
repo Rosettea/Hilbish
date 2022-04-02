@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os/exec"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -120,7 +121,7 @@ func handleLua(cmdString string) (uint8, error) {
 }
 
 func handleSh(cmdString string) (uint8, error) {
-	err := execCommand(cmdString)
+	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -129,7 +130,7 @@ func handleSh(cmdString string) (uint8, error) {
 				if err != nil {
 					break
 				}
-				err = execCommand(cmdString)
+				_, _, err = execCommand(cmdString, true)
 				if syntax.IsIncomplete(err) || strings.HasSuffix(cmdString, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
@@ -153,10 +154,16 @@ func handleSh(cmdString string) (uint8, error) {
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string) error {
+func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
-		return err
+		return nil, nil, err
+	}
+	var stdout io.Writer = os.Stdout
+	var stderr io.Writer = os.Stderr
+	if !terminalOut {
+		stdout = new(bytes.Buffer)
+		stderr = new(bytes.Buffer)
 	}
 
 	var bg bool
@@ -320,7 +327,7 @@ func execCommand(cmd string) error {
 	}
 
 	runner, _ := interp.New(
-		interp.StdIO(os.Stdin, os.Stdout, os.Stderr),
+		interp.StdIO(os.Stdin, stdout, stderr),
 		interp.ExecHandler(exechandle),
 	)
 
@@ -340,11 +347,11 @@ func execCommand(cmd string) error {
 
 		err = runner.Run(context.TODO(), stmt)
 		if err != nil {
-			return err
+			return stdout, stderr, err
 		}
 	}
 
-	return nil
+	return stdout, stderr, nil
 }
 
 func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable

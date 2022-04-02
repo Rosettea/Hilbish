@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -38,7 +39,7 @@ var exports = map[string]util.LuaExport{
 	"inputMode": {hlinputMode, 1, false},
 	"interval": {hlinterval, 2, false},
 	"read": {hlread, 1, false},
-	"run": {hlrun, 1, false},
+	"run": {hlrun, 1, true},
 	"timeout": {hltimeout, 2, false},
 	"which": {hlwhich, 1, false},
 }
@@ -220,8 +221,10 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 }
 
-// run(cmd)
+// run(cmd, returnOut) -> exitCode, stdout, stderr
 // Runs `cmd` in Hilbish's sh interpreter.
+// If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
+// 3rd values instead of being outputted to the terminal.
 // --- @param cmd string
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
@@ -231,8 +234,21 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	var terminalOut bool
+	if len(c.Etc()) != 0 {
+		tout := c.Etc()[0]
+		termOut, ok := tout.TryBool()
+		terminalOut = termOut
+		if !ok {
+			return nil, errors.New("bad argument to run (expected boolean, got " + tout.TypeName() + ")")
+		}
+	} else {
+		terminalOut = true
+	}
+
 	var exitcode uint8
-	err = execCommand(cmd)
+	stdout, stderr, err := execCommand(cmd, terminalOut)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -240,7 +256,14 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		exitcode = 1
 	}
 
-	return c.PushingNext1(t.Runtime, rt.IntValue(int64(exitcode))), nil
+	stdoutStr := ""
+	stderrStr := ""
+	if !terminalOut {
+		stdoutStr = stdout.(*bytes.Buffer).String()
+		stderrStr = stderr.(*bytes.Buffer).String()
+	}
+
+	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
 }
 
 // cwd()
