@@ -69,7 +69,7 @@ func (a *aliasHandler) Resolve(cmdstr string) string {
 func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
 	// create a lua module with our functions
 	hshaliasesLua := map[string]util.LuaExport{
-		"add": util.LuaExport{a.luaAdd, 2, false},
+		"add": util.LuaExport{hlalias, 2, false},
 		"list": util.LuaExport{a.luaList, 0, false},
 		"del": util.LuaExport{a.luaDelete, 1, false},
 	}
@@ -78,24 +78,6 @@ func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
 	util.SetExports(rtm, mod, hshaliasesLua)
 
 	return mod
-}
-
-func (a *aliasHandler) luaAdd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
-		return nil, err
-	}
-	alias, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-	cmd, err := c.StringArg(1)
-	if err != nil {
-		return nil, err
-	}
-
-	a.Add(alias, cmd)
-
-	return c.Next(), nil
 }
 
 func (a *aliasHandler) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
