@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"strings"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -151,17 +152,17 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		/*luaArgs := l.NewTable()
-		for _, arg := range getopt.Args() {
-			luaArgs.Append(lua.LString(arg))
+		luaArgs := rt.NewTable()
+		for i, arg := range getopt.Args() {
+			luaArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(arg))
 		}
 
-		l.SetGlobal("args", luaArgs)
-		err := l.DoFile(getopt.Arg(0))
+		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
+		err := util.DoFile(l, getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
-		}*/
+		}
 		os.Exit(0)
 	}
 
