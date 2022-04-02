@@ -12,7 +12,7 @@ dev:
 install:
 	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
 	@mkdir -p "$(DESTDIR)$(LIBDIR)"
-	@cp libs docs emmyLuaDocs prelude .hilbishrc.lua "$(DESTDIR)$(LIBDIR)" -r
+	@cp libs docs emmyLuaDocs prelude sample_configs/init.lua "$(DESTDIR)$(LIBDIR)" -r
 	@grep "$(DESTDIR)$(BINDIR)/hilbish" -qxF /etc/shells || echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
 	@echo "Hilbish Installed"
 
