@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
@@ -58,11 +59,19 @@ func luaInit() {
 		}
 	}
 }
+
 func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	err := l.DoFile(confpath)
+	var err error
+	switch (filepath.Ext(confpath)) {
+	case ".lua":
+		err = l.DoFile(confpath)
+	case ".fnl":
+		 // @TODO(DeBruno): This is hacky, probably need to add to the actual library
+		err = l.DoString(fmt.Sprintf("local fennel = require 'fennel'; fennel.dofile('%s')", confpath))
+	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err,
 			"\nAn error has occured while loading your config! Falling back to minimal default config.")

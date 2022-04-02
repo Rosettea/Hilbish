@@ -119,19 +119,25 @@ func main() {
 	lr = newLineReader("", false)
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
-		// Read default from current directory
-		// (this is assuming the current dir is Hilbish's git)
-		_, err := os.ReadFile(".hilbishrc.lua")
-		confpath := ".hilbishrc.lua"
+		// if it wasnt found try init.fnl
+		_, err := os.ReadFile(filepath.Join(defaultConfDir, "init.fnl"))
+		confpath := filepath.Join(defaultConfDir, "init.fnl")
 		if err != nil {
-			// If it wasnt found, go to the real sample conf
-			_, err = os.ReadFile(sampleConfPath)
-			confpath = sampleConfPath
+			// Read default from current directory
+			// (this is assuming the current dir is Hilbish's git)
+			_, err := os.ReadFile(".hilbishrc.lua")
+			confpath = ".hilbishrc.lua"
 			if err != nil {
-				fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
-				return
+				// If it wasnt found, go to the real sample conf
+				_, err = os.ReadFile(sampleConfPath)
+				confpath = sampleConfPath
+				if err != nil {
+					fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
+					return
+				}
 			}
 		}
+
 
 		runConfig(confpath)
 	} else {
