@@ -71,15 +71,16 @@ func DoFile(rtm *rt.Runtime, path string) error {
 		return err
 	}
 
+	var buf []byte
 	if c == byte('#') {
 		// shebang - skip that line
 		_, err := reader.ReadBytes('\n')
 		if err != nil && err != io.EOF {
 			return err
 		}
+		buf = []byte{'\n'}
 	}
 
-	var buf []byte
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
