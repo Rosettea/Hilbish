@@ -5,76 +5,78 @@ import (
 
 	"hilbish/util"
 
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/packagelib"
 	"golang.org/x/term"
-	"github.com/yuin/gopher-lua"
 )
 
 var termState *term.State
-
-func Loader(L *lua.LState) int {
-	mod := L.SetFuncs(L.NewTable(), exports)
-	util.Document(L, mod, "The terminal library is a simple and lower level library for certain terminal interactions.")
-
-	L.Push(mod)
-
-	return 1
+var Loader = packagelib.Loader{
+	Load: loaderFunc,
+	Name: "terminal",
 }
 
-var exports = map[string]lua.LGFunction{
-	"setRaw": termraw,
-	"restoreState": termrestoreState,
-	"size": termsize,
-	"saveState": termsaveState,
+func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+	exports := map[string]util.LuaExport{
+		"setRaw": util.LuaExport{termsetRaw, 0, false},
+		"restoreState": util.LuaExport{termrestoreState, 0, false},
+		"size": util.LuaExport{termsize, 0, false},
+		"saveState": util.LuaExport{termsaveState, 0, false},
+	}
+
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+	util.Document(mod, "The terminal library is a simple and lower level library for certain terminal interactions.")
+
+	return rt.TableValue(mod), nil
 }
 
 // size()
 // Gets the dimensions of the terminal. Returns a table with `width` and `height`
 // Note: this is not the size in relation to the dimensions of the display
-func termsize(L *lua.LState) int {
+func termsize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	w, h, err := term.GetSize(int(os.Stdin.Fd()))
 	if err != nil {
-		L.RaiseError(err.Error())
-		return 0
+		return nil, err
 	}
-	dimensions := L.NewTable()
-	L.SetField(dimensions, "width", lua.LNumber(w))
-	L.SetField(dimensions, "height", lua.LNumber(h))
 
-	L.Push(dimensions)
-	return 1
+	dimensions := rt.NewTable()
+	dimensions.Set(rt.StringValue("width"), rt.IntValue(int64(w)))
+	dimensions.Set(rt.StringValue("height"), rt.IntValue(int64(h)))
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(dimensions)), nil
 }
 
 // saveState()
 // Saves the current state of the terminal
-func termsaveState(L *lua.LState) int {
+func termsaveState(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	state, err := term.GetState(int(os.Stdin.Fd()))
 	if err != nil {
-		L.RaiseError(err.Error())
-		return 0
+		return nil, err
 	}
 
 	termState = state
-	return 0
+	return c.Next(), nil
 }
 
 // restoreState()
 // Restores the last saved state of the terminal
-func termrestoreState(L *lua.LState) int {
+func termrestoreState(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := term.Restore(int(os.Stdin.Fd()), termState)
 	if err != nil {
-		L.RaiseError(err.Error())
+		return nil, err
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // setRaw()
 // Puts the terminal in raw mode
-func termraw(L *lua.LState) int {
+func termsetRaw(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	_, err := term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
-		L.RaiseError(err.Error())
+		return nil, err
 	}
 
-	return 0
+	return c.Next(), nil
 }

@@ -10,20 +10,21 @@ import (
 	"runtime"
 	"strings"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 
+	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
-	"github.com/yuin/gopher-lua"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
 )
 
 var (
-	l *lua.LState
+	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*lua.LFunction{}
-	luaCompletions = map[string]*lua.LFunction{}
+	commands = map[string]*rt.Closure{}
+	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
 	userDataDir string
@@ -151,13 +152,13 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		luaArgs := l.NewTable()
-		for _, arg := range getopt.Args() {
-			luaArgs.Append(lua.LString(arg))
+		luaArgs := rt.NewTable()
+		for i, arg := range getopt.Args() {
+			luaArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(arg))
 		}
 
-		l.SetGlobal("args", luaArgs)
-		err := l.DoFile(getopt.Arg(0))
+		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
+		err := util.DoFile(l, getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

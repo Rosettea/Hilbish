@@ -5,18 +5,19 @@ import (
 	"io"
 	"strings"
 
+	"hilbish/util"
+
 	"github.com/maxlandon/readline"
-	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
 )
 
 type lineReader struct {
 	rl *readline.Instance
 }
 var fileHist *fileHistory
-var hinter lua.LValue = lua.LNil
-var highlighter lua.LValue = lua.LNil
+var hinter *rt.Closure
+var highlighter *rt.Closure
 
-// other gophers might hate this naming but this is local, shut up
 func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
 	// we don't mind hilbish.read rl instances having completion,
@@ -47,46 +48,38 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
-		if hinter == lua.LNil {
+		if hinter == nil {
 			return []rune{}
 		}
 
-		err := l.CallByParam(lua.P{
-			Fn: hinter,
-			NRet: 1,
-			Protect: true,
-		}, lua.LString(string(line)), lua.LNumber(pos))
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
 			return []rune{}
 		}
 		
-		retVal := l.Get(-1)
 		hintText := ""
-		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
-			hintText = luaStr.String()
+		if luaStr, ok := retVal.TryString(); ok {
+			hintText = luaStr
 		}
 		
 		return []rune(hintText)
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
-		if highlighter == lua.LNil {
+		if highlighter == nil {
 			return string(line)
 		}
-		err := l.CallByParam(lua.P{
-			Fn: highlighter,
-			NRet: 1,
-			Protect: true,
-		}, lua.LString(string(line)))
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		rt.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
 			return string(line)
 		}
 		
-		retVal := l.Get(-1)
 		highlighted := ""
-		if luaStr, ok := retVal.(lua.LString); retVal != lua.LNil && ok {
-			highlighted = luaStr.String()
+		if luaStr, ok := retVal.TryString(); ok {
+			highlighted = luaStr
 		}
 		
 		return highlighted
@@ -122,22 +115,19 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			return prefix, compGroup
 		} else {
 			if completecb, ok := luaCompletions["command." + fields[0]]; ok {
-				luaFields := l.NewTable()
-				for _, f := range fields {
-					luaFields.Append(lua.LString(f))
+				luaFields := rt.NewTable()
+				for i, f := range fields {
+					luaFields.Set(rt.IntValue(int64(i + 1)), rt.StringValue(f))
 				}
-				err := l.CallByParam(lua.P{
-					Fn: completecb,
-					NRet: 1,
-					Protect: true,
-				}, lua.LString(query), lua.LString(ctx), luaFields)
+
+				// we must keep the holy 80 cols
+				luacompleteTable, err := rt.Call1(l.MainThread(), 
+				rt.FunctionValue(completecb), rt.StringValue(query),
+				rt.StringValue(ctx), rt.TableValue(luaFields))
 
 				if err != nil {
 					return "", compGroup
 				}
-
-				luacompleteTable := l.Get(-1)
-				l.Pop(1)
 
 				/*
 					as an example with git,
@@ -163,50 +153,86 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 					it is the responsibility of the completer
 					to work on subcommands and subcompletions
 				*/
-				if cmpTbl, ok := luacompleteTable.(*lua.LTable); ok {
-					cmpTbl.ForEach(func(key lua.LValue, value lua.LValue) {
-						if key.Type() == lua.LTNumber {
-							// completion group
-							if value.Type() == lua.LTTable {
-								luaCmpGroup := value.(*lua.LTable)
-								compType := luaCmpGroup.RawGet(lua.LString("type"))
-								compItems := luaCmpGroup.RawGet(lua.LString("items"))
-								if compType.Type() != lua.LTString {
-									l.RaiseError("bad type name for completion (expected string, got %v)", compType.Type().String())
-								}
-								if compItems.Type() != lua.LTTable {
-									l.RaiseError("bad items for completion (expected table, got %v)", compItems.Type().String())
-								}
-								var items []string
-								itemDescriptions := make(map[string]string)
-								compItems.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
-									if k.Type() == lua.LTString {
-										// ['--flag'] = {'description', '--flag-alias'}
-										itm := v.(*lua.LTable)
-										items = append(items, k.String())
-										itemDescriptions[k.String()] = itm.RawGet(lua.LNumber(1)).String()
-									} else {
-										items = append(items, v.String())
-									}
-								})
+				if cmpTbl, ok := luacompleteTable.TryTable(); ok {
+					nextVal := rt.NilValue
+					for {
+						next, val, ok := cmpTbl.Next(nextVal)
+						if next == rt.NilValue {
+							break
+						}
+						nextVal = next
 
-								var dispType readline.TabDisplayType
-								switch compType.String() {
-									case "grid": dispType = readline.TabDisplayGrid
-									case "list": dispType = readline.TabDisplayList
-									// need special cases, will implement later
-									//case "map": dispType = readline.TabDisplayMap
+						_, ok = next.TryInt()
+						valTbl, okk := val.TryTable()
+						if !ok || !okk {
+							// TODO: error?
+							break
+						}
+
+						luaCompType := valTbl.Get(rt.StringValue("type"))
+						luaCompItems := valTbl.Get(rt.StringValue("items"))
+
+						compType, ok := luaCompType.TryString()
+						compItems, okk := luaCompItems.TryTable()
+						if !ok || !okk {
+							// TODO: error
+							break
+						}
+
+						var items []string
+						itemDescriptions := make(map[string]string)
+						nxVal := rt.NilValue
+						for {
+							nx, vl, _ := compItems.Next(nxVal)
+							if nx == rt.NilValue {
+								break
+							}
+							nxVal = nx
+
+							if tstr := nx.Type(); tstr == rt.StringType {
+								// ['--flag'] = {'description', '--flag-alias'}
+								nxStr, ok := nx.TryString()
+								vlTbl, okk := vl.TryTable()
+								if !ok || !okk {
+									// TODO: error
+									continue
 								}
-								compGroup = append(compGroup, &readline.CompletionGroup{
-									DisplayType: dispType,
-									Descriptions: itemDescriptions,
-									Suggestions: items,
-									TrimSlash: false,
-									NoSpace: true,
-								})
+								items = append(items, nxStr)
+								itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
+								if !ok {
+									// TODO: error
+									continue
+								}
+								itemDescriptions[nxStr] = itemDescription
+							} else if tstr == rt.IntType {
+								vlStr, okk := vl.TryString()
+								if !okk {
+									// TODO: error
+									continue
+								}
+								items = append(items, vlStr)
+							} else {
+								// TODO: error
+								continue
 							}
 						}
-					})
+
+						var dispType readline.TabDisplayType
+						switch compType {
+							case "grid": dispType = readline.TabDisplayGrid
+							case "list": dispType = readline.TabDisplayList
+							// need special cases, will implement later
+							//case "map": dispType = readline.TabDisplayMap
+						}
+
+						compGroup = append(compGroup, &readline.CompletionGroup{
+							DisplayType: dispType,
+							Descriptions: itemDescriptions,
+							Suggestions: items,
+							TrimSlash: false,
+							NoSpace: true,
+						})
+					}
 				}
 			}
 
@@ -268,56 +294,65 @@ func (lr *lineReader) Resize() {
 }
 
 // lua module
-func (lr *lineReader) Loader(L *lua.LState) *lua.LTable {
-	lrLua := map[string]lua.LGFunction{
-		"add": lr.luaAddHistory,
-		"all": lr.luaAllHistory,
-		"clear": lr.luaClearHistory,
-		"get": lr.luaGetHistory,
-		"size": lr.luaSize,
+func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
+	lrLua := map[string]util.LuaExport{
+		"add": {lr.luaAddHistory, 1, false},
+		"all": {lr.luaAllHistory, 0, false},
+		"clear": {lr.luaClearHistory, 0, false},
+		"get": {lr.luaGetHistory, 1, false},
+		"size": {lr.luaSize, 0, false},
 	}
 
-	mod := l.SetFuncs(l.NewTable(), lrLua)
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, lrLua)
 
 	return mod
 }
 
-func (lr *lineReader) luaAddHistory(l *lua.LState) int {
-	cmd := l.CheckString(1)
+func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	lr.AddHistory(cmd)
 
-	return 0
+	return c.Next(), nil
 }
 
-func (lr *lineReader) luaSize(L *lua.LState) int {
-	L.Push(lua.LNumber(fileHist.Len()))
-
-	return 1
+func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	return c.PushingNext1(t.Runtime, rt.IntValue(int64(fileHist.Len()))), nil
 }
 
-func (lr *lineReader) luaGetHistory(L *lua.LState) int {
-	idx := L.CheckInt(1)
-	cmd, _ := fileHist.GetLine(idx)
-	L.Push(lua.LString(cmd))
+func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	idx, err := c.IntArg(0)
+	if err != nil {
+		return nil, err
+	}
 
-	return 1
+	cmd, _ := fileHist.GetLine(int(idx))
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 }
 
-func (lr *lineReader) luaAllHistory(L *lua.LState) int {
-	tbl := L.NewTable()
+func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	tbl := rt.NewTable()
 	size := fileHist.Len()
 
 	for i := 1; i < size; i++ {
 		cmd, _ := fileHist.GetLine(i)
-		tbl.Append(lua.LString(cmd))
+		tbl.Set(rt.IntValue(int64(i)), rt.StringValue(cmd))
 	}
 
-	L.Push(tbl)
-
-	return 1
+	return c.PushingNext1(t.Runtime, rt.TableValue(tbl)), nil
 }
 
-func (lr *lineReader) luaClearHistory(l *lua.LState) int {
+func (lr *lineReader) luaClearHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	fileHist.clear()
-	return 0
+	return c.Next(), nil
 }

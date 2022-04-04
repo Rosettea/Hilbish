@@ -4,6 +4,8 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,38 +16,44 @@ import (
 
 	"hilbish/util"
 
-	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/maxlandon/readline"
 	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
-var exports = map[string]lua.LGFunction {
-	"alias": hlalias,
-	"appendPath": hlappendPath,
-	"complete": hlcomplete,
-	"cwd": hlcwd,
-	"exec": hlexec,
-	"runnerMode": hlrunnerMode,
-	"goro": hlgoro,
-	"highlighter": hlhighlighter,
-	"hinter": hlhinter,
-	"multiprompt": hlmlprompt,
-	"prependPath": hlprependPath,
-	"prompt": hlprompt,
-	"inputMode": hlinputMode,
-	"interval": hlinterval,
-	"read": hlread,
-	"run": hlrun,
-	"timeout": hltimeout,
-	"which": hlwhich,
+var exports = map[string]util.LuaExport{
+	"alias": {hlalias, 2, false},
+	"appendPath": {hlappendPath, 1, false},
+	"complete": {hlcomplete, 2, false},
+	"cwd": {hlcwd, 0, false},
+	"exec": {hlexec, 1, false},
+	"runnerMode": {hlrunnerMode, 1, false},
+	"goro": {hlgoro, 1, true},
+	"highlighter": {hlhighlighter, 1, false},
+	"hinter": {hlhinter, 1, false},
+	"multiprompt": {hlmultiprompt, 1, false},
+	"prependPath": {hlprependPath, 1, false},
+	"prompt": {hlprompt, 1, false},
+	"inputMode": {hlinputMode, 1, false},
+	"interval": {hlinterval, 2, false},
+	"read": {hlread, 1, false},
+	"run": {hlrun, 1, true},
+	"timeout": {hltimeout, 2, false},
+	"which": {hlwhich, 1, false},
 }
 
 var greeting string
-var hshMod *lua.LTable
+var hshMod *rt.Table
+var hilbishLoader = packagelib.Loader{
+	Load: hilbishLoad,
+	Name: "hilbish",
+}
 
-func hilbishLoader(L *lua.LState) int {
-	mod := L.SetFuncs(L.NewTable(), exports)
+func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
 	hshMod = mod
 
 	host, _ := os.Hostname()
@@ -59,151 +67,72 @@ func hilbishLoader(L *lua.LState) int {
 The nice lil shell for {blue}Lua{reset} fanatics!
 Check out the {blue}{bold}guide{reset} command to get started.
 `
-
-	util.SetField(L, mod, "ver", lua.LString(version), "Hilbish version")
-	util.SetField(L, mod, "user", lua.LString(username), "Username of user")
-	util.SetField(L, mod, "host", lua.LString(host), "Host name of the machine")
-	util.SetField(L, mod, "home", lua.LString(curuser.HomeDir), "Home directory of the user")
-	util.SetField(L, mod, "dataDir", lua.LString(dataDir), "Directory for Hilbish's data files")
-	util.SetField(L, mod, "interactive", lua.LBool(interactive), "If this is an interactive shell")
-	util.SetField(L, mod, "login", lua.LBool(interactive), "Whether this is a login shell")
-	util.SetField(L, mod, "greeting", lua.LString(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
-	util.SetField(l, mod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetField(l, hshMod, "exitCode", lua.LNumber(0), "Exit code of last exected command")
-	util.Document(L, mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	util.SetField(rtm, mod, "ver", rt.StringValue(version), "Hilbish version")
+	util.SetField(rtm, mod, "user", rt.StringValue(username), "Username of user")
+	util.SetField(rtm, mod, "host", rt.StringValue(host), "Host name of the machine")
+	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
+	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
+	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
+	util.SetField(rtm, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
+	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
+	util.SetField(rtm, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(rtm, hshMod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
+	util.Document(mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
-	hshuser := L.NewTable()
+	hshuser := rt.NewTable()
 
-	util.SetField(L, hshuser, "config", lua.LString(confDir), "User's config directory")
-	util.SetField(L, hshuser, "data", lua.LString(userDataDir), "XDG data directory")
-	util.Document(L, hshuser, "User directories to store configs and/or modules.")
-	L.SetField(mod, "userDir", hshuser)
+	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
+	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
+	util.Document(hshuser, "User directories to store configs and/or modules.")
+	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 	// hilbish.os table
-	hshos := L.NewTable()
+	hshos := rt.NewTable()
 	info, _ := osinfo.GetOSInfo()
 
-	util.SetField(L, hshos, "family", lua.LString(info.Family), "Family name of the current OS")
-	util.SetField(L, hshos, "name", lua.LString(info.Name), "Pretty name of the current OS")
-	util.SetField(L, hshos, "version", lua.LString(info.Version), "Version of the current OS")
-	util.Document(L, hshos, "OS info interface")
-	L.SetField(mod, "os", hshos)
+	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
+	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
+	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
+	util.Document(hshos, "OS info interface")
+	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
 	// hilbish.aliases table
 	aliases = newAliases()
-	aliasesModule := aliases.Loader(L)
-	util.Document(L, aliasesModule, "Alias inferface for Hilbish.")
-	L.SetField(mod, "aliases", aliasesModule)
+	aliasesModule := aliases.Loader(rtm)
+	util.Document(aliasesModule, "Alias inferface for Hilbish.")
+	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
 	// hilbish.history table
-	historyModule := lr.Loader(L)
-	util.Document(L, historyModule, "History interface for Hilbish.")
-	L.SetField(mod, "history", historyModule)
+	historyModule := lr.Loader(rtm)
+	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
+	util.Document(historyModule, "History interface for Hilbish.")
 
-	// hilbish.completions table
-	hshcomp := L.NewTable()
+	// hilbish.completion table
+	hshcomp := rt.NewTable()
+	util.SetField(rtm, hshcomp, "files",
+	rt.FunctionValue(rt.NewGoFunction(luaFileComplete, "files", 3, false)),
+	"Completer for files")
 
-	util.SetField(L, hshcomp, "files", L.NewFunction(luaFileComplete), "Completer for files")
-	util.SetField(L, hshcomp, "bins", L.NewFunction(luaBinaryComplete), "Completer for executables/binaries")
-	util.Document(L, hshcomp, "Completions interface for Hilbish.")
-	L.SetField(mod, "completion", hshcomp)
+	util.SetField(rtm, hshcomp, "bins",
+	rt.FunctionValue(rt.NewGoFunction(luaBinaryComplete, "bins", 3, false)),
+	"Completer for executables/binaries")
+
+	util.Document(hshcomp, "Completions interface for Hilbish.")
+	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
-	runnerModule := runnerModeLoader(L)
-	util.Document(L, runnerModule, "Runner/exec interface for Hilbish.")
-	L.SetField(mod, "runner", runnerModule)
+	runnerModule := runnerModeLoader(rtm)
+	util.Document(runnerModule, "Runner/exec interface for Hilbish.")
+	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
-	jobModule := jobs.loader(L)
-	util.Document(L, jobModule, "(Background) job interface.")
-	L.SetField(mod, "jobs", jobModule)
+	jobModule := jobs.loader(rtm)
+	util.Document(jobModule, "(Background) job interface.")
+	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
-	L.Push(mod)
-
-	return 1
-}
-
-func luaFileComplete(L *lua.LState) int {
-	query := L.CheckString(1)
-	ctx := L.CheckString(2)
-	fields := L.CheckTable(3)
-
-	var fds []string
-	fields.ForEach(func(k lua.LValue, v lua.LValue) {
-		fds = append(fds, v.String())
-	})
-
-	completions := fileComplete(query, ctx, fds)
-	luaComps := L.NewTable()
-
-	for _, comp := range completions {
-		luaComps.Append(lua.LString(comp))
-	}
-
-	L.Push(luaComps)
-
-	return 1
-}
-
-func luaBinaryComplete(L *lua.LState) int {
-	query := L.CheckString(1)
-	ctx := L.CheckString(2)
-	fields := L.CheckTable(3)
-
-	var fds []string
-	fields.ForEach(func(k lua.LValue, v lua.LValue) {
-		fds = append(fds, v.String())
-	})
-
-	completions, _ := binaryComplete(query, ctx, fds)
-	luaComps := L.NewTable()
-
-	for _, comp := range completions {
-		luaComps.Append(lua.LString(comp))
-	}
-
-	L.Push(luaComps)
-
-	return 1
-}
-
-func setVimMode(mode string) {
-	util.SetField(l, hshMod, "vimMode", lua.LString(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	hooks.Em.Emit("hilbish.vimMode", mode)
-}
-
-func unsetVimMode() {
-	util.SetField(l, hshMod, "vimMode", lua.LNil, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-}
-
-// run(cmd)
-// Runs `cmd` in Hilbish's sh interpreter.
-// --- @param cmd string
-func hlrun(L *lua.LState) int {
-	var exitcode uint8
-	cmd := L.CheckString(1)
-	err := execCommand(cmd)
-
-	if code, ok := interp.IsExitStatus(err); ok {
-		exitcode = code
-	} else if err != nil {
-		exitcode = 1
-	}
-
-	L.Push(lua.LNumber(exitcode))
-	return 1
-}
-
-// cwd()
-// Returns the current directory of the shell
-func hlcwd(L *lua.LState) int {
-	cwd, _ := os.Getwd()
-
-	L.Push(lua.LString(cwd))
-
-	return 1
+	return rt.TableValue(mod), nil
 }
 
 func getenv(key, fallback string) string {
@@ -214,24 +143,160 @@ func getenv(key, fallback string) string {
     return value
 }
 
+func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions := fileComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
+}
+
+func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, _ := binaryComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
+}
+
+func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
+	if err := c.CheckNArgs(3); err != nil {
+		return "", "", []string{}, err
+	}
+	query, err := c.StringArg(0)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	ctx, err := c.StringArg(1)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	fields, err := c.TableArg(2)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+
+	var fds []string
+	nextVal := rt.NilValue
+	for {
+		next, val, ok := fields.Next(nextVal)
+		if next == rt.NilValue {
+			break
+		}
+		nextVal = next
+
+		valStr, ok := val.TryString()
+		if !ok {
+			continue
+		}
+
+		fds = append(fds, valStr)
+	}
+
+	return query, ctx, fds, err
+}
+
+func setVimMode(mode string) {
+	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	hooks.Em.Emit("hilbish.vimMode", mode)
+}
+
+func unsetVimMode() {
+	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+}
+
+// run(cmd, returnOut) -> exitCode, stdout, stderr
+// Runs `cmd` in Hilbish's sh interpreter.
+// If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
+// 3rd values instead of being outputted to the terminal.
+// --- @param cmd string
+func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	var terminalOut bool
+	if len(c.Etc()) != 0 {
+		tout := c.Etc()[0]
+		termOut, ok := tout.TryBool()
+		terminalOut = termOut
+		if !ok {
+			return nil, errors.New("bad argument to run (expected boolean, got " + tout.TypeName() + ")")
+		}
+	} else {
+		terminalOut = true
+	}
+
+	var exitcode uint8
+	stdout, stderr, err := execCommand(cmd, terminalOut)
+
+	if code, ok := interp.IsExitStatus(err); ok {
+		exitcode = code
+	} else if err != nil {
+		exitcode = 1
+	}
+
+	stdoutStr := ""
+	stderrStr := ""
+	if !terminalOut {
+		stdoutStr = stdout.(*bytes.Buffer).String()
+		stderrStr = stderr.(*bytes.Buffer).String()
+	}
+
+	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
+}
+
+// cwd()
+// Returns the current directory of the shell
+func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	cwd, _ := os.Getwd()
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(cwd)), nil
+}
+
+
 // read(prompt) -> input?
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 // --- @param prompt string
-func hlread(L *lua.LState) int {
-	luaprompt := L.CheckString(1)
+func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	luaprompt, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	lualr := newLineReader("", true)
 	lualr.SetPrompt(luaprompt)
 
 	input, err := lualr.Read()
 	if err != nil {
-		L.Push(lua.LNil)
-		return 1
+		return c.Next(), nil
 	}
 
-	L.Push(lua.LString(input))
-	return 1
+	return c.PushingNext1(t.Runtime, rt.StringValue(input)), nil
 }
 
 /*
@@ -244,52 +309,91 @@ These will be formatted and replaced with the appropriate values.
 `%h` - Hostname of device
 --- @param str string
 */
-func hlprompt(L *lua.LState) int {
-	prompt = L.CheckString(1)
+func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	var prompt string
+	err := c.Check1Arg()
+	if err == nil {
+		prompt, err = c.StringArg(0)
+	}
+	if err != nil {
+		return nil, err
+	}
 	lr.SetPrompt(fmtPrompt(prompt))
 
-	return 0
+	return c.Next(), nil
 }
 
 // multiprompt(str)
 // Changes the continued line prompt to `str`
 // --- @param str string
-func hlmlprompt(L *lua.LState) int {
-	multilinePrompt = L.CheckString(1)
+func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	prompt, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	multilinePrompt = prompt
 
-	return 0
+	return c.Next(), nil
 }
 
 // alias(cmd, orig)
 // Sets an alias of `cmd` to `orig`
 // --- @param cmd string
 // --- @param orig string
-func hlalias(L *lua.LState) int {
-	alias := L.CheckString(1)
-	source := L.CheckString(2)
+func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	orig, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
 
-	aliases.Add(alias, source)
+	aliases.Add(cmd, orig)
 
-	return 1
+	return c.Next(), nil
 }
 
 // appendPath(dir)
 // Appends `dir` to $PATH
 // --- @param dir string|table
-func hlappendPath(L *lua.LState) int {
+func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	arg := c.Arg(0)
+
 	// check if dir is a table or a string
-	arg := L.Get(1)
-	if arg.Type() == lua.LTTable {
-		arg.(*lua.LTable).ForEach(func(k lua.LValue, v lua.LValue) {
-			appendPath(v.String())
-		})
-	} else if arg.Type() == lua.LTString {
-		appendPath(arg.String())
+	if arg.Type() == rt.TableType {
+		nextVal := rt.NilValue
+		for {
+			next, val, ok := arg.AsTable().Next(nextVal)
+			if next == rt.NilValue {
+				break
+			}
+			nextVal = next
+
+			valStr, ok := val.TryString()
+			if !ok {
+				continue
+			}
+
+			appendPath(valStr)
+		}
+	} else if arg.Type() == rt.StringType {
+		appendPath(arg.AsString())
 	} else {
-		L.RaiseError("bad argument to appendPath (expected string or table, got %v)", L.Get(1).Type().String())
+		return nil, errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 func appendPath(dir string) {
@@ -305,8 +409,14 @@ func appendPath(dir string) {
 // exec(cmd)
 // Replaces running hilbish with `cmd`
 // --- @param cmd string
-func hlexec(L *lua.LState) int {
-	cmd := L.CheckString(1)
+func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	cmdArgs, _ := splitInput(cmd)
 	if runtime.GOOS != "windows" {
 		cmdPath, err := exec.LookPath(cmdArgs[0])
@@ -328,78 +438,89 @@ func hlexec(L *lua.LState) int {
 		os.Exit(0)
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // goro(fn)
 // Puts `fn` in a goroutine
 // --- @param fn function
-func hlgoro(L *lua.LState) int {
-	fn := L.CheckFunction(1)
-	argnum := L.GetTop()
-	args := make([]lua.LValue, argnum)
-	for i := 1; i <= argnum; i++ {
-		args[i - 1] = L.Get(i)
+func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	fn, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
 	}
 
 	// call fn
 	go func() {
-		if err := L.CallByParam(lua.P{
-			Fn: fn,
-			NRet: 0,
-			Protect: true,
-		}, args...); err != nil {
+		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(fn), c.Etc()...)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
 		}
 	}()
 
-	return 0
+	return c.Next(), nil
 }
 
 // timeout(cb, time)
 // Runs the `cb` function after `time` in milliseconds
 // --- @param cb function
 // --- @param time number
-func hltimeout(L *lua.LState) int {
-	cb := L.CheckFunction(1)
-	ms := L.CheckInt(2)
+func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
+	ms, err := c.IntArg(1)
+	if err != nil {
+		return nil, err
+	}
 
 	timeout := time.Duration(ms) * time.Millisecond
 	time.Sleep(timeout)
 
-	if err := L.CallByParam(lua.P{
-		Fn: cb,
-		NRet: 0,
-		Protect: true,
-	}); err != nil {
-		fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
+	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
+	if err != nil {
+		return nil, err
 	}
-	return 0
+
+	return c.Next(), nil
 }
 
 // interval(cb, time)
 // Runs the `cb` function every `time` milliseconds
 // --- @param cb function
 // --- @param time number
-func hlinterval(L *lua.LState) int {
-	intervalfunc := L.CheckFunction(1)
-	ms := L.CheckInt(2)
+func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+	cb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
+	ms, err := c.IntArg(1)
+	if err != nil {
+		return nil, err
+	}
 	interval := time.Duration(ms) * time.Millisecond
 
 	ticker := time.NewTicker(interval)
-	stop := make(chan lua.LValue)
+	stop := make(chan rt.Value)
 
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				if err := L.CallByParam(lua.P{
-					Fn: intervalfunc,
-					NRet: 0,
-					Protect: true,
-				}); err != nil {
+				_, err := rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
+				if err != nil {
 					fmt.Fprintln(os.Stderr, "Error in interval function:\n\n", err)
-					stop <- lua.LTrue // stop the interval
+					stop <- rt.BoolValue(true) // stop the interval
 				}
 			case <-stop:
 				ticker.Stop()
@@ -408,8 +529,8 @@ func hlinterval(L *lua.LState) int {
 		}
 	}()
 
-	L.Push(lua.LChannel(stop))
-	return 1
+	// TODO: return channel
+	return c.Next(), nil
 }
 
 // complete(scope, cb)
@@ -422,20 +543,27 @@ func hlinterval(L *lua.LState) int {
 // `grid` (the normal file completion display) or `list` (with a description)
 // --- @param scope string
 // --- @param cb function
-func hlcomplete(L *lua.LState) int {
-	scope := L.CheckString(1)
-	cb := L.CheckFunction(2)
-
+func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	scope, cb, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
 	luaCompletions[scope] = cb
 
-	return 0
+	return c.Next(), nil
 }
 
 // prependPath(dir)
 // Prepends `dir` to $PATH
 // --- @param dir string
-func hlprependPath(L *lua.LState) int {
-	dir := L.CheckString(1)
+func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	dir, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
 	pathenv := os.Getenv("PATH")
 
@@ -444,29 +572,40 @@ func hlprependPath(L *lua.LState) int {
 		os.Setenv("PATH", dir + string(os.PathListSeparator) + pathenv)
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // which(binName)
 // Searches for an executable called `binName` in the directories of $PATH
 // --- @param binName string
-func hlwhich(L *lua.LState) int {
-	binName := L.CheckString(1)
+func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	binName, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 	path, err := exec.LookPath(binName)
 	if err != nil {
-		l.Push(lua.LNil)
-		return 1
+		return c.Next(), nil
 	}
 
-	l.Push(lua.LString(path))
-	return 1
+	return c.PushingNext1(t.Runtime, rt.StringValue(path)), nil
 }
 
 // inputMode(mode)
 // Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 // --- @param mode string
-func hlinputMode(L *lua.LState) int {
-	mode := L.CheckString(1)
+func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	mode, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
 	switch mode {
 		case "emacs":
 			unsetVimMode()
@@ -474,9 +613,11 @@ func hlinputMode(L *lua.LState) int {
 		case "vim":
 			setVimMode("insert")
 			lr.rl.InputMode = readline.Vim
-		default: L.RaiseError("inputMode: expected vim or emacs, received " + mode)
+		default:
+			return nil, errors.New("inputMode: expected vim or emacs, received " + mode)
 	}
-	return 0
+
+	return c.Next(), nil
 }
 
 // runnerMode(mode)
@@ -486,24 +627,24 @@ func hlinputMode(L *lua.LState) int {
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
 // --- @param mode string|function
-func hlrunnerMode(L *lua.LState) int {
-	mode := L.CheckAny(1)
+func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	mode := c.Arg(0)
+
 	switch mode.Type() {
-		case lua.LTString:
-			switch mode.String() {
+		case rt.StringType:
+			switch mode.AsString() {
 				// no fallthrough doesnt work so eh
-				case "hybrid": fallthrough
-				case "hybridRev": fallthrough
-				case "lua": fallthrough
-				case "sh":
-					runnerMode = mode
-				default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
+				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 			}
-		case lua.LTFunction: runnerMode = mode
-		default: L.RaiseError("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received %v", mode)
+		case rt.FunctionType: runnerMode = mode
+		default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
-	return 0
+	return c.Next(), nil
 }
 
 // hinter(cb)
@@ -512,11 +653,17 @@ func hlrunnerMode(L *lua.LState) int {
 // the current line and the position. It is expected to return a string
 // which will be used for the hint.
 // --- @param cb function
-func hlhinter(L *lua.LState) int {
-	hinterCb := L.CheckFunction(1)
+func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	hinterCb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
 	hinter = hinterCb
 	
-	return 0
+	return c.Next(), err
 }
 
 // highlighter(cb)
@@ -525,9 +672,15 @@ func hlhinter(L *lua.LState) int {
 // is passed the current line as typed and is expected to return a line that will
 // be used to display in the line.
 // --- @param cb function
-func hlhighlighter(L *lua.LState) int {
-	highlighterCb := L.CheckFunction(1)
+func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	highlighterCb, err := c.ClosureArg(0)
+	if err != nil {
+		return nil, err
+	}
 	highlighter = highlighterCb
 
-	return 0
+	return c.Next(), err
 }

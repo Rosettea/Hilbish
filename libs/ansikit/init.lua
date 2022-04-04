@@ -89,21 +89,25 @@ end
 
 ansikit.print = function(text)
 	io.write(ansikit.format(text))
+	io.flush()
 	return ansikit
 end
 
 ansikit.printCode = function(code, terminate)
 	io.write(ansikit.getCode(code, terminate))
+	io.flush()
 	return ansikit
 end
 
 ansikit.printCSI = function(code, endc)
 	io.write(ansikit.getCSI(code, endc))
+	io.flush()
 	return ansikit
 end
 
 ansikit.println = function(text)
-	print(ansikit.print(text))
+	io.write(ansikit.format(text) .. "\n")
+	io.flush()
 	return ansikit
 end
 

@@ -4,40 +4,42 @@ import (
 	"fmt"
 	"os"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
 	"hilbish/golibs/terminal"
 
-	"github.com/yuin/gopher-lua"
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
-	l = lua.NewState()
-	l.OpenLibs()
+	l = rt.New(os.Stdout)
+	lib.LoadAll(l)
 
+	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
-	l.PreloadModule("hilbish", hilbishLoader)
-	l.DoString("hilbish = require 'hilbish'")
+	util.DoString(l, "hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
-	l.PreloadModule("fs", fs.Loader)
-	l.PreloadModule("terminal", terminal.Loader)
+	lib.LoadLibs(l, fs.Loader)
+	lib.LoadLibs(l, terminal.Loader)
 
 	cmds := commander.New()
 	// When a command from Lua is added, register it for use
-	cmds.Events.On("commandRegister", func(cmdName string, cmd *lua.LFunction) {
+	cmds.Events.On("commandRegister", func(cmdName string, cmd *rt.Closure) {
 		commands[cmdName] = cmd
 	})
 	cmds.Events.On("commandDeregister", func(cmdName string) {
 		delete(commands, cmdName)
 	})
-	l.PreloadModule("commander", cmds.Loader)
+	lib.LoadLibs(l, cmds.Loader)
 
 	hooks = bait.New()
-	l.PreloadModule("bait", hooks.Loader)
+	lib.LoadLibs(l, hooks.Loader)
 
 	// Add Ctrl-C handler
 	hooks.Em.On("signal.sigint", func() {
@@ -47,26 +49,27 @@ func luaInit() {
 	})
 
 	// Add more paths that Lua can require from
-	l.DoString("package.path = package.path .. " + requirePaths)
-
-	err := l.DoFile("prelude/init.lua")
+	err := util.DoString(l, "package.path = package.path .. " + requirePaths)
 	if err != nil {
-		err = l.DoFile(preloadPath)
+		fmt.Fprintln(os.Stderr, "Could not add preload paths! Libraries will be missing. This shouldn't happen.")
+	}
+
+	err = util.DoFile(l, "prelude/init.lua")
+	if err != nil {
+		err = util.DoFile(l, preloadPath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"Missing preload file, builtins may be missing.")
+			fmt.Fprintln(os.Stderr, "Missing preload file, builtins may be missing.")
 		}
 	}
 }
+
 func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	err := l.DoFile(confpath)
+	err := util.DoFile(l, confpath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err,
-			"\nAn error has occured while loading your config! Falling back to minimal default config.")
-
-		l.DoString(minimalconf)
+		fmt.Fprintln(os.Stderr, err, "\nAn error has occured while loading your config! Falling back to minimal default config.")
+		util.DoString(l, minimalconf)
 	}
 }

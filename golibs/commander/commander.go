@@ -3,52 +3,68 @@ package commander
 import (
 	"hilbish/util"
 
+	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/chuckpreslar/emission"
-	"github.com/yuin/gopher-lua"
 )
 
 type Commander struct{
 	Events *emission.Emitter
+	Loader packagelib.Loader
 }
 
 func New() Commander {
-	return Commander{
+	c := Commander{
 		Events: emission.NewEmitter(),
 	}
+	c.Loader = packagelib.Loader{
+		Load: c.loaderFunc,
+		Name: "commander",
+	}
+
+	return c
 }
 
-func (c *Commander) Loader(L *lua.LState) int {
-	exports := map[string]lua.LGFunction{
-		"register": c.cregister,
-		"deregister": c.cderegister,
+func (c *Commander) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+	exports := map[string]util.LuaExport{
+		"register": util.LuaExport{c.cregister, 2, false},
+		"deregister": util.LuaExport{c.cderegister, 1, false},
 	}
-	mod := L.SetFuncs(L.NewTable(), exports)
-	util.Document(L, mod, "Commander is Hilbish's custom command library, a way to write commands in Lua.")
-	L.Push(mod)
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+	util.Document(mod, "Commander is Hilbish's custom command library, a way to write commands in Lua.")
 
-	return 1
+	return rt.TableValue(mod), nil
 }
 
 // register(name, cb)
 // Register a command with `name` that runs `cb` when ran
 // --- @param name string
 // --- @param cb function
-func (c *Commander) cregister(L *lua.LState) int {
-	cmdName := L.CheckString(1)
-	cmd := L.CheckFunction(2)
+func (c *Commander) cregister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
+	cmdName, cmd, err := util.HandleStrCallback(t, ct)
+	if err != nil {
+		return nil, err
+	}
 
 	c.Events.Emit("commandRegister", cmdName, cmd)
 
-	return 0
+	return ct.Next(), err
 }
 
 // deregister(name)
 // Deregisters any command registered with `name`
 // --- @param name string
-func (c *Commander) cderegister(L *lua.LState) int {
-	cmdName := L.CheckString(1)
+func (c *Commander) cderegister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
+	if err := ct.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmdName, err := ct.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
 
 	c.Events.Emit("commandDeregister", cmdName)
 
-	return 0
+	return ct.Next(), err
 }
