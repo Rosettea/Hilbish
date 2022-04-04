@@ -58,7 +58,7 @@ function hilbish.interval(cb, time) end
 
 --- Changes the continued line prompt to `str`
 --- @param str string
-function hilbish.mlprompt(str) end
+function hilbish.multiprompt(str) end
 
 --- Prepends `dir` to $PATH
 --- @param dir string
@@ -80,6 +80,8 @@ function hilbish.prompt(str) end
 function hilbish.read(prompt) end
 
 --- Runs `cmd` in Hilbish's sh interpreter.
+--- If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
+--- 3rd values instead of being outputted to the terminal.
 --- @param cmd string
 function hilbish.run(cmd) end
 
