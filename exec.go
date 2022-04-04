@@ -192,7 +192,7 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		if commands[args[0]] != nil {
 			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Error in command:\n\n" + err.Error())
+				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
 			}
 
