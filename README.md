@@ -91,7 +91,7 @@ After you did all that, run `sudo make install` to install Hilbish globally.
 
 # Getting Started
 At startup, you should see a message which says to run a `guide` command.
-This guide is a *very* simple and basic step through text of what Hilish is
+This guide is a *very* simple and basic step through text of what Hilbish is
 and where to find documentation.
 
 Documentation is primarily viewed via the in shell `doc` command.
