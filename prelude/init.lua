@@ -217,14 +217,6 @@ do
 			end
 		end,
 	})
-
-	bait.catch('command.exit', function ()
-		for key, value in pairs(virt_G) do
-			if type(value) == 'string' then
-				virt_G[key] = os.getenv(key)
-			end
-		end
-	end)
 end
 
 commander.register('cdr', function(args)
