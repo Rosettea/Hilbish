@@ -37,37 +37,37 @@ func runInput(input string, priv bool) {
 			case "hybrid":
 				_, err := handleLua(cmdString)
 				if err == nil {
-					cmdFinish(0, cmdString, priv)
+					cmdFinish(0, input, priv)
 					return
 				}
 				exitCode, err := handleSh(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
-				cmdFinish(exitCode, cmdString, priv)
+				cmdFinish(exitCode, input, priv)
 			case "hybridRev":
 				_, err := handleSh(cmdString)
 				if err == nil {
-					cmdFinish(0, cmdString, priv)
+					cmdFinish(0, input, priv)
 					return
 				}
 				exitCode, err := handleLua(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
-				cmdFinish(exitCode, cmdString, priv)
+				cmdFinish(exitCode, input, priv)
 			case "lua":
 				exitCode, err := handleLua(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
-				cmdFinish(exitCode, cmdString, priv)
+				cmdFinish(exitCode, input, priv)
 			case "sh":
 				exitCode, err := handleSh(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
-				cmdFinish(exitCode, cmdString, priv)
+				cmdFinish(exitCode, input, priv)
 		}
 	} else {
 		// can only be a string or function so
@@ -75,7 +75,7 @@ func runInput(input string, priv bool) {
 		err := rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-			cmdFinish(124, cmdString, priv)
+			cmdFinish(124, input, priv)
 			return
 		}
 
@@ -90,7 +90,7 @@ func runInput(input string, priv bool) {
 		if runErr != rt.NilValue {
 			fmt.Fprintln(os.Stderr, runErr)
 		}
-		cmdFinish(exitCode, cmdString, priv)
+		cmdFinish(exitCode, input, priv)
 	}
 }
 
