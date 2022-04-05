@@ -159,15 +159,45 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	var stdout io.Writer = os.Stdout
-	var stderr io.Writer = os.Stderr
-	if !terminalOut {
+
+	runner, _ := interp.New()
+
+	var stdout io.Writer
+	var stderr io.Writer
+	if terminalOut {
+		interp.StdIO(os.Stdin, os.Stdout, os.Stderr)(runner)
+	} else {
 		stdout = new(bytes.Buffer)
 		stderr = new(bytes.Buffer)
+		interp.StdIO(os.Stdin, stdout, stderr)(runner)
 	}
+	buf := new(bytes.Buffer)
+	printer := syntax.NewPrinter()
 
 	var bg bool
-	exechandle := func(ctx context.Context, args []string) error {
+	for _, stmt := range file.Stmts {
+		bg = false
+		if stmt.Background {
+			bg = true
+			printer.Print(buf, stmt.Cmd)
+
+			stmtStr := buf.String()
+			buf.Reset()
+			jobs.add(stmtStr)
+		}
+
+		interp.ExecHandler(execHandle(bg))(runner)
+		err = runner.Run(context.TODO(), stmt)
+		if err != nil {
+			return stdout, stderr, err
+		}
+	}
+
+	return stdout, stderr, nil
+}
+
+func execHandle(bg bool) interp.ExecHandlerFunc {
+	return func(ctx context.Context, args []string) error {
 		_, argstring := splitInput(strings.Join(args, " "))
 		// i dont really like this but it works
 		if aliases.All()[args[0]] != "" {
@@ -328,33 +358,6 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		}
 		return interp.NewExitStatus(exit)
 	}
-
-	runner, _ := interp.New(
-		interp.StdIO(os.Stdin, stdout, stderr),
-		interp.ExecHandler(exechandle),
-	)
-
-	buf := new(bytes.Buffer)
-	printer := syntax.NewPrinter()
-
-	for _, stmt := range file.Stmts {
-		bg = false
-		if stmt.Background {
-			bg = true
-			printer.Print(buf, stmt.Cmd)
-
-			stmtStr := buf.String()
-			buf.Reset()
-			jobs.add(stmtStr)
-		}
-
-		err = runner.Run(context.TODO(), stmt)
-		if err != nil {
-			return stdout, stderr, err
-		}
-	}
-
-	return stdout, stderr, nil
 }
 
 func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
