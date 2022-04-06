@@ -1,5 +1,5 @@
-github.com/Rosettea/golua v0.0.0-20220329151031-261b8fbd3f78 h1:9YuMWEHn85Av2ZF60OWkcha5Wt56+i6R7hRcHKB5how=
-github.com/Rosettea/golua v0.0.0-20220329151031-261b8fbd3f78/go.mod h1:9jzpYPiU2is0HVGCiuIOBSXdergHUW44IEjmuN1UrIE=
+github.com/Rosettea/golua v0.0.0-20220406024702-f447a8095170 h1:k2MAUwR1diHqqoFPEhxMKAQoz131tMSti8ArzCTg2HI=
+github.com/Rosettea/golua v0.0.0-20220406024702-f447a8095170/go.mod h1:9jzpYPiU2is0HVGCiuIOBSXdergHUW44IEjmuN1UrIE=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e h1:P2XupP8SaylWaudD1DqbWtZ3mIa8OsE9635LmR+Q+lg=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e/go.mod h1:R09vh/04ILvP2Gj8/Z9Jd0Dh0ZIvaucowMEs6abQpWs=
 github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d h1:licZJFw2RwpHMqeKTCYkitsPqHNxTmd4SNR5r94FGM8=
