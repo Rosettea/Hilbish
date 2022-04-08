@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"syscall"
 )
 
 var rxMultiline = regexp.MustCompile(`[\r\n]+`)
@@ -77,6 +78,14 @@ func (rl *Instance) Readline() (string, error) {
 			var err error
 			i, err = os.Stdin.Read(b)
 			if err != nil {
+				// i shouldnt really check the error like this but i dont know what
+				// the actual thing is so
+				if err.Error() == "read /dev/stdin: resource temporarily unavailable" {
+					err = syscall.SetNonblock(syscall.Stdin, false)
+					if err == nil {
+						continue
+					}
+				}
 				return "", err
 			}
 		}
