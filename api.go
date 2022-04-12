@@ -515,7 +515,7 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	interval := time.Duration(ms) * time.Millisecond
-	timer := timers.creat(timerInterval, interval, cb)
+	timer := timers.create(timerInterval, interval, cb)
 	timer.start()
 
 	return c.PushingNext1(t.Runtime, timer.lua()), nil
