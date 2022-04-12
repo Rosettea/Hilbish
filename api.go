@@ -471,8 +471,10 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // timeout(cb, time)
 // Runs the `cb` function after `time` in milliseconds
+// Returns a `timer` object (see `doc timers`).
 // --- @param cb function
 // --- @param time number
+// --- @return table
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -494,9 +496,11 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // interval(cb, time)
-// Runs the `cb` function every `time` milliseconds
+// Runs the `cb` function every `time` milliseconds.
+// Returns a `timer` object (see `doc timers`).
 // --- @param cb function
 // --- @param time number
+// --- @return table
 func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -511,7 +515,7 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	interval := time.Duration(ms) * time.Millisecond
-	timer := timers.create(timerInterval, interval, cb)
+	timer := timers.creat(timerInterval, interval, cb)
 	timer.start()
 
 	return c.PushingNext1(t.Runtime, timer.lua()), nil
