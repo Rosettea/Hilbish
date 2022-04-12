@@ -51,9 +51,11 @@ function hilbish.hinter(cb) end
 --- @param mode string
 function hilbish.inputMode(mode) end
 
---- Runs the `cb` function every `time` milliseconds
+--- Runs the `cb` function every `time` milliseconds.
+--- Returns a `timer` object (see `doc timers`).
 --- @param cb function
 --- @param time number
+--- @return table
 function hilbish.interval(cb, time) end
 
 --- Changes the continued line prompt to `str`
@@ -94,8 +96,10 @@ function hilbish.run(cmd) end
 function hilbish.runnerMode(mode) end
 
 --- Runs the `cb` function after `time` in milliseconds
+--- Returns a `timer` object (see `doc timers`).
 --- @param cb function
 --- @param time number
+--- @return table
 function hilbish.timeout(cb, time) end
 
 --- Searches for an executable called `binName` in the directories of $PATH

@@ -28,7 +28,8 @@ which will be used for the hint.
 
 inputMode(mode) > Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 
-interval(cb, time) > Runs the `cb` function every `time` milliseconds
+interval(cb, time) > Runs the `cb` function every `time` milliseconds.
+Returns a `timer` object (see `doc timers`).
 
 multiprompt(str) > Changes the continued line prompt to `str`
 
@@ -56,6 +57,7 @@ sh, and lua. It also accepts a function, to which if it is passed one
 will call it to execute user input instead.
 
 timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
+Returns a `timer` object (see `doc timers`).
 
 which(binName) > Searches for an executable called `binName` in the directories of $PATH
 
