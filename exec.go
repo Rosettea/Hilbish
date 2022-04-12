@@ -125,6 +125,9 @@ func handleSh(cmdString string) (uint8, error) {
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
+			if !interactive {
+				return 126, err
+			}
 			for {
 				cmdString, err = continuePrompt(strings.TrimSuffix(cmdString, "\\"))
 				if err != nil {
