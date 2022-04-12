@@ -131,6 +131,11 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	jobModule := jobs.loader(rtm)
 	util.Document(jobModule, "(Background) job interface.")
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
+	
+	timers = newTimerHandler()
+	timerModule := timers.loader(rtm)
+	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
+	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
 
 	return rt.TableValue(mod), nil
 }
@@ -481,15 +486,11 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	timeout := time.Duration(ms) * time.Millisecond
-	time.Sleep(timeout)
-
-	_, err = rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
-	if err != nil {
-		return nil, err
-	}
-
-	return c.Next(), nil
+	interval := time.Duration(ms) * time.Millisecond
+	timer := timers.create(timerTimeout, interval, cb)
+	timer.start()
+	
+	return c.PushingNext1(t.Runtime, timer.lua()), nil
 }
 
 // interval(cb, time)
@@ -508,29 +509,12 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	interval := time.Duration(ms) * time.Millisecond
+	timer := timers.create(timerInterval, interval, cb)
+	timer.start()
 
-	ticker := time.NewTicker(interval)
-	stop := make(chan rt.Value)
-
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				_, err := rt.Call1(l.MainThread(), rt.FunctionValue(cb)) 
-				if err != nil {
-					fmt.Fprintln(os.Stderr, "Error in interval function:\n\n", err)
-					stop <- rt.BoolValue(true) // stop the interval
-				}
-			case <-stop:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-
-	// TODO: return channel
-	return c.Next(), nil
+	return c.PushingNext1(t.Runtime, timer.lua()), nil
 }
 
 // complete(scope, cb)

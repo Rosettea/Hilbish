@@ -145,6 +145,7 @@ func main() {
 			text := scanner.Text()
 			runInput(text, true)
 		}
+		exit(0)
 	}
 
 	if *cmdflag != "" {
@@ -161,9 +162,9 @@ func main() {
 		err := util.DoFile(l, getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			exit(1)
 		}
-		os.Exit(0)
+		exit(0)
 	}
 
 	initialized = true
@@ -298,4 +299,13 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func exit(code int) {
+	// wait for all timers to finish before exiting
+	for {
+		if timers.running == 0 {
+			os.Exit(code)
+		}
+	}
 }
