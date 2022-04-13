@@ -416,6 +416,10 @@ func (rl *Instance) Readline() (string, error) {
 				rl.renderHelpers()
 			}
 
+		case charCtrlUnderscore:
+			rl.undoLast()
+			rl.viUndoSkipAppend = true
+
 		case '\r':
 			fallthrough
 		case '\n':
