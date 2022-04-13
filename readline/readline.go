@@ -170,9 +170,18 @@ func (rl *Instance) Readline() (string, error) {
 			rl.clearHelpers()
 			return "", CtrlC
 
-		case charEOF:
-			rl.clearHelpers()
-			return "", EOF
+		case charEOF: // ctrl d
+			if len(rl.line) == 0 {
+				rl.clearHelpers()
+				return "", EOF
+			}
+			if rl.modeTabFind {
+				rl.backspaceTabFind()
+			} else {
+				if (rl.pos < len(rl.line)) {
+					rl.deleteBackspace(true)
+				}
+			}
 
 		// Clear screen
 		case charCtrlL:
