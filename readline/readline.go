@@ -557,8 +557,8 @@ func (rl *Instance) editorInput(r []rune) {
 		rl.refreshVimStatus()
 
 	default:
-		// For some reason Ctrl+k messes with the input line, so ignore it.
-		if r[0] == 11 {
+		// Don't insert control keys
+		if r[0] >= 1 && r[0] <= 31 {
 			return
 		}
 		// We reset the history nav counter each time we come here:

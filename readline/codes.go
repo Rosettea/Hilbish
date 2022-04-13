@@ -34,7 +34,6 @@ const (
 	charCtrlHat               // ^^
 	charCtrlUnderscore        // ^_
 	charBackspace2      = 127 // ASCII 1963
-
 )
 
 // Escape sequences
