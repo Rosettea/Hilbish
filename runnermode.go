@@ -28,13 +28,13 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	exitCode, err := handleSh(cmd)
+	input, exitCode, err := handleSh(cmd)
 	var luaErr rt.Value = rt.NilValue
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
 	}
 
-	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitCode)), luaErr), nil
+	return c.PushingNext(t.Runtime, rt.StringValue(input), rt.IntValue(int64(exitCode)), luaErr), nil
 }
 
 func luaRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -46,11 +46,11 @@ func luaRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	exitCode, err := handleLua(cmd)
+	input, exitCode, err := handleLua(cmd)
 	var luaErr rt.Value = rt.NilValue
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
 	}
 
-	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitCode)), luaErr), nil
+	return c.PushingNext(t.Runtime, rt.StringValue(input), rt.IntValue(int64(exitCode)), luaErr), nil
 }

@@ -32,38 +32,40 @@ func runInput(input string, priv bool) {
 	cmdString := aliases.Resolve(input)
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
+	var exitCode uint8
+	var err error
 	if runnerMode.Type() == rt.StringType {
 		switch runnerMode.AsString() {
 			case "hybrid":
-				_, err := handleLua(cmdString)
+				_, _, err = handleLua(cmdString)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				exitCode, err := handleSh(cmdString)
+				input, exitCode, err = handleSh(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
 				cmdFinish(exitCode, input, priv)
 			case "hybridRev":
-				_, err := handleSh(cmdString)
+				_, _, err = handleSh(cmdString)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				exitCode, err := handleLua(cmdString)
+				input, exitCode, err = handleLua(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
 				cmdFinish(exitCode, input, priv)
 			case "lua":
-				exitCode, err := handleLua(cmdString)
+				input, exitCode, err = handleLua(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
 				cmdFinish(exitCode, input, priv)
 			case "sh":
-				exitCode, err := handleSh(cmdString)
+				input, exitCode, err = handleSh(cmdString)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
@@ -79,12 +81,17 @@ func runInput(input string, priv bool) {
 			return
 		}
 
-		luaexitcode := term.Get(0) // first return value (makes sense right i love stacks)
+		luaexitcode := term.Get(0)
 		runErr := term.Get(1)
+		luaInput := term.Get(1)
 
 		var exitCode uint8
 		if code, ok := luaexitcode.TryInt(); ok {
 			exitCode = uint8(code)
+		}
+		
+		if inp, ok := luaInput.TryString(); ok {
+			input = inp
 		}
 
 		if runErr != rt.NilValue {
@@ -94,7 +101,7 @@ func runInput(input string, priv bool) {
 	}
 }
 
-func handleLua(cmdString string) (uint8, error) {
+func handleLua(cmdString string) (string, uint8, error) {
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
@@ -105,7 +112,7 @@ func handleLua(cmdString string) (uint8, error) {
 			}
 		}
 	*/
-		return 125, err
+		return cmdString, 125, err
 	}
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
@@ -114,19 +121,19 @@ func handleLua(cmdString string) (uint8, error) {
 		}
 	}
 	if err == nil {
-		return 0, nil
+		return cmdString, 0, nil
 	}
 
-	return 125, err
+	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (uint8, error) {
+func handleSh(cmdString string) (string, uint8, error) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			if !interactive {
-				return 126, err
+				return cmdString, 126, err
 			}
 			for {
 				cmdString, err = continuePrompt(strings.TrimSuffix(cmdString, "\\"))
@@ -137,23 +144,23 @@ func handleSh(cmdString string) (uint8, error) {
 				if syntax.IsIncomplete(err) || strings.HasSuffix(cmdString, "\\") {
 					continue
 				} else if code, ok := interp.IsExitStatus(err); ok {
-					return code, nil
+					return cmdString, code, nil
 				} else if err != nil {
-					return 126, err
+					return cmdString, 126, err
 				} else {
-					return 0, nil
+					return cmdString, 0, nil
 				}
 			}
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				return code, nil
+				return cmdString, code, nil
 			} else {
-				return 126, err
+				return cmdString, 126, err
 			}
 		}
 	}
 
-	return 0, nil
+	return cmdString, 0, nil
 }
 
 // Run command in sh interpreter

@@ -20,7 +20,7 @@ An example:
 hilbish.runnerMode(function(input)
 	local ok = pcall(fennel.eval, input)
 	if ok then
-		return 0, nil
+		return input, 0, nil
 	end
 
 	return hilbish.runner.sh(input)
@@ -28,7 +28,9 @@ end)
 
 The `hilbish.runner` interface is an alternative to using `hilbish.runnerMode`
 and also provides the sh and Lua runner functions that Hilbish itself uses.
-A runner function is expected to return 2 values: the exit code, and an error.
+A runner function is expected to return 3 values: the input, exit code, and an error.
+The input return is there incase you need to prompt for more input.
+If you don't, just return the input passed to the runner function.
 The exit code has to be a number, it will be 0 otherwise and the error can be
 `nil` to indicate no error.
 
@@ -36,5 +38,5 @@ The exit code has to be a number, it will be 0 otherwise and the error can be
 These are the functions for the `hilbish.runner` interface
 
 + setMode(mode) > The same as `hilbish.runnerMode`
-+ sh(input) -> code, err > Runs `input` in Hilbish's sh interpreter
-+ lua(input) -> code, err > Evals `input` as Lua code
++ sh(input) -> input, code, err > Runs `input` in Hilbish's sh interpreter
++ lua(input) -> input, code, err > Evals `input` as Lua code
