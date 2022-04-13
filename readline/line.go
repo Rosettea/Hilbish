@@ -183,26 +183,41 @@ func (rl *Instance) deleteToEnd() {
 	rl.line = rl.line[:rl.pos]
 }
 
+// @TODO(Renzix): move to emacs sepecific file
 func (rl *Instance) emacsForwardWord(tokeniser tokeniser) (adjust int) {
-	// when emacs has more specific stuff, move this in a file with then
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	if len(split) == 0 {
 		return
 	}
 
-	word := rTrimWhiteSpace(split[index])
+	word := strings.TrimSpace(split[index])
 
 	switch {
 	case len(split) == 0:
 		return
-	case index == len(split)-1 && pos >= len(word)-1:
-		return
-	case pos >= len(word)-1:
-		word = rTrimWhiteSpace(split[index+1])
-		adjust = len(split[index]) - pos
-		adjust += len(word)
+	case pos == len(word) && index != len(split)-1:
+		extrawhitespace := len(strings.TrimLeft(split[index], " ")) - len(word)
+		word = split[index+1]
+		adjust = len(word) + extrawhitespace
 	default:
 		adjust = len(word) - pos
+	}
+	return
+}
+
+func (rl *Instance) emacsBackwardWord(tokeniser tokeniser) (adjust int) {
+	split, index, pos := tokeniser(rl.line, rl.pos)
+	if len(split) == 0 {
+		return
+	}
+
+	switch {
+	case len(split) == 0:
+		return
+	case pos == 0 && index != 0:
+		adjust = len(split[index-1])
+	default:
+		adjust = pos
 	}
 	return
 }

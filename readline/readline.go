@@ -755,6 +755,34 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.pos = len(rl.line)
 		rl.viUndoSkipAppend = true
 
+	case seqAltB:
+		if rl.modeTabCompletion {
+			return
+		}
+
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		move := rl.emacsBackwardWord(tokeniseLine)
+		rl.moveCursorByAdjust(-move)
+		rl.updateHelpers()
+
+	case seqAltF:
+		if rl.modeTabCompletion {
+			return
+		}
+
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		move := rl.emacsForwardWord(tokeniseLine)
+		rl.moveCursorByAdjust(move)
+		rl.updateHelpers()
+
 	case seqAltR:
 		rl.resetVirtualComp(false)
 		// For some modes only, if we are in vim Keys mode,
@@ -786,17 +814,21 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.viDeleteByAdjust(rl.viJumpB(tokeniseLine))
 		rl.updateHelpers()
 
-	case seqCtrlDelete, seqCtrlDelete2:
+	case seqCtrlDelete, seqCtrlDelete2, seqAltD:
 		if rl.modeTabCompletion {
 			rl.resetVirtualComp(false)
-		}
-		// This is only available in Insert mode
-		if rl.modeViMode != VimInsert {
-			return
 		}
 		rl.saveToRegister(rl.emacsForwardWord(tokeniseLine))
 		// vi delete, emacs forward, funny huh
 		rl.viDeleteByAdjust(rl.emacsForwardWord(tokeniseLine))
+		rl.updateHelpers()
+
+	case seqAltDelete:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		rl.saveToRegister(-rl.emacsBackwardWord(tokeniseLine))
+		rl.viDeleteByAdjust(-rl.emacsBackwardWord(tokeniseLine))
 		rl.updateHelpers()
 
 	default:
