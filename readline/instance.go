@@ -30,11 +30,13 @@ type Instance struct {
 	Multiline       bool   // If set to true, the shell will have a two-line prompt.
 	MultilinePrompt string // If multiline is true, this is the content of the 2nd line.
 
-	mainPrompt     string // If multiline true, the full prompt string / If false, the 1st line of the prompt
-	realPrompt     []rune // The prompt that is actually on the same line as the beginning of the input line.
-	defaultPrompt  []rune
-	promptLen      int
-	stillOnRefresh bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
+	mainPrompt      string // If multiline true, the full prompt string / If false, the 1st line of the prompt
+	rightPrompt     string
+	rightPromptLen  int
+	realPrompt      []rune // The prompt that is actually on the same line as the beginning of the input line.
+	defaultPrompt   []rune
+	promptLen       int
+	stillOnRefresh  bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
 
 	//
 	// Input Line ---------------------------------------------------------------------------------

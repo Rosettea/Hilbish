@@ -35,7 +35,7 @@ var exports = map[string]util.LuaExport{
 	"hinter": {hlhinter, 1, false},
 	"multiprompt": {hlmultiprompt, 1, false},
 	"prependPath": {hlprependPath, 1, false},
-	"prompt": {hlprompt, 1, false},
+	"prompt": {hlprompt, 1, true},
 	"inputMode": {hlinputMode, 1, false},
 	"interval": {hlinterval, 2, false},
 	"read": {hlread, 1, false},
@@ -305,7 +305,7 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 /*
-prompt(str)
+prompt(str, typ?)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
@@ -313,17 +313,34 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 --- @param str string
+--- @param typ string Type of prompt, being left or right. Left by default.
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	var prompt string
 	err := c.Check1Arg()
-	if err == nil {
-		prompt, err = c.StringArg(0)
-	}
 	if err != nil {
 		return nil, err
 	}
-	lr.SetPrompt(fmtPrompt(prompt))
+	p, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	typ := "left"
+	if len(c.Etc()) != 0 {
+		ltyp := c.Etc()[0]
+		var ok bool
+		typ, ok = ltyp.TryString()
+		if !ok {
+			return nil, errors.New("bad argument to run (expected string, got " + ltyp.TypeName() + ")")
+		}
+	}
+
+	switch typ {
+		case "left":
+			prompt = p
+			lr.SetPrompt(fmtPrompt(prompt))
+		case "right": lr.SetRightPrompt(fmtPrompt(p))
+		default: return nil, errors.New("expected prompt type to be right or left, got " + typ)
+	}
 
 	return c.Next(), nil
 }

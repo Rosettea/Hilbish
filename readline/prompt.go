@@ -14,6 +14,12 @@ func (rl *Instance) SetPrompt(s string) {
 	rl.computePrompt()
 }
 
+// SetRightPrompt sets the right prompt.
+func (rl *Instance) SetRightPrompt(s string) {
+	rl.rightPrompt = s + " "
+	rl.computePrompt()
+}
+
 // RefreshPromptLog - A simple function to print a string message (a log, or more broadly,
 // an asynchronous event) without bothering the user, and by "pushing" the prompt below the message.
 func (rl *Instance) RefreshPromptLog(log string) (err error) {
@@ -185,6 +191,7 @@ func (rl *Instance) computePrompt() (prompt []rune) {
 
 	// Strip color escapes
 	rl.promptLen = getRealLength(string(rl.realPrompt))
+	rl.rightPromptLen = getRealLength(string(rl.rightPrompt))
 	
 	return
 }
@@ -204,4 +211,12 @@ func (rl *Instance) colorizeVimPrompt(p []rune) (cp []rune) {
 func getRealLength(s string) (l int) {
 	stripped := ansi.Strip(s)
 	return uniseg.GraphemeClusterCount(stripped)
+}
+
+func (rl *Instance) echoRightPrompt() {
+	if rl.fullX < GetTermWidth() - rl.rightPromptLen - 1 {
+		moveCursorForwards(GetTermWidth())
+		moveCursorBackwards(rl.rightPromptLen)
+		print(rl.rightPrompt)
+	}
 }

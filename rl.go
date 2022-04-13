@@ -281,6 +281,13 @@ func (lr *lineReader) SetPrompt(p string) {
 	}
 }
 
+func (lr *lineReader) SetRightPrompt(p string) {
+	lr.rl.SetRightPrompt(p)
+	if initialized && !running {
+		lr.rl.RefreshPromptInPlace("")
+	}
+}
+
 func (lr *lineReader) AddHistory(cmd string) {
 	fileHist.Write(cmd)
 }

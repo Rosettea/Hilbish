@@ -121,6 +121,8 @@ func (rl *Instance) renderHelpers() {
 		rl.writeHintText()
 	}
 
+	rl.echoRightPrompt()
+
 	// Go at beginning of first line after input remainder
 	moveCursorDown(rl.fullY - rl.posY)
 	moveCursorBackwards(GetTermWidth())
