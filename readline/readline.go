@@ -777,7 +777,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.viDeleteByAdjust(rl.viJumpB(tokeniseLine))
 		rl.updateHelpers()
 
-	case seqCtrlDelete:
+	case seqCtrlDelete, seqCtrlDelete2:
 		if rl.modeTabCompletion {
 			rl.resetVirtualComp(false)
 		}
