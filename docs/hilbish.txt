@@ -35,7 +35,7 @@ multiprompt(str) > Changes the continued line prompt to `str`
 
 prependPath(dir) > Prepends `dir` to $PATH
 
-prompt(str) > Changes the shell prompt to `str`
+prompt(str, typ?) > Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory

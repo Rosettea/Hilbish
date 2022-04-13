@@ -73,7 +73,8 @@ function hilbish.prependPath(dir) end
 --- `%u` - Name of current user
 --- `%h` - Hostname of device
 --- @param str string
-function hilbish.prompt(str) end
+--- @param typ string Type of prompt, being left or right. Left by default.
+function hilbish.prompt(str, typ) end
 
 --- Read input from the user, using Hilbish's line editor/input reader.
 --- This is a separate instance from the one Hilbish actually uses.
