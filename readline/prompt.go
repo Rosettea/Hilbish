@@ -14,6 +14,7 @@ func (rl *Instance) SetPrompt(s string) {
 	rl.computePrompt()
 }
 
+// SetRightPrompt sets the right prompt.
 func (rl *Instance) SetRightPrompt(s string) {
 	rl.rightPrompt = s
 	rl.computePrompt()
