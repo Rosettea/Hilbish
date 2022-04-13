@@ -305,7 +305,7 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 /*
-prompt(str)
+prompt(str, typ?)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
@@ -313,6 +313,7 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 --- @param str string
+--- @param typ string Type of prompt, being left or right. Left by default.
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()
@@ -337,8 +338,8 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		case "left":
 			prompt = p
 			lr.SetPrompt(fmtPrompt(prompt))
-		case "right":
-			lr.SetRightPrompt(fmtPrompt(p))
+		case "right": lr.SetRightPrompt(fmtPrompt(p))
+		default: return nil, errors.New("expected prompt type to be right or left, got " + typ)
 	}
 
 	return c.Next(), nil
