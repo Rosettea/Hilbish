@@ -564,6 +564,8 @@ func (rl *Instance) editorInput(r []rune) {
 		rl.writeHintText()
 	}
 
+	rl.echoRightPrompt()
+
 	if len(rl.multisplit) == 0 {
 		rl.syntaxCompletion()
 	}
