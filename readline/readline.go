@@ -785,8 +785,9 @@ func (rl *Instance) escapeSeq(r []rune) {
 		if rl.modeViMode != VimInsert {
 			return
 		}
-		rl.saveToRegister(rl.viJumpW(tokeniseLine))
-		rl.viDeleteByAdjust(rl.viJumpW(tokeniseLine))
+		rl.saveToRegister(rl.emacsForwardWord(tokeniseLine))
+		// vi delete, emacs forward, funny huh
+		rl.viDeleteByAdjust(rl.emacsForwardWord(tokeniseLine))
 		rl.updateHelpers()
 
 	default:

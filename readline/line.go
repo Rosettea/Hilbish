@@ -182,3 +182,27 @@ func (rl *Instance) deleteToEnd() {
 	// Keep everything before the cursor
 	rl.line = rl.line[:rl.pos]
 }
+
+func (rl *Instance) emacsForwardWord(tokeniser tokeniser) (adjust int) {
+	// when emacs has more specific stuff, move this in a file with then
+	split, index, pos := tokeniser(rl.line, rl.pos)
+	if len(split) == 0 {
+		return
+	}
+
+	word := rTrimWhiteSpace(split[index])
+
+	switch {
+	case len(split) == 0:
+		return
+	case index == len(split)-1 && pos >= len(word)-1:
+		return
+	case pos >= len(word)-1:
+		word = rTrimWhiteSpace(split[index+1])
+		adjust = len(split[index]) - pos
+		adjust += len(word)
+	default:
+		adjust = len(word) - pos
+	}
+	return
+}
