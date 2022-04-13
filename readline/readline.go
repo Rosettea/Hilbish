@@ -777,6 +777,18 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.viDeleteByAdjust(rl.viJumpB(tokeniseLine))
 		rl.updateHelpers()
 
+	case seqCtrlDelete:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+		rl.saveToRegister(rl.viJumpW(tokeniseLine))
+		rl.viDeleteByAdjust(rl.viJumpW(tokeniseLine))
+		rl.updateHelpers()
+
 	default:
 		if rl.modeTabFind {
 			return
