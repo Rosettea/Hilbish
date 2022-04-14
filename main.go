@@ -155,7 +155,7 @@ func main() {
 	if getopt.NArgs() > 0 {
 		luaArgs := rt.NewTable()
 		for i, arg := range getopt.Args() {
-			luaArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(arg))
+			luaArgs.Set(rt.IntValue(int64(i)), rt.StringValue(arg))
 		}
 
 		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
