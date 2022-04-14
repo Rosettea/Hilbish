@@ -50,8 +50,12 @@ var (
 	seqDelete2      = string([]byte{27, 91, 80})
 	seqCtrlDelete   = string([]byte{27, 91, 51, 59, 53, 126})
 	seqCtrlDelete2  = string([]byte{27, 91, 77})
+	seqAltDelete    = string([]byte{27, 91, 51, 59, 51, 126})
 	seqShiftTab     = string([]byte{27, 91, 90})
 	seqAltQuote     = string([]byte{27, 34})  // Added for showing registers ^["
+	seqAltB         = string([]byte{27, 98})
+	seqAltD         = string([]byte{27, 100})
+	seqAltF         = string([]byte{27, 102})
 	seqAltR         = string([]byte{27, 114}) // Used for alternative history
 	seqAltBackspace = string([]byte{27, 127})
 )
