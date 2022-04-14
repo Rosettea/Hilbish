@@ -12,7 +12,7 @@ dev: build
 build:
 	go build $(MY_GOFLAGS)
 
-install: all
+install:
 	install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
 	mkdir -p "$(DESTDIR)$(LIBDIR)"
 	cp -r libs docs emmyLuaDocs prelude .hilbishrc.lua "$(DESTDIR)$(LIBDIR)"
