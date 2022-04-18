@@ -689,8 +689,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		if (rl.modeViMode == VimInsert && rl.pos < len(rl.line)) ||
 			(rl.modeViMode != VimInsert && rl.pos < len(rl.line)-1) {
-			moveCursorForwards(1)
-			rl.pos++
+			rl.moveCursorByAdjust(1)
 		}
 		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
@@ -705,10 +704,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			rl.renderHelpers()
 			return
 		}
-		if rl.pos > 0 {
-			moveCursorBackwards(1)
-			rl.pos--
-		}
+		rl.moveCursorByAdjust(-1)
 		rl.viUndoSkipAppend = true
 		rl.updateHelpers()
 
@@ -749,16 +745,16 @@ func (rl *Instance) escapeSeq(r []rune) {
 		if rl.modeTabCompletion {
 			return
 		}
-		moveCursorBackwards(rl.pos)
-		rl.pos = 0
+		rl.moveCursorByAdjust(-rl.pos)
+		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
 
 	case seqEnd, seqEndSc:
 		if rl.modeTabCompletion {
 			return
 		}
-		moveCursorForwards(len(rl.line) - rl.pos)
-		rl.pos = len(rl.line)
+		rl.moveCursorByAdjust(len(rl.line) - rl.pos)
+		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
 
 	case seqAltB:
