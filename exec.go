@@ -220,7 +220,11 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 
 			// If alias was found, use command alias
 			argstring = aliases.Resolve(argstring)
-			args, _ = shell.Fields(argstring, nil)
+			var err error
+			args, err = shell.Fields(argstring, nil)
+			if err != nil {
+				return err
+			}
 		}
 
 		// If command is defined in Lua then run it
