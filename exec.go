@@ -42,13 +42,13 @@ func runInput(input string, priv bool) {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleSh(cmdString)
+				input, exitCode, err = handleSh(input)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
 				cmdFinish(exitCode, input, priv)
 			case "hybridRev":
-				_, _, err = handleSh(cmdString)
+				_, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -65,7 +65,7 @@ func runInput(input string, priv bool) {
 				}
 				cmdFinish(exitCode, input, priv)
 			case "sh":
-				input, exitCode, err = handleSh(cmdString)
+				input, exitCode, err = handleSh(input)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 				}
