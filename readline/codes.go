@@ -85,6 +85,7 @@ const (
 	seqBold       = "\x1b[1m"
 	seqUnderscore = "\x1b[4m"
 	seqBlink      = "\x1b[5m"
+	seqInvert     = "\x1b[7m"
 )
 
 // Text colours

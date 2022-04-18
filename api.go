@@ -325,6 +325,7 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 	typ := "left"
+	// optional 2nd arg
 	if len(c.Etc()) != 0 {
 		ltyp := c.Etc()[0]
 		var ok bool

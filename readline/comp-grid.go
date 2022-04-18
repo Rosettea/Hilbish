@@ -121,7 +121,7 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 		}
 
 		if (x == g.tcPosX && y == g.tcPosY) && (g.isCurrent) {
-			comp += seqCtermFg255 + seqFgBlackBright
+			comp += seqInvert
 		}
 
 		comp += fmt.Sprintf("%-"+cellWidth+"s %s", g.Suggestions[i], seqReset)

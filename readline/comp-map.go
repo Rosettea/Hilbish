@@ -101,7 +101,7 @@ func (g *CompletionGroup) writeMap(rl *Instance) (comp string) {
 	// Highlighting function
 	highlight := func(y int) string {
 		if y == g.tcPosY && g.isCurrent {
-			return seqCtermFg255 + seqFgBlackBright
+			return seqInvert
 		}
 		return ""
 	}
