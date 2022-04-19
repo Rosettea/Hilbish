@@ -28,4 +28,4 @@ replace github.com/maxlandon/readline => ./readline
 
 replace layeh.com/gopher-luar => github.com/layeh/gopher-luar v1.0.10
 
-replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20220406024702-f447a8095170
+replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20220419183026-6d22d6fec5ac
