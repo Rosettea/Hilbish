@@ -868,6 +868,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 }
 
 func (rl *Instance) carridgeReturn() {
+	rl.moveCursorByAdjust(len(rl.line))
+	rl.updateHelpers()
 	rl.clearHelpers()
 	print("\r\n")
 	if rl.HistoryAutoWrite {
