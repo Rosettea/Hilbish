@@ -47,6 +47,10 @@ func (rl *Instance) updateReferences() {
 	fullRest := toEndLine % GetTermWidth()
 	rl.fullX = fullRest
 
+	if fullRest == 0 && fullOffset > 0 {
+		print("\n")
+	}
+
 	// Use rl.pos value to get the offset to go TO/FROM the CURRENT POSITION
 	lineToCursorPos := rl.promptLen + cPosLine
 	offsetToCursor := lineToCursorPos / GetTermWidth()
@@ -116,7 +120,7 @@ func (rl *Instance) renderHelpers() {
 		rl.getHintText()
 		rl.writeHintText()
 	} else if !rl.compConfirmWait {
-		// for the same reason above, do nothing here
+		// for the same reason above of wanting it below user input, do nothing here
 	} else {
 		rl.writeHintText()
 	}
