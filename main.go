@@ -56,7 +56,7 @@ func main() {
 		defaultConfDir = filepath.Join(confDir, "hilbish")
 	} else {
 		// else do ~ substitution
-		defaultConfDir = expandHome(defaultHistDir)
+		defaultConfDir = expandHome(defaultConfDir)
 	}
 	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {
@@ -239,11 +239,9 @@ func continuePrompt(prev string) (string, error) {
 func fmtPrompt(prompt string) string {
 	host, _ := os.Hostname()
 	cwd, _ := os.Getwd()
-
-	if strings.HasPrefix(cwd, curuser.HomeDir) {
-		cwd = "~" + strings.TrimPrefix(cwd, curuser.HomeDir)
-	}
+	cwd = expandHome(cwd)
 	username := curuser.Username
+
 	// this will be baked into binary since GOOS is a constant
 	if runtime.GOOS == "windows" {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
@@ -274,9 +272,12 @@ func handleHistory(cmd string) {
 }
 
 func expandHome(path string) string {
-	homedir := curuser.HomeDir
-
-	return strings.Replace(defaultHistDir, "~", homedir, 1)
+	expanded := path
+	if strings.HasPrefix(path, curuser.HomeDir) {
+		expanded = "~" + strings.TrimPrefix(path, curuser.HomeDir)
+	}
+	
+	return expanded
 }
 
 func removeDupes(slice []string) []string {
