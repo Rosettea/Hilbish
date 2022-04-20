@@ -17,4 +17,5 @@ var (
 	dataDir = "/usr/local/share/hilbish"
 	preloadPath = dataDir + "/prelude/init.lua"
 	sampleConfPath = dataDir + "/.hilbishrc.lua" // Path to default/sample config
+	defaultConfDir = getenv("XDG_CONFIG_HOME", "~/.config")
 )
