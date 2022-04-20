@@ -44,7 +44,7 @@ func main() {
 
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
-	case "linux":
+	case "linux", "darwin":
 		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
 	default:
 		// this is fine on windows, dont know about others
@@ -56,7 +56,7 @@ func main() {
 		defaultConfDir = filepath.Join(confDir, "hilbish")
 	} else {
 		// else do ~ substitution
-		defaultConfDir = expandHome(defaultConfDir)
+		defaultConfDir = filepath.Join(expandHome(defaultConfDir), "hilbish")
 	}
 	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {

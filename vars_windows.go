@@ -11,4 +11,5 @@ var (
 	dataDir = "~\\Appdata\\Roaming\\Hilbish" // ~ and \ gonna cry?
 	preloadPath = dataDir + "\\prelude\\init.lua"
 	sampleConfPath = dataDir + "\\hilbishrc.lua" // Path to default/sample config
+	defaultConfDir = ""
 )
