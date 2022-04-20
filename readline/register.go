@@ -259,9 +259,9 @@ func (r *registers) resetRegister() {
 // The user can show registers completions and insert, no matter the cursor position.
 func (rl *Instance) completeRegisters() (groups []*CompletionGroup) {
 
-	// We set the hint exceptionally
-	hint := BLUE + "-- registers --" + RESET
-	rl.hintText = []rune(hint)
+	// We set the info exceptionally
+	info := BLUE + "-- registers --" + RESET
+	rl.infoText = []rune(info)
 
 	// Make the groups
 	anonRegs := &CompletionGroup{

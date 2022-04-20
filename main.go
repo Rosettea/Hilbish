@@ -10,20 +10,21 @@ import (
 	"runtime"
 	"strings"
 
+	"hilbish/util"
 	"hilbish/golibs/bait"
 
+	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
-	"github.com/yuin/gopher-lua"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
 )
 
 var (
-	l *lua.LState
+	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*lua.LFunction{}
-	luaCompletions = map[string]*lua.LFunction{}
+	commands = map[string]*rt.Closure{}
+	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
 	userDataDir string
@@ -43,7 +44,7 @@ func main() {
 
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
-	case "linux":
+	case "linux", "darwin":
 		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
 	default:
 		// this is fine on windows, dont know about others
@@ -55,7 +56,7 @@ func main() {
 		defaultConfDir = filepath.Join(confDir, "hilbish")
 	} else {
 		// else do ~ substitution
-		defaultConfDir = expandHome(defaultHistDir)
+		defaultConfDir = filepath.Join(expandHome(defaultConfDir), "hilbish")
 	}
 	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {
@@ -142,27 +143,28 @@ func main() {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 		for scanner.Scan() {
 			text := scanner.Text()
-			runInput(text, text)
+			runInput(text, true)
 		}
+		exit(0)
 	}
 
 	if *cmdflag != "" {
-		runInput(*cmdflag, *cmdflag)
+		runInput(*cmdflag, true)
 	}
 
 	if getopt.NArgs() > 0 {
-		luaArgs := l.NewTable()
-		for _, arg := range getopt.Args() {
-			luaArgs.Append(lua.LString(arg))
+		luaArgs := rt.NewTable()
+		for i, arg := range getopt.Args() {
+			luaArgs.Set(rt.IntValue(int64(i)), rt.StringValue(arg))
 		}
 
-		l.SetGlobal("args", luaArgs)
-		err := l.DoFile(getopt.Arg(0))
+		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
+		err := util.DoFile(l, getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			exit(1)
 		}
-		os.Exit(0)
+		exit(0)
 	}
 
 	initialized = true
@@ -185,7 +187,10 @@ input:
 			fmt.Println("^C")
 			continue
 		}
-		oldInput := input
+		var priv bool
+		if strings.HasPrefix(input, " ") {
+			priv = true
+		}
 
 		input = strings.TrimSpace(input)
 		if len(input) == 0 {
@@ -198,6 +203,8 @@ input:
 			for {
 				input, err = continuePrompt(input)
 				if err != nil {
+					running = true
+					lr.SetPrompt(fmtPrompt(prompt))
 					goto input // continue inside nested loop
 				}
 				if !strings.HasSuffix(input, "\\") {
@@ -206,7 +213,7 @@ input:
 			}
 		}
 
-		runInput(input, oldInput)
+		runInput(input, priv)
 
 		termwidth, _, err := term.GetSize(0)
 		if err != nil {
@@ -268,8 +275,7 @@ func handleHistory(cmd string) {
 
 func expandHome(path string) string {
 	homedir := curuser.HomeDir
-
-	return strings.Replace(defaultHistDir, "~", homedir, 1)
+	return strings.Replace(path, "~", homedir, 1)
 }
 
 func removeDupes(slice []string) []string {
@@ -283,4 +289,22 @@ func removeDupes(slice []string) []string {
 	}
 
 	return newSlice
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func exit(code int) {
+	// wait for all timers to finish before exiting
+	for {
+		if timers.running == 0 {
+			os.Exit(code)
+		}
+	}
 }

@@ -2,7 +2,7 @@
 
 local hilbish = {}
 
---- Sets an alias of `orig` to `cmd`
+--- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
 function hilbish.alias(cmd, orig) end
@@ -33,18 +33,34 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goro(fn) end
 
+--- Sets the highlighter function. This is mainly for syntax hightlighting, but in
+--- reality could set the input of the prompt to display anything. The callback
+--- is passed the current line as typed and is expected to return a line that will
+--- be used to display in the line.
+--- @param cb function
+function hilbish.highlighter(cb) end
+
+--- Sets the hinter function. This will be called on every key insert to determine
+--- what text to use as an inline hint. The callback is passed 2 arguments:
+--- the current line and the position. It is expected to return a string
+--- which will be used for the hint.
+--- @param cb function
+function hilbish.hinter(cb) end
+
 --- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
 --- @param mode string
 function hilbish.inputMode(mode) end
 
---- Runs the `cb` function every `time` milliseconds
+--- Runs the `cb` function every `time` milliseconds.
+--- Returns a `timer` object (see `doc timers`).
 --- @param cb function
 --- @param time number
+--- @return table
 function hilbish.interval(cb, time) end
 
 --- Changes the continued line prompt to `str`
 --- @param str string
-function hilbish.mlprompt(str) end
+function hilbish.multiprompt(str) end
 
 --- Prepends `dir` to $PATH
 --- @param dir string
@@ -57,7 +73,8 @@ function hilbish.prependPath(dir) end
 --- `%u` - Name of current user
 --- `%h` - Hostname of device
 --- @param str string
-function hilbish.prompt(str) end
+--- @param typ string Type of prompt, being left or right. Left by default.
+function hilbish.prompt(str, typ) end
 
 --- Read input from the user, using Hilbish's line editor/input reader.
 --- This is a separate instance from the one Hilbish actually uses.
@@ -66,12 +83,24 @@ function hilbish.prompt(str) end
 function hilbish.read(prompt) end
 
 --- Runs `cmd` in Hilbish's sh interpreter.
+--- If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
+--- 3rd values instead of being outputted to the terminal.
 --- @param cmd string
 function hilbish.run(cmd) end
 
+--- Sets the execution/runner mode for interactive Hilbish. This determines whether
+--- Hilbish wll try to run input as Lua and/or sh or only do one of either.
+--- Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
+--- sh, and lua. It also accepts a function, to which if it is passed one
+--- will call it to execute user input instead.
+--- @param mode string|function
+function hilbish.runnerMode(mode) end
+
 --- Runs the `cb` function after `time` in milliseconds
+--- Returns a `timer` object (see `doc timers`).
 --- @param cb function
 --- @param time number
+--- @return table
 function hilbish.timeout(cb, time) end
 
 --- Searches for an executable called `binName` in the directories of $PATH

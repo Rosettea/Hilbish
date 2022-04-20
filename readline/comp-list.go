@@ -188,7 +188,7 @@ func (g *CompletionGroup) writeList(rl *Instance) (comp string) {
 	// function highlights the cell depending on current selector place.
 	highlight := func(y int, x int) string {
 		if y == g.tcPosY && x == g.tcPosX && g.isCurrent {
-			return seqCtermFg255 + seqFgBlackBright
+			return seqInvert
 		}
 		return ""
 	}

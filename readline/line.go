@@ -57,9 +57,9 @@ func (rl *Instance) echo() {
 
 		// Print the input line with optional syntax highlighting
 		if rl.SyntaxHighlighter != nil {
-			print(rl.SyntaxHighlighter(line) + " ")
+			print(rl.SyntaxHighlighter(line))
 		} else {
-			print(string(line) + " ")
+			print(string(line))
 		}
 	}
 
@@ -125,14 +125,14 @@ func (rl *Instance) deleteX() {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) deleteBackspace() {
+func (rl *Instance) deleteBackspace(forward bool) {
 	switch {
 	case len(rl.line) == 0:
 		return
-	case rl.pos == 0:
-		rl.line = rl.line[1:]
+	case forward:
+		rl.line = append(rl.line[:rl.pos], rl.line[rl.pos+1:]...)
 	case rl.pos > len(rl.line):
-		rl.backspace() // There is an infite loop going on here...
+		rl.backspace(forward) // There is an infite loop going on here...
 	case rl.pos == len(rl.line):
 		rl.pos--
 		rl.line = rl.line[:rl.pos]
@@ -175,4 +175,49 @@ func (rl *Instance) deleteToBeginning() {
 	// Keep the line length up until the cursor
 	rl.line = rl.line[rl.pos:]
 	rl.pos = 0
+}
+
+func (rl *Instance) deleteToEnd() {
+	rl.resetVirtualComp(false)
+	// Keep everything before the cursor
+	rl.line = rl.line[:rl.pos]
+}
+
+// @TODO(Renzix): move to emacs sepecific file
+func (rl *Instance) emacsForwardWord(tokeniser tokeniser) (adjust int) {
+	split, index, pos := tokeniser(rl.line, rl.pos)
+	if len(split) == 0 {
+		return
+	}
+
+	word := strings.TrimSpace(split[index])
+
+	switch {
+	case len(split) == 0:
+		return
+	case pos == len(word) && index != len(split)-1:
+		extrawhitespace := len(strings.TrimLeft(split[index], " ")) - len(word)
+		word = split[index+1]
+		adjust = len(word) + extrawhitespace
+	default:
+		adjust = len(word) - pos
+	}
+	return
+}
+
+func (rl *Instance) emacsBackwardWord(tokeniser tokeniser) (adjust int) {
+	split, index, pos := tokeniser(rl.line, rl.pos)
+	if len(split) == 0 {
+		return
+	}
+
+	switch {
+	case len(split) == 0:
+		return
+	case pos == 0 && index != 0:
+		adjust = len(split[index-1])
+	default:
+		adjust = pos
+	}
+	return
 }

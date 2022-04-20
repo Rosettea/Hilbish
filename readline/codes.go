@@ -34,32 +34,39 @@ const (
 	charCtrlHat               // ^^
 	charCtrlUnderscore        // ^_
 	charBackspace2      = 127 // ASCII 1963
-
 )
 
 // Escape sequences
 var (
-	seqUp        = string([]byte{27, 91, 65})
-	seqDown      = string([]byte{27, 91, 66})
-	seqForwards  = string([]byte{27, 91, 67})
-	seqBackwards = string([]byte{27, 91, 68})
-	seqHome      = string([]byte{27, 91, 72})
-	seqHomeSc    = string([]byte{27, 91, 49, 126})
-	seqEnd       = string([]byte{27, 91, 70})
-	seqEndSc     = string([]byte{27, 91, 52, 126})
-	seqDelete    = string([]byte{27, 91, 51, 126})
-	seqShiftTab  = string([]byte{27, 91, 90})
-	seqAltQuote  = string([]byte{27, 34})  // Added for showing registers ^["
-	seqAltR      = string([]byte{27, 114}) // Used for alternative history
+	seqUp           = string([]byte{27, 91, 65})
+	seqDown         = string([]byte{27, 91, 66})
+	seqForwards     = string([]byte{27, 91, 67})
+	seqBackwards    = string([]byte{27, 91, 68})
+	seqHome         = string([]byte{27, 91, 72})
+	seqHomeSc       = string([]byte{27, 91, 49, 126})
+	seqEnd          = string([]byte{27, 91, 70})
+	seqEndSc        = string([]byte{27, 91, 52, 126})
+	seqDelete       = string([]byte{27, 91, 51, 126})
+	seqDelete2      = string([]byte{27, 91, 80})
+	seqCtrlDelete   = string([]byte{27, 91, 51, 59, 53, 126})
+	seqCtrlDelete2  = string([]byte{27, 91, 77})
+	seqAltDelete    = string([]byte{27, 91, 51, 59, 51, 126})
+	seqShiftTab     = string([]byte{27, 91, 90})
+	seqAltQuote     = string([]byte{27, 34})  // Added for showing registers ^["
+	seqAltB         = string([]byte{27, 98})
+	seqAltD         = string([]byte{27, 100})
+	seqAltF         = string([]byte{27, 102})
+	seqAltR         = string([]byte{27, 114}) // Used for alternative history
+	seqAltBackspace = string([]byte{27, 127})
 )
 
 const (
 	seqPosSave    = "\x1b[s"
 	seqPosRestore = "\x1b[u"
 
-	seqClearLineAfer    = "\x1b[0k"
-	seqClearLineBefore  = "\x1b[1k"
-	seqClearLine        = "\x1b[2k"
+	seqClearLineAfer    = "\x1b[0K"
+	seqClearLineBefore  = "\x1b[1K"
+	seqClearLine        = "\x1b[2K"
 	seqClearScreenBelow = "\x1b[0J"
 	seqClearScreen      = "\x1b[2J" // Clears screen fully
 	seqCursorTopLeft    = "\x1b[H"  // Clears screen and places cursor on top-left
@@ -78,6 +85,7 @@ const (
 	seqBold       = "\x1b[1m"
 	seqUnderscore = "\x1b[4m"
 	seqBlink      = "\x1b[5m"
+	seqInvert     = "\x1b[7m"
 )
 
 // Text colours

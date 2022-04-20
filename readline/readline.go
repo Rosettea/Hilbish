@@ -2,9 +2,11 @@ package readline
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
+	"syscall"
 )
 
 var rxMultiline = regexp.MustCompile(`[\r\n]+`)
@@ -38,11 +40,12 @@ func (rl *Instance) Readline() (string, error) {
 	rl.modeViMode = VimInsert
 	rl.pos = 0
 	rl.posY = 0
+	rl.tcPrefix = ""
 
-	// Completion && hints init
-	rl.resetHintText()
+	// Completion && infos init
+	rl.resetInfoText()
 	rl.resetTabCompletion()
-	rl.getHintText()
+	rl.getInfoText()
 
 	// History Init
 	// We need this set to the last command, so that we can access it quickly
@@ -62,7 +65,7 @@ func (rl *Instance) Readline() (string, error) {
 		return string(rl.line), nil
 	}
 
-	// Finally, print any hints or completions
+	// Finally, print any info or completions
 	// if the TabCompletion engines so desires
 	rl.renderHelpers()
 
@@ -76,6 +79,12 @@ func (rl *Instance) Readline() (string, error) {
 			var err error
 			i, err = os.Stdin.Read(b)
 			if err != nil {
+				if errors.Is(err, syscall.EAGAIN) {
+					err = syscall.SetNonblock(syscall.Stdin, false)
+					if err == nil {
+						continue
+					}
+				}
 				return "", err
 			}
 		}
@@ -127,8 +136,8 @@ func (rl *Instance) Readline() (string, error) {
 				rl.updateHelpers()
 			}
 
-			if len(ret.HintText) > 0 {
-				rl.hintText = ret.HintText
+			if len(ret.InfoText) > 0 {
+				rl.infoText = ret.InfoText
 				rl.clearHelpers()
 				rl.renderHelpers()
 			}
@@ -160,9 +169,18 @@ func (rl *Instance) Readline() (string, error) {
 			rl.clearHelpers()
 			return "", CtrlC
 
-		case charEOF:
-			rl.clearHelpers()
-			return "", EOF
+		case charEOF: // ctrl d
+			if len(rl.line) == 0 {
+				rl.clearHelpers()
+				return "", EOF
+			}
+			if rl.modeTabFind {
+				rl.backspaceTabFind()
+			} else {
+				if (rl.pos < len(rl.line)) {
+					rl.deleteBackspace(true)
+				}
+			}
 
 		// Clear screen
 		case charCtrlL:
@@ -173,8 +191,8 @@ func (rl *Instance) Readline() (string, error) {
 			}
 			print(seqClearScreenBelow)
 
-			rl.resetHintText()
-			rl.getHintText()
+			rl.resetInfoText()
+			rl.getInfoText()
 			rl.renderHelpers()
 
 		// Line Editing ------------------------------------------------------------------------------------
@@ -185,6 +203,16 @@ func (rl *Instance) Readline() (string, error) {
 			// Delete everything from the beginning of the line to the cursor position
 			rl.saveBufToRegister(rl.line[:rl.pos])
 			rl.deleteToBeginning()
+			rl.resetHelpers()
+			rl.updateHelpers()
+
+		case charCtrlK:
+			if rl.modeTabCompletion {
+				rl.resetVirtualComp(true)
+			}
+			// Delete everything after the cursor position
+			rl.saveBufToRegister(rl.line[rl.pos:])
+			rl.deleteToEnd()
 			rl.resetHelpers()
 			rl.updateHelpers()
 
@@ -213,7 +241,7 @@ func (rl *Instance) Readline() (string, error) {
 				// Vim mode has different behaviors
 				if rl.InputMode == Vim {
 					if rl.modeViMode == VimInsert {
-						rl.backspace()
+						rl.backspace(false)
 					} else if rl.pos != 0 {
 						rl.pos--
 					}
@@ -222,7 +250,7 @@ func (rl *Instance) Readline() (string, error) {
 				}
 
 				// Else emacs deletes a character
-				rl.backspace()
+				rl.backspace(false)
 				rl.renderHelpers()
 			}
 
@@ -387,6 +415,10 @@ func (rl *Instance) Readline() (string, error) {
 				rl.renderHelpers()
 			}
 
+		case charCtrlUnderscore:
+			rl.undoLast()
+			rl.viUndoSkipAppend = true
+
 		case '\r':
 			fallthrough
 		case '\n':
@@ -516,21 +548,26 @@ func (rl *Instance) editorInput(r []rune) {
 
 	case VimReplaceMany:
 		for _, char := range r {
-			rl.deleteX()
+			if rl.pos != len(rl.line) {
+				rl.deleteX()
+			}
 			rl.insert([]rune{char})
 		}
 		rl.refreshVimStatus()
 
 	default:
-		// For some reason Ctrl+k messes with the input line, so ignore it.
-		if r[0] == 11 {
+		// Don't insert control keys
+		if r[0] >= 1 && r[0] <= 31 {
 			return
 		}
 		// We reset the history nav counter each time we come here:
 		// We don't need it when inserting text.
 		rl.histNavIdx = 0
 		rl.insert(r)
+		rl.writeHintText()
 	}
+
+	rl.echoRightPrompt()
 
 	if len(rl.multisplit) == 0 {
 		rl.syntaxCompletion()
@@ -625,6 +662,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		rl.mainHist = true
 		rl.walkHistory(1)
+		moveCursorForwards(len(rl.line) - rl.pos)
+		rl.pos = len(rl.line)
 
 	case seqDown:
 		if rl.modeTabCompletion {
@@ -636,6 +675,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		rl.mainHist = true
 		rl.walkHistory(-1)
+		moveCursorForwards(len(rl.line) - rl.pos)
+		rl.pos = len(rl.line)
 
 	case seqForwards:
 		if rl.modeTabCompletion {
@@ -647,8 +688,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 		}
 		if (rl.modeViMode == VimInsert && rl.pos < len(rl.line)) ||
 			(rl.modeViMode != VimInsert && rl.pos < len(rl.line)-1) {
-			moveCursorForwards(1)
-			rl.pos++
+			rl.moveCursorByAdjust(1)
 		}
 		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
@@ -663,10 +703,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			rl.renderHelpers()
 			return
 		}
-		if rl.pos > 0 {
-			moveCursorBackwards(1)
-			rl.pos--
-		}
+		rl.moveCursorByAdjust(-1)
 		rl.viUndoSkipAppend = true
 		rl.updateHelpers()
 
@@ -689,31 +726,63 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 		return
 	case seqCtrlRightArrow:
+		rl.insert(rl.hintText)
 		rl.moveCursorByAdjust(rl.viJumpW(tokeniseLine))
 		rl.updateHelpers()
 		return
 
-	case seqDelete:
+	case seqDelete,seqDelete2:
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
-			rl.deleteBackspace()
+			if (rl.pos < len(rl.line)) {
+				rl.deleteBackspace(true)
+			}
 		}
+
 	case seqHome, seqHomeSc:
 		if rl.modeTabCompletion {
 			return
 		}
-		moveCursorBackwards(rl.pos)
-		rl.pos = 0
+		rl.moveCursorByAdjust(-rl.pos)
+		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
 
 	case seqEnd, seqEndSc:
 		if rl.modeTabCompletion {
 			return
 		}
-		moveCursorForwards(len(rl.line) - rl.pos)
-		rl.pos = len(rl.line)
+		rl.moveCursorByAdjust(len(rl.line) - rl.pos)
+		rl.updateHelpers()
 		rl.viUndoSkipAppend = true
+
+	case seqAltB:
+		if rl.modeTabCompletion {
+			return
+		}
+
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		move := rl.emacsBackwardWord(tokeniseLine)
+		rl.moveCursorByAdjust(-move)
+		rl.updateHelpers()
+
+	case seqAltF:
+		if rl.modeTabCompletion {
+			return
+		}
+
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		move := rl.emacsForwardWord(tokeniseLine)
+		rl.moveCursorByAdjust(move)
+		rl.updateHelpers()
 
 	case seqAltR:
 		rl.resetVirtualComp(false)
@@ -732,6 +801,36 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.modeTabFind = true
 		rl.updateTabFind([]rune{})
 		rl.viUndoSkipAppend = true
+
+	case seqAltBackspace:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		// This is only available in Insert mode
+		if rl.modeViMode != VimInsert {
+			return
+		}
+
+		rl.saveToRegister(rl.viJumpB(tokeniseLine))
+		rl.viDeleteByAdjust(rl.viJumpB(tokeniseLine))
+		rl.updateHelpers()
+
+	case seqCtrlDelete, seqCtrlDelete2, seqAltD:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		rl.saveToRegister(rl.emacsForwardWord(tokeniseLine))
+		// vi delete, emacs forward, funny huh
+		rl.viDeleteByAdjust(rl.emacsForwardWord(tokeniseLine))
+		rl.updateHelpers()
+
+	case seqAltDelete:
+		if rl.modeTabCompletion {
+			rl.resetVirtualComp(false)
+		}
+		rl.saveToRegister(-rl.emacsBackwardWord(tokeniseLine))
+		rl.viDeleteByAdjust(-rl.emacsBackwardWord(tokeniseLine))
+		rl.updateHelpers()
 
 	default:
 		if rl.modeTabFind {
@@ -768,6 +867,8 @@ func (rl *Instance) escapeSeq(r []rune) {
 }
 
 func (rl *Instance) carridgeReturn() {
+	rl.moveCursorByAdjust(len(rl.line))
+	rl.updateHelpers()
 	rl.clearHelpers()
 	print("\r\n")
 	if rl.HistoryAutoWrite {

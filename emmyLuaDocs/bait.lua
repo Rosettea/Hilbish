@@ -15,6 +15,6 @@ function bait.catchOnce(name, cb) end
 --- Throws a hook with `name` with the provided `args`
 --- @param name string
 --- @vararg any
-function bait.throw(name) end
+function bait.throw(name, ...) end
 
 return bait

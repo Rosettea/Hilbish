@@ -4,10 +4,12 @@ import "regexp"
 
 // SetHintText - a nasty function to force writing a new hint text. It does not update helpers, it just renders
 // them, so the hint will survive until the helpers (thus including the hint) will be updated/recomputed.
+/*
 func (rl *Instance) SetHintText(s string) {
 	rl.hintText = []rune(s)
 	rl.renderHelpers()
 }
+*/
 
 func (rl *Instance) getHintText() {
 
@@ -27,7 +29,7 @@ func (rl *Instance) getHintText() {
 // writeHintText - only writes the hint text and computes its offsets.
 func (rl *Instance) writeHintText() {
 	if len(rl.hintText) == 0 {
-		rl.hintY = 0
+		//rl.hintY = 0
 		return
 	}
 
@@ -41,16 +43,16 @@ func (rl *Instance) writeHintText() {
 
 	wrapped, hintLen := WrapText(string(rl.hintText), width)
 	offset += hintLen
-	rl.hintY = offset
+//	rl.hintY = offset
 
 	hintText := string(wrapped)
 
 	if len(hintText) > 0 {
-		print("\r" + rl.HintFormatting + string(hintText) + seqReset)
+		print(rl.HintFormatting + string(hintText) + seqReset)
 	}
 }
 
 func (rl *Instance) resetHintText() {
-	rl.hintY = 0
+	//rl.hintY = 0
 	rl.hintText = []rune{}
 }

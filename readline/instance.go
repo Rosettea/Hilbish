@@ -30,11 +30,13 @@ type Instance struct {
 	Multiline       bool   // If set to true, the shell will have a two-line prompt.
 	MultilinePrompt string // If multiline is true, this is the content of the 2nd line.
 
-	mainPrompt     string // If multiline true, the full prompt string / If false, the 1st line of the prompt
-	realPrompt     []rune // The prompt that is actually on the same line as the beginning of the input line.
-	defaultPrompt  []rune
-	promptLen      int
-	stillOnRefresh bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
+	mainPrompt      string // If multiline true, the full prompt string / If false, the 1st line of the prompt
+	rightPrompt     string
+	rightPromptLen  int
+	realPrompt      []rune // The prompt that is actually on the same line as the beginning of the input line.
+	defaultPrompt   []rune
+	promptLen       int
+	stillOnRefresh  bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
 
 	//
 	// Input Line ---------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ type Instance struct {
 	searchMode   FindMode       // Used for varying hints, and underlying functions called
 	regexSearch  *regexp.Regexp // Holds the current search regex match
 	mainHist     bool           // Which history stdin do we want
-	histHint     []rune         // We store a hist hint, for dual history sources
+	histInfo     []rune         // We store a piece of hist info, for dual history sources
 
 	//
 	// History -----------------------------------------------------------------------------------
@@ -134,19 +136,33 @@ type Instance struct {
 	histNavIdx int // Used for quick history navigation.
 
 	//
-	// Hints -------------------------------------------------------------------------------------
+	// Info -------------------------------------------------------------------------------------
 
-	// HintText is a helper function which displays hint text the prompt.
-	// HintText takes the line input from the promt and the cursor position.
+	// InfoText is a helper function which displays infio text below the prompt.
+	// InfoText takes the line input from the prompt and the cursor position.
+	// It returns the info text to display.
+	InfoText func([]rune, int) []rune
+
+	// InfoColor is any ANSI escape codes you wish to use for info formatting. By
+	// default this will just be blue.
+	InfoFormatting string
+
+	infoText []rune // The actual info text
+	infoY    int    // Offset to info, if it spans multiple lines
+
+	//
+	// Hints -----------------------------------------------------------------------------------
+
+	// HintText is a helper function which displays hint text right after the user's input.
+	// It takes the line input and cursor position.
 	// It returns the hint text to display.
 	HintText func([]rune, int) []rune
 
-	// HintColor any ANSI escape codes you wish to use for hint formatting. By
-	// default this will just be blue.
+	// HintFormatting is just a string to use as the formatting for the hint. By default
+	// this will be a grey color.
 	HintFormatting string
 
-	hintText []rune // The actual hint text
-	hintY    int    // Offset to hints, if it spans multiple lines
+	hintText []rune
 
 	//
 	// Vim Operatng Parameters -------------------------------------------------------------------
@@ -205,7 +221,8 @@ func NewInstance() *Instance {
 	rl.HistoryAutoWrite = true
 
 	// Others
-	rl.HintFormatting = seqFgBlue
+	rl.InfoFormatting = seqFgBlue
+	rl.HintFormatting = "\x1b[2m"
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
 

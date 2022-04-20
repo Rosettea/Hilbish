@@ -80,6 +80,9 @@ func main() {
 					if emmyType == "@param" {
 						em.Params = append(em.Params, emmyLinePieces[1])
 					}
+					if emmyType == "@vararg" {
+						em.Params = append(em.Params, "...") // add vararg
+					}
 					em.Docs = append(em.Docs, d)
 				} else {
 					funcdoc = append(funcdoc, d)
@@ -110,6 +113,9 @@ func main() {
 						emmyType := emmyLinePieces[0]
 						if emmyType == "@param" {
 							em.Params = append(em.Params, emmyLinePieces[1])
+						}
+						if emmyType == "@vararg" {
+							em.Params = append(em.Params, "...") // add vararg
 						}
 						em.Docs = append(em.Docs, d)
 					} else {

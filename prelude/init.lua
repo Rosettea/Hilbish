@@ -8,7 +8,7 @@ local _ = require 'succulent' -- Function additions
 local oldDir = hilbish.cwd()
 
 local shlvl = tonumber(os.getenv 'SHLVL')
-if shlvl ~= nil then os.setenv('SHLVL', shlvl + 1) else os.setenv('SHLVL', 0) end
+if shlvl ~= nil then os.setenv('SHLVL', tostring(shlvl + 1)) else os.setenv('SHLVL', '0') end
 
 -- Builtins
 local recentDirs = {}
@@ -168,6 +168,9 @@ hilbish.userDir.config .. '/hilbish/init.lua' ..
 and also change all global functions (prompt, alias) to be
 in the hilbish module (hilbish.prompt, hilbish.alias as examples).
 
+And if this is your first time (most likely), you can copy a config
+from ]] .. hilbish.dataDir,
+[[
 Since 1.0 is a big release, you'll want to check the changelog
 at https://github.com/Rosettea/Hilbish/releases/tag/v1.0.0
 to find more breaking changes.
@@ -214,14 +217,6 @@ do
 			end
 		end,
 	})
-
-	bait.catch('command.exit', function ()
-		for key, value in pairs(virt_G) do
-			if type(value) == 'string' then
-				virt_G[key] = os.getenv(key)
-			end
-		end
-	end)
 end
 
 commander.register('cdr', function(args)
@@ -263,7 +258,7 @@ bait.catch('command.not-found', function(cmd)
 	print(string.format('hilbish: %s not found', cmd))
 end)
 
-bait.catch('command.no-perm', function(cmd)
-	print(string.format('hilbish: %s: no permission', cmd))
+bait.catch('command.not-executable', function(cmd)
+	print(string.format('hilbish: %s: not executable', cmd))
 end)
 

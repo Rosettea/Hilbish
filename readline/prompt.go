@@ -11,6 +11,13 @@ import (
 // It also calculates the runes in the string as well as any non-printable escape codes.
 func (rl *Instance) SetPrompt(s string) {
 	rl.mainPrompt = s
+	rl.computePrompt()
+}
+
+// SetRightPrompt sets the right prompt.
+func (rl *Instance) SetRightPrompt(s string) {
+	rl.rightPrompt = s + " "
+	rl.computePrompt()
 }
 
 // RefreshPromptLog - A simple function to print a string message (a log, or more broadly,
@@ -20,7 +27,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-		// Account for the hint line
+		// Account for the info line
 	} else if rl.modeTabCompletion && rl.modeAutoFind {
 		rl.tcUsedY = 0
 	} else {
@@ -40,7 +47,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 		moveCursorUp(1)
 	}
 	rl.stillOnRefresh = true
-	moveCursorUp(rl.hintY + rl.tcUsedY)
+	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
 	print("\r\n" + seqClearScreenBelow)
 
@@ -68,12 +75,11 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 
 // RefreshPromptInPlace - Refreshes the prompt in the very same place he is.
 func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
-
 	// We adjust cursor movement, depending on which mode we're currently in.
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-		// Account for the hint line
+		// Account for the info line
 	} else if rl.modeTabCompletion && rl.modeAutoFind {
 		rl.tcUsedY = 0
 	} else {
@@ -82,7 +88,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 
 	// Update the prompt if a special has been passed.
 	if prompt != "" {
-		rl.mainPrompt = prompt
+		rl.SetPrompt(prompt)
 	}
 
 	if rl.Multiline {
@@ -91,7 +97,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 
 	// Clear the input line and everything below
 	print(seqClearLine)
-	moveCursorUp(rl.hintY + rl.tcUsedY)
+	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
 	print("\r\n" + seqClearScreenBelow)
 
@@ -118,7 +124,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-	} else if rl.modeTabCompletion && rl.modeAutoFind { // Account for the hint line
+	} else if rl.modeTabCompletion && rl.modeAutoFind { // Account for the info line
 		rl.tcUsedY = 0
 	} else {
 		rl.tcUsedY = 1
@@ -137,7 +143,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 
 	// Update the prompt if a special has been passed.
 	if prompt != "" {
-		rl.mainPrompt = prompt
+		rl.SetPrompt(prompt)
 	}
 
 	// Add a new line if needed
@@ -185,6 +191,7 @@ func (rl *Instance) computePrompt() (prompt []rune) {
 
 	// Strip color escapes
 	rl.promptLen = getRealLength(string(rl.realPrompt))
+	rl.rightPromptLen = getRealLength(string(rl.rightPrompt))
 	
 	return
 }
@@ -204,4 +211,12 @@ func (rl *Instance) colorizeVimPrompt(p []rune) (cp []rune) {
 func getRealLength(s string) (l int) {
 	stripped := ansi.Strip(s)
 	return uniseg.GraphemeClusterCount(stripped)
+}
+
+func (rl *Instance) echoRightPrompt() {
+	if rl.fullX < GetTermWidth() - rl.rightPromptLen - 1 {
+		moveCursorForwards(GetTermWidth())
+		moveCursorBackwards(rl.rightPromptLen)
+		print(rl.rightPrompt)
+	}
 }

@@ -1,25 +1,56 @@
 # 🎀 Changelog
 
-## [1.0.4] - 2021-03-12
+## [1.2.0] - 2022-03-17
+### Added
+- Job Management additions
+  - `job.start` and `job.done` hooks (`doc hooks job`)
+  - `hilbish.jobs` interface (`get(id)` function gets a job object via `id`, `all()` gets all)
+- Customizable runner/exec mode
+  - However Hilbish runs interactive user input can now be changed Lua side (`doc runner-mode`)
+
+### Changed
+- `vimMode` doc is now `vim-mode`
+
+### Fixed
+- Make sure input which is supposed to go in history goes there
+- Cursor is right at the end of input on history search
+
+## [1.1.0] - 2022-03-17
+### Added
+- `hilbish.vimAction` hook (`doc vimMode actions`)
+- `command.not-executable` hook (will replace `command.no-perm` in a future release)
+
+### Fixed
+- Check if interactive before adding to history
+- Escape in vim mode exits all modes and not only insert
+- Make 2nd line in prompt empty if entire prompt is 1 line
+- Completion menu doesnt appear if there is only 1 result
+- Ignore SIGQUIT, which caused a panic unhandled
+- Remove hostname in greeting on Windows
+- Handle PATH binaries properly on Windows
+- Fix removal of dot in the beginning of folders/files that have them for file complete
+- Fix prompt being set to the continue prompt even when exited
+
+## [1.0.4] - 2022-03-12
 ### Fixed
 - Panic when history directory doesn't exist
 
-## [1.0.3] - 2021-03-12
+## [1.0.3] - 2022-03-12
 ### Fixed
 - Removed duplicate executable suggestions
 - User input is added to history now instead of what's ran by Hilbish
 - Formatting issue with prompt on no input
 
-## [1.0.2] - 2021-03-06
+## [1.0.2] - 2022-03-06
 ### Fixed
 - Cases where Hilbish's history directory doesn't exist will no longer cause a panic
 
-## [1.0.1] - 2021-03-06
+## [1.0.1] - 2022-03-06
 ### Fixed
 - Using `hilbish.appendPath` will no longer result in string spam (debugging thing left being)
 - Prompt gets set properly on startup
 
-## [1.0.0] - 2021-03-06
+## [1.0.0] - 2022-03-06
 ### Added
 - MacOS is now officialy supported, default compile time vars have been added
 for it
@@ -392,6 +423,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[1.1.0]: https://github.com/Rosettea/Hilbish/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/Rosettea/Hilbish/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Rosettea/Hilbish/compare/v1.0.1...v1.0.2

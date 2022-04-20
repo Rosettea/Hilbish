@@ -1,31 +1,30 @@
 PREFIX ?= /usr
-DESTDIR ?=
 BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/share/hilbish
 
-build:
-	@go build -ldflags "-s -w"
+MY_GOFLAGS = -ldflags "-s -w"
 
-dev:
-	@go build -ldflags "-s -w -X main.version=$(shell git describe --tags)"
+all: dev
+
+dev: MY_GOFLAGS = -ldflags "-s -w -X main.version=$(shell git describe --tags)"
+dev: build
+
+build:
+	go build $(MY_GOFLAGS)
 
 install:
-	@install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
-	@mkdir -p "$(DESTDIR)$(LIBDIR)"
-	@cp libs docs emmyLuaDocs prelude .hilbishrc.lua "$(DESTDIR)$(LIBDIR)" -r
-	@grep "$(DESTDIR)$(BINDIR)/hilbish" -qxF /etc/shells || echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
-	@echo "Hilbish Installed"
+	install -v -d "$(DESTDIR)$(BINDIR)/" && install -m 0755 -v hilbish "$(DESTDIR)$(BINDIR)/hilbish"
+	mkdir -p "$(DESTDIR)$(LIBDIR)"
+	cp -r libs docs emmyLuaDocs prelude .hilbishrc.lua "$(DESTDIR)$(LIBDIR)"
+	grep -qxF "$(DESTDIR)$(BINDIR)/hilbish" /etc/shells || echo "$(DESTDIR)$(BINDIR)/hilbish" >> /etc/shells
 
 uninstall:
-	@rm -vrf \
+	rm -vrf \
 			"$(DESTDIR)$(BINDIR)/hilbish" \
 			"$(DESTDIR)$(LIBDIR)"
-	@sed -i '/hilbish/d' /etc/shells
-	@echo "Hilbish Uninstalled"
+	sed -i '/hilbish/d' /etc/shells
 
 clean:
-	@go clean
+	go clean
 
-all: build install
-
-.PHONY: install uninstall build dev clean
+.PHONY: all dev build install uninstall clean

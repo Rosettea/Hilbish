@@ -399,22 +399,22 @@ func (rl *Instance) refreshVimStatus() {
 	rl.updateHelpers()
 }
 
-// viHintMessage - lmorg's way of showing Vim status is to overwrite the hint.
+// viInfoMessage - lmorg's way of showing Vim status is to overwrite the info.
 // Currently not used, as there is a possibility to show the current Vim mode in the prompt.
-func (rl *Instance) viHintMessage() {
+func (rl *Instance) viInfoMessage() {
 	switch rl.modeViMode {
 	case VimKeys:
-		rl.hintText = []rune("-- VIM KEYS -- (press `i` to return to normal editing mode)")
+		rl.infoText = []rune("-- VIM KEYS -- (press `i` to return to normal editing mode)")
 	case VimInsert:
-		rl.hintText = []rune("-- INSERT --")
+		rl.infoText = []rune("-- INSERT --")
 	case VimReplaceOnce:
-		rl.hintText = []rune("-- REPLACE CHARACTER --")
+		rl.infoText = []rune("-- REPLACE CHARACTER --")
 	case VimReplaceMany:
-		rl.hintText = []rune("-- REPLACE --")
+		rl.infoText = []rune("-- REPLACE --")
 	case VimDelete:
-		rl.hintText = []rune("-- DELETE --")
+		rl.infoText = []rune("-- DELETE --")
 	default:
-		rl.getHintText()
+		rl.getInfoText()
 	}
 
 	rl.clearHelpers()

@@ -33,7 +33,7 @@ func (rl *Instance) updateTabFind(r []rune) {
 	var err error
 	rl.regexSearch, err = regexp.Compile("(?i)" + string(rl.tfLine))
 	if err != nil {
-		rl.hintText = []rune(Red("Failed to match search regexp"))
+		rl.infoText = []rune(Red("Failed to match search regexp"))
 	}
 
 	// We update and print
