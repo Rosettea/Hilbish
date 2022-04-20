@@ -239,9 +239,11 @@ func continuePrompt(prev string) (string, error) {
 func fmtPrompt(prompt string) string {
 	host, _ := os.Hostname()
 	cwd, _ := os.Getwd()
-	cwd = expandHome(cwd)
-	username := curuser.Username
 
+	if strings.HasPrefix(cwd, curuser.HomeDir) {
+		cwd = "~" + strings.TrimPrefix(cwd, curuser.HomeDir)
+	}
+	username := curuser.Username
 	// this will be baked into binary since GOOS is a constant
 	if runtime.GOOS == "windows" {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
@@ -272,12 +274,8 @@ func handleHistory(cmd string) {
 }
 
 func expandHome(path string) string {
-	expanded := path
-	if strings.HasPrefix(path, curuser.HomeDir) {
-		expanded = "~" + strings.TrimPrefix(path, curuser.HomeDir)
-	}
-	
-	return expanded
+	homedir := curuser.HomeDir
+	return strings.Replace(path, "~", homedir, 1)
 }
 
 func removeDupes(slice []string) []string {
