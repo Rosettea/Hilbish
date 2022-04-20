@@ -93,9 +93,9 @@ func DoFile(rtm *rt.Runtime, path string) error {
 		buf = append(buf, line...)
 	}
 
-	chunk, err := rtm.CompileAndLoadLuaChunk(path, buf, rt.TableValue(rtm.GlobalEnv()))
-	if chunk != nil {
-		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
+	clos, err := rtm.LoadFromSourceOrCode(path, buf, "bt", rt.TableValue(rtm.GlobalEnv()), false)
+	if clos != nil {
+		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(clos))
 	}
 
 	return err
