@@ -86,7 +86,6 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
 		ctx := string(line)
-		var completions []string
 
 		var compGroup []*readline.CompletionGroup
 
@@ -237,12 +236,14 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			}
 
 			if len(compGroup) == 0 {
-				completions = fileComplete(query, ctx, fields)
-				compGroup = append(compGroup, &readline.CompletionGroup{
+				completions, p := fileComplete(query, ctx, fields)
+				fcompGroup := []*readline.CompletionGroup{{
 					TrimSlash: false,
 					NoSpace: true,
 					Suggestions: completions,
-				})
+				}}
+
+				return p, fcompGroup
 			}
 		}
 		return "", compGroup

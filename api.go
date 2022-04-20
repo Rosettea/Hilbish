@@ -154,7 +154,7 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	completions := fileComplete(query, ctx, fds)
+	completions, _ := fileComplete(query, ctx, fds)
 	luaComps := rt.NewTable()
 
 	for i, comp := range completions {

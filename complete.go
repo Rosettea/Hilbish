@@ -6,21 +6,8 @@ import (
 	"os"
 )
 
-func fileComplete(query, ctx string, fields []string) []string {
-	var completions []string
-
-	prefixes := []string{"./", "../", "/", "~/"}
-	for _, prefix := range prefixes {
-		if strings.HasPrefix(query, prefix) {
-			completions, _ = matchPath(strings.Replace(query, "~", curuser.HomeDir, 1), query)
-		}
-	}
-
-	if len(completions) == 0 && len(fields) > 1 {
-		completions, _ = matchPath("./" + query, query)
-	}
-
-	return completions
+func fileComplete(query, ctx string, fields []string) ([]string, string) {
+	return matchPath(query)
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
@@ -29,17 +16,17 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	prefixes := []string{"./", "../", "/", "~/"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(query, prefix) {
-			fileCompletions := fileComplete(query, ctx, fields)
+			fileCompletions, filePref := matchPath(query)
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
-					name := strings.Replace(query + f, "~", curuser.HomeDir, 1)
-					if err := findExecutable(name, false, true); err != nil {
+					fullPath, _ := filepath.Abs(expandHome(query + strings.TrimPrefix(f, filePref)))
+					if err := findExecutable(fullPath, false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
 				}
 			}
-			return completions, ""
+			return completions, filePref
 		}
 	}
 
@@ -75,37 +62,52 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	return completions, query
 }
 
-func matchPath(path, pref string) ([]string, error) {
+func matchPath(query string) ([]string, string) {
 	var entries []string
-	matches, err := filepath.Glob(path + "*")
-	if err == nil {
-		args := []string{
-			"\"", "\\\"",
-			"'", "\\'",
-			"`", "\\`",
-			" ", "\\ ",
-			"(", "\\(",
-			")", "\\)",
-			"[", "\\[",
-			"]", "\\]",
-		}
+	var baseName string
 
-		r := strings.NewReplacer(args...)
-		for _, match := range matches {
-			name := filepath.Base(match)
-			p := filepath.Base(pref)
-			if pref == "" || pref == "./" {
-				p = ""
+	path, _ := filepath.Abs(expandHome(filepath.Dir(query)))
+	if string(query) == "" {
+		// filepath base below would give us "."
+		// which would cause a match of only dotfiles
+		path, _ = filepath.Abs(".")
+	} else if !strings.HasSuffix(query, string(os.PathSeparator)) {
+		baseName = filepath.Base(query)
+	}
+
+	files, _ := os.ReadDir(path)
+	for _, file := range files {
+		if strings.HasPrefix(file.Name(), baseName) {
+			entry := file.Name()
+			if file.IsDir() {
+				entry = entry + string(os.PathSeparator)
 			}
-			name = strings.TrimPrefix(name, p)
-			matchFull, _ := filepath.Abs(match)
-			if info, err := os.Stat(matchFull); err == nil && info.IsDir() {
-				name = name + string(os.PathSeparator)
-			}
-			name = r.Replace(name)
-			entries = append(entries, name)
+			entry = escapeFilename(entry)
+			entries = append(entries, entry)
 		}
 	}
 
-	return entries, err
+	return entries, baseName
+}
+
+func escapeFilename(fname string) string {
+	args := []string{
+		"\"", "\\\"",
+		"'", "\\'",
+		"`", "\\`",
+		" ", "\\ ",
+		"(", "\\(",
+		")", "\\)",
+		"[", "\\[",
+		"]", "\\]",
+		"$", "\\$",
+		"&", "\\&",
+		"*", "\\*",
+		">", "\\>",
+		"<", "\\<",
+		"|", "\\|",
+	}
+
+	r := strings.NewReplacer(args...)
+	return r.Replace(fname)
 }
