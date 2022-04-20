@@ -1,5 +1,7 @@
 package readline
 
+import "golang.org/x/text/width"
+
 // updateHelpers is a key part of the whole refresh process:
 // it should coordinate reprinting the input line, any Infos and completions
 // and manage to get back to the current (computed) cursor coordinates
@@ -21,6 +23,23 @@ func (rl *Instance) updateHelpers() {
 	rl.renderHelpers()
 }
 
+const tabWidth = 4
+
+func getWidth(x []rune) int {
+	var w int
+	for _, j := range x {
+		k := width.LookupRune(j).Kind()
+		if j == '\t' {
+			w += tabWidth
+		} else if k == width.EastAsianWide || k == width.EastAsianFullwidth {
+			w += 2
+		} else {
+			w++
+		}
+	}
+	return w
+}
+
 // Update reference should be called only once in a "loop" (not Readline(), but key control loop)
 func (rl *Instance) updateReferences() {
 
@@ -33,11 +52,11 @@ func (rl *Instance) updateReferences() {
 
 	var fullLine, cPosLine int
 	if len(rl.currentComp) > 0 {
-		fullLine = len(rl.lineComp)
-		cPosLine = len(rl.lineComp[:rl.pos])
+		fullLine = getWidth(rl.lineComp)
+		cPosLine = getWidth(rl.lineComp[:rl.pos])
 	} else {
-		fullLine = len(rl.line)
-		cPosLine = len(rl.line[:rl.pos])
+		fullLine = getWidth(rl.line)
+		cPosLine = getWidth(rl.line[:rl.pos])
 	}
 
 	// We need the X offset of the whole line
@@ -106,7 +125,7 @@ func (rl *Instance) clearHelpers() {
 // and replaces the cursor to its current position. This function never
 // computes or refreshes any value, except from inside the echo function.
 func (rl *Instance) renderHelpers() {
-	
+
 	// when the instance is in this state we want it to be "below" the user's
 	// input for it to be aligned properly
 	if !rl.compConfirmWait {
