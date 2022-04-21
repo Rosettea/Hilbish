@@ -601,7 +601,7 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // inputMode(mode)
-// Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+// Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 // --- @param mode string
 func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
