@@ -1,9 +1,14 @@
 package main
 
 import (
+	"errors"
 	"path/filepath"
 	"strings"
 	"os"
+
+	"hilbish/util"
+
+	rt "github.com/arnodel/golua/runtime"
 )
 
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
@@ -110,4 +115,102 @@ func escapeFilename(fname string) string {
 
 	r := strings.NewReplacer(args...)
 	return r.Replace(fname)
+}
+
+func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(4); err != nil {
+		return nil, err
+	}
+	completer, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	query, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err := c.StringArg(2)
+	if err != nil {
+		return nil, err
+	}
+	fields, err := c.TableArg(3)
+	if err != nil {
+		return nil, err
+	}
+
+	var completecb *rt.Closure
+	var ok bool
+	if completecb, ok = luaCompletions[completer]; !ok {
+		return nil, errors.New("completer " + completer + " does not exist")
+	}
+
+	// we must keep the holy 80 cols
+	completerReturn, err := rt.Call1(l.MainThread(),
+	rt.FunctionValue(completecb), rt.StringValue(query),
+	rt.StringValue(ctx), rt.TableValue(fields))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext1(t.Runtime, completerReturn), nil
+}
+
+func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, _ := fileComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
+}
+
+func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, _ := binaryComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
+}
+
+func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
+	if err := c.CheckNArgs(3); err != nil {
+		return "", "", []string{}, err
+	}
+	query, err := c.StringArg(0)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	ctx, err := c.StringArg(1)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	fields, err := c.TableArg(2)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+
+	var fds []string
+	util.ForEach(fields, func(k rt.Value, v rt.Value) {
+		if v.Type() == rt.StringType {
+			fds = append(fds, v.AsString())
+		}
+	})
+
+	return query, ctx, fds, err
 }

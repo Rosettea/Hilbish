@@ -148,75 +148,6 @@ func getenv(key, fallback string) string {
     return value
 }
 
-func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	completions, _ := fileComplete(query, ctx, fds)
-	luaComps := rt.NewTable()
-
-	for i, comp := range completions {
-		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
-	}
-
-	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
-}
-
-func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	completions, _ := binaryComplete(query, ctx, fds)
-	luaComps := rt.NewTable()
-
-	for i, comp := range completions {
-		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
-	}
-
-	return c.PushingNext1(t.Runtime, rt.TableValue(luaComps)), nil
-}
-
-func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
-	if err := c.CheckNArgs(3); err != nil {
-		return "", "", []string{}, err
-	}
-	query, err := c.StringArg(0)
-	if err != nil {
-		return "", "", []string{}, err
-	}
-	ctx, err := c.StringArg(1)
-	if err != nil {
-		return "", "", []string{}, err
-	}
-	fields, err := c.TableArg(2)
-	if err != nil {
-		return "", "", []string{}, err
-	}
-
-	var fds []string
-	nextVal := rt.NilValue
-	for {
-		next, val, ok := fields.Next(nextVal)
-		if next == rt.NilValue {
-			break
-		}
-		nextVal = next
-
-		valStr, ok := val.TryString()
-		if !ok {
-			continue
-		}
-
-		fds = append(fds, valStr)
-	}
-
-	return query, ctx, fds, err
-}
-
 func setVimMode(mode string) {
 	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	hooks.Em.Emit("hilbish.vimMode", mode)
@@ -395,21 +326,11 @@ func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	// check if dir is a table or a string
 	if arg.Type() == rt.TableType {
-		nextVal := rt.NilValue
-		for {
-			next, val, ok := arg.AsTable().Next(nextVal)
-			if next == rt.NilValue {
-				break
+		util.ForEach(arg.AsTable(), func(k rt.Value, v rt.Value) {
+			if v.Type() == rt.StringType {
+				appendPath(v.AsString())
 			}
-			nextVal = next
-
-			valStr, ok := val.TryString()
-			if !ok {
-				continue
-			}
-
-			appendPath(valStr)
-		}
+		})
 	} else if arg.Type() == rt.StringType {
 		appendPath(arg.AsString())
 	} else {

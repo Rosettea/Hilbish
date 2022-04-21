@@ -34,8 +34,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			case readline.VimKeys: modeStr = "normal"
 			case readline.VimInsert: modeStr = "insert"
 			case readline.VimDelete: modeStr = "delete"
-			case readline.VimReplaceOnce:
-			case readline.VimReplaceMany: modeStr = "replace"
+			case readline.VimReplaceOnce, readline.VimReplaceMany: modeStr = "replace"
 		}
 		setVimMode(modeStr)
 	}
@@ -153,71 +152,54 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 					to work on subcommands and subcompletions
 				*/
 				if cmpTbl, ok := luacompleteTable.TryTable(); ok {
-					nextVal := rt.NilValue
-					for {
-						next, val, ok := cmpTbl.Next(nextVal)
-						if next == rt.NilValue {
-							break
-						}
-						nextVal = next
-
-						_, ok = next.TryInt()
-						valTbl, okk := val.TryTable()
-						if !ok || !okk {
-							// TODO: error?
-							break
+					util.ForEach(cmpTbl, func(key rt.Value, val rt.Value) {
+						if key.Type() != rt.IntType && val.Type() != rt.TableType {
+							return
 						}
 
+						valTbl := val.AsTable()
 						luaCompType := valTbl.Get(rt.StringValue("type"))
 						luaCompItems := valTbl.Get(rt.StringValue("items"))
 
-						compType, ok := luaCompType.TryString()
-						compItems, okk := luaCompItems.TryTable()
-						if !ok || !okk {
-							// TODO: error
-							break
+						if luaCompType.Type() != rt.StringType && luaCompItems.Type() != rt.TableType {
+							return
 						}
 
-						var items []string
+						items := []string{}
 						itemDescriptions := make(map[string]string)
-						nxVal := rt.NilValue
-						for {
-							nx, vl, _ := compItems.Next(nxVal)
-							if nx == rt.NilValue {
-								break
-							}
-							nxVal = nx
 
-							if tstr := nx.Type(); tstr == rt.StringType {
+						util.ForEach(luaCompItems.AsTable(), func(lkey rt.Value, lval rt.Value) {
+							if keytyp := lkey.Type(); keytyp == rt.StringType {
 								// ['--flag'] = {'description', '--flag-alias'}
-								nxStr, ok := nx.TryString()
-								vlTbl, okk := vl.TryTable()
-								if !ok || !okk {
+								itemName, ok := lkey.TryString()
+								vlTbl, okk := lval.TryTable()
+								if !ok && !okk {
 									// TODO: error
-									continue
+									return
 								}
-								items = append(items, nxStr)
+
+								items = append(items, itemName)
 								itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
 								if !ok {
 									// TODO: error
-									continue
+									return
 								}
-								itemDescriptions[nxStr] = itemDescription
-							} else if tstr == rt.IntType {
-								vlStr, okk := vl.TryString()
-								if !okk {
+								itemDescriptions[itemName] = itemDescription
+							} else if keytyp == rt.IntType {
+								vlStr, ok := lval.TryString()
+								if !ok {
 									// TODO: error
-									continue
+									return
 								}
 								items = append(items, vlStr)
 							} else {
 								// TODO: error
-								continue
+								return
 							}
-						}
+						})
 
 						var dispType readline.TabDisplayType
-						switch compType {
+						switch luaCompType.AsString() {
 							case "grid": dispType = readline.TabDisplayGrid
 							case "list": dispType = readline.TabDisplayList
 							// need special cases, will implement later
@@ -231,7 +213,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 							TrimSlash: false,
 							NoSpace: true,
 						})
-					}
+					})
 				}
 			}
 

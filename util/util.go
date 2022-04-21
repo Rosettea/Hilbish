@@ -118,3 +118,17 @@ func HandleStrCallback(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) 
 
 	return name, cb, err
 }
+
+// ForEach loops through a Lua table.
+func ForEach(tbl *rt.Table, cb func(key rt.Value, val rt.Value)) {
+	nextVal := rt.NilValue
+	for {
+		key, val, _ := tbl.Next(nextVal)
+		if key == rt.NilValue {
+			break
+		}
+		nextVal = key
+
+		cb(key, val)
+	}
+}
