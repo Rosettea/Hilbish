@@ -47,7 +47,7 @@ function hilbish.highlighter(cb) end
 --- @param cb function
 function hilbish.hinter(cb) end
 
---- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+--- Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 --- @param mode string
 function hilbish.inputMode(mode) end
 
