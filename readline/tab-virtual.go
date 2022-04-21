@@ -18,39 +18,55 @@ func (rl *Instance) insertCandidateVirtual(candidate []rune) {
 		break
 	}
 
+	// Keep reference of previous candidate to compare its prefix
+	oldComp := rl.currentComp
 	// We place the cursor back at the beginning of the previous virtual candidate
-	rl.pos -= len(rl.currentComp)
+	rl.pos -= len(rl.oldCOmp)
 
 	// We delete the previous virtual completion, just
 	// like we would delete a word in vim editing mode.
-	if len(rl.currentComp) == 1 {
+	if len(oldComp) == 1 {
 		rl.deleteVirtual() // Delete a single character
-	} else if len(rl.currentComp) > 0 {
+	} else if len(oldComp) > 0 {
 		rl.viDeleteByAdjustVirtual(rl.viJumpEVirtual(tokeniseSplitSpaces) + 1)
 	}
+	prefix := len(rl.tcPrefix)
+	comp := candidate[prefix:]
 
 	// We then keep a reference to the new candidate
-	rl.currentComp = candidate
+	rl.currentComp = comp
 
 	// We should not have a remaining virtual completion
 	// line, so it is now identical to the real line.
 	rl.lineComp = rl.line
 
-	// Insert the new candidate in the virtual line.
+	compPrefix := candidate[:prefix]
+	// first clause checks if the previous input wouldve changed the prefix
+	if (len(oldComp) > 0 && string(oldComp[:prefix]) != rl.tcPrefix) || string(compPrefix) != rl.tcPrefix {
+		rl.viDeleteByAdjustVirtual(-prefix)
+		rl.insertVirtual(compPrefix)
+	}
+
+	rl.insertVirtual(comp)
+}
+
+func (rl *Instance) insertVirtual(r []rune) {
+	// we dont need that scuffed unicode fix here, since this function
+	// is only called in the 2 instances above, which already handles it
 	switch {
 	case len(rl.lineComp) == 0:
-		rl.lineComp = candidate
+		rl.lineComp = r
 	case rl.pos == 0:
-		rl.lineComp = append(candidate, rl.lineComp...)
+		rl.lineComp = append(r, rl.lineComp...)
 	case rl.pos < len(rl.lineComp):
-		r := append(candidate, rl.lineComp[rl.pos:]...)
+		r := append(r, rl.lineComp[rl.pos:]...)
 		rl.lineComp = append(rl.lineComp[:rl.pos], r...)
 	default:
-		rl.lineComp = append(rl.lineComp, candidate...)
+		rl.lineComp = append(rl.lineComp, r...)
 	}
 
 	// We place the cursor at the end of our new virtually completed item
-	rl.pos += len(candidate)
+	rl.pos += len(r)
 }
 
 // Insert the current completion candidate into the input line.
@@ -113,7 +129,7 @@ func (rl *Instance) updateVirtualComp() {
 
 			// Or insert it virtually.
 			if len(completion) >= prefix {
-				rl.insertCandidateVirtual([]rune(completion[prefix:]))
+				rl.insertCandidateVirtual([]rune(completion))
 			}
 		}
 	}
@@ -170,14 +186,14 @@ func (rl *Instance) resetVirtualComp(drop bool) {
 				trimmed = trimmed + " "
 			}
 		}
-		rl.insertCandidateVirtual([]rune(trimmed[prefix:]))
+		rl.insertCandidateVirtual([]rune(trimmed))
 	} else {
 		if rl.compAddSpace {
 			if !cur.NoSpace {
 				completion = completion + " "
 			}
 		}
-		rl.insertCandidateVirtual([]rune(completion[prefix:]))
+		rl.insertCandidateVirtual([]rune(completion))
 	}
 
 	// Reset virtual
@@ -274,6 +290,8 @@ func (rl *Instance) deleteVirtual() {
 	default:
 		rl.lineComp = append(rl.lineComp[:rl.pos], rl.lineComp[rl.pos+1:]...)
 	}
+	
+	rl.pos--
 }
 
 // We are done with the current virtual completion candidate.
