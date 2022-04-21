@@ -21,7 +21,7 @@ func (rl *Instance) insertCandidateVirtual(candidate []rune) {
 	// Keep reference of previous candidate to compare its prefix
 	oldComp := rl.currentComp
 	// We place the cursor back at the beginning of the previous virtual candidate
-	rl.pos -= len(rl.oldCOmp)
+	rl.pos -= len(rl.oldComp)
 
 	// We delete the previous virtual completion, just
 	// like we would delete a word in vim editing mode.
