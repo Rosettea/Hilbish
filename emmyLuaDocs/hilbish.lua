@@ -103,7 +103,7 @@ function hilbish.runnerMode(mode) end
 --- @return table
 function hilbish.timeout(cb, time) end
 
---- Searches for an executable called `binName` in the directories of $PATH
+--- Checks if `name` is a valid command
 --- @param binName string
 function hilbish.which(binName) end
 
