@@ -107,17 +107,17 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 The nice lil shell for {blue}Lua{reset} fanatics!
 Check out the {blue}{bold}guide{reset} command to get started.
 `
-	util.SetField(rtm, mod, "ver", rt.StringValue(version), "Hilbish version")
-	util.SetField(rtm, mod, "user", rt.StringValue(username), "Username of user")
-	util.SetField(rtm, mod, "host", rt.StringValue(host), "Host name of the machine")
-	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
-	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
-	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
-	util.SetField(rtm, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
-	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
-	util.SetField(rtm, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetField(rtm, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
-	util.Document(mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(version), "Hilbish version")
+	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
+	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
+	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
+	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
+	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
+	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
+	util.SetFieldProtected(fakeMod, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
+	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
+	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
 	hshuser := rt.NewTable()
