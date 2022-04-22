@@ -63,12 +63,29 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		return c.PushingNext1(t.Runtime, val), nil
 	}
 	modNewIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		k := c.Arg(1)
+		k, err := c.StringArg(1)
+		if err != nil {
+			return nil, err
+		}
+
 		v := c.Arg(2)
-		if modVal := mod.Get(k); modVal != rt.NilValue {
+		if k == "highlighter" {
+			var err error
+			// fine to assign, since itll be either nil or a closure
+			highlighter, err = c.ClosureArg(2)
+			if err != nil {
+				return nil, errors.New("hilbish.highlighter has to be a function")
+			}
+		} else if k == "hinter" {
+			var err error
+			hinter, err = c.ClosureArg(2)
+			if err != nil {
+				return nil, errors.New("hilbish.hinter has to be a function")
+			}
+		} else if modVal := mod.Get(rt.StringValue(k)); modVal != rt.NilValue {
 			return nil, errors.New("not allowed to override in hilbish table")
 		}
-		mod.Set(k, v)
+		mod.Set(rt.StringValue(k), v)
 
 		return c.Next(), nil
 	}
@@ -493,7 +510,7 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // replacing <cmd> with the name of the command (for example `command.git`).
 // `cb` must be a function that returns a table of "completion groups."
 // A completion group is a table with the keys `items` and `type`.
-// `items` being a table of items and `type` being the display type of
+// `items` being a table of items and `type` being the display type, which is
 // `grid` (the normal file completion display) or `list` (with a description)
 // --- @param scope string
 // --- @param cb function
@@ -599,7 +616,6 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	switch mode.Type() {
 		case rt.StringType:
 			switch mode.AsString() {
-				// no fallthrough doesnt work so eh
 				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
 				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 			}
@@ -610,40 +626,24 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// hinter(cb)
-// Sets the hinter function. This will be called on every key insert to determine
-// what text to use as an inline hint. The callback is passed 2 arguments:
-// the current line and the position. It is expected to return a string
-// which will be used for the hint.
-// --- @param cb function
+// hinter(line, pos)
+// The command line hint handler. It gets called on every key insert to
+// determine what text to use as an inline hint. It is passed the current
+// line and cursor position. It is expected to return a string which is used
+// as the text for the hint. This is by default a shim. To set hints,
+// override this function with your custom handler.
+// --- @param line string
+// --- @param pos int
 func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	hinterCb, err := c.ClosureArg(0)
-	if err != nil {
-		return nil, err
-	}
-	hinter = hinterCb
-	
-	return c.Next(), err
+	return c.Next(), nil
 }
 
-// highlighter(cb)
-// Sets the highlighter function. This is mainly for syntax hightlighting, but in
-// reality could set the input of the prompt to display anything. The callback
-// is passed the current line as typed and is expected to return a line that will
-// be used to display in the line.
-// --- @param cb function
+// highlighter(line)
+// Line highlighter handler. This is mainly for syntax highlighting, but in
+// reality could set the input of the prompt to *display* anything. The
+// callback is passed the current line and is expected to return a line that
+// will be used as the input display.
+// --- @param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	highlighterCb, err := c.ClosureArg(0)
-	if err != nil {
-		return nil, err
-	}
-	highlighter = highlighterCb
-
-	return c.Next(), err
+	return c.Next(), nil
 }
