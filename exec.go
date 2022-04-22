@@ -73,7 +73,7 @@ func runInput(input string, priv bool) {
 		}
 	} else {
 		// can only be a string or function so
-		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 2, false)
+		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
 		err := rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -81,9 +81,9 @@ func runInput(input string, priv bool) {
 			return
 		}
 
-		luaexitcode := term.Get(0)
-		runErr := term.Get(1)
-		luaInput := term.Get(1)
+		luaInput := term.Get(0)
+		luaexitcode := term.Get(1)
+		runErr := term.Get(2)
 
 		var exitCode uint8
 		if code, ok := luaexitcode.TryInt(); ok {
