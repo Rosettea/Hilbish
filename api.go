@@ -52,7 +52,30 @@ var hilbishLoader = packagelib.Loader{
 }
 
 func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
+	fakeMod := rt.NewTable()
+	modmt := rt.NewTable()
 	mod := rt.NewTable()
+
+	modIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		arg := c.Arg(1)
+		val := mod.Get(arg)
+
+		return c.PushingNext1(t.Runtime, val), nil
+	}
+	modNewIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		k := c.Arg(1)
+		v := c.Arg(2)
+		if modVal := mod.Get(k); modVal != rt.NilValue {
+			return nil, errors.New("not allowed to override in hilbish table")
+		}
+		mod.Set(k, v)
+
+		return c.Next(), nil
+	}
+	modmt.Set(rt.StringValue("__newindex"), rt.FunctionValue(rt.NewGoFunction(modNewIndex, "__newindex", 3, false)))
+	modmt.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(modIndex, "__index", 2, false)))
+	fakeMod.SetMetatable(modmt)
+
 	util.SetExports(rtm, mod, exports)
 	hshMod = mod
 
@@ -141,7 +164,7 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
 	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
 
-	return rt.TableValue(mod), nil
+	return rt.TableValue(fakeMod), nil
 }
 
 func getenv(key, fallback string) string {
