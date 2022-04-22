@@ -76,7 +76,7 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(rtm, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
 	util.SetField(rtm, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.SetField(rtm, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetField(rtm, hshMod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
+	util.SetField(rtm, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
 	util.Document(mod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
@@ -117,6 +117,10 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetField(rtm, hshcomp, "bins",
 	rt.FunctionValue(rt.NewGoFunction(luaBinaryComplete, "bins", 3, false)),
 	"Completer for executables/binaries")
+
+	util.SetField(rtm, hshcomp, "call",
+	rt.FunctionValue(rt.NewGoFunction(callLuaCompleter, "call", 4, false)),
+	"Calls a completer and get its entries for completions")
 
 	util.Document(hshcomp, "Completions interface for Hilbish.")
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
