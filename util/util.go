@@ -29,12 +29,16 @@ func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, d
 	
 	if mt == nil {
 		mt = rt.NewTable()
-		docProp := rt.NewTable()
-		mt.Set(rt.StringValue("__docProp"), rt.TableValue(docProp))
 
 		module.SetMetatable(mt)
 	}
+	
 	docProp := mt.Get(rt.StringValue("__docProp"))
+	if docProp == rt.NilValue {
+		docPropTbl := rt.NewTable()
+		mt.Set(rt.StringValue("__docProp"), rt.TableValue(docPropTbl))
+		docProp = mt.Get(rt.StringValue("__docProp"))
+	}
 
 	docProp.AsTable().Set(rt.StringValue(field), rt.StringValue(doc))
 	module.Set(rt.StringValue(field), value)
