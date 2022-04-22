@@ -529,18 +529,27 @@ func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// which(binName)
-// Searches for an executable called `binName` in the directories of $PATH
+// which(name)
+// Checks if `name` is a valid command
 // --- @param binName string
 func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
-	binName, err := c.StringArg(0)
+	name, err := c.StringArg(0)
 	if err != nil {
 		return nil, err
 	}
-	path, err := exec.LookPath(binName)
+
+	cmd := aliases.Resolve(name)
+
+	// check for commander
+	if commands[cmd] != nil {
+		// they dont resolve to a path, so just send the cmd
+		return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
+	}
+
+	path, err := exec.LookPath(cmd)
 	if err != nil {
 		return c.Next(), nil
 	}
