@@ -497,9 +497,7 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // A `scope` is currently only expected to be `command.<cmd>`,
 // replacing <cmd> with the name of the command (for example `command.git`).
 // `cb` must be a function that returns a table of "completion groups."
-// A completion group is a table with the keys `items` and `type`.
-// `items` being a table of items and `type` being the display type, which is
-// `grid` (the normal file completion display) or `list` (with a description)
+// Check `doc completions` for more information.
 // --- @param scope string
 // --- @param cb function
 func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
