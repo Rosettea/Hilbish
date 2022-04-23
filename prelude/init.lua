@@ -135,6 +135,7 @@ Usage: doc <section> [subdoc]
 A section is a module or a literal section and a subdoc is a subsection for it.
 
 Available sections: ]]
+	io.flush()
 
 	print(table.concat(modules, ', '))
 end)
