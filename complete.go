@@ -11,8 +11,6 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-var completer rt.Value
-
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
 	return matchPath(query)
 }
