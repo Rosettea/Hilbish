@@ -54,7 +54,7 @@ func luaInit() {
 		fmt.Fprintln(os.Stderr, "Could not add preload paths! Libraries will be missing. This shouldn't happen.")
 	}
 
-	err = util.DoFile(l, "prelude/init.lua")
+	err = util.DoFile(l, "nature/init.lua")
 	if err != nil {
 		err = util.DoFile(l, preloadPath)
 		if err != nil {
