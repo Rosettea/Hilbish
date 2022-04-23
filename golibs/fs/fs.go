@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"path/filepath"
 	"strconv"
 	"os"
 	"strings"
@@ -22,6 +23,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"mkdir": util.LuaExport{fmkdir, 2, false},
 		"stat": util.LuaExport{fstat, 1, false},
 		"readdir": util.LuaExport{freaddir, 1, false},
+		"abs": util.LuaExport{fabs, 1, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -131,4 +133,21 @@ func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	return c.PushingNext1(t.Runtime, rt.TableValue(names)), nil
+}
+
+// abs(path)
+// Gives an absolute version of `path`.
+// --- @param path string
+func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	path, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	abspath, err := filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(abspath)), nil
 }
