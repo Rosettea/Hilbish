@@ -4,4 +4,4 @@
 `modeName` is the name of the mode changed to (can be `insert`, `normal`, `delete` or `replace`).
 
 + `hilbish.vimAction` -> actionName, args > Sent when the user does a "vim action," being something
-like yanking or pasting text. See `doc vimMode actions` for more info.
+like yanking or pasting text. See `doc vim-mode actions` for more info.
