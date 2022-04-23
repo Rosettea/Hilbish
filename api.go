@@ -149,19 +149,7 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(historyModule, "History interface for Hilbish.")
 
 	// hilbish.completion table
-	hshcomp := rt.NewTable()
-	util.SetField(rtm, hshcomp, "files",
-	rt.FunctionValue(rt.NewGoFunction(luaFileComplete, "files", 3, false)),
-	"Completer for files")
-
-	util.SetField(rtm, hshcomp, "bins",
-	rt.FunctionValue(rt.NewGoFunction(luaBinaryComplete, "bins", 3, false)),
-	"Completer for executables/binaries")
-
-	util.SetField(rtm, hshcomp, "call",
-	rt.FunctionValue(rt.NewGoFunction(callLuaCompleter, "call", 4, false)),
-	"Calls a completer and get its entries for completions")
-
+	hshcomp := completionLoader(rtm)
 	util.Document(hshcomp, "Completions interface for Hilbish.")
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
 
