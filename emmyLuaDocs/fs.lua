@@ -2,6 +2,10 @@
 
 local fs = {}
 
+--- Gives an absolute version of `path`.
+--- @param path string
+function fs.abs(path) end
+
 --- Changes directory to `dir`
 --- @param dir string
 function fs.cd(dir) end
