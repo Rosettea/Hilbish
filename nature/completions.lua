@@ -6,8 +6,12 @@ function hilbish.completion.handler(line, pos)
 	local ctx = line:gsub('^%s*(.-)$', '%1')
 	if ctx:len() == 0 then return {}, '' end
 
-	ctx = hilbish.aliases.resolve(ctx)
+	local res = hilbish.aliases.resolve(ctx)
+	local resFields = string.split(res, ' ')
 	local fields = string.split(ctx, ' ')
+	if #fields > 1 and #resFields > 1 then
+		fields = resFields
+	end
 	local query = fields[#fields]
 
 	if #fields == 1 then
