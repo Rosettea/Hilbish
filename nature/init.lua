@@ -6,6 +6,7 @@ package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 
 require 'nature.hooks'
 require 'nature.commands'
+require 'nature.completions'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then
