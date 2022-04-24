@@ -62,7 +62,7 @@ func main() {
 	if defaultHistDir == "" {
 		defaultHistDir = filepath.Join(userDataDir, "hilbish")
 	} else {
-		defaultHistDir = expandHome(defaultHistDir)
+		defaultHistDir = filepath.Join(expandHome(defaultHistDir), "hilbish")
 	}
 	defaultHistPath = filepath.Join(defaultHistDir, ".hilbish-history")
 	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
