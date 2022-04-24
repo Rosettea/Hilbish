@@ -131,84 +131,9 @@ func completionLoader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
+// left as a shim, might doc in the same way as hilbish functions
 func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
-		return nil, err
-	}
-	line, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-	// just for validation
-	_, err = c.IntArg(1)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx := strings.TrimLeft(line, " ")
-	if len(ctx) == 0 {
-		return c.PushingNext(t.Runtime, rt.TableValue(rt.NewTable()), rt.StringValue("")), nil
-	}
-
-	ctx = aliases.Resolve(ctx)
-	fields := strings.Split(ctx, " ")
-	query := fields[len(fields) - 1]
-
-	luaFields := rt.NewTable()
-
-	for i, f := range fields {
-		luaFields.Set(rt.IntValue(int64(i + 1)), rt.StringValue(f))
-	}
-
-	compMod := hshMod.Get(rt.StringValue("completion")).AsTable()
-	var term *rt.Termination
-	if len(fields) == 1 {
-		term = rt.NewTerminationWith(t.CurrentCont(), 2, false)
-		err := rt.Call(t, compMod.Get(rt.StringValue("bins")), []rt.Value{
-			rt.StringValue(query),
-			rt.StringValue(ctx),
-			rt.TableValue(luaFields),
-		}, term)
-
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		gterm := rt.NewTerminationWith(t.CurrentCont(), 2, false)
-		err := rt.Call(t, compMod.Get(rt.StringValue("call")), []rt.Value{
-			rt.StringValue("commands." + fields[0]),
-			rt.StringValue(query),
-			rt.StringValue(ctx),
-			rt.TableValue(luaFields),
-		}, gterm)
-
-		if err == nil {
-			groups := gterm.Get(0)
-			pfx := gterm.Get(1)
-
-			return c.PushingNext(t.Runtime, groups, pfx), nil
-		}
-
-		// error means there isnt a command handler - default to files in that case
-		term = rt.NewTerminationWith(t.CurrentCont(), 2, false)
-		err = rt.Call(t, compMod.Get(rt.StringValue("files")), []rt.Value{
-			rt.StringValue(query),
-			rt.StringValue(ctx),
-			rt.TableValue(luaFields),
-		}, term)
-	}
-
-	comps := term.Get(0)
-	pfx := term.Get(1)
-
-	groups := rt.NewTable()
-
-	compGroup := rt.NewTable()
-	compGroup.Set(rt.StringValue("items"), comps)
-	compGroup.Set(rt.StringValue("type"), rt.StringValue("grid"))
-
-	groups.Set(rt.IntValue(1), rt.TableValue(compGroup))
-	return c.PushingNext(t.Runtime, rt.TableValue(groups), pfx), nil
+	return c.Next(), nil
 }
 
 func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
