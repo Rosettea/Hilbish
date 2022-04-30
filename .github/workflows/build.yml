@@ -36,11 +36,11 @@ jobs:
         with:
           name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
           path: |
-          LICENSE
-          README.md
-          CHANGELOG.md
-          .hilbishrc.lua
-          nature
-          libs
-          docs
-          emmyLuaDocs
+            LICENSE
+            README.md
+            CHANGELOG.md
+            .hilbishrc.lua
+            nature
+            libs
+            docs
+            emmyLuaDocs
