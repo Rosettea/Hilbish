@@ -1,5 +1,63 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- Inline hints, akin to fish and the others.
+To make a handler for hint text, you can set the `hilbish.hinter` function.
+For more info, look at its docs with the `doc hilbish` command.
+- Syntax highlighting function. To make a handler for it, set
+`hilbish.highlighter`. Same thing as the hinter, check `doc hilbish` for
+more info/docs.
+- Ctrl+K deletes from the cursor to the end of the line. ([#128](https://github.com/Rosettea/Hilbish/pull/128))
+- Alt+Backspace as an alternative of Ctrl+W to delete a word. ([#132](https://github.com/Rosettea/Hilbish/pull/132))
+- Enhanced timer API (`doc timers`)
+- Don't exit until intervals are stopped/finished when running a non interactive script.
+- Ctrl+D deletes character below cursor if line isn't empty instead of exiting.
+- Ctrl+Delete to forward delete a word.
+- Right prompt ([#140](https://github.com/Rosettea/Hilbish/pull/140))
+- Ctrl+_ to undo in Emacs input mode.
+- Emacs style forward/backward word keybinds ([#139](https://github.com/Rosettea/Hilbish/pull/139))
+- `hilbish.completion.call` to call a completion handler (`doc completions`)
+- `hilbish.completion.handler` to set a custom handler for completions. This
+is for everything/anything as opposed to just adding a single command completion. 
+[#122](https://github.com/Rosettea/Hilbish/issues/122)
+- `fs.abs(path)` to get absolute path.
+- Nature module (`doc nature`)
+
+### Changed
+- **Breaking Change:** Upgraded to Lua 5.4.
+This is probably one of (if not the) biggest things in this release.
+- **Breaking Change:** MacOS config paths now match Linux.
+- Overrides on the `hilbish` table are no longer permitted.
+- **Breaking Change:** Runner functions are now required to return 3 values:
+user input, exit code, and error. User input has been added to the return to
+account for runners wanting to prompt for continued input, and to add it
+properly to history.
+
+### Fixed
+- If in Vim replace mode, input at the end of the line inserts instead of
+replacing the last character.
+- Make forward delete work how its supposed to.
+- Prompt refresh not working properly.
+- Crashing on input in xterm. ([#131](https://github.com/Rosettea/Hilbish/pull/131))
+- Make delete key work on st ([#131](https://github.com/Rosettea/Hilbish/pull/131))
+- `hilbish.login` being the wrong value.
+- Put full input in history if prompted for continued input
+- Don't put alias expanded command in history (sound familiar?)
+- Handle cases of stdin being nonblocking (in the case of [#130](https://github.com/Rosettea/Hilbish/issues/130))
+- Don't prompt for continued input if non interactive
+- Don't insert unhandled control keys.
+- Handle sh syntax error in alias
+- Use invert for completion menu selection highlight instead of specific
+colors. Brings an improvement on light themes, or themes that don't follow
+certain color rules.
+- Home/End keys now go to the actual start/end of the input.
+- Input getting cut off on enter in certain cases.
+- Go to the next line properly if input reaches end of terminal width.
+- Cursor position with CJK characters. ([#145](https://github.com/Rosettea/Hilbish/pull/145))
+- Files with same name as parent folder in completions getting cut off [#136](https://github.com/Rosettea/Hilbish/issues/136))
+- `hilbish.which` now works with commanders and aliases.
+
 ## [1.2.0] - 2022-03-17
 ### Added
 - Job Management additions
