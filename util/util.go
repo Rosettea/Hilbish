@@ -153,9 +153,16 @@ func ForEach(tbl *rt.Table, cb func(key rt.Value, val rt.Value)) {
 	}
 }
 
+// ExpandHome expands ~ (tilde) in the path, changing it to the user home
+// directory.
 func ExpandHome(path string) string {
-	curuser, _ := user.Current()
-	homedir := curuser.HomeDir
+	if strings.HasPrefix(path, "~") {
+		curuser, _ := user.Current()
+		homedir := curuser.HomeDir
 
-	return strings.Replace(path, "~", homedir, 1)
+		return strings.Replace(path, "~", homedir, 1)
+	}
+
+	return path
 }
+
