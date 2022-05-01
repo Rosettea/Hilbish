@@ -3,7 +3,9 @@ package util
 import (
 	"bufio"
 	"io"
+	"strings"
 	"os"
+	"os/user"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -149,4 +151,11 @@ func ForEach(tbl *rt.Table, cb func(key rt.Value, val rt.Value)) {
 
 		cb(key, val)
 	}
+}
+
+func ExpandHome(path string) string {
+	curuser, _ := user.Current()
+	homedir := curuser.HomeDir
+
+	return strings.Replace(path, "~", homedir, 1)
 }

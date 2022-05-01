@@ -30,7 +30,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 
 	util.Document(mod, `The fs module provides easy and simple access to
 filesystem functions and other things, and acts an
-addition to the Lua standard library's I/O and fs functions.`)
+addition to the Lua standard library's I/O and filesystem functions.`)
 
 	return rt.TableValue(mod), nil
 }
@@ -46,8 +46,9 @@ func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	path = util.ExpandHome(strings.TrimSpace(path))
 
-	err = os.Chdir(strings.TrimSpace(path))
+	err = os.Chdir(path)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
-	dirname, err := c.StringArg(0)
+	path, err := c.StringArg(0)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +72,7 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := strings.TrimSpace(dirname)
+	path = util.ExpandHome(strings.TrimSpace(path))
 
 	if recursive {
 		err = os.MkdirAll(path, 0744)
@@ -96,6 +97,7 @@ func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	path = util.ExpandHome(path)
 
 	pathinfo, err := os.Stat(path)
 	if err != nil {
@@ -122,6 +124,7 @@ func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	dir = util.ExpandHome(dir)
 	names := rt.NewTable()
 
 	dirEntries, err := os.ReadDir(dir)
@@ -143,6 +146,7 @@ func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	path = util.ExpandHome(path)
 
 	abspath, err := filepath.Abs(path)
 	if err != nil {

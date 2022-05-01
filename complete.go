@@ -24,7 +24,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			fileCompletions, filePref := matchPath(query)
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
-					fullPath, _ := filepath.Abs(expandHome(query + strings.TrimPrefix(f, filePref)))
+					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
 					if err := findExecutable(fullPath, false, true); err != nil {
 						continue
 					}
@@ -71,7 +71,7 @@ func matchPath(query string) ([]string, string) {
 	var entries []string
 	var baseName string
 
-	path, _ := filepath.Abs(expandHome(filepath.Dir(query)))
+	path, _ := filepath.Abs(util.ExpandHome(filepath.Dir(query)))
 	if string(query) == "" {
 		// filepath base below would give us "."
 		// which would cause a match of only dotfiles
