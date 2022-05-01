@@ -25,7 +25,62 @@ import (
 )
 
 var errNotExec = errors.New("not executable")
+var errNotFound = errors.New("not found")
 var runnerMode rt.Value = rt.StringValue("hybrid")
+
+type execError struct{
+	typ string
+	cmd string
+	code int
+	colon bool
+	err error
+}
+
+func (e execError) Error() string {
+	return fmt.Sprintf("%s: %s", e.cmd, e.typ)
+}
+
+func (e execError) sprint() error {
+	sep := " "
+	if e.colon {
+		sep = ": "
+	}
+
+	return fmt.Errorf("hilbish: %s%s%s", e.cmd, sep, e.err.Error())
+}
+
+func isExecError(err error) (execError, bool) {
+	if exErr, ok := err.(execError); ok {
+		return exErr, true
+	}
+
+	fields := strings.Split(err.Error(), ": ")
+	knownTypes := []string{
+		"not-found",
+		"not-executable",
+	}
+
+	if len(fields) > 1 && contains(knownTypes, fields[1]) {
+		var colon bool
+		var e error
+		switch fields[1] {
+			case "not-found":
+				e = errNotFound
+			case "not-executable":
+				colon = true
+				e = errNotExec
+		}
+
+		return execError{
+			cmd: fields[0],
+			typ: fields[1],
+			colon: colon,
+			err: e,
+		}, true
+	}
+
+	return execError{}, false
+}
 
 func runInput(input string, priv bool) {
 	running = true
@@ -43,10 +98,6 @@ func runInput(input string, priv bool) {
 					return
 				}
 				input, exitCode, err = handleSh(input)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-				}
-				cmdFinish(exitCode, input, priv)
 			case "hybridRev":
 				_, _, err = handleSh(input)
 				if err == nil {
@@ -54,27 +105,15 @@ func runInput(input string, priv bool) {
 					return
 				}
 				input, exitCode, err = handleLua(cmdString)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-				}
-				cmdFinish(exitCode, input, priv)
 			case "lua":
 				input, exitCode, err = handleLua(cmdString)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-				}
-				cmdFinish(exitCode, input, priv)
 			case "sh":
 				input, exitCode, err = handleSh(input)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-				}
-				cmdFinish(exitCode, input, priv)
 		}
 	} else {
 		// can only be a string or function so
 		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-		err := rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
+		err = rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
@@ -85,7 +124,6 @@ func runInput(input string, priv bool) {
 		luaexitcode := term.Get(1)
 		runErr := term.Get(2)
 
-		var exitCode uint8
 		if code, ok := luaexitcode.TryInt(); ok {
 			exitCode = uint8(code)
 		}
@@ -94,11 +132,19 @@ func runInput(input string, priv bool) {
 			input = inp
 		}
 
-		if runErr != rt.NilValue {
-			fmt.Fprintln(os.Stderr, runErr)
+		if errStr, ok := runErr.TryString(); ok {
+			err = fmt.Errorf("%s", errStr)
 		}
-		cmdFinish(exitCode, input, priv)
 	}
+
+	if err != nil {
+		if exErr, ok := isExecError(err); ok {
+			hooks.Em.Emit("command." + exErr.typ, exErr.cmd)
+			err = exErr.sprint()
+		}
+		fmt.Fprintln(os.Stderr, err)
+	}
+	cmdFinish(exitCode, input, priv)
 }
 
 func handleLua(cmdString string) (string, uint8, error) {
@@ -255,12 +301,20 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 
 		err := lookpath(args[0])
 		if err == errNotExec {
-			hooks.Em.Emit("command.no-perm", args[0])
-			hooks.Em.Emit("command.not-executable", args[0])
-			return interp.NewExitStatus(126)
+			return execError{
+				typ: "not-executable",
+				cmd: args[0],
+				code: 126,
+				colon: true,
+				err: errNotExec,
+			}
 		} else if err != nil {
-			hooks.Em.Emit("command.not-found", args[0])
-			return interp.NewExitStatus(127)
+			return execError{
+				typ: "not-found",
+				cmd: args[0],
+				code: 127,
+				err: errNotFound,
+			}
 		}
 
 		killTimeout := 2 * time.Second
