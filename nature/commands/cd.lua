@@ -31,5 +31,5 @@ commander.register('cd', function (args)
 	fs.cd(hilbish.home)
 	bait.throw('cd', hilbish.home)
 
-	dirs.addRecent(hilbish.home)
+	dirs.push(hilbish.home)
 end)
