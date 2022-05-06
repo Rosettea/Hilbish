@@ -54,11 +54,13 @@ func luaInit() {
 		fmt.Fprintln(os.Stderr, "Could not add Hilbish require paths! Libraries will be missing. This shouldn't happen.")
 	}
 
-	err = util.DoFile(l, "nature/init.lua")
-	if err != nil {
-		err = util.DoFile(l, preloadPath)
-		if err != nil {
+	err1 := util.DoFile(l, "nature/init.lua")
+	if err1 != nil {
+		err2 := util.DoFile(l, preloadPath)
+		if err2 != nil {
 			fmt.Fprintln(os.Stderr, "Missing nature module, some functionality and builtins will be missing.")
+			fmt.Fprintln(os.Stderr, "local error:", err1)
+			fmt.Fprintln(os.Stderr, "global install error:", err2)
 		}
 	}
 }
