@@ -32,12 +32,22 @@ jobs:
         if: matrix.goos == 'windows'
         with:
           name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: hilbish.exe
+          path: |
+            hilbish.exe
+            LICENSE
+            README.md
+            CHANGELOG.md
+            .hilbishrc.lua
+            nature
+            libs
+            docs
+            emmyLuaDocs
       - uses: actions/upload-artifact@v2
         if: matrix.goos != 'windows'
         with:
           name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
           path: |
+            hilbish
             LICENSE
             README.md
             CHANGELOG.md
