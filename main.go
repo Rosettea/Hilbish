@@ -56,13 +56,13 @@ func main() {
 		defaultConfDir = filepath.Join(confDir, "hilbish")
 	} else {
 		// else do ~ substitution
-		defaultConfDir = filepath.Join(expandHome(defaultConfDir), "hilbish")
+		defaultConfDir = filepath.Join(util.ExpandHome(defaultConfDir), "hilbish")
 	}
 	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {
 		defaultHistDir = filepath.Join(userDataDir, "hilbish")
 	} else {
-		defaultHistDir = expandHome(defaultHistDir)
+		defaultHistDir = filepath.Join(util.ExpandHome(defaultHistDir), "hilbish")
 	}
 	defaultHistPath = filepath.Join(defaultHistDir, ".hilbish-history")
 	helpflag := getopt.BoolLong("help", 'h', "Prints Hilbish flags")
@@ -271,11 +271,6 @@ func fmtPrompt(prompt string) string {
 func handleHistory(cmd string) {
 	lr.AddHistory(cmd)
 	// TODO: load history again (history shared between sessions like this ye)
-}
-
-func expandHome(path string) string {
-	homedir := curuser.HomeDir
-	return strings.Replace(path, "~", homedir, 1)
 }
 
 func removeDupes(slice []string) []string {

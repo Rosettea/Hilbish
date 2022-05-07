@@ -15,9 +15,7 @@ function hilbish.appendPath(dir) end
 --- A `scope` is currently only expected to be `command.<cmd>`,
 --- replacing <cmd> with the name of the command (for example `command.git`).
 --- `cb` must be a function that returns a table of "completion groups."
---- A completion group is a table with the keys `items` and `type`.
---- `items` being a table of items and `type` being the display type of
---- `grid` (the normal file completion display) or `list` (with a description)
+--- Check `doc completions` for more information.
 --- @param scope string
 --- @param cb function
 function hilbish.complete(scope, cb) end
@@ -33,21 +31,23 @@ function hilbish.exec(cmd) end
 --- @param fn function
 function hilbish.goro(fn) end
 
---- Sets the highlighter function. This is mainly for syntax hightlighting, but in
---- reality could set the input of the prompt to display anything. The callback
---- is passed the current line as typed and is expected to return a line that will
---- be used to display in the line.
---- @param cb function
-function hilbish.highlighter(cb) end
+--- Line highlighter handler. This is mainly for syntax highlighting, but in
+--- reality could set the input of the prompt to *display* anything. The
+--- callback is passed the current line and is expected to return a line that
+--- will be used as the input display.
+--- @param line string
+function hilbish.highlighter(line) end
 
---- Sets the hinter function. This will be called on every key insert to determine
---- what text to use as an inline hint. The callback is passed 2 arguments:
---- the current line and the position. It is expected to return a string
---- which will be used for the hint.
---- @param cb function
-function hilbish.hinter(cb) end
+--- The command line hint handler. It gets called on every key insert to
+--- determine what text to use as an inline hint. It is passed the current
+--- line and cursor position. It is expected to return a string which is used
+--- as the text for the hint. This is by default a shim. To set hints,
+--- override this function with your custom handler.
+--- @param line string
+--- @param pos int
+function hilbish.hinter(line, pos) end
 
---- Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+--- Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 --- @param mode string
 function hilbish.inputMode(mode) end
 
@@ -103,7 +103,7 @@ function hilbish.runnerMode(mode) end
 --- @return table
 function hilbish.timeout(cb, time) end
 
---- Searches for an executable called `binName` in the directories of $PATH
+--- Checks if `name` is a valid command
 --- @param binName string
 function hilbish.which(binName) end
 

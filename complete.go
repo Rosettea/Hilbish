@@ -1,9 +1,14 @@
 package main
 
 import (
+	"errors"
 	"path/filepath"
 	"strings"
 	"os"
+
+	"hilbish/util"
+
+	rt "github.com/arnodel/golua/runtime"
 )
 
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
@@ -19,7 +24,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			fileCompletions, filePref := matchPath(query)
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
-					fullPath, _ := filepath.Abs(expandHome(query + strings.TrimPrefix(f, filePref)))
+					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
 					if err := findExecutable(fullPath, false, true); err != nil {
 						continue
 					}
@@ -66,7 +71,7 @@ func matchPath(query string) ([]string, string) {
 	var entries []string
 	var baseName string
 
-	path, _ := filepath.Abs(expandHome(filepath.Dir(query)))
+	path, _ := filepath.Abs(util.ExpandHome(filepath.Dir(query)))
 	if string(query) == "" {
 		// filepath base below would give us "."
 		// which would cause a match of only dotfiles
@@ -112,3 +117,119 @@ func escapeFilename(fname string) string {
 	return r.Replace(fname)
 }
 
+func completionLoader(rtm *rt.Runtime) *rt.Table {
+	exports := map[string]util.LuaExport{
+		"files": {luaFileComplete, 3, false},
+		"bins": {luaBinaryComplete, 3, false},
+		"call": {callLuaCompleter, 4, false},
+		"handler": {completionHandler, 2, false},
+	}
+
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+	
+	return mod
+}
+
+// left as a shim, might doc in the same way as hilbish functions
+func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	return c.Next(), nil
+}
+
+func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(4); err != nil {
+		return nil, err
+	}
+	completer, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	query, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
+	ctx, err := c.StringArg(2)
+	if err != nil {
+		return nil, err
+	}
+	fields, err := c.TableArg(3)
+	if err != nil {
+		return nil, err
+	}
+
+	var completecb *rt.Closure
+	var ok bool
+	if completecb, ok = luaCompletions[completer]; !ok {
+		return nil, errors.New("completer " + completer + " does not exist")
+	}
+
+	// we must keep the holy 80 cols
+	completerReturn, err := rt.Call1(l.MainThread(),
+	rt.FunctionValue(completecb), rt.StringValue(query),
+	rt.StringValue(ctx), rt.TableValue(fields))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext1(t.Runtime, completerReturn), nil
+}
+
+func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, pfx := fileComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+}
+
+func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, pfx := binaryComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+}
+
+func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
+	if err := c.CheckNArgs(3); err != nil {
+		return "", "", []string{}, err
+	}
+	query, err := c.StringArg(0)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	ctx, err := c.StringArg(1)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+	fields, err := c.TableArg(2)
+	if err != nil {
+		return "", "", []string{}, err
+	}
+
+	var fds []string
+	util.ForEach(fields, func(k rt.Value, v rt.Value) {
+		if v.Type() == rt.StringType {
+			fds = append(fds, v.AsString())
+		}
+	})
+
+	return query, ctx, fds, err
+}

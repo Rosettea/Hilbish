@@ -6,9 +6,7 @@ complete(scope, cb) > Registers a completion handler for `scope`.
 A `scope` is currently only expected to be `command.<cmd>`,
 replacing <cmd> with the name of the command (for example `command.git`).
 `cb` must be a function that returns a table of "completion groups."
-A completion group is a table with the keys `items` and `type`.
-`items` being a table of items and `type` being the display type of
-`grid` (the normal file completion display) or `list` (with a description)
+Check `doc completions` for more information.
 
 cwd() > Returns the current directory of the shell
 
@@ -16,17 +14,18 @@ exec(cmd) > Replaces running hilbish with `cmd`
 
 goro(fn) > Puts `fn` in a goroutine
 
-highlighter(cb) > Sets the highlighter function. This is mainly for syntax hightlighting, but in
-reality could set the input of the prompt to display anything. The callback
-is passed the current line as typed and is expected to return a line that will
-be used to display in the line.
+highlighter(line) > Line highlighter handler. This is mainly for syntax highlighting, but in
+reality could set the input of the prompt to *display* anything. The
+callback is passed the current line and is expected to return a line that
+will be used as the input display.
 
-hinter(cb) > Sets the hinter function. This will be called on every key insert to determine
-what text to use as an inline hint. The callback is passed 2 arguments:
-the current line and the position. It is expected to return a string
-which will be used for the hint.
+hinter(line, pos) > The command line hint handler. It gets called on every key insert to
+determine what text to use as an inline hint. It is passed the current
+line and cursor position. It is expected to return a string which is used
+as the text for the hint. This is by default a shim. To set hints,
+override this function with your custom handler.
 
-inputMode(mode) > Sets the input mode for Hilbish's line reader. Accepts either emacs for vim
+inputMode(mode) > Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 
 interval(cb, time) > Runs the `cb` function every `time` milliseconds.
 Returns a `timer` object (see `doc timers`).
@@ -59,5 +58,5 @@ will call it to execute user input instead.
 timeout(cb, time) > Runs the `cb` function after `time` in milliseconds
 Returns a `timer` object (see `doc timers`).
 
-which(binName) > Searches for an executable called `binName` in the directories of $PATH
+which(name) > Checks if `name` is a valid command
 

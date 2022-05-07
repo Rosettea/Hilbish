@@ -19,7 +19,9 @@ jobs:
             goos: windows
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
@@ -29,10 +31,28 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: matrix.goos == 'windows'
         with:
-          name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}.exe
-          path: hilbish.exe
+          name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: |
+            hilbish.exe
+            LICENSE
+            README.md
+            CHANGELOG.md
+            .hilbishrc.lua
+            nature
+            libs
+            docs
+            emmyLuaDocs
       - uses: actions/upload-artifact@v2
         if: matrix.goos != 'windows'
         with:
           name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: hilbish
+          path: |
+            hilbish
+            LICENSE
+            README.md
+            CHANGELOG.md
+            .hilbishrc.lua
+            nature
+            libs
+            docs
+            emmyLuaDocs

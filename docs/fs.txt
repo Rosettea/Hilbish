@@ -1,3 +1,5 @@
+abs(path) > Gives an absolute version of `path`.
+
 cd(dir) > Changes directory to `dir`
 
 mkdir(name, recursive) > Makes a directory called `name`. If `recursive` is true, it will create its parent directories.

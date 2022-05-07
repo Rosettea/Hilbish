@@ -30,13 +30,13 @@ jobs:
           - goarch: arm64
             goos: windows
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
-        submodules: recursive
+        submodules: true
     - uses: wangyoucao577/go-release-action@v1.25
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         binary_name: hilbish
-        extra_files: LICENSE README.md CHANGELOG.md .hilbishrc.lua prelude libs docs emmyLuaDocs
+        extra_files: LICENSE README.md CHANGELOG.md .hilbishrc.lua nature libs docs emmyLuaDocs

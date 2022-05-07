@@ -34,8 +34,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			case readline.VimKeys: modeStr = "normal"
 			case readline.VimInsert: modeStr = "insert"
 			case readline.VimDelete: modeStr = "delete"
-			case readline.VimReplaceOnce:
-			case readline.VimReplaceMany: modeStr = "replace"
+			case readline.VimReplaceOnce, readline.VimReplaceMany: modeStr = "replace"
 		}
 		setVimMode(modeStr)
 	}
@@ -85,168 +84,91 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return highlighted
 	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
-		ctx := string(line)
+		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 2, false)
+		compHandle := hshMod.Get(rt.StringValue("completion")).AsTable().Get(rt.StringValue("handler"))
+		err := rt.Call(l.MainThread(), compHandle, []rt.Value{rt.StringValue(string(line)),
+		rt.IntValue(int64(pos))}, term)
 
-		var compGroup []*readline.CompletionGroup
-
-		ctx = strings.TrimLeft(ctx, " ")
-		if len(ctx) == 0 {
-			return "", compGroup
+		var compGroups []*readline.CompletionGroup
+		if err != nil {
+			return "", compGroups
 		}
 
-		fields := strings.Split(ctx, " ")
-		if len(fields) == 0 {
-			return "", compGroup
+		luaCompGroups := term.Get(0)
+		luaPrefix := term.Get(1)
+
+		if luaCompGroups.Type() != rt.TableType {
+			return "", compGroups
 		}
-		query := fields[len(fields) - 1]
 
-		ctx = aliases.Resolve(ctx)
+		groups := luaCompGroups.AsTable()
+		// prefix is optional
+		pfx, _ := luaPrefix.TryString()
 
-		if len(fields) == 1 {
-			completions, prefix := binaryComplete(query, ctx, fields)
+		util.ForEach(groups, func(key rt.Value, val rt.Value) {
+			if key.Type() != rt.IntType || val.Type() != rt.TableType {
+				return
+			}
 
-			compGroup = append(compGroup, &readline.CompletionGroup{
-				TrimSlash: false,
-				NoSpace: true,
-				Suggestions: completions,
+			valTbl := val.AsTable()
+			luaCompType := valTbl.Get(rt.StringValue("type"))
+			luaCompItems := valTbl.Get(rt.StringValue("items"))
+
+			if luaCompType.Type() != rt.StringType || luaCompItems.Type() != rt.TableType {
+				return
+			}
+
+			items := []string{}
+			itemDescriptions := make(map[string]string)
+
+			util.ForEach(luaCompItems.AsTable(), func(lkey rt.Value, lval rt.Value) {
+				if keytyp := lkey.Type(); keytyp == rt.StringType {
+					// ['--flag'] = {'description', '--flag-alias'}
+					itemName, ok := lkey.TryString()
+					vlTbl, okk := lval.TryTable()
+					if !ok && !okk {
+						// TODO: error
+						return
+					}
+
+					items = append(items, itemName)
+					itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
+					if !ok {
+						// TODO: error
+						return
+					}
+					itemDescriptions[itemName] = itemDescription
+				} else if keytyp == rt.IntType {
+					vlStr, ok := lval.TryString()
+						if !ok {
+							// TODO: error
+							return
+						}
+						items = append(items, vlStr)
+				} else {
+					// TODO: error
+					return
+				}
 			})
 
-			return prefix, compGroup
-		} else {
-			if completecb, ok := luaCompletions["command." + fields[0]]; ok {
-				luaFields := rt.NewTable()
-				for i, f := range fields {
-					luaFields.Set(rt.IntValue(int64(i + 1)), rt.StringValue(f))
-				}
-
-				// we must keep the holy 80 cols
-				luacompleteTable, err := rt.Call1(l.MainThread(), 
-				rt.FunctionValue(completecb), rt.StringValue(query),
-				rt.StringValue(ctx), rt.TableValue(luaFields))
-
-				if err != nil {
-					return "", compGroup
-				}
-
-				/*
-					as an example with git,
-					completion table should be structured like:
-					{
-						{
-							items = {
-								'add',
-								'clone',
-								'init'
-							},
-							type = 'grid'
-						},
-						{
-							items = {
-								'-c',
-								'--git-dir'
-							},
-							type = 'list'
-						}
-					}
-					^ a table of completion groups.
-					it is the responsibility of the completer
-					to work on subcommands and subcompletions
-				*/
-				if cmpTbl, ok := luacompleteTable.TryTable(); ok {
-					nextVal := rt.NilValue
-					for {
-						next, val, ok := cmpTbl.Next(nextVal)
-						if next == rt.NilValue {
-							break
-						}
-						nextVal = next
-
-						_, ok = next.TryInt()
-						valTbl, okk := val.TryTable()
-						if !ok || !okk {
-							// TODO: error?
-							break
-						}
-
-						luaCompType := valTbl.Get(rt.StringValue("type"))
-						luaCompItems := valTbl.Get(rt.StringValue("items"))
-
-						compType, ok := luaCompType.TryString()
-						compItems, okk := luaCompItems.TryTable()
-						if !ok || !okk {
-							// TODO: error
-							break
-						}
-
-						var items []string
-						itemDescriptions := make(map[string]string)
-						nxVal := rt.NilValue
-						for {
-							nx, vl, _ := compItems.Next(nxVal)
-							if nx == rt.NilValue {
-								break
-							}
-							nxVal = nx
-
-							if tstr := nx.Type(); tstr == rt.StringType {
-								// ['--flag'] = {'description', '--flag-alias'}
-								nxStr, ok := nx.TryString()
-								vlTbl, okk := vl.TryTable()
-								if !ok || !okk {
-									// TODO: error
-									continue
-								}
-								items = append(items, nxStr)
-								itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
-								if !ok {
-									// TODO: error
-									continue
-								}
-								itemDescriptions[nxStr] = itemDescription
-							} else if tstr == rt.IntType {
-								vlStr, okk := vl.TryString()
-								if !okk {
-									// TODO: error
-									continue
-								}
-								items = append(items, vlStr)
-							} else {
-								// TODO: error
-								continue
-							}
-						}
-
-						var dispType readline.TabDisplayType
-						switch compType {
-							case "grid": dispType = readline.TabDisplayGrid
-							case "list": dispType = readline.TabDisplayList
-							// need special cases, will implement later
-							//case "map": dispType = readline.TabDisplayMap
-						}
-
-						compGroup = append(compGroup, &readline.CompletionGroup{
-							DisplayType: dispType,
-							Descriptions: itemDescriptions,
-							Suggestions: items,
-							TrimSlash: false,
-							NoSpace: true,
-						})
-					}
-				}
+			var dispType readline.TabDisplayType
+			switch luaCompType.AsString() {
+				case "grid": dispType = readline.TabDisplayGrid
+				case "list": dispType = readline.TabDisplayList
+				// need special cases, will implement later
+				//case "map": dispType = readline.TabDisplayMap
 			}
 
-			if len(compGroup) == 0 {
-				completions, p := fileComplete(query, ctx, fields)
-				fcompGroup := []*readline.CompletionGroup{{
-					TrimSlash: false,
-					NoSpace: true,
-					Suggestions: completions,
-				}}
+			compGroups = append(compGroups, &readline.CompletionGroup{
+				DisplayType: dispType,
+				Descriptions: itemDescriptions,
+				Suggestions: items,
+				TrimSlash: false,
+				NoSpace: true,
+			})
+		})
 
-				return p, fcompGroup
-			}
-		}
-		return "", compGroup
+		return pfx, compGroups
 	}
 
 	return &lineReader{

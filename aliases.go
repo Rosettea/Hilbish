@@ -72,6 +72,7 @@ func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
 		"add": util.LuaExport{hlalias, 2, false},
 		"list": util.LuaExport{a.luaList, 0, false},
 		"del": util.LuaExport{a.luaDelete, 1, false},
+		"resolve": util.LuaExport{a.luaResolve, 1, false},
 	}
 
 	mod := rt.NewTable()
@@ -100,4 +101,17 @@ func (a *aliasHandler) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	a.Delete(alias)
 
 	return c.Next(), nil
+}
+
+func (a *aliasHandler) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	alias, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	resolved := a.Resolve(alias)
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(resolved)), nil
 }
