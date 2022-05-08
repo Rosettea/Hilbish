@@ -2,7 +2,7 @@
 local _ = require 'succulent' -- Function additions
 
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
-.. ';' .. hilbish.dataDir .. '/?/?.lua'
+.. ';' .. hilbish.dataDir .. '/?/?.lua' .. ";" .. hilbish.dataDir .. '/?.lua'
 
 require 'nature.commands'
 require 'nature.completions'
