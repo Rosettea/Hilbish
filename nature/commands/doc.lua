@@ -58,17 +58,19 @@ commander.register('doc', function(args)
 			local propstr = ''
 			local modDesc = ''
 			local modmt = getmetatable(require(mod))
-			modDesc = modmt.__doc
-			if modmt.__docProp then
-				-- not all modules have docs for properties
-				props = table.map(modmt.__docProp, function(v, k)
-					return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
-				end)
+			if modmt then
+				modDesc = modmt.__doc
+				if modmt.__docProp then
+					-- not all modules have docs for properties
+					props = table.map(modmt.__docProp, function(v, k)
+						return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
+					end)
+				end
+				if #props > 0 then
+					propstr = '\n# Properties\n' .. table.concat(props, '\n') .. '\n'
+				end
+				desc = string.format(modDocFormat, modDesc, propstr)
 			end
-			if #props > 0 then
-				propstr = '\n# Properties\n' .. table.concat(props, '\n') .. '\n'
-			end
-			desc = string.format(modDocFormat, modDesc, propstr)
 		end
 		print(desc .. formattedFuncs)
 		f:close()
