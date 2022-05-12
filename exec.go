@@ -113,7 +113,7 @@ func runInput(input string, priv bool) {
 	} else {
 		// can only be a string or function so
 		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-		err = rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(cmdString)}, term)
+		err = rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(input)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
