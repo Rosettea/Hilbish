@@ -79,16 +79,19 @@ func newJobHandler() *jobHandler {
 	}
 }
 
-func (j *jobHandler) add(cmd string) {
+func (j *jobHandler) add(cmd string) *job {
 	j.mu.Lock()
 	defer j.mu.Unlock()
 
 	j.latestID++
-	j.jobs[j.latestID] = &job{
+	jb := &job{
 		cmd: cmd,
 		running: false,
 		id: j.latestID,
 	}
+	j.jobs[j.latestID] = jb
+
+	return jb
 }
 
 func (j *jobHandler) getLatest() *job {
@@ -102,6 +105,7 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	jobFuncs := map[string]util.LuaExport{
 		"all": {j.luaAllJobs, 0, false},
 		"get": {j.luaGetJob, 1, false},
+		"add": {j.luaAddJob, 1, false},
 	}
 
 	luaJob := rt.NewTable()
@@ -128,6 +132,23 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	return c.PushingNext1(t.Runtime, job.lua()), nil
+}
+
+func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	j.mu.RLock()
+	defer j.mu.RUnlock()
+
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	cmd, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	jb := j.add(cmd)
+
+	return c.PushingNext1(t.Runtime, jb.lua()), nil
 }
 
 func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
