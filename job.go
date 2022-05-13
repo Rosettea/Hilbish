@@ -3,10 +3,12 @@ package main
 import (
 	"sync"
 	"os"
+	"os/exec"
 
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
+	"github.com/arnodel/golua/lib/iolib"
 )
 
 var jobs *jobHandler
@@ -17,18 +19,51 @@ type job struct {
 	id int
 	pid int
 	exitCode int
-	proc *os.Process
+	once bool
+	args []string
+	// save path for a few reasons, one being security (lmao) while the other
+	// would just be so itll be the same binary command always (path changes)
+	path string
+	handle *exec.Cmd
+	stdin *iolib.File
+	stdout *iolib.File
+	stderr *iolib.File
 }
 
-func (j *job) start(pid int) {
-	j.pid = pid
+func (j *job) start() error {
+	if j.handle == nil || j.once {
+		// cmd cant be reused so make a new one
+		cmd := exec.Cmd{
+			Path: j.path,
+			Args: j.args,
+			Stdin: j.getStdio("in"),
+			Stdout: j.getStdio("out"),
+			Stderr: j.getStdio("err"),
+		}
+		j.setHandle(&cmd)
+	}
+
+	if !j.once {
+		j.once = true
+	}
+
+	err := j.handle.Start()
+	proc := j.getProc()
+
+	j.pid = proc.Pid
 	j.running = true
+
 	hooks.Em.Emit("job.start", j.lua())
+
+	return err
 }
 
 func (j *job) stop() {
 	// finish will be called in exec handle
-	j.proc.Kill()
+	proc := j.getProc()
+	if proc != nil {
+		proc.Kill()
+	}
 }
 
 func (j *job) finish() {
@@ -36,13 +71,38 @@ func (j *job) finish() {
 	hooks.Em.Emit("job.done", j.lua())
 }
 
-func (j *job) setHandle(handle *os.Process) {
-	j.proc = handle
+func (j *job) setHandle(handle *exec.Cmd) {
+	j.handle = handle
+	j.args = handle.Args
+	j.path = handle.Path
+}
+
+func (j *job) getProc() *os.Process {
+	handle := j.handle
+	if handle != nil {
+		return handle.Process
+	}
+
+	return nil
+}
+
+func (j *job) getStdio(typ string) *os.File {
+	// TODO: make this use std io/out/err values from job struct,
+	// which are lua files
+	var stdio *os.File
+	switch typ {
+		case "in": stdio = os.Stdin
+		case "out": stdio = os.Stdout
+		case "err": stdio = os.Stderr
+	}
+
+	return stdio
 }
 
 func (j *job) lua() rt.Value {
 	jobFuncs := map[string]util.LuaExport{
 		"stop": {j.luaStop, 0, false},
+		"start": {j.luaStart, 0, false},
 	}
 	luaJob := rt.NewTable()
 	util.SetExports(l, luaJob, jobFuncs)
@@ -54,6 +114,17 @@ func (j *job) lua() rt.Value {
 	luaJob.Set(rt.StringValue("exitCode"), rt.IntValue(int64(j.exitCode)))
 
 	return rt.TableValue(luaJob)
+}
+
+func (j *job) luaStart(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if !j.running {
+		err := j.start()
+		exit := handleExecErr(err)
+		j.exitCode = int(exit)
+		j.finish()
+	}
+
+	return c.Next(), nil
 }
 
 func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -79,7 +150,7 @@ func newJobHandler() *jobHandler {
 	}
 }
 
-func (j *jobHandler) add(cmd string) *job {
+func (j *jobHandler) add(cmd string, args []string, path string) *job {
 	j.mu.Lock()
 	defer j.mu.Unlock()
 
@@ -88,6 +159,7 @@ func (j *jobHandler) add(cmd string) *job {
 		cmd: cmd,
 		running: false,
 		id: j.latestID,
+		args: args,
 	}
 	j.jobs[j.latestID] = jb
 
@@ -145,8 +217,19 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	largs, err := c.TableArg(1)
+	if err != nil {
+		return nil, err
+	}
 
-	jb := j.add(cmd)
+	var args []string
+	util.ForEach(largs, func(k rt.Value, v rt.Value) {
+		if v.Type() == rt.StringType {
+			args = append(args, v.AsString())
+		}
+	})
+	// TODO: change to lookpath for args[0]
+	jb := j.add(cmd, args, args[0])
 
 	return c.PushingNext1(t.Runtime, jb.lua()), nil
 }
