@@ -362,12 +362,9 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		if bg {
 			j = jobs.getLatest()
 			j.setHandle(cmd.Process)
+			j.start(cmd.Process.Pid)
 		}
 		if err == nil {
-			if bg {
-				j.start(cmd.Process.Pid)
-			}
-
 			if done := ctx.Done(); done != nil {
 				go func() {
 					<-done
