@@ -59,6 +59,7 @@ func (j *job) lua() rt.Value {
 func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if j.running {
 		j.stop()
+		j.finish()
 	}
 
 	return c.Next(), nil
