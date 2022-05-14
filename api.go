@@ -163,11 +163,16 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	jobModule := jobs.loader(rtm)
 	util.Document(jobModule, "(Background) job interface.")
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
-	
+
+	// hilbish.timers table
 	timers = newTimerHandler()
 	timerModule := timers.loader(rtm)
 	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
 	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
+
+	editorModule := editorLoader(rtm)
+	util.Document(editorModule, "")
+	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
 
 	return rt.TableValue(fakeMod), nil
 }

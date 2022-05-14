@@ -107,6 +107,10 @@ func (rl *Instance) insert(r []rune) {
 	rl.updateHelpers()
 }
 
+func (rl *Instance) Insert(t string) {
+	rl.insert([]rune(t))
+}
+
 func (rl *Instance) deleteX() {
 	switch {
 	case len(rl.line) == 0:

@@ -105,7 +105,10 @@ func (rl *Instance) saveToRegisterTokenize(tokeniser tokeniser, jumper func(toke
 // let the caller pass directly this buffer, yet relying on the register system to
 // determine which register will store the buffer.
 func (rl *Instance) saveBufToRegister(buffer []rune) {
+	rl.SetRegisterBuf(string(rl.registers.currentRegister), buffer)
+}
 
+func (rl *Instance) SetRegisterBuf(reg string, buffer []rune) {
 	// We must make an immutable version of the buffer first.
 	buf := string(buffer)
 
@@ -124,7 +127,7 @@ func (rl *Instance) saveBufToRegister(buffer []rune) {
 	// If there is an active register, directly give it the buffer.
 	// Check if its a numbered or lettered register, and put it in.
 	if rl.registers.onRegister {
-		num, err := strconv.Atoi(string(rl.registers.currentRegister))
+		num, err := strconv.Atoi(reg)
 		if err == nil && num < 10 {
 			rl.registers.writeNumberedRegister(num, []rune(buf), false)
 		} else if err != nil {
@@ -149,8 +152,12 @@ func (rl *Instance) pasteFromRegister() (buffer []rune) {
 	}
 	activeRegister := string(rl.registers.currentRegister)
 
-	// Else find the active register, and return its content.
-	num, err := strconv.Atoi(activeRegister)
+	return rl.GetFromRegister(activeRegister)
+}
+
+func (rl *Instance) GetFromRegister(reg string) []rune {
+	// Find the active register, and return its content.
+	num, err := strconv.Atoi(reg)
 
 	// Either from the numbered ones.
 	if err == nil {
@@ -158,20 +165,20 @@ func (rl *Instance) pasteFromRegister() (buffer []rune) {
 		if found {
 			return buf
 		}
-		return
+		return []rune{}
 	}
 	// or the lettered ones
-	buf, found := rl.registers.alpha[activeRegister]
+	buf, found := rl.registers.alpha[reg]
 	if found {
 		return buf
 	}
 	// Or the read-only ones
-	buf, found = rl.registers.ro[activeRegister]
+	buf, found = rl.registers.ro[reg]
 	if found {
 		return buf
 	}
 
-	return
+	return []rune{}
 }
 
 // setActiveRegister - The user has typed "<regiserID>, and we don't know yet
