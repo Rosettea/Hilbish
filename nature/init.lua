@@ -7,6 +7,7 @@ package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 require 'nature.commands'
 require 'nature.completions'
 require 'nature.opts'
+require 'nature.vim'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then
