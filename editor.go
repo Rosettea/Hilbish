@@ -66,5 +66,5 @@ func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	buf := lr.rl.GetFromRegister(register)
 
-	return c.PushingNext1(t.Runtime, rt.StringValue(string(bufma))), nil
+	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
 }
