@@ -107,7 +107,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 The nice lil shell for {blue}Lua{reset} fanatics!
 Check out the {blue}{bold}guide{reset} command to get started.
 `
-	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(version), "Hilbish version")
+	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()), "Hilbish version")
 	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
 	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
 	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")

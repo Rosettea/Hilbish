@@ -6,7 +6,7 @@ MY_GOFLAGS = -ldflags "-s -w"
 
 all: dev
 
-dev: MY_GOFLAGS = -ldflags "-s -w -X main.version=$(shell git describe --tags)"
+dev: MY_GOFLAGS = -ldflags "-s -w -X main.gitCommit=$(shell git rev-parse --short HEAD) -X main.gitBranch=$(shell git rev-parse --abbrev-ref HEAD)"
 dev: build
 
 build:

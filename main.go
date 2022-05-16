@@ -106,7 +106,7 @@ func main() {
 	}
 
 	if *verflag {
-		fmt.Printf("Hilbish %s\n", version)
+		fmt.Printf("Hilbish %s\n", getVersion())
 		os.Exit(0)
 	}
 
@@ -302,4 +302,19 @@ func exit(code int) {
 			os.Exit(code)
 		}
 	}
+}
+
+func getVersion() string {
+	v := strings.Builder{}
+
+	v.WriteString(ver)
+	if gitBranch != "" && gitBranch != "HEAD" {
+		v.WriteString("-" + gitBranch)
+	}
+
+	if gitCommit != "" {
+		v.WriteString("." + gitCommit)
+	}
+
+	return v.String()
 }
