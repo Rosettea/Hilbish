@@ -159,6 +159,7 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		running: false,
 		id: j.latestID,
 		args: args,
+		path: path,
 		stdin: os.Stdin,
 		stdout: os.Stdout,
 		stderr: os.Stderr,
