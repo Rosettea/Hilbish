@@ -1,9 +1,10 @@
 package main
 
 import (
-	"sync"
+	"io"
 	"os"
 	"os/exec"
+	"sync"
 
 	"hilbish/util"
 
@@ -25,9 +26,9 @@ type job struct {
 	// would just be so itll be the same binary command always (path changes)
 	path string
 	handle *exec.Cmd
-	stdin *iolib.File
-	stdout *iolib.File
-	stderr *iolib.File
+	stdin io.Reader
+	stdout io.Writer
+	stderr io.Writer
 }
 
 func (j *job) start() error {
@@ -36,9 +37,9 @@ func (j *job) start() error {
 		cmd := exec.Cmd{
 			Path: j.path,
 			Args: j.args,
-			Stdin: j.getStdio("in"),
-			Stdout: j.getStdio("out"),
-			Stderr: j.getStdio("err"),
+			Stdin: j.stdin,
+			Stdout: j.stdout,
+			Stderr: j.stderr,
 		}
 		j.setHandle(&cmd)
 	}
@@ -75,6 +76,9 @@ func (j *job) setHandle(handle *exec.Cmd) {
 	j.handle = handle
 	j.args = handle.Args
 	j.path = handle.Path
+	j.stdin = handle.Stdin
+	j.stdout = handle.Stdout
+	j.stderr = handle.Stderr
 }
 
 func (j *job) getProc() *os.Process {
@@ -86,17 +90,12 @@ func (j *job) getProc() *os.Process {
 	return nil
 }
 
-func (j *job) getStdio(typ string) *os.File {
-	// TODO: make this use std io/out/err values from job struct,
-	// which are lua files
-	var stdio *os.File
+func (j *job) setStdio(typ string, f *iolib.File) {
 	switch typ {
-		case "in": stdio = os.Stdin
-		case "out": stdio = os.Stdout
-		case "err": stdio = os.Stderr
+		case "in": j.stdin = f.File
+		case "out": j.stdout = f.File
+		case "err": j.stderr = f.File
 	}
-
-	return stdio
 }
 
 func (j *job) lua() rt.Value {
@@ -160,6 +159,9 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		running: false,
 		id: j.latestID,
 		args: args,
+		stdin: os.Stdin,
+		stdout: os.Stdout,
+		stderr: os.Stderr,
 	}
 	j.jobs[j.latestID] = jb
 
