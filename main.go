@@ -316,5 +316,7 @@ func getVersion() string {
 		v.WriteString("." + gitCommit)
 	}
 
+	v.WriteString(" (" + releaseName + ")")
+
 	return v.String()
 }
