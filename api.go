@@ -174,6 +174,14 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(editorModule, "")
 	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
 
+	versionModule := rt.NewTable()
+	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch), "Git branch Hilbish was compiled from")
+	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()), "Full version info, including release name")
+	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit), "Git commit Hilbish was compiled from")
+	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName), "Release name")
+	util.Document(versionModule, "Version info interface.")
+	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
+
 	return rt.TableValue(fakeMod), nil
 }
 
