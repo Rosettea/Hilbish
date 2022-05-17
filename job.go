@@ -165,6 +165,7 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		stderr: os.Stderr,
 	}
 	j.jobs[j.latestID] = jb
+	hooks.Em.Emit("job.add", jb.lua())
 
 	return jb
 }
