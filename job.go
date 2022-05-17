@@ -179,7 +179,7 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	jobFuncs := map[string]util.LuaExport{
 		"all": {j.luaAllJobs, 0, false},
 		"get": {j.luaGetJob, 1, false},
-		"add": {j.luaAddJob, 1, false},
+		"add": {j.luaAddJob, 2, false},
 	}
 
 	luaJob := rt.NewTable()
@@ -209,10 +209,7 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	j.mu.RLock()
-	defer j.mu.RUnlock()
-
-	if err := c.Check1Arg(); err != nil {
+	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
 	cmd, err := c.StringArg(0)
