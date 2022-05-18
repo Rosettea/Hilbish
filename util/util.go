@@ -166,3 +166,12 @@ func ExpandHome(path string) string {
 	return path
 }
 
+// AbbrevHome changes the user's home directory in the path string to ~ (tilde)
+func AbbrevHome(path string) string {
+	curuser, _ := user.Current()
+	if strings.HasPrefix(path, curuser.HomeDir) {
+		return "~" + strings.TrimPrefix(path, curuser.HomeDir)
+	}
+
+	return path
+}
