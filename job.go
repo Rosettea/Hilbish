@@ -11,7 +11,6 @@ import (
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
-	"github.com/arnodel/golua/lib/iolib"
 )
 
 var jobs *jobHandler
@@ -95,14 +94,6 @@ func (j *job) getProc() *os.Process {
 	}
 
 	return nil
-}
-
-func (j *job) setStdio(typ string, f *iolib.File) {
-	switch typ {
-		case "in": j.stdin = f.File
-		case "out": j.stdout = f.File
-		case "err": j.stderr = f.File
-	}
 }
 
 func (j *job) lua() rt.Value {
