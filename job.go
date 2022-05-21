@@ -43,6 +43,7 @@ func (j *job) start() error {
 		}
 		j.setHandle(&cmd)
 	}
+	j.handle.SysProcAttr = bgProcAttr
 
 	if !j.once {
 		j.once = true
