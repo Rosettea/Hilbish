@@ -360,7 +360,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		var j *job
 		if bg {
 			var procAttr *syscall.SysProcAttr
-			if runtime.GOOS != "windows" {
+			if runtime.GOOS == "windows" {
 				procAttr = &syscall.SysProcAttr{
 					CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 				}
