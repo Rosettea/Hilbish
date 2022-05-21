@@ -45,12 +45,12 @@ func (j *job) start() error {
 	}
 	// bgProcAttr is defined in execfile_<os>.go, it holds a procattr struct
 	// in a simple explanation, it makes signals from hilbish (sigint)
-	// not go to it
+	// not go to it (child process)
 	j.handle.SysProcAttr = bgProcAttr
 	// reset output buffers
 	j.stdout.Reset()
 	j.stderr.Reset()
-	// make cmd write to both standard output and output buffers for lua ccess
+	// make cmd write to both standard output and output buffers for lua access
 	j.handle.Stdout = io.MultiWriter(j.cmdout, j.stdout)
 	j.handle.Stderr = io.MultiWriter(j.cmderr, j.stderr)
 
