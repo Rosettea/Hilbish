@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"os"
@@ -27,9 +28,10 @@ type job struct {
 	// would just be so itll be the same binary command always (path changes)
 	path string
 	handle *exec.Cmd
-	stdin io.Reader
-	stdout io.Writer
-	stderr io.Writer
+	cmdout io.Writer
+	cmderr io.Writer
+	stdout *bytes.Buffer
+	stderr *bytes.Buffer
 }
 
 func (j *job) start() error {
@@ -38,13 +40,19 @@ func (j *job) start() error {
 		cmd := exec.Cmd{
 			Path: j.path,
 			Args: j.args,
-			Stdin: j.stdin,
-			Stdout: j.stdout,
-			Stderr: j.stderr,
 		}
 		j.setHandle(&cmd)
 	}
+	// bgProcAttr is defined in execfile_<os>.go, it holds a procattr struct
+	// in a simple explanation, it makes signals from hilbish (sigint)
+	// not go to it
 	j.handle.SysProcAttr = bgProcAttr
+	// reset output buffers
+	j.stdout.Reset()
+	j.stderr.Reset()
+	// make cmd write to both standard output and output buffers for lua ccess
+	j.handle.Stdout = io.MultiWriter(j.cmdout, j.stdout)
+	j.handle.Stderr = io.MultiWriter(j.cmderr, j.stderr)
 
 	if !j.once {
 		j.once = true
@@ -82,9 +90,12 @@ func (j *job) setHandle(handle *exec.Cmd) {
 	j.handle = handle
 	j.args = handle.Args
 	j.path = handle.Path
-	j.stdin = handle.Stdin
-	j.stdout = handle.Stdout
-	j.stderr = handle.Stderr
+	if handle.Stdout != nil {
+		j.cmdout = handle.Stdout
+	}
+	if handle.Stderr != nil {
+		j.cmderr = handle.Stderr
+	}
 }
 
 func (j *job) getProc() *os.Process {
@@ -109,6 +120,8 @@ func (j *job) lua() rt.Value {
 	luaJob.Set(rt.StringValue("id"), rt.IntValue(int64(j.id)))
 	luaJob.Set(rt.StringValue("pid"), rt.IntValue(int64(j.pid)))
 	luaJob.Set(rt.StringValue("exitCode"), rt.IntValue(int64(j.exitCode)))
+	luaJob.Set(rt.StringValue("stdout"), rt.StringValue(string(j.stdout.Bytes())))
+	luaJob.Set(rt.StringValue("stderr"), rt.StringValue(string(j.stderr.Bytes())))
 
 	return rt.TableValue(luaJob)
 }
@@ -158,9 +171,10 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		id: j.latestID,
 		args: args,
 		path: path,
-		stdin: os.Stdin,
-		stdout: os.Stdout,
-		stderr: os.Stderr,
+		cmdout: os.Stdout,
+		cmderr: os.Stderr,
+		stdout: &bytes.Buffer{},
+		stderr: &bytes.Buffer{},
 	}
 	j.jobs[j.latestID] = jb
 	hooks.Em.Emit("job.add", jb.lua())
@@ -303,4 +317,3 @@ func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.PushingNext1(t.Runtime, job.lua()), nil
 }
-
