@@ -215,6 +215,7 @@ func (j *jobHandler) stopAll() {
 func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	jobFuncs := map[string]util.LuaExport{
 		"all": {j.luaAllJobs, 0, false},
+		"last": {j.luaLastJob, 0, false},
 		"get": {j.luaGetJob, 1, false},
 		"add": {j.luaAddJob, 2, false},
 		"disown": {j.luaDisownJob, 1, false},
@@ -299,3 +300,16 @@ func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.Next(), nil
 }
+
+func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	j.mu.RLock()
+	defer j.mu.RUnlock()
+
+	job := j.jobs[j.latestID]
+	if job == nil { // incase we dont have any jobs yet
+		return c.Next(), nil
+	}
+
+	return c.PushingNext1(t.Runtime, job.lua()), nil
+}
+
