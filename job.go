@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"os"
 	"os/exec"
 	"sync"
+	"syscall"
 
 	"hilbish/util"
 
@@ -71,6 +73,10 @@ func (j *job) stop() {
 func (j *job) finish() {
 	j.running = false
 	hooks.Em.Emit("job.done", j.lua())
+}
+
+func (j *job) wait() {
+	j.handle.Wait()
 }
 
 func (j *job) setHandle(handle *exec.Cmd) {
@@ -178,11 +184,40 @@ func (j *jobHandler) getLatest() *job {
 	return j.jobs[j.latestID]
 }
 
+func (j *jobHandler) disown(id int) error {
+	j.mu.RLock()
+	if j.jobs[id] == nil {
+		return errors.New("job doesnt exist")
+	}
+	j.mu.RUnlock()
+
+	j.mu.Lock()
+	delete(j.jobs, id)
+	j.mu.Unlock()
+
+	return nil
+}
+
+func (j *jobHandler) stopAll() {
+	j.mu.RLock()
+	defer j.mu.RUnlock()
+
+	for _, jb := range j.jobs {
+		// on exit, unix shell should send sighup to all jobs
+		if jb.running {
+			proc := jb.getProc()
+			proc.Signal(syscall.SIGHUP)
+			jb.wait() // waits for program to exit due to sighup
+		}
+	}
+}
+
 func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	jobFuncs := map[string]util.LuaExport{
 		"all": {j.luaAllJobs, 0, false},
 		"get": {j.luaGetJob, 1, false},
 		"add": {j.luaAddJob, 2, false},
+		"disown": {j.luaDisownJob, 1, false},
 	}
 
 	luaJob := rt.NewTable()
@@ -246,4 +281,21 @@ func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	return c.PushingNext1(t.Runtime, rt.TableValue(jobTbl)), nil
+}
+
+func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	jobID, err := c.IntArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	err = j.disown(int(jobID))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Next(), nil
 }
