@@ -34,6 +34,15 @@ without arguments will disown the last job.
 - Job output (stdout/stderr) can now be obtained via the `stdout` and `stderr`
 fields on a job object.
 - Documentation for jobs is now available via `doc jobs`.
+- `hilbish.alias.resolve(cmdstr)` to resolve a command alias.
+- `hilbish.opts` for shell options. Currently, the only opt is `autocd`.
+- `hilbish.editor` interface for interacting with the line editor that
+Hilbish uses.
+- `hilbish.vim` interface to dynamically get/set vim registers.
+Example usage: `hilbish.vim.registers['a'] = 'hello'`. You can also
+get the mode with it via `hilbish.vim.mode`
+- `hilbish.version` interface for more info about Hilbish's version. This
+includes git commit, branch, and (new!!) release name.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -44,6 +53,7 @@ This is probably one of (if not the) biggest things in this release.
 user input, exit code, and error. User input has been added to the return to
 account for runners wanting to prompt for continued input, and to add it
 properly to history.
+- All `fs` module functions which take paths now implicitly expand ~ to home.
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
@@ -70,6 +80,14 @@ certain color rules.
 - `hilbish.which` now works with commanders and aliases.
 - Background jobs no longer take stdin so they do not interfere with shell
 input.
+- Completions are fixed in cases where the query/line is an alias alone
+where it can also resolve to the beginning of command names.
+(reference [this commit](https://github.com/Rosettea/Hilbish/commit/2790982ad123115c6ddbc5764677fdca27668cea))
+for explanation.
+- Jobs now throw `job.done` and set running to false when stopped via
+Lua `job.stop` function.
+- Jobs are always started in sh exec handler now instead of only successful start.
+- SIGTERM is handled properly now, which means stopping jobs and timers.
 
 ## [1.2.0] - 2022-03-17
 ### Added
