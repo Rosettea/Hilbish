@@ -34,7 +34,7 @@ func (th *timerHandler) create(typ timerType, dur time.Duration, fun *rt.Closure
 		typ: typ,
 		fun: fun,
 		dur: dur,
-		channel: make(chan bool, 1),
+		channel: make(chan struct{}, 1),
 		th: th,
 		id: th.latestID,
 	}

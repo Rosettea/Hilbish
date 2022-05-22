@@ -25,7 +25,7 @@ type timer struct{
 	fun *rt.Closure
 	th *timerHandler
 	ticker *time.Ticker
-	channel chan bool
+	channel chan struct{}
 }
 
 func (t *timer) start() error {
@@ -65,7 +65,7 @@ func (t *timer) stop() error {
 		return errors.New("timer not running")
 	}
 
-	t.channel <- true
+	t.channel <- struct{}{}
 	t.running = false
 	t.th.running--
 	
