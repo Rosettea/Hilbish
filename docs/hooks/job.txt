@@ -1,4 +1,4 @@
-Note: `job` refers to a job object. YOu can check `doc jobs` for more
+Note: `job` refers to a job object. You can check `doc jobs` for more
 detail.
 
 + `job.start` -> job > Thrown when a new background job starts.
