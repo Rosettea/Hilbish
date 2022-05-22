@@ -12,6 +12,7 @@ import (
 var timers *timerHandler
 type timerHandler struct {
 	mu *sync.RWMutex
+	wg *sync.WaitGroup
 	timers map[int]*timer
 	latestID int
 	running int
@@ -22,7 +23,12 @@ func newTimerHandler() *timerHandler {
 		timers: make(map[int]*timer),
 		latestID: 0,
 		mu: &sync.RWMutex{},
+		wg: &sync.WaitGroup{},
 	}
+}
+
+func (th *timerHandler) wait() {
+	th.wg.Wait()
 }
 
 func (th *timerHandler) create(typ timerType, dur time.Duration, fun *rt.Closure) *timer {

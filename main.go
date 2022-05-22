@@ -301,11 +301,7 @@ func exit(code int) {
 	// wait for all timers to finish before exiting.
 	// only do that when not interactive
 	if !interactive {
-		for {
-			if timers.running == 0 {
-				os.Exit(code)
-			}
-		}
+		timers.wait()
 	}
 
 	os.Exit(code)

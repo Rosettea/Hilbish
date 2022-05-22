@@ -35,6 +35,7 @@ func (t *timer) start() error {
 
 	t.running = true
 	t.th.running++
+	t.th.wg.Add(1)
 	t.ticker = time.NewTicker(t.dur)
 
 	go func() {
@@ -68,6 +69,7 @@ func (t *timer) stop() error {
 	t.channel <- struct{}{}
 	t.running = false
 	t.th.running--
+	t.th.wg.Done()
 	
 	return nil
 }
