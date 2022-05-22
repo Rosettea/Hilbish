@@ -23,6 +23,17 @@ is for everything/anything as opposed to just adding a single command completion
 [#122](https://github.com/Rosettea/Hilbish/issues/122)
 - `fs.abs(path)` to get absolute path.
 - Nature module (`doc nature`)
+- `hilbish.jobs.add(cmdstr, args, execPath)` to add a job to the job table.
+`cmdstr` would be user input, `args` is the args for the command (includes arg0)
+and `execPath` is absolute path to command executable
+- `job.add` hook is thrown when a job is added. acts as a unique hook for
+jobs
+- `hilbish.jobs.disown(id)` and `disown` builtin to disown a job. `disown`
+without arguments will disown the last job.
+- `hilbish.jobs.last()` returns the last added job.
+- Job output (stdout/stderr) can now be obtained via the `stdout` and `stderr`
+fields on a job object.
+- Documentation for jobs is now available via `doc jobs`.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -57,6 +68,8 @@ certain color rules.
 - Cursor position with CJK characters. ([#145](https://github.com/Rosettea/Hilbish/pull/145))
 - Files with same name as parent folder in completions getting cut off [#136](https://github.com/Rosettea/Hilbish/issues/136))
 - `hilbish.which` now works with commanders and aliases.
+- Background jobs no longer take stdin so they do not interfere with shell
+input.
 
 ## [1.2.0] - 2022-03-17
 ### Added
