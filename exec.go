@@ -239,7 +239,7 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 
 			stmtStr := buf.String()
 			buf.Reset()
-			jobs.add(stmtStr)
+			jobs.add(stmtStr, []string{}, "")
 		}
 
 		interp.ExecHandler(execHandle(bg))(runner)
@@ -357,13 +357,15 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			Stderr: hc.Stderr,
 		}
 
-		err = cmd.Start()
 		var j *job
 		if bg {
 			j = jobs.getLatest()
-			j.setHandle(cmd.Process)
-			j.start(cmd.Process.Pid)
+			j.setHandle(&cmd)
+			err = j.start()
+		} else {
+			err = cmd.Start()
 		}
+
 		if err == nil {
 			if done := ctx.Done(); done != nil {
 				go func() {
@@ -388,35 +390,8 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			err = cmd.Wait()
 		}
 
-		var exit uint8
-		switch x := err.(type) {
-		case *exec.ExitError:
-			// started, but errored - default to 1 if OS
-			// doesn't have exit statuses
-			if status, ok := x.Sys().(syscall.WaitStatus); ok {
-				if status.Signaled() {
-					if ctx.Err() != nil {
-						return ctx.Err()
-					}
-					exit = uint8(128 + status.Signal())
-					goto end
-				}
-				exit = uint8(status.ExitStatus())
-				goto end
-			}
-			exit = 1
-			goto end
-		case *exec.Error:
-			// did not start
-			fmt.Fprintf(hc.Stderr, "%v\n", err)
-			exit = 127
-			goto end
-		case nil:
-			goto end
-		default:
-			return err
-		}
-		end:
+		exit := handleExecErr(err)
+
 		if bg {
 			j.exitCode = int(exit)
 			j.finish()
@@ -425,6 +400,35 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 	}
 }
 
+func handleExecErr(err error) (exit uint8) {
+	ctx := context.TODO()
+
+	switch x := err.(type) {
+	case *exec.ExitError:
+		// started, but errored - default to 1 if OS
+		// doesn't have exit statuses
+		if status, ok := x.Sys().(syscall.WaitStatus); ok {
+			if status.Signaled() {
+				if ctx.Err() != nil {
+					return
+				}
+				exit = uint8(128 + status.Signal())
+				return
+			}
+			exit = uint8(status.ExitStatus())
+			return
+		}
+		exit = 1
+		return
+	case *exec.Error:
+		// did not start
+		//fmt.Fprintf(hc.Stderr, "%v\n", err)
+		exit = 127
+	default: return
+	}
+
+	return
+}
 func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
 	var skip []string
 	if runtime.GOOS == "windows" {

@@ -4,7 +4,12 @@ package main
 
 import (
 	"os"
+	"syscall"
 )
+
+var bgProcAttr *syscall.SysProcAttr = &syscall.SysProcAttr{
+	Setpgid: true,
+}
 
 func findExecutable(path string, inPath, dirs bool) error {
 	f, err := os.Stat(path)

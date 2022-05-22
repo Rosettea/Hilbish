@@ -221,6 +221,8 @@ input:
 		}
 		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
 	}
+
+	exit(0)
 }
 
 func continuePrompt(prev string) (string, error) {
@@ -294,12 +296,19 @@ func contains(s []string, e string) bool {
 }
 
 func exit(code int) {
-	// wait for all timers to finish before exiting
-	for {
-		if timers.running == 0 {
-			os.Exit(code)
+	jobs.stopAll()
+
+	// wait for all timers to finish before exiting.
+	// only do that when not interactive
+	if !interactive {
+		for {
+			if timers.running == 0 {
+				os.Exit(code)
+			}
 		}
 	}
+
+	os.Exit(code)
 }
 
 func getVersion() string {
