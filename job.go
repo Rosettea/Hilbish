@@ -222,7 +222,7 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 		"all": {j.luaAllJobs, 0, false},
 		"last": {j.luaLastJob, 0, false},
 		"get": {j.luaGetJob, 1, false},
-		"add": {j.luaAddJob, 2, false},
+		"add": {j.luaAddJob, 3, false},
 		"disown": {j.luaDisownJob, 1, false},
 	}
 
@@ -253,7 +253,7 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
+	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
 	}
 	cmd, err := c.StringArg(0)
@@ -264,6 +264,10 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
+	execPath, err := c.StringArg(2)
+	if err != nil {
+		return nil, err
+	}
 
 	var args []string
 	util.ForEach(largs, func(k rt.Value, v rt.Value) {
@@ -271,8 +275,8 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			args = append(args, v.AsString())
 		}
 	})
-	// TODO: change to lookpath for args[0]
-	jb := j.add(cmd, args, args[0])
+
+	jb := j.add(cmd, args, execPath)
 
 	return c.PushingNext1(t.Runtime, jb.lua()), nil
 }
