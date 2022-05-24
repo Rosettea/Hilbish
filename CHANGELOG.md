@@ -43,6 +43,9 @@ Example usage: `hilbish.vim.registers['a'] = 'hello'`. You can also
 get the mode with it via `hilbish.vim.mode`
 - `hilbish.version` interface for more info about Hilbish's version. This
 includes git commit, branch, and (new!!) release name.
+- Added `fg` and `bg` builtins
+- `job.foreground()` and `job.background()`, when `job` is a job object,
+foreground and backgrounds a job respectively.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
