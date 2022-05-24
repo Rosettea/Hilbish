@@ -8,8 +8,9 @@ require (
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/maxlandon/readline v0.1.0-beta.0.20211027085530-2b76cabb8036
 	github.com/pborman/getopt v1.1.0
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
-	mvdan.cc/sh/v3 v3.4.3
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
+	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171
+	mvdan.cc/sh/v3 v3.5.1
 )
 
 require (
@@ -18,12 +19,11 @@ require (
 	github.com/evilsocket/islazy v1.10.6 // indirect
 	github.com/olekukonko/ts v0.0.0-20171002115256-78ecb04241c0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )
 
-replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e
+replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220524215627-dfd9a4fa219b
 
 replace github.com/maxlandon/readline => ./readline
 
