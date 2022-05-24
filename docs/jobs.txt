@@ -38,3 +38,6 @@ The `id` is unique to Hilbish and is how you get jobs with the
 ## Functions
 - `stop()`: Stops the job.
 - `start()`: Starts the job.
+- `foreground()`: Set the job as the current running foreground process, or
+run it in the foreground after it has been suspended.
+- `background()`: Run the job in the background after it has been suspended.
