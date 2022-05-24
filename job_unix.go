@@ -26,3 +26,13 @@ func (j *job) foreground() error {
 
 	return nil
 }
+
+func (j *job) background() error {
+	proc := j.handle.Process
+	if proc == nil {
+		return nil
+	}
+
+	proc.Signal(syscall.SIGCONT)
+	return nil
+}

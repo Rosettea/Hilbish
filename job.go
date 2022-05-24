@@ -112,6 +112,7 @@ func (j *job) lua() rt.Value {
 		"stop": {j.luaStop, 0, false},
 		"start": {j.luaStart, 0, false},
 		"foreground": {j.luaForeground, 0, false},
+		"background": {j.luaBackground, 0, false},
 	}
 	luaJob := rt.NewTable()
 	util.SetExports(l, luaJob, jobFuncs)
@@ -154,11 +155,31 @@ func (j *job) luaForeground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	// lua code can run in other threads and goroutines, so this exists
 	jobs.foreground = true
-	err := j.foreground()
+	// this is kinda funny
+	// background continues the process incase it got suspended
+	err := j.background()
+	if err != nil {
+		return nil, err
+	}
+
+	err = j.foreground()
 	if err != nil {
 		return nil, err
 	}
 	jobs.foreground = false
+
+	return c.Next(), nil
+}
+
+func (j *job) luaBackground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if !j.running {
+		return nil, errors.New("job not running")
+	}
+
+	err := j.background()
+	if err != nil {
+		return nil, err
+	}
 
 	return c.Next(), nil
 }
