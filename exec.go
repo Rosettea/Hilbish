@@ -17,6 +17,7 @@ import (
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
+	"golang.org/x/sys/unix"
 	"mvdan.cc/sh/v3/shell"
 	//"github.com/yuin/gopher-lua/parse"
 	"mvdan.cc/sh/v3/interp"
@@ -271,6 +272,25 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			if err != nil {
 				return err
 			}
+		}
+
+		// sh interp has "fg" as unimplemented builtin, which panics
+		if args[0] == "fg" {
+			j := jobs.getLatest()
+			if j == nil || j.pid == 0 {
+				return interp.NewExitStatus(1)
+			}
+
+			pgid, _ := syscall.Getpgid(j.pid)
+			hshPgid, _ := syscall.Getpgid(os.Getpid())
+
+			// tcsetpgrp
+			unix.IoctlSetPointerInt(0, unix.TIOCSPGRP, pgid)
+			proc, _ := os.FindProcess(j.pid)
+			proc.Wait()
+			unix.IoctlSetPointerInt(0, unix.TIOCSPGRP, hshPgid)
+
+			return interp.NewExitStatus(0)
 		}
 
 		// If command is defined in Lua then run it

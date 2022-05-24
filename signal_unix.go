@@ -10,6 +10,7 @@ import (
 
 func handleSignals() {
 	c := make(chan os.Signal)
+	signal.Ignore(syscall.SIGTTOU, syscall.SIGTTIN, syscall.SIGTSTP)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGWINCH, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGQUIT)
 
 	for s := range c {
