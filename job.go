@@ -111,6 +111,7 @@ func (j *job) lua() rt.Value {
 	jobFuncs := map[string]util.LuaExport{
 		"stop": {j.luaStop, 0, false},
 		"start": {j.luaStart, 0, false},
+		"foreground": {j.luaForeground, 0, false},
 	}
 	luaJob := rt.NewTable()
 	util.SetExports(l, luaJob, jobFuncs)
@@ -146,9 +147,26 @@ func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+func (j *job) luaForeground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if !j.running {
+		return nil, errors.New("job not running")
+	}
+
+	// lua code can run in other threads and goroutines, so this exists
+	jobs.foreground = true
+	err := j.foreground()
+	if err != nil {
+		return nil, err
+	}
+	jobs.foreground = false
+
+	return c.Next(), nil
+}
+
 type jobHandler struct {
 	jobs map[int]*job
 	latestID int
+	foreground bool // if job currently in the foreground
 	mu *sync.RWMutex
 }
 

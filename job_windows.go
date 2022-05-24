@@ -1,0 +1,11 @@
+// +build windows
+
+package main
+
+import (
+	"errors"
+)
+
+func (j *job) foreground() error {
+	return errors.New("not supported on windows")
+}
