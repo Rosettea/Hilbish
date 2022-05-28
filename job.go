@@ -82,7 +82,7 @@ func (j *job) stop() {
 
 func (j *job) finish() {
 	j.running = false
-	hooks.Em.Emit("job.done", j.ud)
+	hooks.Em.Emit("job.done", rt.UserDataValue(j.ud))
 }
 
 func (j *job) wait() {
