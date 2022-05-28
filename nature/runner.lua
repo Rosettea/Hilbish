@@ -48,19 +48,9 @@ function runnerHandler.exec(cmd, runnerName)
 	return r.run(cmd)
 end
 
-
+-- lsp shut up
+hilbish = hilbish
 function runnerHandler.setCurrent(name)
-	local defaultRunners = {
-		hybrid = true,
-		hybridRev = true,
-		lua = true,
-		sh = true
-	}
-	if defaultRunners[name] then
-		hilbish.runner.setMode(name)
-		return
-	end
-
 	local r = runnerHandler.get(name)
 	currentRunner = name
 
@@ -69,4 +59,34 @@ end
 
 -- add functions to hilbish.runner
 for k, v in pairs(runnerHandler) do hilbish.runner[k] = v end
+
+runnerHandler.add('hybrid', function(input)
+	local cmdStr = hilbish.aliases.resolve(input)
+
+	local _, _, err = hilbish.runner.lua(cmdStr)
+	if not err then
+		return input, 0, nil
+	end
+
+	return hilbish.runner.sh(input)
+end)
+
+runnerHandler.add('hybridRev', function(input)
+	local _, _, err = hilbish.runner.sh(input)
+	if not err then
+		return input, 0, nil
+	end
+
+	local cmdStr = hilbish.aliases.resolve(input)
+	return hilbish.runner.lua(cmdStr)
+end)
+
+runnerHandler.add('lua', function(input)
+	local cmdStr = hilbish.aliases.resolve(input)
+	return hilbish.runner.lua(cmdStr)
+end)
+
+runnerHandler.add('sh', function(input)
+	return hilbish.runner.sh(input)
+end)
 
