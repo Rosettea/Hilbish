@@ -68,5 +68,5 @@ function runnerHandler.setCurrent(name)
 end
 
 -- add functions to hilbish.runner
-for k, v in ipairs(runnerHandler) do hilbish.runner[k] = v end
+for k, v in pairs(runnerHandler) do hilbish.runner[k] = v end
 
