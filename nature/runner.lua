@@ -1,11 +1,13 @@
 local currentRunner = 'hybrid'
-local runnerHandler = {}
 local runners = {}
+
+-- lsp shut up
+hilbish = hilbish
 
 --- Get a runner by name.
 --- @param name string
 --- @return table
-function runnerHandler.get(name)
+function hilbish.runner.get(name)
 	local r = runners[name]
 
 	if not r then
@@ -19,7 +21,7 @@ end
 --- it must have the run function in it.
 --- @param name string
 --- @param runner function | table
-function runnerHandler.add(name, runner)
+function hilbish.runner.add(name, runner)
 	if type(name) ~= 'string' then
 		error 'expected runner name to be a table'
 	end
@@ -36,13 +38,13 @@ function runnerHandler.add(name, runner)
 		error(string.format('runner %s already exists', name))
 	end
 
-	runnerHandler.set(name, runner)
+	hilbish.runner.set(name, runner)
 end
 
 --- Sets a runner by name. The runner table must have the run function in it.
 --- @param name string
 --- @param runner table
-function runnerHandler.set(name, runner)
+function hilbish.runner.set(name, runner)
 	if not runner.run or type(runner.run) ~= 'function' then
 		error 'run function in runner missing'
 	end
@@ -55,29 +57,24 @@ end
 --- @param cmd string
 --- @param runnerName string?
 --- @return string, number, string
-function runnerHandler.exec(cmd, runnerName)
+function hilbish.runner.exec(cmd, runnerName)
 	if not runnerName then runnerName = currentRunner end
 
-	local r = runnerHandler.get(runnerName)
+	local r = hilbish.runner.get(runnerName)
 
 	return r.run(cmd)
 end
 
--- lsp shut up
-hilbish = hilbish
 --- Sets the current interactive/command line runner mode.
 --- @param name string
-function runnerHandler.setCurrent(name)
-	local r = runnerHandler.get(name)
+function hilbish.runner.setCurrent(name)
+	local r = hilbish.runner.get(name)
 	currentRunner = name
 
 	hilbish.runner.setMode(r.run)
 end
 
--- add functions to hilbish.runner
-for k, v in pairs(runnerHandler) do hilbish.runner[k] = v end
-
-runnerHandler.add('hybrid', function(input)
+hilbish.runner.add('hybrid', function(input)
 	local cmdStr = hilbish.aliases.resolve(input)
 
 	local _, _, err = hilbish.runner.lua(cmdStr)
@@ -88,7 +85,7 @@ runnerHandler.add('hybrid', function(input)
 	return hilbish.runner.sh(input)
 end)
 
-runnerHandler.add('hybridRev', function(input)
+hilbish.runner.add('hybridRev', function(input)
 	local _, _, err = hilbish.runner.sh(input)
 	if not err then
 		return input, 0, nil
@@ -98,12 +95,12 @@ runnerHandler.add('hybridRev', function(input)
 	return hilbish.runner.lua(cmdStr)
 end)
 
-runnerHandler.add('lua', function(input)
+hilbish.runner.add('lua', function(input)
 	local cmdStr = hilbish.aliases.resolve(input)
 	return hilbish.runner.lua(cmdStr)
 end)
 
-runnerHandler.add('sh', function(input)
+hilbish.runner.add('sh', function(input)
 	return hilbish.runner.sh(input)
 end)
 
