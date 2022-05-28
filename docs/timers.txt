@@ -16,9 +16,17 @@ a timer via ID.
 when the timer is triggered.
 
 # Timer Object
-Those previously mentioned functions return a `timer` object, to which you can
-stop and start a timer again. The functions of the timers interface also
-return a timer object.
+All those previously mentioned functions return a `timer` object, to which
+you can stop and start a timer again.
+
+An example of usage:
+local t = hilbish.timers.create(1, 5000, function()
+	print 'hello!'
+end)
+
+t:stop()
+print(t.running, t.duration, t.type)
+t:start()
 
 ## Properties
 - `duration`: amount of time the timer runs for in milliseconds
