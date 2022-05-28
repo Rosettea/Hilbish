@@ -17,8 +17,12 @@ function runnerHandler.add(name, runner)
 		error 'expected runner name to be a table'
 	end
 
+	if type(runner) == 'function' then
+		runner = {run = runner} -- this probably looks confusing
+	end
+
 	if type(runner) ~= 'table' then
-		error 'expected runner to be a table'
+		error 'expected runner to be a table or function'
 	end
 
 	if runners[name] then
