@@ -48,7 +48,19 @@ function runnerHandler.exec(cmd, runnerName)
 	return r.run(cmd)
 end
 
+
 function runnerHandler.setCurrent(name)
+	local defaultRunners = {
+		'hybrid',
+		'hybridRev',
+		'lua',
+		'sh'
+	}
+	if defaultRunners[name] then
+		hilbish.runner.setMode(name)
+		return
+	end
+
 	local r = runnerHandler.get(name)
 	currentRunner = name
 
