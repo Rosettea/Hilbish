@@ -46,6 +46,8 @@ includes git commit, branch, and (new!!) release name.
 - Added `fg` and `bg` builtins
 - `job.foreground()` and `job.background()`, when `job` is a job object,
 foreground and backgrounds a job respectively.
+- Friendlier functions to the `hilbish.runner` interface, which also allow
+having and using multiple runners.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
