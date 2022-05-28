@@ -51,10 +51,10 @@ end
 
 function runnerHandler.setCurrent(name)
 	local defaultRunners = {
-		'hybrid',
-		'hybridRev',
-		'lua',
-		'sh'
+		hybrid = true,
+		hybridRev = true,
+		lua = true,
+		sh = true
 	}
 	if defaultRunners[name] then
 		hilbish.runner.setMode(name)
