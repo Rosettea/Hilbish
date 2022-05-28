@@ -35,8 +35,21 @@ The exit code has to be a number, it will be 0 otherwise and the error can be
 `nil` to indicate no error.
 
 ## Functions
-These are the functions for the `hilbish.runner` interface
+These are the "low level" functions for the `hilbish.runner` interface.
 
 + setMode(mode) > The same as `hilbish.runnerMode`
 + sh(input) -> input, code, err > Runs `input` in Hilbish's sh interpreter
 + lua(input) -> input, code, err > Evals `input` as Lua code
+
+The others here are defined in Lua and have EmmyLua documentation.
+These functions should be preferred over the previous ones.
++ setCurrent(mode) > The same as `setMode`, but works with runners managed
+via the functions below.
++ add(name, runner) > Adds a runner to a table of available runners. The `runner`
+argument is either a function or a table with a run callback.
++ set(name, runner) > The same as `add` but requires passing a table and
+overwrites if the `name`d runner already exists.
++ get(name) > runner > Gets a runner by name. It is a table with at least a
+run function, to run input.
++ exec(cmd, runnerName) > Runs `cmd` with a runner. If `runnerName` isn't passed,
+the current runner mode is used.
