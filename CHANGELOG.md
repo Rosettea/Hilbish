@@ -56,6 +56,9 @@ This is probably one of (if not the) biggest things in this release.
 user input, exit code, and error. User input has been added to the return to
 account for runners wanting to prompt for continued input, and to add it
 properly to history.
+- **Breaking Change:** Job objects and timers are now Lua userdata instead
+of a table, so their functions require you to call them with a colon instead
+of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
 
 ### Fixed

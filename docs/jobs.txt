@@ -20,8 +20,11 @@ and `execPath` is an absolute path for the command executable.
 - `disown(id)`: Removes a job by ID from the job table.
 
 # Job Object
-A job object on the Lua side is a table with some functions.
-On the under side it represents a job in the job table.
+A job object is a piece of `userdata`. All the functions of a job require
+you to call them with a colon, since they are *methods* for the job object.
+Example: hilbish.jobs.last():foreground()
+Which will foreground the last job.
+
 You can still have a job object for a disowned job,
 it just won't be *working* anywhere. :^)
 

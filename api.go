@@ -476,7 +476,7 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	timer := timers.create(timerTimeout, interval, cb)
 	timer.start()
 	
-	return c.PushingNext1(t.Runtime, timer.lua()), nil
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(timer.ud)), nil
 }
 
 // interval(cb, time)
@@ -502,7 +502,7 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	timer := timers.create(timerInterval, interval, cb)
 	timer.start()
 
-	return c.PushingNext1(t.Runtime, timer.lua()), nil
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(timer.ud)), nil
 }
 
 // complete(scope, cb)

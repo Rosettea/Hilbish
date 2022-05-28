@@ -6,8 +6,6 @@ import (
 	"os"
 	"time"
 
-	"hilbish/util"
-	
 	rt "github.com/arnodel/golua/runtime"
 )
 
@@ -25,6 +23,7 @@ type timer struct{
 	fun *rt.Closure
 	th *timerHandler
 	ticker *time.Ticker
+	ud *rt.UserData
 	channel chan struct{}
 }
 
@@ -74,8 +73,17 @@ func (t *timer) stop() error {
 	return nil
 }
 
-func (t *timer) luaStart(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	err := t.start()
+func timerStart(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	t, err := timerArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	err = t.start()
 	if err != nil {
 		return nil, err
 	}
@@ -83,26 +91,20 @@ func (t *timer) luaStart(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (t *timer) luaStop(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	err := t.stop()
+func timerStop(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	t, err := timerArg(c, 0)
 	if err != nil {
 		return nil, err
 	}
-	
-	return c.Next(), nil
-}
 
-func (t *timer) lua() rt.Value {
-	tExports := map[string]util.LuaExport{
-		"start": {t.luaStart, 0, false},
-		"stop": {t.luaStop, 0, false},
+	err = t.stop()
+	if err != nil {
+		return nil, err
 	}
-	luaTimer := rt.NewTable()
-	util.SetExports(l, luaTimer, tExports)
 
-	luaTimer.Set(rt.StringValue("type"), rt.IntValue(int64(t.typ)))
-	luaTimer.Set(rt.StringValue("running"), rt.BoolValue(t.running))
-	luaTimer.Set(rt.StringValue("duration"), rt.IntValue(int64(t.dur / time.Millisecond)))
-
-	return rt.TableValue(luaTimer)
+	return c.Next(), nil
 }
