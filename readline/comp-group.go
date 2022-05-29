@@ -73,6 +73,7 @@ func (g *CompletionGroup) updateTabFind(rl *Instance) {
 
 	// We perform filter right here, so we create a new completion group, and populate it with our results.
 	for i := range g.Suggestions {
+		if rl.regexSearch == nil { continue }
 		if rl.regexSearch.MatchString(g.Suggestions[i]) {
 			suggs = append(suggs, g.Suggestions[i])
 		} else if g.DisplayType == TabDisplayList && rl.regexSearch.MatchString(g.Descriptions[g.Suggestions[i]]) {
