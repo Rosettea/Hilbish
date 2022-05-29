@@ -73,8 +73,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 	return
 }
 
-// RefreshPromptInPlace - Refreshes the prompt in the very same place he is.
-func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
+func (rl *Instance) promptInPlace(prompt string) {
 	// We adjust cursor movement, depending on which mode we're currently in.
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
@@ -91,15 +90,11 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 		rl.SetPrompt(prompt)
 	}
 
-	if rl.Multiline {
-		rl.tcUsedY += 1
-	}
-
 	// Clear the input line and everything below
 	print(seqClearLine)
 	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
-	print("\r\n" + seqClearScreenBelow)
+	print("\r" + seqClearScreenBelow)
 
 	// Add a new line if needed
 	if rl.Multiline {
@@ -108,8 +103,11 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 	} else {
 		fmt.Print(rl.mainPrompt)
 	}
+}
 
-	// Refresh the line
+// RefreshPromptInPlace - Refreshes the prompt in the very same place he is.
+func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
+	rl.promptInPlace(prompt)
 	rl.updateHelpers()
 
 	return

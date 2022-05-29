@@ -45,6 +45,7 @@ func (rl *Instance) echo() {
 		print(seqClearScreenBelow)
 
 		// Print the prompt
+		rl.promptInPlace("")
 		print(string(rl.realPrompt))
 
 		// Assemble the line, taking virtual completions into account
