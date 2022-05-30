@@ -87,19 +87,23 @@ func runInput(input string, priv bool) {
 	cmdString := aliases.Resolve(input)
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
+	rerun:
 	var exitCode uint8
 	var err error
-	if runnerMode.Type() == rt.StringType {
-		switch runnerMode.AsString() {
+	var cont bool
+	// save incase it changes while prompting (For some reason)
+	currentRunner := runnerMode
+	if currentRunner.Type() == rt.StringType {
+		switch currentRunner.AsString() {
 			case "hybrid":
 				_, _, err = handleLua(cmdString)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleSh(input)
+				input, exitCode, err, cont = handleSh(input)
 			case "hybridRev":
-				_, _, err = handleSh(input)
+				_, _, err, cont = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -108,12 +112,12 @@ func runInput(input string, priv bool) {
 			case "lua":
 				input, exitCode, err = handleLua(cmdString)
 			case "sh":
-				input, exitCode, err = handleSh(input)
+				input, exitCode, err, cont = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
 		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-		err = rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(input)}, term)
+		err = rt.Call(l.MainThread(), currentRunner, []rt.Value{rt.StringValue(input)}, term)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
@@ -138,8 +142,25 @@ func runInput(input string, priv bool) {
 		if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
 			err = fmt.Errorf("%s", errStr)
 		}
+
+		if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
+			cont = c
+		}
 	}
 
+	if cont {
+		for {
+			input, err = continuePrompt(strings.TrimSuffix(input, "\\"))
+			if err != nil {
+				break
+			}
+
+			if strings.HasSuffix(cmdString, "\\") {
+				continue
+			}
+			goto rerun
+		}
+	}
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Em.Emit("command." + exErr.typ, exErr.cmd)
@@ -176,40 +197,25 @@ func handleLua(cmdString string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (string, uint8, error) {
+func handleSh(cmdString string) (string, uint8, error, bool) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			if !interactive {
-				return cmdString, 126, err
+				return cmdString, 126, err, false
 			}
-			for {
-				cmdString, err = continuePrompt(strings.TrimSuffix(cmdString, "\\"))
-				if err != nil {
-					break
-				}
-				_, _, err = execCommand(cmdString, true)
-				if syntax.IsIncomplete(err) || strings.HasSuffix(cmdString, "\\") {
-					continue
-				} else if code, ok := interp.IsExitStatus(err); ok {
-					return cmdString, code, nil
-				} else if err != nil {
-					return cmdString, 126, err
-				} else {
-					return cmdString, 0, nil
-				}
-			}
+			return cmdString, 126, err, true
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				return cmdString, code, nil
+				return cmdString, code, nil, false
 			} else {
-				return cmdString, 126, err
+				return cmdString, 126, err, false
 			}
 		}
 	}
 
-	return cmdString, 0, nil
+	return cmdString, 0, nil, false
 }
 
 // Run command in sh interpreter
