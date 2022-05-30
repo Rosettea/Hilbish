@@ -33,8 +33,12 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
 	}
+	runnerRet := rt.NewTable()
+	runnerRet.Set(rt.StringValue("input"), rt.StringValue(input))
+	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
+	runnerRet.Set(rt.StringValue("err"), luaErr)
 
-	return c.PushingNext(t.Runtime, rt.StringValue(input), rt.IntValue(int64(exitCode)), luaErr), nil
+	return c.PushingNext(t.Runtime, rt.TableValue(runnerRet)), nil
 }
 
 func luaRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -51,6 +55,10 @@ func luaRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
 	}
+	runnerRet := rt.NewTable()
+	runnerRet.Set(rt.StringValue("input"), rt.StringValue(input))
+	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
+	runnerRet.Set(rt.StringValue("err"), luaErr)
 
-	return c.PushingNext(t.Runtime, rt.StringValue(input), rt.IntValue(int64(exitCode)), luaErr), nil
+	return c.PushingNext(t.Runtime, rt.TableValue(runnerRet)), nil
 }

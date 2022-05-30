@@ -120,19 +120,22 @@ func runInput(input string, priv bool) {
 			return
 		}
 
-		luaInput := term.Get(0)
-		luaexitcode := term.Get(1)
-		runErr := term.Get(2)
+		var runner *rt.Table
+		var ok bool
+		runnerRet := term.Get(0)
+		if runner, ok = runnerRet.TryTable(); !ok {
+			fmt.Fprintln(os.Stderr, "runner did not return a table")
+		}
 
-		if code, ok := luaexitcode.TryInt(); ok {
+		if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
 			exitCode = uint8(code)
 		}
 		
-		if inp, ok := luaInput.TryString(); ok {
+		if inp, ok := runner.Get(rt.StringValue("input")).TryString(); ok {
 			input = inp
 		}
 
-		if errStr, ok := runErr.TryString(); ok {
+		if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
 			err = fmt.Errorf("%s", errStr)
 		}
 	}

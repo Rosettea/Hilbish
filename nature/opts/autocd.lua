@@ -1,23 +1,25 @@
 local fs = require 'fs'
 
 function cdHandle(inp)
-	local input, exit, err = hilbish.runner.lua(inp)
+	local res = hilbish.runner.lua(inp)
 
-	if not err then
-		return input, exit, err
+	if not res.err then
+		return res
 	end
 
-	input, exit, err = hilbish.runner.sh(inp)
+	res = hilbish.runner.sh(inp)
 
-	if exit ~= 0 and hilbish.opts.autocd then
-		local ok, stat = pcall(fs.stat, input)
+	if res.exit ~= 0 and hilbish.opts.autocd then
+		local ok, stat = pcall(fs.stat, res.input)
 		if ok and stat.isDir then
 			-- discard here to not append the cd, which will be in history
-			_, exit, err = hilbish.runner.sh('cd ' .. input)
+			local _, exitCode, err = hilbish.runner.sh('cd ' .. res.input)
+			res.exitCode = exitCode
+			res.err = err
 		end
 	end
 
-	return input, exit, err
+	return res
 end
 
 hilbish.runner.setMode(cdHandle)
