@@ -79,9 +79,8 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
 		rl.tcUsedY = 1
-		// Account for the info line
 	} else if rl.modeTabCompletion && rl.modeAutoFind {
-		rl.tcUsedY = 0
+		rl.tcUsedY = -1 // idk man
 	} else {
 		rl.tcUsedY = 1
 	}

@@ -215,7 +215,7 @@ func (rl *Instance) getCompletions() {
 // moveTabCompletionHighlight - This function is in charge of
 // computing the new position in the current completions liste.
 func (rl *Instance) moveTabCompletionHighlight(x, y int) {
-
+	rl.completionOpen = true
 	g := rl.getCurrentGroup()
 
 	// If there is no current group, we leave any current completion mode.

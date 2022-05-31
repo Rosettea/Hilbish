@@ -96,6 +96,7 @@ type Instance struct {
 	tabCompletionSelect  bool // We may have completions printed, but no selected candidate yet
 	tabCompletionReverse bool // Groups sometimes use this indicator to know how they should handle their index
 	tcUsedY              int  // Comprehensive offset of the currently built completions
+	completionOpen       bool
 
 	// Candidate /  virtual completion string / etc
 	currentComp  []rune // The currently selected item, not yet a real part of the input line.

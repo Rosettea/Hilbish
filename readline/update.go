@@ -11,8 +11,10 @@ func (rl *Instance) updateHelpers() {
 	// Thus overwrites anything having been dirtily added/forced/modified, like rl.SetInfoText()
 	rl.getInfoText()
 	rl.getHintText()
-	if rl.modeTabCompletion {
+	if rl.modeTabCompletion && !rl.completionOpen {
 		rl.getTabCompletion()
+	} else {
+		if rl.completionOpen { rl.completionOpen = false }
 	}
 
 	// We clear everything
