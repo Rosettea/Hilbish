@@ -54,10 +54,17 @@ having and using multiple runners.
 This is probably one of (if not the) biggest things in this release.
 - **Breaking Change:** MacOS config paths now match Linux.
 - Overrides on the `hilbish` table are no longer permitted.
-- **Breaking Change:** Runner functions are now required to return 3 values:
-user input, exit code, and error. User input has been added to the return to
-account for runners wanting to prompt for continued input, and to add it
-properly to history.
+- **Breaking Change:** Runner functions are now required to return a table.
+It can (at the moment) have 4 variables:
+  - `input` (user input)
+  - `exitCode` (exit code)
+  - `error` (error message)
+  - `continue` (whether to prompt for more input)
+User input has been added to the return to account for runners wanting to
+prompt for continued input, and to add it properly to history. `continue`
+got added so that it would be easier for runners to get continued input
+without having to actually handle it at all.
+
 - **Breaking Change:** Job objects and timers are now Lua userdata instead
 of a table, so their functions require you to call them with a colon instead
 of a dot. (ie. `job.stop()` -> `job:stop()`)
