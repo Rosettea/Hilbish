@@ -29,8 +29,9 @@ For any code contributions (Lua and/or Go), you should follow these rules:
 1. Ensure that any new install or build dependencies are documented in
 the README.md and pull request.
 
-2. Mention any and all changes, this includes useful file locations and
-breaking changes.
+2. Mention any and all changes, feature additons, removals, etc. This includes
+useful file locations and breaking changes. Document them in the [changelog](CHANGELOG.md)
+in the pull request.
 
 3. We use [Semver](http://semver.org/) for versioning and
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)

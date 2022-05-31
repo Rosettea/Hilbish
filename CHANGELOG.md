@@ -46,6 +46,8 @@ includes git commit, branch, and (new!!) release name.
 - Added `fg` and `bg` builtins
 - `job.foreground()` and `job.background()`, when `job` is a job object,
 foreground and backgrounds a job respectively.
+- Friendlier functions to the `hilbish.runner` interface, which also allow
+having and using multiple runners.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -56,6 +58,9 @@ This is probably one of (if not the) biggest things in this release.
 user input, exit code, and error. User input has been added to the return to
 account for runners wanting to prompt for continued input, and to add it
 properly to history.
+- **Breaking Change:** Job objects and timers are now Lua userdata instead
+of a table, so their functions require you to call them with a colon instead
+of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
 
 ### Fixed

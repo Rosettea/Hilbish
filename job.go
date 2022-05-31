@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -15,6 +16,7 @@ import (
 )
 
 var jobs *jobHandler
+var jobMetaKey = rt.StringValue("hshjob")
 
 type job struct {
 	cmd string
@@ -32,6 +34,7 @@ type job struct {
 	cmderr io.Writer
 	stdout *bytes.Buffer
 	stderr *bytes.Buffer
+	ud *rt.UserData
 }
 
 func (j *job) start() error {
@@ -64,7 +67,7 @@ func (j *job) start() error {
 	j.pid = proc.Pid
 	j.running = true
 
-	hooks.Em.Emit("job.start", j.lua())
+	hooks.Em.Emit("job.start", rt.UserDataValue(j.ud))
 
 	return err
 }
@@ -79,7 +82,7 @@ func (j *job) stop() {
 
 func (j *job) finish() {
 	j.running = false
-	hooks.Em.Emit("job.done", j.lua())
+	hooks.Em.Emit("job.done", rt.UserDataValue(j.ud))
 }
 
 func (j *job) wait() {
@@ -107,28 +110,16 @@ func (j *job) getProc() *os.Process {
 	return nil
 }
 
-func (j *job) lua() rt.Value {
-	jobFuncs := map[string]util.LuaExport{
-		"stop": {j.luaStop, 0, false},
-		"start": {j.luaStart, 0, false},
-		"foreground": {j.luaForeground, 0, false},
-		"background": {j.luaBackground, 0, false},
+func luaStartJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
 	}
-	luaJob := rt.NewTable()
-	util.SetExports(l, luaJob, jobFuncs)
 
-	luaJob.Set(rt.StringValue("cmd"), rt.StringValue(j.cmd))
-	luaJob.Set(rt.StringValue("running"), rt.BoolValue(j.running))
-	luaJob.Set(rt.StringValue("id"), rt.IntValue(int64(j.id)))
-	luaJob.Set(rt.StringValue("pid"), rt.IntValue(int64(j.pid)))
-	luaJob.Set(rt.StringValue("exitCode"), rt.IntValue(int64(j.exitCode)))
-	luaJob.Set(rt.StringValue("stdout"), rt.StringValue(string(j.stdout.Bytes())))
-	luaJob.Set(rt.StringValue("stderr"), rt.StringValue(string(j.stderr.Bytes())))
+	j, err := jobArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
 
-	return rt.TableValue(luaJob)
-}
-
-func (j *job) luaStart(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if !j.running {
 		err := j.start()
 		exit := handleExecErr(err)
@@ -139,7 +130,16 @@ func (j *job) luaStart(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func luaStopJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	j, err := jobArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	if j.running {
 		j.stop()
 		j.finish()
@@ -148,7 +148,16 @@ func (j *job) luaStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (j *job) luaForeground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func luaForegroundJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	j, err := jobArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	if !j.running {
 		return nil, errors.New("job not running")
 	}
@@ -157,7 +166,7 @@ func (j *job) luaForeground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	jobs.foreground = true
 	// this is kinda funny
 	// background continues the process incase it got suspended
-	err := j.background()
+	err = j.background()
 	if err != nil {
 		return nil, err
 	}
@@ -171,12 +180,21 @@ func (j *job) luaForeground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (j *job) luaBackground(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func luaBackgroundJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	j, err := jobArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	if !j.running {
 		return nil, errors.New("job not running")
 	}
 
-	err := j.background()
+	err = j.background()
 	if err != nil {
 		return nil, err
 	}
@@ -215,8 +233,10 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		stdout: &bytes.Buffer{},
 		stderr: &bytes.Buffer{},
 	}
+	jb.ud = jobUserData(jb)
+
 	j.jobs[j.latestID] = jb
-	hooks.Em.Emit("job.add", jb.lua())
+	hooks.Em.Emit("job.add", rt.UserDataValue(jb.ud))
 
 	return jb
 }
@@ -257,6 +277,44 @@ func (j *jobHandler) stopAll() {
 }
 
 func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
+	jobMethods := rt.NewTable()
+	jFuncs := map[string]util.LuaExport{
+		"stop": {luaStopJob, 1, false},
+		"start": {luaStartJob, 1, false},
+		"foreground": {luaForegroundJob, 1, false},
+		"background": {luaBackgroundJob, 1, false},
+	}
+	util.SetExports(l, jobMethods, jFuncs)
+
+	jobMeta := rt.NewTable()
+	jobIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		j, _ := jobArg(c, 0)
+
+		arg := c.Arg(1)
+		val := jobMethods.Get(arg)
+
+		if val != rt.NilValue {
+			return c.PushingNext1(t.Runtime, val), nil
+		}
+
+		keyStr, _ := arg.TryString()
+
+		switch keyStr {
+			case "cmd": val = rt.StringValue(j.cmd)
+			case "running": val = rt.BoolValue(j.running)
+			case "id": val = rt.IntValue(int64(j.id))
+			case "pid": val = rt.IntValue(int64(j.pid))
+			case "exitCode": val = rt.IntValue(int64(j.exitCode))
+			case "stdout": val = rt.StringValue(string(j.stdout.Bytes()))
+			case "stderr": val = rt.StringValue(string(j.stderr.Bytes()))
+		}
+
+		return c.PushingNext1(t.Runtime, val), nil
+	}
+
+	jobMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(jobIndex, "__index", 2, false)))
+	l.SetRegistry(jobMetaKey, rt.TableValue(jobMeta))
+
 	jobFuncs := map[string]util.LuaExport{
 		"all": {j.luaAllJobs, 0, false},
 		"last": {j.luaLastJob, 0, false},
@@ -269,6 +327,30 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	util.SetExports(rtm, luaJob, jobFuncs)
 
 	return luaJob
+}
+
+func jobArg(c *rt.GoCont, arg int) (*job, error) {
+	j, ok := valueToJob(c.Arg(arg))
+	if !ok {
+		return nil, fmt.Errorf("#%d must be a job", arg + 1)
+	}
+
+	return j, nil
+}
+
+func valueToJob(val rt.Value) (*job, bool) {
+	u, ok := val.TryUserData()
+	if !ok {
+		return nil, false
+	}
+
+	j, ok := u.Value().(*job)
+	return j, ok
+}
+
+func jobUserData(j *job) *rt.UserData {
+	jobMeta := l.Registry(jobMetaKey)
+	return rt.NewUserData(j, jobMeta.AsTable())
 }
 
 func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -288,7 +370,7 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return c.Next(), nil
 	}
 
-	return c.PushingNext1(t.Runtime, job.lua()), nil
+	return c.PushingNext(t.Runtime, rt.UserDataValue(job.ud)), nil
 }
 
 func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -317,7 +399,7 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	jb := j.add(cmd, args, execPath)
 
-	return c.PushingNext1(t.Runtime, jb.lua()), nil
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(jb.ud)), nil
 }
 
 func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -326,7 +408,7 @@ func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	jobTbl := rt.NewTable()
 	for id, job := range j.jobs {
-		jobTbl.Set(rt.IntValue(int64(id)), job.lua())
+		jobTbl.Set(rt.IntValue(int64(id)), rt.UserDataValue(job.ud))
 	}
 
 	return c.PushingNext1(t.Runtime, rt.TableValue(jobTbl)), nil
@@ -358,5 +440,5 @@ func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return c.Next(), nil
 	}
 
-	return c.PushingNext1(t.Runtime, job.lua()), nil
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(job.ud)), nil
 }
