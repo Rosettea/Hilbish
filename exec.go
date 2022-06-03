@@ -87,19 +87,23 @@ func runInput(input string, priv bool) {
 	cmdString := aliases.Resolve(input)
 	hooks.Em.Emit("command.preexec", input, cmdString)
 
+	rerun:
 	var exitCode uint8
 	var err error
-	if runnerMode.Type() == rt.StringType {
-		switch runnerMode.AsString() {
+	var cont bool
+	// save incase it changes while prompting (For some reason)
+	currentRunner := runnerMode
+	if currentRunner.Type() == rt.StringType {
+		switch currentRunner.AsString() {
 			case "hybrid":
 				_, _, err = handleLua(cmdString)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleSh(input)
+				input, exitCode, cont, err = handleSh(input)
 			case "hybridRev":
-				_, _, err = handleSh(input)
+				_, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -108,32 +112,24 @@ func runInput(input string, priv bool) {
 			case "lua":
 				input, exitCode, err = handleLua(cmdString)
 			case "sh":
-				input, exitCode, err = handleSh(input)
+				input, exitCode, cont, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
-		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-		err = rt.Call(l.MainThread(), runnerMode, []rt.Value{rt.StringValue(input)}, term)
+		input, exitCode, cont, err = runLuaRunner(currentRunner, input)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
 			return
 		}
+	}
 
-		luaInput := term.Get(0)
-		luaexitcode := term.Get(1)
-		runErr := term.Get(2)
-
-		if code, ok := luaexitcode.TryInt(); ok {
-			exitCode = uint8(code)
-		}
-		
-		if inp, ok := luaInput.TryString(); ok {
-			input = inp
-		}
-
-		if errStr, ok := runErr.TryString(); ok {
-			err = fmt.Errorf("%s", errStr)
+	if cont {
+		input, err = reprompt(input)
+		if err == nil {
+			goto rerun
+		} else if err == io.EOF {
+			return
 		}
 	}
 
@@ -145,6 +141,52 @@ func runInput(input string, priv bool) {
 		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
+}
+
+func reprompt(input string) (string, error) {
+	for {
+		in, err := continuePrompt(strings.TrimSuffix(input, "\\"))
+		if err != nil {
+			return input, err
+		}
+
+		if strings.HasSuffix(in, "\\") {
+			continue
+		}
+		return in, nil
+	}
+}
+
+func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, err error) {
+	term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
+	err = rt.Call(l.MainThread(), runr, []rt.Value{rt.StringValue(userInput)}, term)
+	if err != nil {
+		return
+	}
+
+	var runner *rt.Table
+	var ok bool
+	runnerRet := term.Get(0)
+	if runner, ok = runnerRet.TryTable(); !ok {
+		fmt.Fprintln(os.Stderr, "runner did not return a table")
+	}
+
+	if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
+		exitCode = uint8(code)
+	}
+
+	if inp, ok := runner.Get(rt.StringValue("input")).TryString(); ok {
+		input = inp
+	}
+
+	if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
+		err = fmt.Errorf("%s", errStr)
+	}
+
+	if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
+		continued = c
+	}
+	return
 }
 
 func handleLua(cmdString string) (string, uint8, error) {
@@ -173,40 +215,25 @@ func handleLua(cmdString string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (string, uint8, error) {
+func handleSh(cmdString string) (string, uint8, bool, error) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			if !interactive {
-				return cmdString, 126, err
+				return cmdString, 126, false, err
 			}
-			for {
-				cmdString, err = continuePrompt(strings.TrimSuffix(cmdString, "\\"))
-				if err != nil {
-					break
-				}
-				_, _, err = execCommand(cmdString, true)
-				if syntax.IsIncomplete(err) || strings.HasSuffix(cmdString, "\\") {
-					continue
-				} else if code, ok := interp.IsExitStatus(err); ok {
-					return cmdString, code, nil
-				} else if err != nil {
-					return cmdString, 126, err
-				} else {
-					return cmdString, 0, nil
-				}
-			}
+			return cmdString, 126, true, err
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				return cmdString, code, nil
+				return cmdString, code, false, nil
 			} else {
-				return cmdString, 126, err
+				return cmdString, 126, false, err
 			}
 		}
 	}
 
-	return cmdString, 0, nil
+	return cmdString, 0, false, nil
 }
 
 // Run command in sh interpreter

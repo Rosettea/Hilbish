@@ -77,18 +77,18 @@ end
 hilbish.runner.add('hybrid', function(input)
 	local cmdStr = hilbish.aliases.resolve(input)
 
-	local _, _, err = hilbish.runner.lua(cmdStr)
-	if not err then
-		return input, 0, nil
+	local res = hilbish.runner.lua(cmdStr)
+	if not res.err then
+		return res
 	end
 
 	return hilbish.runner.sh(input)
 end)
 
 hilbish.runner.add('hybridRev', function(input)
-	local _, _, err = hilbish.runner.sh(input)
-	if not err then
-		return input, 0, nil
+	local res = hilbish.runner.sh(input)
+	if not res.err then
+		return res
 	end
 
 	local cmdStr = hilbish.aliases.resolve(input)
