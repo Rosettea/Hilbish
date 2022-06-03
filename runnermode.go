@@ -28,7 +28,7 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	input, exitCode, err, cont := handleSh(cmd)
+	input, exitCode, cont, err := handleSh(cmd)
 	var luaErr rt.Value = rt.NilValue
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())

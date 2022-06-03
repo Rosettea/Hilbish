@@ -101,9 +101,9 @@ func runInput(input string, priv bool) {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err, cont = handleSh(input)
+				input, exitCode, cont, err = handleSh(input)
 			case "hybridRev":
-				_, _, err, cont = handleSh(input)
+				_, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -112,7 +112,7 @@ func runInput(input string, priv bool) {
 			case "lua":
 				input, exitCode, err = handleLua(cmdString)
 			case "sh":
-				input, exitCode, err, cont = handleSh(input)
+				input, exitCode, cont, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
@@ -197,25 +197,25 @@ func handleLua(cmdString string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (string, uint8, error, bool) {
+func handleSh(cmdString string) (string, uint8, bool, error) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			if !interactive {
-				return cmdString, 126, err, false
+				return cmdString, 126, false, err
 			}
-			return cmdString, 126, err, true
+			return cmdString, 126, true, err
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				return cmdString, code, nil, false
+				return cmdString, code, false, nil
 			} else {
-				return cmdString, 126, err, false
+				return cmdString, 126, false, err
 			}
 		}
 	}
 
-	return cmdString, 0, nil, false
+	return cmdString, 0, false, nil
 }
 
 // Run command in sh interpreter
