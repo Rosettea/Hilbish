@@ -116,51 +116,23 @@ func runInput(input string, priv bool) {
 		}
 	} else {
 		// can only be a string or function so
-		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-		err = rt.Call(l.MainThread(), currentRunner, []rt.Value{rt.StringValue(input)}, term)
+		input, exitCode, cont, err = runLuaRunner(currentRunner, input)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
 			return
 		}
-
-		var runner *rt.Table
-		var ok bool
-		runnerRet := term.Get(0)
-		if runner, ok = runnerRet.TryTable(); !ok {
-			fmt.Fprintln(os.Stderr, "runner did not return a table")
-		}
-
-		if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
-			exitCode = uint8(code)
-		}
-		
-		if inp, ok := runner.Get(rt.StringValue("input")).TryString(); ok {
-			input = inp
-		}
-
-		if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
-			err = fmt.Errorf("%s", errStr)
-		}
-
-		if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
-			cont = c
-		}
 	}
 
 	if cont {
-		for {
-			input, err = continuePrompt(strings.TrimSuffix(input, "\\"))
-			if err != nil {
-				break
-			}
-
-			if strings.HasSuffix(cmdString, "\\") {
-				continue
-			}
+		input, err = reprompt(input)
+		if err == nil {
 			goto rerun
+		} else if err == io.EOF {
+			return
 		}
 	}
+
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Em.Emit("command." + exErr.typ, exErr.cmd)
@@ -169,6 +141,52 @@ func runInput(input string, priv bool) {
 		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
+}
+
+func reprompt(input string) (string, error) {
+	for {
+		in, err := continuePrompt(strings.TrimSuffix(input, "\\"))
+		if err != nil {
+			return input, err
+		}
+
+		if strings.HasSuffix(in, "\\") {
+			continue
+		}
+		return in, nil
+	}
+}
+
+func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, err error) {
+	term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
+	err = rt.Call(l.MainThread(), runr, []rt.Value{rt.StringValue(userInput)}, term)
+	if err != nil {
+		return
+	}
+
+	var runner *rt.Table
+	var ok bool
+	runnerRet := term.Get(0)
+	if runner, ok = runnerRet.TryTable(); !ok {
+		fmt.Fprintln(os.Stderr, "runner did not return a table")
+	}
+
+	if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
+		exitCode = uint8(code)
+	}
+
+	if inp, ok := runner.Get(rt.StringValue("input")).TryString(); ok {
+		input = inp
+	}
+
+	if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
+		err = fmt.Errorf("%s", errStr)
+	}
+
+	if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
+		continued = c
+	}
+	return
 }
 
 func handleLua(cmdString string) (string, uint8, error) {
