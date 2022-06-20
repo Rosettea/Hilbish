@@ -55,7 +55,10 @@ func (rl *Instance) Readline() (string, error) {
 	// Multisplit
 	if len(rl.multisplit) > 0 {
 		r := []rune(rl.multisplit[0])
-		rl.editorInput(r)
+		if len(r) >= 1 {
+			rl.editorInput(r)
+		}
+
 		rl.carridgeReturn()
 		if len(rl.multisplit) > 1 {
 			rl.multisplit = rl.multisplit[1:]
