@@ -116,12 +116,17 @@ func runInput(input string, priv bool) {
 		}
 	} else {
 		// can only be a string or function so
-		input, exitCode, cont, err = runLuaRunner(currentRunner, input)
+		var runnerErr error
+		input, exitCode, cont, runnerErr, err = runLuaRunner(currentRunner, input)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
 			return
 		}
+		// yep, we only use `err` to check for lua eval error
+		// our actual error should only be a runner provided error at this point
+		// command not found type, etc
+		err = runnerErr
 	}
 
 	if cont {
@@ -157,11 +162,11 @@ func reprompt(input string) (string, error) {
 	}
 }
 
-func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, err error) {
+func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, runnerErr, err error) {
 	term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
 	err = rt.Call(l.MainThread(), runr, []rt.Value{rt.StringValue(userInput)}, term)
 	if err != nil {
-		return
+		return "", 124, false, nil, err
 	}
 
 	var runner *rt.Table
@@ -180,7 +185,7 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	}
 
 	if errStr, ok := runner.Get(rt.StringValue("err")).TryString(); ok {
-		err = fmt.Errorf("%s", errStr)
+		runnerErr = fmt.Errorf("%s", errStr)
 	}
 
 	if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
