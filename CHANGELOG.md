@@ -48,6 +48,13 @@ includes git commit, branch, and (new!!) release name.
 foreground and backgrounds a job respectively.
 - Friendlier functions to the `hilbish.runner` interface, which also allow
 having and using multiple runners.
+- A few new functions to the `fs` module:
+  - `fs.basename(path)` gets the basename of path
+  - `fs.dir(path)` gets the directory part of path
+  - `fs.glob(pattern)` globs files and directories based on patterns
+- .. and 2 properties
+  - `fs.pathSep` is the separator for filesystem paths and directories
+  - `fs.pathListSep` is the separator for $PATH env entries
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.

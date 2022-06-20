@@ -24,9 +24,14 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"stat": util.LuaExport{fstat, 1, false},
 		"readdir": util.LuaExport{freaddir, 1, false},
 		"abs": util.LuaExport{fabs, 1, false},
+		"basename": util.LuaExport{fbasename, 1, false},
+		"dir": util.LuaExport{fdir, 1, false},
+		"glob": util.LuaExport{fglob, 1, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
+	mod.Set(rt.StringValue("pathSep"), rt.StringValue(string(os.PathSeparator)))
+	mod.Set(rt.StringValue("pathListSep"), rt.StringValue(string(os.PathListSeparator)))
 
 	util.Document(mod, `The fs module provides easy and simple access to
 filesystem functions and other things, and acts an
@@ -154,4 +159,60 @@ func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(abspath)), nil
+}
+
+// basename(path)
+// Gives the basename of `path`. For the rules,
+// see Go's filepath.Base
+func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	path, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext(t.Runtime, rt.StringValue(filepath.Base(path))), nil
+}
+
+// dir(path)
+// Returns the directory part of `path`. For the rules, see Go's
+// filepath.Dir
+func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	path, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext(t.Runtime, rt.StringValue(filepath.Dir(path))), nil
+}
+
+// glob(pattern)
+// Glob all files and directories that match the pattern.
+// For the rules, see Go's filepath.Glob
+func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	pattern, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	matches, err := filepath.Glob(pattern)
+	if err != nil {
+		return nil, err
+	}
+
+	luaMatches := rt.NewTable()
+
+	for i, match := range matches {
+		luaMatches.Set(rt.IntValue(int64(i + 1)), rt.StringValue(match))
+	}
+	
+	return c.PushingNext(t.Runtime, rt.TableValue(luaMatches)), nil
 }
