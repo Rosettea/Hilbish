@@ -56,8 +56,13 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	modmt := rt.NewTable()
 	mod := rt.NewTable()
 
+	interfacer := util.NewInterfacer(mod)
+
 	modIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		arg := c.Arg(1)
+		if ifaceName, ok := arg.TryString(); ok {
+			interfacer.Load(ifaceName)
+		}
 		val := mod.Get(arg)
 
 		return c.PushingNext1(t.Runtime, val), nil
@@ -119,68 +124,97 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
 	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
-	// hilbish.userDir table
-	hshuser := rt.NewTable()
+	interfacer.Add([]*util.Interface{
+		{
+			Name: "userDir",
+			Description: "User directories to store configs and/or modules.",
+			Setup: func() *rt.Table {
+				hshuser := rt.NewTable()
 
-	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
-	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
-	util.Document(hshuser, "User directories to store configs and/or modules.")
-	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
+				util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
+				util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
 
-	// hilbish.os table
-	hshos := rt.NewTable()
-	info, _ := osinfo.GetOSInfo()
+				return hshuser
+			},
+		},
+		{
+			Name: "os",
+			Description: "OS info interface",
+			Setup: func() *rt.Table {
+				hshos := rt.NewTable()
+				info, _ := osinfo.GetOSInfo()
 
-	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
-	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
-	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
-	util.Document(hshos, "OS info interface")
-	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
+				util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
+				util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
+				util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
 
-	// hilbish.aliases table
-	aliases = newAliases()
-	aliasesModule := aliases.Loader(rtm)
-	util.Document(aliasesModule, "Alias inferface for Hilbish.")
-	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
+				return hshos
+			},
+		},
+		{
+			Name: "aliases",
+			Description: "Alias management interface",
+			Setup: func() *rt.Table {
+				return aliases.Loader(rtm)
+			},
+		},
+		{
+			Name: "history",
+			Description: "History interface.",
+			Setup: func() *rt.Table {
+				return lr.Loader(rtm)
+			},
+		},
+		{
+			Name: "completion",
+			Description: "Completions interface.",
+			Setup: func() *rt.Table {
+				return completionLoader(rtm)
+			},
+		},
+		{
+			Name: "runner",
+			Description: "Runner/exec interface for Hilbish.",
+			Setup: func() *rt.Table {
+				return runnerModeLoader(rtm)
+			},
+		},
+		{
+			Name: "jobs",
+			Description: "(Background) job interface.",
+			Setup: func() *rt.Table {
+				return jobs.loader(rtm)
+			},
+		},
+		{
+			Name: "timers",
+			Description: "Timer interface, for control of all intervals and timeouts.",
+			Setup: func() *rt.Table {
+				return timers.loader(rtm)
+			},
+		},
+		{
+			Name: "editor",
+			Description: "",
+			Setup: func() *rt.Table {
+				return editorLoader(rtm)
+			},
+		},
+		{
+			Name: "version",
+			Description: "Version info interface.",
+			Setup: func() *rt.Table {
+				versionModule := rt.NewTable()
 
-	// hilbish.history table
-	historyModule := lr.Loader(rtm)
-	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
-	util.Document(historyModule, "History interface for Hilbish.")
+				util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch), "Git branch Hilbish was compiled from")
+				util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()), "Full version info, including release name")
+				util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit), "Git commit Hilbish was compiled from")
+				util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName), "Release name")
 
-	// hilbish.completion table
-	hshcomp := completionLoader(rtm)
-	util.Document(hshcomp, "Completions interface for Hilbish.")
-	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
-
-	// hilbish.runner table
-	runnerModule := runnerModeLoader(rtm)
-	util.Document(runnerModule, "Runner/exec interface for Hilbish.")
-	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
-
-	// hilbish.jobs table
-	jobs = newJobHandler()
-	jobModule := jobs.loader(rtm)
-	util.Document(jobModule, "(Background) job interface.")
-	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
-
-	// hilbish.timers table
-	timers = newTimerHandler()
-	timerModule := timers.loader(rtm)
-	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
-	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
-
-	editorModule := editorLoader(rtm)
-	util.Document(editorModule, "")
-	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
-
-	versionModule := rt.NewTable()
-	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch), "Git branch Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()), "Full version info, including release name")
-	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit), "Git commit Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName), "Release name")
-	util.Document(versionModule, "Version info interface.")
-	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
+				return versionModule
+			},
+		},
+	})
 
 	return rt.TableValue(fakeMod), nil
 }

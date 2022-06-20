@@ -17,6 +17,10 @@ import (
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
+	aliases = newAliases()
+	jobs = newJobHandler()
+	timers = newTimerHandler()
+
 	l = rt.New(os.Stdout)
 	lib.LoadAll(l)
 
