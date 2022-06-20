@@ -1,5 +1,6 @@
 -- Prelude initializes everything else for our shell
 local _ = require 'succulent' -- Function additions
+local fs = require 'fs'
 
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 .. ';' .. hilbish.dataDir .. '/?/?.lua' .. ";" .. hilbish.dataDir .. '/?.lua'
@@ -45,3 +46,20 @@ do
 	})
 end
 
+do
+	local startSearchPath = hilbish.userDir.data .. '/hilbish/start/?/init.lua;'
+	.. hilbish.userDir.data .. '/hilbish/start/?.lua'
+
+	local ok, modules = pcall(fs.readdir, hilbish.userDir.data .. '/hilbish/start/')
+	if ok then
+		for _, module in ipairs(modules) do
+			local entry = package.searchpath(module, startSearchPath)
+			print(entry)
+			if entry then
+				dofile(entry)
+			end
+		end
+	end
+
+	package.path = package.path .. ';' .. startSearchPath
+end
