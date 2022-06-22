@@ -1,4 +1,4 @@
-<h{{ .Level }} id="{{ .Anchor | safeURL }}" {{ if .IsHome }}class="fw-light"{{ end }}>
+<h{{ .Level }} id="{{ .Anchor | safeURL }}">
 	{{ .Text | safeHTML }}
 </h{{ .Level }}>
 {{ if eq .Text ""}}
