@@ -1,6 +1,6 @@
 ---
-title: Docs
-layout: page
+title: Introduction
+layout: doc
 ---
 
 Hello!
