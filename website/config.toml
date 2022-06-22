@@ -1,4 +1,4 @@
-baseURL = 'https://rosettea.github.io/hilbish/'
+baseURL = 'https://rosettea.github.io/Hilbish/'
 languageCode = 'en-us'
 title = 'Hilbish'
 theme = 'hsh'
