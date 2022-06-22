@@ -11,7 +11,7 @@ For official stable releases, check out the latest [Github release.](https://git
 Hilbish is packaged in a *few* repositories for some distros.
 
 ## Arch Linux (AUR)
-Hilbihs is on the AUR. Setup an AUR helper, and install.
+Hilbish is on the AUR. Setup an AUR helper, and install.
 Example with yay:  
 
 ```
