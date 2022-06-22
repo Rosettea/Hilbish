@@ -13,7 +13,7 @@
 					{{ $currentPage := . }}
 					{{ range .Site.Menus.nav }}
 						<li class="nav-item">
-							<a {{ if not ($currentPage.IsMenuCurrent "nav" .) }}href="{{ .URL }}"{{ end }} class="nav-link {{ if $currentPage.IsMenuCurrent "nav" . }}active{{ end }}">
+							<a href="{{ .URL }}" class="nav-link {{ if $currentPage.IsMenuCurrent "nav" . }}active{{ end }}">
 								{{ .Name }}
 							</a>
 						</li>
