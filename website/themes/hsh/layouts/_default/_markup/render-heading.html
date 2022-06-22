@@ -1,6 +1,6 @@
-<h{{ .Level }} id="{{ .Anchor | safeURL }}">
+<h{{ (add .Level 1) }} id="{{ .Anchor | safeURL }}">
 	{{ .Text | safeHTML }}
-</h{{ .Level }}>
+</h{{ (add .Level 1) }}>
 {{ if eq .Text ""}}
 <hr>
 {{ end }}
