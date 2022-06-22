@@ -1,7 +1,5 @@
 ---
-description: |
-Something Unique. Hilbish is the new interactive shell for Lua fans.
-Extensible, scriptable, configurable: All in Lua.
+description: 'Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua.'
 ---
 
 [//]: <>
