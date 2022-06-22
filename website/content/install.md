@@ -1,5 +1,6 @@
 ---
 title: Install
+description: Steps on how to install Hilbish on all the OSes and distros supported.
 layout: page
 ---
 # Github Prebuilt Binaries

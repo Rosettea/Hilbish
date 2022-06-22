@@ -1,3 +1,9 @@
+---
+description: |
+Something Unique. Hilbish is the new interactive shell for Lua fans.
+Extensible, scriptable, configurable: All in Lua.
+---
+
 [//]: <>
 
 <!-- hugo (prob goldmark) is funny; the html wont work if its the first thing -->

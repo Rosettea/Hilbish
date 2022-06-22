@@ -10,8 +10,8 @@
 
 	<meta property="og:site_name" content="Hilbish" />
 	<meta content="{{ $title }}" property="og:title" />
-	<meta content="{{ .Summary }}" property="og:description" />
-	<meta content="{{ .Summary }}" name="description" />
+	<meta content="{{if .Description}}{{ .Description }}{{ else }}{{ .Summary }}{{ end }}" property="og:description" />
+	<meta content="{{if .Description}}{{ .Description }}{{ else }}{{ .Summary }}{{ end }}" name="description" />
 	
 	<meta name="revisit-after" content="2 days">
 	<meta name="keywords" content="Lua, Hilbish, Linux, Shell">
