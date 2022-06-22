@@ -7,17 +7,17 @@ theme = 'hsh'
 [[menu.nav]]
 	identifier = 'home'
 	name = 'Home'
-	url = '/'
+	pageref = '/'
 	weight = 1
 [[menu.nav]]
 	identifier = 'install'
 	name = 'Install'
-	url = '/install'
+	pageref = '/install/'
 	weight = 2
 [[menu.nav]]
 	identifier = 'docs'
 	name = 'Docs'
-	url = '/docs'
+	pageref = '/docs/'
 	weight = 3
 	
 [markup.goldmark.renderer]
