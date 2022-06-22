@@ -1,5 +1,5 @@
 <head>
-	{{ $title := print .Title " | " .Site.Title }}
+	{{ $title := print .Title " — " .Site.Title }}
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }}</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
