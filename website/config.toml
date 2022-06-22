@@ -12,12 +12,12 @@ theme = 'hsh'
 [[menu.nav]]
 	identifier = 'install'
 	name = 'Install'
-	pageref = '/install/'
+	pageref = '/install'
 	weight = 2
 [[menu.nav]]
 	identifier = 'docs'
 	name = 'Docs'
-	pageref = '/docs/'
+	pageref = '/docs'
 	weight = 3
 	
 [markup.goldmark.renderer]
