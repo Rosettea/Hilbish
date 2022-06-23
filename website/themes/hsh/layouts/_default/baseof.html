@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     {{- partial "head.html" . -}}
-    <body style="overflow-x: hidden;">
+    <body class="d-flex flex-column min-vh-100" style="overflow-x: hidden;">
         {{- partial "header.html" . -}}
         {{- block "main" . }}{{- end }}
         {{- partial "footer.html" . -}}
