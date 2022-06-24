@@ -78,6 +78,7 @@ without having to actually handle it at all.
 of a table, so their functions require you to call them with a colon instead
 of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
+- Added the Getting Started doc for the website
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
