@@ -182,6 +182,10 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.Document(versionModule, "Version info interface.")
 	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
+	pluginModule := moduleLoader(rtm)
+	util.Document(pluginModule, "")
+	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
+
 	return rt.TableValue(fakeMod), nil
 }
 
