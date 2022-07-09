@@ -1,7 +1,7 @@
 # 🎀 Changelog
 
 ## Unreleased
-Note to packagers: Hilbish now uses [Task](Task) insead of Make.
+Note to packagers: Hilbish now uses [Task] insead of Make.
 
 [Task]: https://taskfile.dev/#/
 
