@@ -66,6 +66,7 @@ If you're new to nix you should probably read up on how to do that [here](https:
 ## Manual Build
 ### Prerequisites
 - [Go 1.17+](https://go.dev)
+- [Task](https://taskfile.dev/#/)
 
 ### Build
 First, clone Hilbish. The recursive is required, as some Lua libraries
@@ -78,16 +79,16 @@ go get -d ./...
 
 To build, run:
 ```
-make dev
+task
 ```  
 
 Or, if you want a stable branch, run these commands:
 ```
 git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-make build
+task build
 ```  
 
-After you did all that, run `sudo make install` to install Hilbish globally.
+After you did all that, run `sudo task install` to install Hilbish globally.
 
 # Getting Started
 At startup, you should see a message which says to run a `guide` command.
