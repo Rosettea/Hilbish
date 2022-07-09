@@ -62,6 +62,9 @@ having and using multiple runners.
 - Lua modules located in `hilbish.userDir.data .. '/hilbish/start'` (like `~/.local/share/hilbish/start/foo/init.lua`)
 will be ran on startup
 - `hilbish.init` hook, thrown after Hilbish has initialized Lua side
+- Message of the day on startup (`hilbish.motd`), mainly intended as quick
+small news pieces for releases. It is printed by default. To disable it,
+set `hilbish.opts.motd` to false.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
