@@ -6,7 +6,52 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	rt "github.com/arnodel/golua/runtime"
 )
+
+type luaHistory struct {}
+
+func (h *luaHistory) Write(line string) (int, error) {
+	histWrite := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("add"))
+	ln, err := rt.Call1(l.MainThread(), histWrite, rt.StringValue(line))
+
+	var num int64
+	if ln.Type() == rt.IntType {
+		num = ln.AsInt()
+	}
+
+	return int(num), err
+}
+
+func (h *luaHistory) GetLine(idx int) (string, error) {
+	histGet := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("get"))
+	lcmd, err := rt.Call1(l.MainThread(), histGet, rt.IntValue(int64(idx)))
+
+	var cmd string
+	if lcmd.Type() == rt.StringType {
+		cmd = lcmd.AsString()
+	}
+
+	return cmd, err
+}
+
+func (h *luaHistory) Len() int {
+	histSize := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("size"))
+	ln, _ := rt.Call1(l.MainThread(), histSize)
+
+	var num int64
+	if ln.Type() == rt.IntType {
+		num = ln.AsInt()
+	}
+
+	return int(num)
+}
+
+func (h *luaHistory) Dump() interface{} {
+	// hilbish.history interface already has all function, this isnt used in readline
+	return nil
+}
 
 type fileHistory struct {
 	items []string
