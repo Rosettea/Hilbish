@@ -10,6 +10,7 @@ require 'nature.completions'
 require 'nature.opts'
 require 'nature.vim'
 require 'nature.runner'
+require 'nature.history'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then

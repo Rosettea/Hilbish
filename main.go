@@ -268,11 +268,6 @@ func fmtPrompt(prompt string) string {
 	return nprompt
 }
 
-func handleHistory(cmd string) {
-	lr.AddHistory(cmd)
-	// TODO: load history again (history shared between sessions like this ye)
-}
-
 func removeDupes(slice []string) []string {
 	all := make(map[string]bool)
 	newSlice := []string{}

@@ -20,7 +20,8 @@ local function setupOpt(name, default)
 end
 
 local defaultOpts = {
-	autocd = false
+	autocd = false,
+	history = true
 }
 
 for optsName, default in pairs(defaultOpts) do
