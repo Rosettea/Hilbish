@@ -77,12 +77,13 @@ It can (at the moment) have 4 variables:
 User input has been added to the return to account for runners wanting to
 prompt for continued input, and to add it properly to history. `continue`
 got added so that it would be easier for runners to get continued input
-without having to actually handle it at all.
-
+without having to actually handle it at all.  
 - **Breaking Change:** Job objects and timers are now Lua userdata instead
 of a table, so their functions require you to call them with a colon instead
 of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
+- **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
+always printed by default. To disable it, set the opt to false.
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
