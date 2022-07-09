@@ -11,8 +11,34 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
+func splitQuote(str string) []string {
+	split := []string{}
+	sb := &strings.Builder{}
+	quoted := false
+
+	for _, r := range str {
+		if r == '"' {
+			quoted = !quoted
+			sb.WriteRune(r)
+		} else if !quoted && r == ' ' {
+			split = append(split, sb.String())
+			sb.Reset()
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+
+	if sb.Len() > 0 {
+		split = append(split, sb.String())
+	}
+
+	return split
+}
+
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
-	return matchPath(query)
+	q := splitQuote(ctx)
+
+	return matchPath(q[len(q) - 1])
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
@@ -68,6 +94,8 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 }
 
 func matchPath(query string) ([]string, string) {
+	oldQuery := query
+	query = strings.TrimPrefix(query, "\"")
 	var entries []string
 	var baseName string
 
@@ -87,7 +115,9 @@ func matchPath(query string) ([]string, string) {
 			if file.IsDir() {
 				entry = entry + string(os.PathSeparator)
 			}
-			entry = escapeFilename(entry)
+			if !strings.HasPrefix(oldQuery, "\"") {
+				entry = escapeFilename(entry)
+			}
 			entries = append(entries, entry)
 		}
 	}
