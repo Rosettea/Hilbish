@@ -61,6 +61,7 @@ having and using multiple runners.
   - `fs.pathListSep` is the separator for $PATH env entries
 - Lua modules located in `hilbish.userDir.data .. '/hilbish/start'` (like `~/.local/share/hilbish/start/foo/init.lua`)
 will be ran on startup
+- `hilbish.init` hook, thrown after Hilbish has initialized Lua side
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
