@@ -1,6 +1,10 @@
 # 🎀 Changelog
 
 ## Unreleased
+**NOTE:** Hilbish now uses [Task] insead of Make for builds.
+
+[Task]: https://taskfile.dev/#/
+
 ### Added
 - Inline hints, akin to fish and the others.
 To make a handler for hint text, you can set the `hilbish.hinter` function.

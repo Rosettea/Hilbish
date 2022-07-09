@@ -26,8 +26,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17.7'
+      - name: Download Task
+        run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
       - name: Build
-        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} make
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} ./bin/task
       - uses: actions/upload-artifact@v2
         if: matrix.goos == 'windows'
         with:
