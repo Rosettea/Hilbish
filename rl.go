@@ -28,7 +28,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	// but it cant have shared history
 	if !noHist {
 		lr.fileHist = newFileHistory(defaultHistPath)
-		rl.SetHistoryCtrlR("History", lr.fileHist)
+		rl.SetHistoryCtrlR("History", &luaHistory{})
 		rl.HistoryAutoWrite = false
 	}
 	rl.ShowVimMode = false

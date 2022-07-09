@@ -116,8 +116,8 @@ func main() {
 	}
 
 	go handleSignals()
-	luaInit()
 	lr = newLineReader("", false)
+	luaInit()
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
