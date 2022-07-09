@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -12,13 +13,15 @@ type fileHistory struct {
 	f *os.File
 }
 
-func newFileHistory() *fileHistory {
-	err := os.MkdirAll(defaultHistDir, 0755)
+func newFileHistory(path string) *fileHistory {
+	dir := filepath.Dir(path)
+
+	err := os.MkdirAll(dir, 0755)
 	if err != nil {
 		panic(err)
 	}
 
-	data, err := os.ReadFile(defaultHistPath)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
 			panic(err)
@@ -33,7 +36,7 @@ func newFileHistory() *fileHistory {
 		}
 		itms = append(itms, l)
 	}
-	f, err := os.OpenFile(defaultHistPath, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0755)
+	f, err := os.OpenFile(path, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0755)
 	if err != nil {
 		panic(err)
 	}
