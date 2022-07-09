@@ -8,9 +8,9 @@ Hilbish</a>
 default shell, you can simply run <code>hilbish</code> to start it. This will launch
 a normal interactive session.
 To exit, you can either run the <code>exit</code> command or hit Ctrl+D.</p><h2 id=setting-as-default>Setting as Default</h2><h3 id=login-shell>Login shell</h3><p>There are a few ways to make Hilbish your default shell. A simple way is
-to make it your user/login shell.</p><p>{{ warning &ldquo;It is not recommended to set Hilbish as your login shell. That is expected to be a
+to make it your user/login shell.</p><div class="alert alert-warning d-flex align-items-center" role=alert><svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg><div>It is not recommended to set Hilbish as your login shell. That is expected to be a
 POSIX compliant shell, which Hilbish is not. At most, there will just be a
-few variables missing in your environment&rdquo; >}}</p><p>To do that, simply run <code>chsh -s /usr/bin/hilbish</code>.
+few variables missing in your environment</div></div><p>To do that, simply run <code>chsh -s /usr/bin/hilbish</code>.
 Some distros (namely Fedora) might have <code>lchsh</code> instead, which is used like <code>lchsh &lt;user></code>.
 When prompted, you can put the path for Hilbish.</p><h3 id=default-with-terminal>Default with terminal</h3><p>The simpler way is to set the default shell for your terminal. The way of
 doing this depends on how your terminal settings are configured.</p><h3 id=run-after-login-shell>Run after login shell</h3><p>Some shells (like zsh) have an rc file, like <code>.zlogin</code>, which is ran when the shell session
