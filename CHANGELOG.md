@@ -61,6 +61,10 @@ having and using multiple runners.
   - `fs.pathListSep` is the separator for $PATH env entries
 - Lua modules located in `hilbish.userDir.data .. '/hilbish/start'` (like `~/.local/share/hilbish/start/foo/init.lua`)
 will be ran on startup
+- `hilbish.init` hook, thrown after Hilbish has initialized Lua side
+- Message of the day on startup (`hilbish.motd`), mainly intended as quick
+small news pieces for releases. It is printed by default. To disable it,
+set `hilbish.opts.motd` to false.
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -76,12 +80,13 @@ It can (at the moment) have 4 variables:
 User input has been added to the return to account for runners wanting to
 prompt for continued input, and to add it properly to history. `continue`
 got added so that it would be easier for runners to get continued input
-without having to actually handle it at all.
-
+without having to actually handle it at all.  
 - **Breaking Change:** Job objects and timers are now Lua userdata instead
 of a table, so their functions require you to call them with a colon instead
 of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
+- **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
+always printed by default. To disable it, set the opt to false.
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
