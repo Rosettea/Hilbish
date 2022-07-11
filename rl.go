@@ -27,6 +27,25 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		rl.SetHistoryCtrlR("History", fileHist)
 		rl.HistoryAutoWrite = false
 	}
+	oldSearcher := rl.HistorySearcher
+	rl.HistorySearcher = func(filter string) []string {
+		searcherHandler := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("searcher"))
+		if searcherHandler == rt.NilValue {
+			return oldSearcher(filter)
+		}
+
+		ret, err := rt.Call1(l.MainThread(), searcherHandler, rt.StringValue(filter))
+		entries := []string{}
+		if err == nil && ret.Type() == rt.TableType {
+			util.ForEach(ret.AsTable(), func(k rt.Value, v rt.Value) {
+				if k.Type() == rt.IntType && v.Type() == rt.StringType {
+					entries = append(entries, v.AsString())
+				}
+			})
+		}
+
+		return entries
+	}
 	rl.ShowVimMode = false
 	rl.ViModeCallback = func(mode readline.ViMode) {
 		modeStr := ""

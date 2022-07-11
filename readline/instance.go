@@ -200,6 +200,8 @@ type Instance struct {
 	ViActionCallback func(ViAction, []string)
 
 	RawInputCallback func([]rune) // called on all input
+
+	HistorySearcher func(string) []string
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
@@ -229,6 +231,10 @@ func NewInstance() *Instance {
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
 
+	rl.HistorySearcher = func(filter string) []string {
+		grps := rl.completeHistory()
+		return grps[0].filterSuggestions(rl)
+	}
 	// Registers
 	rl.initRegisters()
 

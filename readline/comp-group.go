@@ -64,14 +64,8 @@ func (g *CompletionGroup) init(rl *Instance) {
 	}
 }
 
-// updateTabFind - When searching through all completion groups (whether it be command history or not),
-// we ask each of them to filter its own items and return the results to the shell for aggregating them.
-// The rx parameter is passed, as the shell already checked that the search pattern is valid.
-func (g *CompletionGroup) updateTabFind(rl *Instance) {
-
+func (g *CompletionGroup) filterSuggestions(rl *Instance) []string {
 	suggs := make([]string, 0)
-
-	// We perform filter right here, so we create a new completion group, and populate it with our results.
 	for i := range g.Suggestions {
 		if rl.regexSearch == nil { continue }
 		if rl.regexSearch.MatchString(g.Suggestions[i]) {
@@ -82,8 +76,20 @@ func (g *CompletionGroup) updateTabFind(rl *Instance) {
 		}
 	}
 
-	// We overwrite the group's items, (will be refreshed as soon as something is typed in the search)
-	g.Suggestions = suggs
+	return suggs
+}
+
+// updateTabFind - When searching through all completion groups (whether it be command history or not),
+// we ask each of them to filter its own items and return the results to the shell for aggregating them.
+// The rx parameter is passed, as the shell already checked that the search pattern is valid.
+func (g *CompletionGroup) updateTabFind(rl *Instance) {
+	// We perform filter right here, so we create a new completion group, and populate it with our results.
+	// Then overwrite the group's items, (will be refreshed as soon as something is typed in the search)
+	if rl.searchMode != HistoryFind {
+		g.Suggestions = g.filterSuggestions(rl)
+	} else {
+		g.Suggestions = rl.HistorySearcher(string(rl.tfLine))
+	}
 
 	// Finally, the group computes its new printing settings
 	g.init(rl)
