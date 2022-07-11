@@ -65,6 +65,7 @@ will be ran on startup
 - Message of the day on startup (`hilbish.motd`), mainly intended as quick
 small news pieces for releases. It is printed by default. To disable it,
 set `hilbish.opts.motd` to false.
+- `hilbish.rawInput` hook for input from the readline library
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.

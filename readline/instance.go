@@ -198,6 +198,8 @@ type Instance struct {
 
 	ViModeCallback func(ViMode)
 	ViActionCallback func(ViAction, []string)
+
+	RawInputCallback func([]rune) // called on all input
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
