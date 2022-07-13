@@ -12,12 +12,16 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
+	"github.com/arnodel/golua/lib/debuglib"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
 	l = rt.New(os.Stdout)
+	l.PushContext(rt.RuntimeContextDef{
+		MessageHandler: debuglib.Traceback,
+	})
 	lib.LoadAll(l)
 
 	lib.LoadLibs(l, hilbishLoader)
@@ -47,6 +51,10 @@ func luaInit() {
 			os.Exit(0)
 		}
 	})
+
+	lr.rl.RawInputCallback = func(r []rune) {
+		hooks.Em.Emit("hilbish.rawInput", string(r))
+	}
 
 	// Add more paths that Lua can require from
 	err := util.DoString(l, "package.path = package.path .. " + requirePaths)

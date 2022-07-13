@@ -44,7 +44,6 @@ var exports = map[string]util.LuaExport{
 	"which": {hlwhich, 1, false},
 }
 
-var greeting string
 var hshMod *rt.Table
 var hilbishLoader = packagelib.Loader{
 	Load: hilbishLoad,
@@ -103,10 +102,6 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + username + `{reset}.
-The nice lil shell for {blue}Lua{reset} fanatics!
-Check out the {blue}{bold}guide{reset} command to get started.
-`
 	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()), "Hilbish version")
 	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
 	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
@@ -114,7 +109,6 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
 	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
 	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
-	util.SetFieldProtected(fakeMod, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
 	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")

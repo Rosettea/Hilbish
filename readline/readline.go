@@ -94,6 +94,9 @@ func (rl *Instance) Readline() (string, error) {
 
 		rl.skipStdinRead = false
 		r := []rune(string(b))
+		if rl.RawInputCallback != nil {
+			rl.RawInputCallback(r[:i])
+		}
 
 		if isMultiline(r[:i]) || len(rl.multiline) > 0 {
 			rl.multiline = append(rl.multiline, b[:i]...)

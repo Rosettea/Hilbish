@@ -116,8 +116,8 @@ func main() {
 	}
 
 	go handleSignals()
-	luaInit()
 	lr = newLineReader("", false)
+	luaInit()
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
@@ -138,6 +138,7 @@ func main() {
 	} else {
 		runConfig(*configflag)
 	}
+	hooks.Em.Emit("hilbish.init")
 
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
@@ -266,11 +267,6 @@ func fmtPrompt(prompt string) string {
 	nprompt := r.Replace(prompt)
 
 	return nprompt
-}
-
-func handleHistory(cmd string) {
-	lr.AddHistory(cmd)
-	// TODO: load history again (history shared between sessions like this ye)
 }
 
 func removeDupes(slice []string) []string {

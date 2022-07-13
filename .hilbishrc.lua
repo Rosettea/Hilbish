@@ -9,8 +9,6 @@ local function doPrompt(fail)
 	))
 end
 
-print(lunacolors.format(hilbish.greeting))
-
 doPrompt()
 
 bait.catch('command.exit', function(code)
