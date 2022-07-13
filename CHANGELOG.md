@@ -66,6 +66,8 @@ will be ran on startup
 - Message of the day on startup (`hilbish.motd`), mainly intended as quick
 small news pieces for releases. It is printed by default. To disable it,
 set `hilbish.opts.motd` to false.
+- `history` opt has been added and is true by default. Setting it to false
+disables commands being added to history.
 - `hilbish.rawInput` hook for input from the readline library
 - Completion of files in quotes
 
@@ -90,6 +92,8 @@ of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
 - **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
 always printed by default. To disable it, set the opt to false.
+- History is now fetched from Lua, which means users can override `hilbish.history`
+methods to make it act how they want.
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
