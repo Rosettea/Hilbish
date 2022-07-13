@@ -2,9 +2,7 @@
 
 package main
 
-import (
-	"hilbish/util"
-)
+import "hilbish/util"
 
 // String vars that are free to be changed at compile time
 var (
