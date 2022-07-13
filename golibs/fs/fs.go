@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"os"
@@ -27,6 +28,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"basename": util.LuaExport{fbasename, 1, false},
 		"dir": util.LuaExport{fdir, 1, false},
 		"glob": util.LuaExport{fglob, 1, false},
+		"join": util.LuaExport{fjoin, 0, true},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -215,4 +217,22 @@ func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 	
 	return c.PushingNext(t.Runtime, rt.TableValue(luaMatches)), nil
+}
+
+// join(paths...)
+// Takes paths and joins them together with the OS's
+// directory separator (forward or backward slash).
+func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	strs := make([]string, len(c.Etc()))
+	for i, v := range c.Etc() {
+		if v.Type() != rt.StringType {
+			// +2; go indexes of 0 and first arg from above
+			return nil, fmt.Errorf("bad argument #%d to run (expected string, got %s)", i + 1, v.TypeName())
+		}
+		strs[i] = v.AsString()
+	}
+
+	res := filepath.Join(strs...)
+
+	return c.PushingNext(t.Runtime, rt.StringValue(res)), nil
 }
