@@ -94,6 +94,8 @@ of a dot. (ie. `job.stop()` -> `job:stop()`)
 always printed by default. To disable it, set the opt to false.
 - History is now fetched from Lua, which means users can override `hilbish.history`
 methods to make it act how they want.
+- `guide` has been removed. See the [website](https://rosettea.github.io/Hilbish/)
+for general tips and documentation
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
