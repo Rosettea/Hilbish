@@ -1,0 +1,25 @@
+{{ define "main" }}
+<div class="container py-3 row">
+	<div class="container" style="width: 240px;">
+		<div class="p-3 col">
+			<ul class="nav nav-pills mb-auto">
+				{{ $currentPage := . }}
+				{{ range where site.Pages.ByWeight.Reverse "Type" "docs" }}
+					<li class="nav-item">
+						<a href="{{ .Permalink }}" class="nav-link">
+							{{ .Title }}
+						</a>
+					</li>
+				{{ end }}
+			</ul>
+		</div>
+	</div>
+	<div class="col">
+		<div>
+			<h1>{{ .Title }}</h1>
+			{{.Content}}
+		</div>
+	</div>
+</div>
+{{ end }}
+
