@@ -12,12 +12,16 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
+	"github.com/arnodel/golua/lib/debuglib"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
 	l = rt.New(os.Stdout)
+	l.PushContext(rt.RuntimeContextDef{
+		MessageHandler: debuglib.Traceback,
+	})
 	lib.LoadAll(l)
 
 	lib.LoadLibs(l, hilbishLoader)
