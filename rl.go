@@ -31,15 +31,56 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		rl.SetHistoryCtrlR("History", &luaHistory{})
 		rl.HistoryAutoWrite = false
 	}
+
 	oldSearcher := rl.HistorySearcher
-	rl.HistorySearcher = func(filter string) []string {
-		searcherHandler := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("searcher"))
-		if searcherHandler == rt.NilValue {
-			return oldSearcher(filter)
+	rl.HistorySearcher = func(query string, suggestions []string) []string {
+		return oldSearcher(query, suggestions)
+		searcherBool := hshMod.Get(rt.StringValue("opts")).AsTable().Get(rt.StringValue("searcher"))
+		if b, _ := searcherBool.TryBool(); !b {
 		}
 
-		ret, err := rt.Call1(l.MainThread(), searcherHandler, rt.StringValue(filter))
+		searcherHandler := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("searcher"))
 		entries := []string{}
+		if searcherHandler == rt.NilValue {
+			// if no searcher, just do a simple filter function
+			filter := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("filter"))
+			if filter == rt.NilValue {
+				return oldSearcher(query, suggestions)
+			}
+
+			histAll := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("all"))
+			cmds, err := rt.Call1(l.MainThread(), histAll)
+			if err != nil || cmds.Type() != rt.TableType {
+				return entries
+			}
+
+			util.ForEach(cmds.AsTable(), func(k rt.Value, cmd rt.Value) {
+				if k.Type() != rt.IntType && cmd.Type() != rt.StringType {
+					return
+				}
+
+				ret, err := rt.Call1(l.MainThread(), filter, rt.StringValue(query), cmd)
+				if err != nil {
+					return // TODO: true to stop for each (implement in util)
+				}
+				if ret.Type() != rt.BoolType {
+					return // just skip normally
+				}
+
+				if ret.AsBool() {
+					entries = append(entries, cmd.AsString())
+				}
+			})
+
+			return entries
+		}
+
+		luaSuggs := rt.NewTable()
+		for i, sug := range suggestions {
+			luaSuggs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(sug))
+		}
+
+		ret, err := rt.Call1(l.MainThread(), searcherHandler, rt.StringValue(query), luaSuggs)
 		if err == nil && ret.Type() == rt.TableType {
 			util.ForEach(ret.AsTable(), func(k rt.Value, v rt.Value) {
 				if k.Type() == rt.IntType && v.Type() == rt.StringType {
