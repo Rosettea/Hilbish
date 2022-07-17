@@ -231,9 +231,13 @@ func NewInstance() *Instance {
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
 
-	rl.HistorySearcher = func(filter string) []string {
-		grps := rl.completeHistory()
-		return grps[0].filterSuggestions(rl)
+	rl.HistorySearcher = func(filter string, suggestions []string) []string {
+		grp := CompletionGroup{
+			DisplayType: TabDisplayMap,
+			MaxLength:   10,
+			Suggestions: suggestions,
+		}
+		return grp.filterSuggestions(rl)
 	}
 	// Registers
 	rl.initRegisters()
