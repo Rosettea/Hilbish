@@ -88,7 +88,7 @@ func (g *CompletionGroup) updateTabFind(rl *Instance) {
 	if rl.searchMode != HistoryFind {
 		g.Suggestions = g.filterSuggestions(rl)
 	} else {
-		g.Suggestions = rl.HistorySearcher(string(rl.tfLine))
+		g.Suggestions = rl.HistorySearcher(string(rl.tfLine), g.Suggestions)
 	}
 
 	// Finally, the group computes its new printing settings

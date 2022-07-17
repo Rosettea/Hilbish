@@ -201,7 +201,7 @@ type Instance struct {
 
 	RawInputCallback func([]rune) // called on all input
 
-	HistorySearcher func(string) []string
+	HistorySearcher func(string, []string) []string
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
