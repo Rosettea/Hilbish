@@ -18,7 +18,7 @@ func (rl *Instance) updateLine(line []rune) {
 
 // getLine - In many places we need the current line input. We either return the real line,
 // or the one that includes the current completion candidate, if there is any.
-func (rl *Instance) getLine() []rune {
+func (rl *Instance) GetLine() []rune {
 	if len(rl.currentComp) > 0 {
 		return rl.lineComp
 	}
