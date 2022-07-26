@@ -138,6 +138,8 @@ menu is open.
   - `hilbish.dataDir` now has tilde (`~`) expanded.
   - Arrow keys now work on Windows terminals.
   - Escape codes now work.
+- Escape percentage symbols in completion entries, so you will no longer see
+an error of missing format variable
 
 ## [1.2.0] - 2022-03-17
 ### Added

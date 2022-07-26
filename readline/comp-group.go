@@ -1,5 +1,7 @@
 package readline
 
+import "strings"
+
 // CompletionGroup - A group/category of items offered to completion, with its own
 // name, descriptions and completion display format/type.
 // The output, if there are multiple groups available for a given completion input,
@@ -284,4 +286,8 @@ func (g *CompletionGroup) goLastCell() {
 		// We do not take into account the alternative suggestions
 		g.tcPosX = 0
 	}
+}
+
+func fmtEscape(s string) string {
+	return strings.Replace(s, "%", "%%", -1)
 }

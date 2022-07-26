@@ -206,12 +206,12 @@ func (g *CompletionGroup) writeList(rl *Instance) (comp string) {
 		if len(item) > maxLength {
 			item = item[:maxLength-3] + "..."
 		}
-		sugg := fmt.Sprintf("\r%s%-"+cellWidth+"s", highlight(y, 0), item)
+		sugg := fmt.Sprintf("\r%s%-"+cellWidth+"s", highlight(y, 0), fmtEscape(item))
 
 		// Alt suggestion
 		alt, ok := g.Aliases[item]
 		if ok {
-			alt = fmt.Sprintf(" %s%"+cellWidthAlt+"s", highlight(y, 1), alt)
+			alt = fmt.Sprintf(" %s%"+cellWidthAlt+"s", highlight(y, 1), fmtEscape(alt))
 		} else {
 			// Else, make an empty cell
 			alt = strings.Repeat(" ", maxLengthAlt+1) // + 2 to keep account of spaces
