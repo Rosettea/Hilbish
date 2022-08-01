@@ -41,6 +41,12 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 
 	if handles != nil {
 		for _, handle := range handles {
+			defer func() {
+				if err := recover(); err != nil {
+					b.callRecoverer(event, handle, err)
+				}
+			}()
+	
 			handle(args...)
 		}
 	}
