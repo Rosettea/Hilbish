@@ -13,7 +13,6 @@ doPrompt()
 
 bait.catch('command.exit', function(code)
 	doPrompt(code ~= 0)
-	print(code:lol())
 end)
 
 bait.catch('hilbish.vimMode', function(mode)
