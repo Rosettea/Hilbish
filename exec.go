@@ -85,7 +85,7 @@ func isExecError(err error) (execError, bool) {
 func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
-	hooks.Em.Emit("command.preexec", input, cmdString)
+	hooks.Emit("command.preexec", input, cmdString)
 
 	rerun:
 	var exitCode uint8
@@ -140,7 +140,7 @@ func runInput(input string, priv bool) {
 
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
-			hooks.Em.Emit("command." + exErr.typ, exErr.cmd)
+			hooks.Emit("command." + exErr.typ, exErr.cmd)
 			err = exErr.sprint()
 		}
 		fmt.Fprintln(os.Stderr, err)
@@ -544,5 +544,5 @@ func cmdFinish(code uint8, cmdstr string, private bool) {
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values
-	hooks.Em.Emit("command.exit", rt.IntValue(int64(code)), cmdstr, private)
+	hooks.Emit("command.exit", rt.IntValue(int64(code)), cmdstr, private)
 }

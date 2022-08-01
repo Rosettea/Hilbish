@@ -1,27 +1,27 @@
 package bait
 
 import (
-	"fmt"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
-	"github.com/chuckpreslar/emission"
 )
 
+type Recoverer func(event string, handler, err interface{})
+
 type Bait struct{
-	Em *emission.Emitter
 	Loader packagelib.Loader
+	recoverer Recoverer
+	luaHandlers map[string][]*rt.Closure
+	handlers map[string][]func(...interface{})
+	rtm *rt.Runtime
 }
 
-func New() Bait {
-	emitter := emission.NewEmitter()
-	emitter.RecoverWith(func(hookname, hookfunc interface{}, err error) {
-		emitter.Off(hookname, hookfunc)
-		fmt.Println(err)
-	})
+func New(rtm *rt.Runtime) Bait {
 	b := Bait{
-		Em: emitter,
+		luaHandlers: make(map[string][]*rt.Closure),
+		handlers: make(map[string][]func(...interface{})),
+		rtm: rtm,
 	}
 	b.Loader = packagelib.Loader{
 		Load: b.loaderFunc,
@@ -29,6 +29,73 @@ func New() Bait {
 	}
 
 	return b
+}
+
+func (b *Bait) Emit(event string, args ...interface{}) {
+	handles := b.handlers[event]
+	luaHandles := b.luaHandlers[event]
+
+	if handles == nil && luaHandles == nil {
+		return
+	}
+
+	if handles != nil {
+		for _, handle := range handles {
+			handle(args...)
+		}
+	}
+
+	if luaHandles != nil {
+		for _, handle := range luaHandles {
+			defer func() {
+				if err := recover(); err != nil {
+					b.callRecoverer(event, handle, err)
+				}
+			}()
+
+			funcVal := rt.FunctionValue(handle)
+			var luaArgs []rt.Value
+			for _, arg := range args {
+				var luarg rt.Value
+				switch arg.(type) {
+					case rt.Value: luarg = arg.(rt.Value)
+					default: luarg = rt.AsValue(arg)
+				}
+				luaArgs = append(luaArgs, luarg)
+			}
+			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
+			if err != nil {
+				// panicking here won't actually cause hilbish to panic and instead will
+				// print the error and remove the hook (look at emission recover from above)
+				panic(err)
+			}
+		}
+	}
+}
+
+func (b *Bait) On(event string, handler func(...interface{})) {
+	if b.handlers[event] == nil {
+		b.handlers[event] = []func(...interface{}){}
+	}
+	b.handlers[event] = append(b.handlers[event], handler)
+}
+
+func (b *Bait) OnLua(event string, handler *rt.Closure) {
+	if b.luaHandlers[event] == nil {
+		b.luaHandlers[event] = []*rt.Closure{}
+	}
+	b.luaHandlers[event] = append(b.luaHandlers[event], handler)
+}
+
+func (b *Bait) SetRecoverer(recoverer Recoverer) {
+	b.recoverer = recoverer
+}
+
+func (b *Bait) callRecoverer(event string, handler, err interface{}) {
+	if b.recoverer == nil {
+		panic(err)
+	}
+	b.recoverer(event, handler, err)
 }
 
 func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
@@ -89,7 +156,7 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	for i, v := range c.Etc() {
 		ifaceSlice[i] = v
 	}
-	b.Em.Emit(name, ifaceSlice...)
+	b.Emit(name, ifaceSlice...)
 
 	return c.Next(), nil
 }
@@ -104,9 +171,7 @@ func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	b.Em.On(name, func(args ...interface{}) {
-		handleHook(t, c, name, catcher, args...)
-	})
+	b.OnLua(name, catcher)
 
 	return c.Next(), nil
 }
@@ -121,7 +186,8 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	b.Em.Once(name, func(args ...interface{}) {
+	// todo: add once
+	b.On(name, func(args ...interface{}) {
 		handleHook(t, c, name, catcher, args...)
 	})
 
