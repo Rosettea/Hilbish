@@ -107,7 +107,7 @@ func (b *Bait) Off(event string, listener *Listener) {
 
 	for i, handle := range handles {
 		if handle == listener {
-			b.handlers[event] = append(handles[:i], handles[i + 1:]...)
+			b.removeListener(event, i)
 		}
 	}
 }
@@ -144,6 +144,13 @@ func (b *Bait) addListener(event string, listener *Listener) {
 	}
 
 	b.handlers[event] = append(b.handlers[event], listener)
+}
+
+
+func (b *Bait) removeListener(event string, idx int) {
+	b.handlers[event][idx] = b.handlers[event][len(b.handlers[event]) - 1]
+
+	b.handlers[event] = b.handlers[event][:len(b.handlers[event]) - 1]
 }
 
 func (b *Bait) callRecoverer(event string, handler *Listener, err interface{}) {
@@ -241,7 +248,6 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	// todo: add once
 	b.OnceLua(name, catcher)
 
 	return c.Next(), nil
