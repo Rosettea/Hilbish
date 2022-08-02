@@ -112,6 +112,16 @@ func (b *Bait) Off(event string, listener *Listener) {
 	}
 }
 
+func (b *Bait) OffLua(event string, handler *rt.Closure) {
+	handles := b.handlers[event]
+
+	for i, handle := range handles {
+		if handle.luaCaller == handler {
+			b.removeListener(event, i)
+		}
+	}
+}
+
 func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
 	listener := &Listener{
 		typ: goListener,
@@ -165,6 +175,7 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"catch": util.LuaExport{b.bcatch, 2, false},
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
+		"release": util.LuaExport{b.brelease, 2, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -249,6 +260,17 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	b.OnceLua(name, catcher)
+
+	return c.Next(), nil
+}
+
+func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	b.OffLua(name, catcher)
 
 	return c.Next(), nil
 }
