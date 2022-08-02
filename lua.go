@@ -43,8 +43,9 @@ func luaInit() {
 	lib.LoadLibs(l, cmds.Loader)
 
 	hooks = bait.New(l)
-	hooks.SetRecoverer(func(event string, handler, err interface{}) {
+	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
 		fmt.Println("Error in", event, "event:", err)
+		hooks.Off(event, handler)
 	})
 
 	lib.LoadLibs(l, hooks.Loader)

@@ -13,10 +13,11 @@ const (
 	luaListener
 )
 
-type Recoverer func(event string, handler, err interface{})
+type Recoverer func(event string, handler *Listener, err interface{})
 
 type Listener struct{
 	typ listenerType
+	once bool
 	caller func(...interface{})
 	luaCaller *rt.Closure
 }
@@ -74,6 +75,10 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 		} else {
 			handle.caller(args...)
 		}
+
+		if handle.once {
+			b.Off(event, handle)
+		}
 	}
 }
 
@@ -97,6 +102,38 @@ func (b *Bait) OnLua(event string, handler *rt.Closure) *Listener {
 	return listener
 }
 
+func (b *Bait) Off(event string, listener *Listener) {
+	handles := b.handlers[event]
+
+	for i, handle := range handles {
+		if handle == listener {
+			b.handlers[event] = append(handles[:i], handles[i + 1:]...)
+		}
+	}
+}
+
+func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
+	listener := &Listener{
+		typ: goListener,
+		once: true,
+		caller: handler,
+	}
+	b.addListener(event, listener)
+
+	return listener
+}
+
+func (b *Bait) OnceLua(event string, handler *rt.Closure) *Listener {
+	listener := &Listener{
+		typ: luaListener,
+		once: true,
+		luaCaller: handler,
+	}
+	b.addListener(event, listener)
+
+	return listener
+}
+
 func (b *Bait) SetRecoverer(recoverer Recoverer) {
 	b.recoverer = recoverer
 }
@@ -108,7 +145,8 @@ func (b *Bait) addListener(event string, listener *Listener) {
 
 	b.handlers[event] = append(b.handlers[event], listener)
 }
-func (b *Bait) callRecoverer(event string, handler, err interface{}) {
+
+func (b *Bait) callRecoverer(event string, handler *Listener, err interface{}) {
 	if b.recoverer == nil {
 		panic(err)
 	}
@@ -204,9 +242,7 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	// todo: add once
-	b.On(name, func(args ...interface{}) {
-		handleHook(t, c, name, catcher, args...)
-	})
+	b.OnceLua(name, catcher)
 
 	return c.Next(), nil
 }
