@@ -7,20 +7,30 @@ import (
 	"github.com/arnodel/golua/lib/packagelib"
 )
 
+type listenerType int
+const (
+	goListener listenerType = iota
+	luaListener
+)
+
 type Recoverer func(event string, handler, err interface{})
+
+type Listener struct{
+	typ listenerType
+	caller func(...interface{})
+	luaCaller *rt.Closure
+}
 
 type Bait struct{
 	Loader packagelib.Loader
 	recoverer Recoverer
-	luaHandlers map[string][]*rt.Closure
-	handlers map[string][]func(...interface{})
+	handlers map[string][]*Listener
 	rtm *rt.Runtime
 }
 
 func New(rtm *rt.Runtime) Bait {
 	b := Bait{
-		luaHandlers: make(map[string][]*rt.Closure),
-		handlers: make(map[string][]func(...interface{})),
+		handlers: make(map[string][]*Listener),
 		rtm: rtm,
 	}
 	b.Loader = packagelib.Loader{
@@ -33,33 +43,19 @@ func New(rtm *rt.Runtime) Bait {
 
 func (b *Bait) Emit(event string, args ...interface{}) {
 	handles := b.handlers[event]
-	luaHandles := b.luaHandlers[event]
-
-	if handles == nil && luaHandles == nil {
+	if handles == nil {
 		return
 	}
 
-	if handles != nil {
-		for _, handle := range handles {
-			defer func() {
-				if err := recover(); err != nil {
-					b.callRecoverer(event, handle, err)
-				}
-			}()
-	
-			handle(args...)
-		}
-	}
+	for _, handle := range handles {
+		defer func() {
+			if err := recover(); err != nil {
+				b.callRecoverer(event, handle, err)
+			}
+		}()
 
-	if luaHandles != nil {
-		for _, handle := range luaHandles {
-			defer func() {
-				if err := recover(); err != nil {
-					b.callRecoverer(event, handle, err)
-				}
-			}()
-
-			funcVal := rt.FunctionValue(handle)
+		if handle.typ == luaListener {
+			funcVal := rt.FunctionValue(handle.luaCaller)
 			var luaArgs []rt.Value
 			for _, arg := range args {
 				var luarg rt.Value
@@ -72,31 +68,46 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
 			if err != nil {
 				// panicking here won't actually cause hilbish to panic and instead will
-				// print the error and remove the hook (look at emission recover from above)
+				// print the error and remove the hook. reference the recoverer function in lua.go
 				panic(err)
 			}
+		} else {
+			handle.caller(args...)
 		}
 	}
 }
 
-func (b *Bait) On(event string, handler func(...interface{})) {
-	if b.handlers[event] == nil {
-		b.handlers[event] = []func(...interface{}){}
+func (b *Bait) On(event string, handler func(...interface{})) *Listener {
+	listener := &Listener{
+		typ: goListener,
+		caller: handler,
 	}
-	b.handlers[event] = append(b.handlers[event], handler)
+
+	b.addListener(event, listener)
+	return listener
 }
 
-func (b *Bait) OnLua(event string, handler *rt.Closure) {
-	if b.luaHandlers[event] == nil {
-		b.luaHandlers[event] = []*rt.Closure{}
+func (b *Bait) OnLua(event string, handler *rt.Closure) *Listener {
+	listener :=&Listener{
+		typ: luaListener,
+		luaCaller: handler,
 	}
-	b.luaHandlers[event] = append(b.luaHandlers[event], handler)
+	b.addListener(event, listener)
+
+	return listener
 }
 
 func (b *Bait) SetRecoverer(recoverer Recoverer) {
 	b.recoverer = recoverer
 }
 
+func (b *Bait) addListener(event string, listener *Listener) {
+	if b.handlers[event] == nil {
+		b.handlers[event] = []*Listener{}
+	}
+
+	b.handlers[event] = append(b.handlers[event], listener)
+}
 func (b *Bait) callRecoverer(event string, handler, err interface{}) {
 	if b.recoverer == nil {
 		panic(err)
