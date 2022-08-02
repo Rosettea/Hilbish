@@ -29,8 +29,8 @@ type Bait struct{
 	rtm *rt.Runtime
 }
 
-func New(rtm *rt.Runtime) Bait {
-	b := Bait{
+func New(rtm *rt.Runtime) *Bait {
+	b := &Bait{
 		handlers: make(map[string][]*Listener),
 		rtm: rtm,
 	}

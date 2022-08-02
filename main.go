@@ -30,7 +30,7 @@ var (
 	userDataDir string
 	curuser *user.User
 
-	hooks bait.Bait
+	hooks *bait.Bait
 	defaultConfPath string
 	defaultHistPath string
 )

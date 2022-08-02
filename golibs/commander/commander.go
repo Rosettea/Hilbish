@@ -2,20 +2,20 @@ package commander
 
 import (
 	"hilbish/util"
+	"hilbish/golibs/bait"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
-	"github.com/chuckpreslar/emission"
 )
 
 type Commander struct{
-	Events *emission.Emitter
+	Events *bait.Bait
 	Loader packagelib.Loader
 }
 
-func New() Commander {
+func New(rtm *rt.Runtime) Commander {
 	c := Commander{
-		Events: emission.NewEmitter(),
+		Events: bait.New(rtm),
 	}
 	c.Loader = packagelib.Loader{
 		Load: c.loaderFunc,
