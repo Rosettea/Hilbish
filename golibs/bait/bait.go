@@ -48,7 +48,7 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 		return
 	}
 
-	for _, handle := range handles {
+	for idx, handle := range handles {
 		defer func() {
 			if err := recover(); err != nil {
 				b.callRecoverer(event, handle, err)
@@ -77,7 +77,7 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 		}
 
 		if handle.once {
-			b.Off(event, handle)
+			b.removeListener(event, idx)
 		}
 	}
 }
