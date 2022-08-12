@@ -1,7 +1,7 @@
 # 🎀 Changelog
 
 ## Unreleased
-**NOTE:** Hilbish now uses [Task] insead of Make for builds.
+**NOTE:** Hilbish now uses [Task] insead of Make for builds. Make is still available as a build method.
 
 [Task]: https://taskfile.dev/#/
 
