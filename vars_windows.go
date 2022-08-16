@@ -12,6 +12,6 @@ var (
 	.. hilbish.userDir.config .. '\\Hilbish\\libs\\?.lua;'`
 	dataDir = util.ExpandHome("~\\Appdata\\Roaming\\Hilbish") // ~ and \ gonna cry?
 	preloadPath = dataDir + "\\nature\\init.lua"
-	sampleConfPath = dataDir + "\\hilbishrc.lua" // Path to default/sample config
+	sampleConfPath = dataDir + "\\.hilbishrc.lua" // Path to default/sample config
 	defaultConfDir = ""
 )
