@@ -275,6 +275,10 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// release(name, catcher)
+// Removes the `catcher` for the event with `name`
+// For this to work, `catcher` has to be the same function used to catch
+// an event, like one saved to a variable.
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
