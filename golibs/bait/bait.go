@@ -13,8 +13,10 @@ const (
 	luaListener
 )
 
+// Recoverer is a function which is called when a panic occurs in an event.
 type Recoverer func(event string, handler *Listener, err interface{})
 
+// Listener is a struct that holds the handler for an event.
 type Listener struct{
 	typ listenerType
 	once bool
@@ -29,6 +31,7 @@ type Bait struct{
 	rtm *rt.Runtime
 }
 
+// New creates a new Bait instance.
 func New(rtm *rt.Runtime) *Bait {
 	b := &Bait{
 		handlers: make(map[string][]*Listener),
@@ -42,6 +45,7 @@ func New(rtm *rt.Runtime) *Bait {
 	return b
 }
 
+// Emit throws an event.
 func (b *Bait) Emit(event string, args ...interface{}) {
 	handles := b.handlers[event]
 	if handles == nil {
@@ -82,6 +86,7 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 	}
 }
 
+// On adds a Go function handler for an event.
 func (b *Bait) On(event string, handler func(...interface{})) *Listener {
 	listener := &Listener{
 		typ: goListener,
@@ -92,6 +97,7 @@ func (b *Bait) On(event string, handler func(...interface{})) *Listener {
 	return listener
 }
 
+// OnLua adds a Lua function handler for an event.
 func (b *Bait) OnLua(event string, handler *rt.Closure) *Listener {
 	listener :=&Listener{
 		typ: luaListener,
@@ -102,6 +108,7 @@ func (b *Bait) OnLua(event string, handler *rt.Closure) *Listener {
 	return listener
 }
 
+// Off removes a Go function handler for an event.
 func (b *Bait) Off(event string, listener *Listener) {
 	handles := b.handlers[event]
 
@@ -112,6 +119,7 @@ func (b *Bait) Off(event string, listener *Listener) {
 	}
 }
 
+// OffLua removes a Lua function handler for an event.
 func (b *Bait) OffLua(event string, handler *rt.Closure) {
 	handles := b.handlers[event]
 
@@ -122,6 +130,7 @@ func (b *Bait) OffLua(event string, handler *rt.Closure) {
 	}
 }
 
+// Once adds a Go function listener for an event that only runs once.
 func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
 	listener := &Listener{
 		typ: goListener,
@@ -133,6 +142,7 @@ func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
 	return listener
 }
 
+// OnceLua adds a Lua function listener for an event that only runs once.
 func (b *Bait) OnceLua(event string, handler *rt.Closure) *Listener {
 	listener := &Listener{
 		typ: luaListener,
@@ -144,6 +154,7 @@ func (b *Bait) OnceLua(event string, handler *rt.Closure) *Listener {
 	return listener
 }
 
+// SetRecoverer sets the function to be executed when a panic occurs in an event.
 func (b *Bait) SetRecoverer(recoverer Recoverer) {
 	b.recoverer = recoverer
 }
