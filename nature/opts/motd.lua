@@ -7,7 +7,7 @@ anymore, that will definitely be why! A MOTD, very message, much day.
 ]]
 
 bait.catch('hilbish.init', function()
-	if hilbish.opts.motd then
+	if hilbish.interactive and hilbish.opts.motd then
 		print(lunacolors.format(hilbish.motd))
 	end
 end)
