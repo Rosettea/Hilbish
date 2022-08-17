@@ -48,7 +48,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			case readline.VimActionPaste: actionStr = "paste"
 			case readline.VimActionYank: actionStr = "yank"
 		}
-		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
+		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
 		if hinter == nil {
@@ -179,7 +179,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 }
 
 func (lr *lineReader) Read() (string, error) {
-	hooks.Em.Emit("command.precmd", nil)
+	hooks.Emit("command.precmd", nil)
 	s, err := lr.rl.Readline()
 	// this is so dumb
 	if err == readline.EOF {

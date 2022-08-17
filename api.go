@@ -189,7 +189,7 @@ func getenv(key, fallback string) string {
 
 func setVimMode(mode string) {
 	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	hooks.Em.Emit("hilbish.vimMode", mode)
+	hooks.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
