@@ -221,7 +221,17 @@ func handleLua(cmdString string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (string, uint8, bool, error) {
+func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr error) {
+	shRunner := hshMod.Get(rt.StringValue("runner")).AsTable().Get(rt.StringValue("sh"))
+	var err error
+	input, exitCode, cont, runErr, err = runLuaRunner(shRunner, cmdString)
+	if err != nil {
+		runErr = err
+	}
+	return
+}
+
+func execSh(cmdString string) (string, uint8, bool, error) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
