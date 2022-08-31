@@ -152,6 +152,7 @@ func reprompt(input string) (string, error) {
 	for {
 		in, err := continuePrompt(strings.TrimSuffix(input, "\\"))
 		if err != nil {
+			lr.SetPrompt(fmtPrompt(prompt))
 			return input, err
 		}
 
