@@ -27,6 +27,9 @@ func splitQuote(str string) []string {
 			sb.WriteRune(r)
 		}
 	}
+	if strings.HasSuffix(str, " ") {
+		split = append(split, "")
+	}
 
 	if sb.Len() > 0 {
 		split = append(split, sb.String())
