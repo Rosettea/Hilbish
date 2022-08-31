@@ -101,7 +101,7 @@ func runInput(input string, priv bool) {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, cont, err = handleSh(input)
+				input, exitCode, cont, err = handleSh(cmdString)
 			case "hybridRev":
 				_, _, _, err = handleSh(input)
 				if err == nil {
@@ -112,7 +112,7 @@ func runInput(input string, priv bool) {
 			case "lua":
 				input, exitCode, err = handleLua(cmdString)
 			case "sh":
-				input, exitCode, cont, err = handleSh(input)
+				input, exitCode, cont, err = handleSh(cmdString)
 		}
 	} else {
 		// can only be a string or function so
