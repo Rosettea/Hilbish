@@ -55,7 +55,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			return []rune{}
 		}
 
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(hinter),
 		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
