@@ -11,6 +11,7 @@ func editorLoader(rtm *rt.Runtime) *rt.Table {
 		"insert": {editorInsert, 1, false},
 		"setVimRegister": {editorSetRegister, 1, false},
 		"getVimRegister": {editorGetRegister, 2, false},
+		"getLine": {editorGetLine, 0, false},
 	}
 
 	mod := rt.NewTable()
@@ -65,6 +66,12 @@ func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	buf := lr.rl.GetFromRegister(register)
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
+}
+
+func editorGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	buf := lr.rl.GetLine()
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
 }

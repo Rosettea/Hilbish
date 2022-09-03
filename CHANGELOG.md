@@ -70,6 +70,11 @@ set `hilbish.opts.motd` to false.
 disables commands being added to history.
 - `hilbish.rawInput` hook for input from the readline library
 - Completion of files in quotes
+- A new and "safer" event emitter has been added. This causes a performance deficit, but avoids a lot of
+random errors introduced with the new Lua runtime (see [#197])
+- `bait.release(name, catcher)` removes `handler` for the named `event`
+
+[#197]: https://github.com/Rosettea/Hilbish/issues/197
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -138,6 +143,8 @@ menu is open.
   - `hilbish.dataDir` now has tilde (`~`) expanded.
   - Arrow keys now work on Windows terminals.
   - Escape codes now work.
+- Escape percentage symbols in completion entries, so you will no longer see
+an error of missing format variable
 
 ## [1.2.0] - 2022-03-17
 ### Added

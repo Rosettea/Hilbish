@@ -30,7 +30,7 @@ var (
 	userDataDir string
 	curuser *user.User
 
-	hooks bait.Bait
+	hooks *bait.Bait
 	defaultConfPath string
 	defaultHistPath string
 )
@@ -138,7 +138,7 @@ func main() {
 	} else {
 		runConfig(*configflag)
 	}
-	hooks.Em.Emit("hilbish.init")
+	hooks.Emit("hilbish.init")
 
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
@@ -177,7 +177,7 @@ input:
 
 		if err == io.EOF {
 			// Exit if user presses ^D (ctrl + d)
-			hooks.Em.Emit("hilbish.exit")
+			hooks.Emit("hilbish.exit")
 			break
 		}
 		if err != nil {
@@ -196,7 +196,7 @@ input:
 		input = strings.TrimSpace(input)
 		if len(input) == 0 {
 			running = true
-			hooks.Em.Emit("command.exit", 0)
+			hooks.Emit("command.exit", 0)
 			continue
 		}
 
@@ -227,7 +227,7 @@ input:
 }
 
 func continuePrompt(prev string) (string, error) {
-	hooks.Em.Emit("multiline", nil)
+	hooks.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
 	cont, err := lr.Read()
 	if err != nil {

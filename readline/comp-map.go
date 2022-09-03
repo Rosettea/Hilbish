@@ -76,7 +76,7 @@ func (g *CompletionGroup) writeMap(rl *Instance) (comp string) {
 
 	if g.Name != "" {
 		// Print group title (changes with line returns depending on type)
-		comp += fmt.Sprintf("%s%s%s %s\n", BOLD, YELLOW, g.Name, RESET)
+		comp += fmt.Sprintf("%s%s%s %s\n", BOLD, YELLOW, fmtEscape(g.Name), RESET)
 		rl.tcUsedY++
 	}
 
@@ -126,7 +126,7 @@ func (g *CompletionGroup) writeMap(rl *Instance) (comp string) {
 		}
 
 		comp += fmt.Sprintf("\r%-"+cellWidth+"s %s %-"+itemWidth+"s %s\n",
-			description, highlight(y), item, seqReset)
+			description, highlight(y), fmtEscape(item), seqReset)
 	}
 
 	// Add the equivalent of this group's size to final screen clearing

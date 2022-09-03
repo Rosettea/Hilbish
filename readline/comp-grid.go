@@ -99,7 +99,7 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 
 	// If group title, print it and adjust offset.
 	if g.Name != "" {
-		comp += fmt.Sprintf("%s%s%s %s\n", BOLD, YELLOW, g.Name, RESET)
+		comp += fmt.Sprintf("%s%s%s %s\n", BOLD, YELLOW, fmtEscape(g.Name), RESET)
 		rl.tcUsedY++
 	}
 
@@ -124,7 +124,7 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 			comp += seqInvert
 		}
 
-		comp += fmt.Sprintf("%-"+cellWidth+"s %s", g.Suggestions[i], seqReset)
+		comp += fmt.Sprintf("%-"+cellWidth+"s %s", fmtEscape(g.Suggestions[i]), seqReset)
 	}
 
 	// Always add a newline to the group if the end if not punctuated with one
