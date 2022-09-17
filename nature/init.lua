@@ -28,7 +28,9 @@ do
 				return got_virt
 			end
 
-			virt_G[key] = os.getenv(key)
+			if type(key) == 'string' then
+				virt_G[key] = os.getenv(key)
+			end
 			return virt_G[key]
 		end,
 
