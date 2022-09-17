@@ -56,7 +56,6 @@ do
 	if ok then
 		for _, module in ipairs(modules) do
 			local entry = package.searchpath(module, startSearchPath)
-			print(entry)
 			if entry then
 				dofile(entry)
 			end
