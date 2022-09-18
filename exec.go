@@ -96,23 +96,23 @@ func runInput(input string, priv bool) {
 	if currentRunner.Type() == rt.StringType {
 		switch currentRunner.AsString() {
 			case "hybrid":
-				_, _, err = handleLua(cmdString)
+				_, _, err = handleLua(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 			case "hybridRev":
 				_, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "lua":
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "sh":
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
@@ -130,7 +130,7 @@ func runInput(input string, priv bool) {
 	}
 
 	if cont {
-		cmdString, err = reprompt(input)
+		input, err = reprompt(input)
 		if err == nil {
 			goto rerun
 		} else if err == io.EOF {
@@ -195,7 +195,8 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	return
 }
 
-func handleLua(cmdString string) (string, uint8, error) {
+func handleLua(input string) (string, uint8, error) {
+	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
