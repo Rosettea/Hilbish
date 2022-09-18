@@ -145,6 +145,9 @@ menu is open.
   - Escape codes now work.
 - Escape percentage symbols in completion entries, so you will no longer see
 an error of missing format variable
+- Fix an error with sh syntax in aliases
+- Prompt now works with east asian characters (CJK)
+- Set back the prompt to normal after exiting the continue prompt with ctrl-d
 
 ## [1.2.0] - 2022-03-17
 ### Added
