@@ -130,7 +130,7 @@ func runInput(input string, priv bool) {
 	}
 
 	if cont {
-		input, err = reprompt(input)
+		cmdString, err = reprompt(input)
 		if err == nil {
 			goto rerun
 		} else if err == io.EOF {
