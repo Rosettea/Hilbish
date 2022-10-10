@@ -250,23 +250,27 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt) -> input?
+// read(prompt?) -> input?
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 // --- @param prompt string
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
+	luaprompt := c.Arg(0)
+	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
+		return nil, errors.New("expected #1 to be a string")
 	}
-	luaprompt, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
+	prompt, ok := luaprompt.TryString()
+	if !ok {
+		// if we are here and `luaprompt` is not a string, it's nil
+		// substitute with an empty string
+		prompt = ""
 	}
+	
 	lualr := &lineReader{
 		rl: readline.NewInstance(),
 	}
-	lualr.SetPrompt(luaprompt)
+	lualr.SetPrompt(prompt)
 
 	input, err := lualr.Read()
 	if err != nil {
