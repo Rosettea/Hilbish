@@ -13,13 +13,13 @@ vars:
 tasks:
   default:
     cmds:
-      - go build {{.GOFLAGS}}
+      - CGO_ENABLED=0 go build {{.GOFLAGS}}
     vars:
       GOFLAGS: '-ldflags "-s -w -X main.gitCommit=$(git rev-parse --short HEAD) -X main.gitBranch=$(git rev-parse --abbrev-ref HEAD)"'
 
   build:
     cmds:
-      - go build {{.GOFLAGS}}
+      - CGO_ENABLED=0 go build {{.GOFLAGS}}
 
   install:
     cmds:
