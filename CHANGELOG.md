@@ -2,6 +2,8 @@
 
 ## Unreleased
 **NOTE:** Hilbish now uses [Task] insead of Make for builds.
+Windows support is also now at a lower tier; The only thing guaranteed is
+Hilbish *compiling* on Windows.
 
 [Task]: https://taskfile.dev/#/
 

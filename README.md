@@ -31,7 +31,6 @@ and aims to be infinitely configurable. If something isn't, open an issue!
   - [AUR](#AUR)
   - [Nixpkgs](#Nixpkgs)
   - [Manual Build](#Manual-Build)
-- [Getting Started](#Getting-Started)
 - [Contributing](#Contributing)
 
 # Screenshots
@@ -42,6 +41,10 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 </div>
 
 # Installation
+**NOTE:** Hilbish is not guaranteed to work properly on Windows, starting
+from the 2.0 version. It will still be able to compile, but functionality
+may be lacking.
+
 ## Prebuilt binaries
 Go [here](https://nightly.link/Rosettea/Hilbish/workflows/build/master) for
 builds on the master branch.
