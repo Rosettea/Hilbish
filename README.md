@@ -31,7 +31,6 @@ and aims to be infinitely configurable. If something isn't, open an issue!
   - [AUR](#AUR)
   - [Nixpkgs](#Nixpkgs)
   - [Manual Build](#Manual-Build)
-- [Getting Started](#Getting-Started)
 - [Contributing](#Contributing)
 
 # Screenshots
