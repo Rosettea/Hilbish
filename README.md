@@ -67,6 +67,7 @@ If you're new to nix you should probably read up on how to do that [here](https:
 ### Prerequisites
 - [Go 1.17+](https://go.dev)
 - [Task](https://taskfile.dev/#/)
+- [gcc](https://gcc.gnu.org/)
 
 ### Build
 First, clone Hilbish. The recursive is required, as some Lua libraries
