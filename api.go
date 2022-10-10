@@ -263,7 +263,9 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
-	lualr := newLineReader("", true)
+	lualr := &lineReader{
+		rl: readline.NewInstance(),
+	}
 	lualr.SetPrompt(luaprompt)
 
 	input, err := lualr.Read()
