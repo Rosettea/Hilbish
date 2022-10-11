@@ -1,6 +1,8 @@
 package bait
 
 import (
+	"errors"
+
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -72,8 +74,12 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 			}
 			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
 			if err != nil {
-				// panicking here won't actually cause hilbish to panic and instead will
-				// print the error and remove the hook. reference the recoverer function in lua.go
+				if event != "error" {
+					b.Emit("error", event, handle.luaCaller, err.Error())
+					return
+				}
+				// if there is an error in an error event handler, panic instead
+				// (calls the go recoverer function)
 				panic(err)
 			}
 		} else {
@@ -187,6 +193,7 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
 		"release": util.LuaExport{b.brelease, 2, false},
+		"hooks": util.LuaExport{b.bhooks, 1, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -288,4 +295,34 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	b.OffLua(name, catcher)
 
 	return c.Next(), nil
+}
+
+// hooks(name) -> {cb, cb...}
+// Returns a table with hooks on the event with `name`.
+func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	evName, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	noHooks := errors.New("no hooks for event " + evName)
+
+	handlers := b.handlers[evName]
+	if handlers == nil {
+		return nil, noHooks
+	}
+
+	luaHandlers := rt.NewTable()
+	for _, handler := range handlers {
+		if handler.typ != luaListener { continue }
+		luaHandlers.Set(rt.IntValue(luaHandlers.Len() + 1), rt.FunctionValue(handler.luaCaller))
+	}
+
+	if luaHandlers.Len() == 0 {
+		return nil, noHooks
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaHandlers)), nil
 }

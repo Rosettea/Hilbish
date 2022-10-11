@@ -1,5 +1,6 @@
 -- Prelude initializes everything else for our shell
 local _ = require 'succulent' -- Function additions
+local bait = require 'bait'
 local fs = require 'fs'
 
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
@@ -64,3 +65,7 @@ do
 
 	package.path = package.path .. ';' .. startSearchPath
 end
+
+bait.catch('error', function(event, handler, err)
+	bait.release(event, handler)
+end)

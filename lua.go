@@ -49,7 +49,7 @@ func luaInit() {
 
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
-		fmt.Println("Error in", event, "event:", err)
+		fmt.Println("Error in `error` hook handler:", err)
 		hooks.Off(event, handler)
 	})
 
