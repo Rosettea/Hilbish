@@ -11,7 +11,7 @@ var (
 
 // Version info
 var (
-	ver = "v2.0.0"
+	ver = "v2.0.0-rc1"
 	releaseName = "Hibiscus"
 	gitCommit string
 	gitBranch string
