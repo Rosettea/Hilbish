@@ -75,6 +75,7 @@ disables commands being added to history.
 - A new and "safer" event emitter has been added. This causes a performance deficit, but avoids a lot of
 random errors introduced with the new Lua runtime (see [#197])
 - `bait.release(name, catcher)` removes `handler` for the named `event`
+- `exec`, `clear` and `cat` builtin commands
 
 [#197]: https://github.com/Rosettea/Hilbish/issues/197
 
