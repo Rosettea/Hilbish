@@ -152,6 +152,11 @@ an error of missing format variable
 - Prompt now works with east asian characters (CJK)
 - Set back the prompt to normal after exiting the continue prompt with ctrl-d
 
+## [2.0.0-rc1] - 2022-09-14
+This is a pre-release version of Hilbish for testing. To see the changelog,
+refer to the `Unreleased` section of the [full changelog](CHANGELOG.md)
+(version 2.0.0 for future reference).
+
 ## [1.2.0] - 2022-03-17
 ### Added
 - Job Management additions
@@ -575,6 +580,8 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.0.0-rc1]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0-rc1
+[1.2.0]: https://github.com/Rosettea/Hilbish/compare/v1.1.4...v1.2.0
 [1.1.0]: https://github.com/Rosettea/Hilbish/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/Rosettea/Hilbish/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3
