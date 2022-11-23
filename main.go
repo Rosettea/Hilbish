@@ -17,6 +17,7 @@ import (
 	"github.com/pborman/getopt"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
+	"mvdan.cc/sh/v3/interp"
 )
 
 var (
@@ -33,9 +34,11 @@ var (
 	hooks *bait.Bait
 	defaultConfPath string
 	defaultHistPath string
+	runner *interp.Runner
 )
 
 func main() {
+	runner, _ = interp.New()
 	curuser, _ = user.Current()
 	homedir := curuser.HomeDir
 	confDir, _ = os.UserConfigDir()

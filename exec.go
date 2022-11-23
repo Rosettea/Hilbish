@@ -260,8 +260,6 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		return nil, nil, err
 	}
 
-	runner, _ := interp.New()
-
 	var stdout io.Writer
 	var stderr io.Writer
 	if terminalOut {
