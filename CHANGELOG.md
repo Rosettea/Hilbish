@@ -154,6 +154,9 @@ an error of missing format variable
 - Users can now tab complete files with spaces while quoted or with escaped spaces.
 This means a query of `Files\ to\ ` with file names of `Files to tab complete` and `Files to complete`
 will result in the files being completed.
+- Fixed grid menu display if cell width ends up being the width of the terminal
+- Cut off item names in grid menu if its longer than cell width
+- Fix completion search menu disappearing
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,
