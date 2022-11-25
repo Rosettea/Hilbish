@@ -79,6 +79,9 @@ func fileComplete(query, ctx string, fields []string) ([]string, string) {
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
+	q := splitForFile(ctx)
+	query = q[len(q) - 1]
+
 	var completions []string
 
 	prefixes := []string{"./", "../", "/", "~/"}
@@ -88,7 +91,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
-					if err := findExecutable(fullPath, false, true); err != nil {
+					if err := findExecutable(escapeInvertReplaer.Replace(fullPath), false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
