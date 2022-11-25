@@ -11,14 +11,48 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-func splitQuote(str string) []string {
+var charEscapeMap = []string{
+	"\"", "\\\"",
+	"'", "\\'",
+	"`", "\\`",
+	" ", "\\ ",
+	"(", "\\(",
+	")", "\\)",
+	"[", "\\[",
+	"]", "\\]",
+	"$", "\\$",
+	"&", "\\&",
+	"*", "\\*",
+	">", "\\>",
+	"<", "\\<",
+	"|", "\\|",
+}
+var charEscapeMapInvert = invert(charEscapeMap)
+var escapeReplaer = strings.NewReplacer(charEscapeMap...)
+var escapeInvertReplaer = strings.NewReplacer(charEscapeMapInvert...)
+
+func invert(m []string) []string {
+	newM := make([]string, len(charEscapeMap))
+	for i := range m {
+		if (i + 1) % 2 == 0 {
+			newM[i] = m[i - 1]
+			newM[i - 1] = m[i]
+		}
+	}
+
+	return newM
+}
+
+func splitForFile(str string) []string {
 	split := []string{}
 	sb := &strings.Builder{}
 	quoted := false
 
-	for _, r := range str {
+	for i, r := range str {
 		if r == '"' {
 			quoted = !quoted
+			sb.WriteRune(r)
+		} else if r == ' ' && str[i - 1] == '\\' {
 			sb.WriteRune(r)
 		} else if !quoted && r == ' ' {
 			split = append(split, sb.String())
@@ -39,7 +73,7 @@ func splitQuote(str string) []string {
 }
 
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
-	q := splitQuote(ctx)
+	q := splitForFile(ctx)
 
 	return matchPath(q[len(q) - 1])
 }
@@ -66,7 +100,6 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 
 	// filter out executables, but in path
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
-		// print dir to stderr for debugging
 		// search for an executable which matches our query string
 		if matches, err := filepath.Glob(filepath.Join(dir, query + "*")); err == nil {
 			// get basename from matches
@@ -102,6 +135,7 @@ func matchPath(query string) ([]string, string) {
 	var entries []string
 	var baseName string
 
+	query = escapeInvertReplaer.Replace(query)
 	path, _ := filepath.Abs(util.ExpandHome(filepath.Dir(query)))
 	if string(query) == "" {
 		// filepath base below would give us "."
@@ -129,25 +163,7 @@ func matchPath(query string) ([]string, string) {
 }
 
 func escapeFilename(fname string) string {
-	args := []string{
-		"\"", "\\\"",
-		"'", "\\'",
-		"`", "\\`",
-		" ", "\\ ",
-		"(", "\\(",
-		")", "\\)",
-		"[", "\\[",
-		"]", "\\]",
-		"$", "\\$",
-		"&", "\\&",
-		"*", "\\*",
-		">", "\\>",
-		"<", "\\<",
-		"|", "\\|",
-	}
-
-	r := strings.NewReplacer(args...)
-	return r.Replace(fname)
+	return escapeReplaer.Replace(fname)
 }
 
 func completionLoader(rtm *rt.Runtime) *rt.Table {

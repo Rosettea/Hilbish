@@ -151,6 +151,9 @@ an error of missing format variable
 - Fix an error with sh syntax in aliases
 - Prompt now works with east asian characters (CJK)
 - Set back the prompt to normal after exiting the continue prompt with ctrl-d
+- Users can now tab complete files with spaces while quoted or with escaped spaces.
+This means a query of `Files\ to\ ` with file names of `Files to tab complete` and `Files to complete`
+will result in the files being completed.
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,
