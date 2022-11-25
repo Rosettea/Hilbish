@@ -238,7 +238,9 @@ func (rl *Instance) Readline() (string, error) {
 
 			// Normal completion search does only refresh the search pattern and the comps
 			if rl.modeTabFind || rl.modeAutoFind {
+				rl.resetVirtualComp(false)
 				rl.backspaceTabFind()
+				rl.renderHelpers()
 				rl.viUndoSkipAppend = true
 			} else {
 				// Always cancel any virtual completion
@@ -517,7 +519,9 @@ func (rl *Instance) Readline() (string, error) {
 			if rl.modeAutoFind || rl.modeTabFind {
 				rl.resetVirtualComp(false)
 				rl.updateTabFind(r[:i])
+				rl.renderHelpers()
 				rl.viUndoSkipAppend = true
+				continue
 			} else {
 				rl.resetVirtualComp(false)
 				rl.editorInput(r[:i])
