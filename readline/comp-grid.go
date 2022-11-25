@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-)
+	"github.com/rivo/uniseg"
+)	
 
 // initGrid - Grid display details. Called each time we want to be sure to have
 // a working completion group either immediately, or later on. Generally defered.
@@ -13,8 +14,8 @@ func (g *CompletionGroup) initGrid(rl *Instance) {
 	// Compute size of each completion item box
 	tcMaxLength := 1
 	for i := range g.Suggestions {
-		if len(g.Suggestions[i]) > tcMaxLength {
-			tcMaxLength = len([]rune(g.Suggestions[i]))
+		if uniseg.GraphemeClusterCount(g.Suggestions[i]) > tcMaxLength {
+			tcMaxLength = uniseg.GraphemeClusterCount(g.Suggestions[i])
 		}
 	}
 
@@ -103,7 +104,7 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 		rl.tcUsedY++
 	}
 
-	cellWidth := strconv.Itoa((GetTermWidth() / g.tcMaxX) - 2)
+	cellWidth := strconv.Itoa((GetTermWidth() / g.tcMaxX) - 4)
 	x := 0
 	y := 1
 
@@ -124,7 +125,15 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 			comp += seqInvert
 		}
 
-		comp += fmt.Sprintf("%-"+cellWidth+"s %s", fmtEscape(g.Suggestions[i]), seqReset)
+		sugg := g.Suggestions[i]
+		if len(sugg) > GetTermWidth() {
+			sugg = sugg[:GetTermWidth() - 4] + "..."
+		}
+		formatStr := "%-"+cellWidth+"s%s "
+		if g.tcMaxX == 1 {
+			formatStr = "%s%s"
+		}
+		comp += fmt.Sprintf(formatStr, fmtEscape(sugg), seqReset)
 	}
 
 	// Always add a newline to the group if the end if not punctuated with one
