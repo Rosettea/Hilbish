@@ -333,6 +333,8 @@ func (rl *Instance) Readline() (string, error) {
 
 			rl.modeTabFind = true
 			rl.updateTabFind([]rune{})
+			rl.updateVirtualComp()
+			rl.renderHelpers()
 			rl.viUndoSkipAppend = true
 
 		// Tab Completion & Completion Search ---------------------------------------------------------------
@@ -486,7 +488,10 @@ func (rl *Instance) Readline() (string, error) {
 				if string(r[:i]) != seqShiftTab &&
 					string(r[:i]) != seqForwards && string(r[:i]) != seqBackwards &&
 					string(r[:i]) != seqUp && string(r[:i]) != seqDown {
-					rl.resetVirtualComp(false)
+					// basically only applies except on 1st ctrl r open
+					// so if we have not explicitly selected something
+					// (tabCompletionSelect is false) drop virtual completion
+					rl.resetVirtualComp(!rl.tabCompletionSelect)
 				}
 			}
 
@@ -608,6 +613,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 	case string(charEscape):
 		switch {
 		case rl.modeAutoFind:
+			rl.resetVirtualComp(true)
 			rl.resetTabFind()
 			rl.clearHelpers()
 			rl.resetTabCompletion()
@@ -615,6 +621,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			rl.renderHelpers()
 
 		case rl.modeTabFind:
+			rl.resetVirtualComp(true)
 			rl.resetTabFind()
 			rl.resetTabCompletion()
 
