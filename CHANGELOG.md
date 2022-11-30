@@ -77,7 +77,9 @@ random errors introduced with the new Lua runtime (see [#197])
 - `bait.release(name, catcher)` removes `handler` for the named `event`
 - `exec`, `clear` and `cat` builtin commands
 - `hilbish.cancel` hook
+- 1st item on history is now inserted when history search menu is opened ([#148])
 
+[#148]: https://github.com/Rosettea/Hilbish/issues/148
 [#197]: https://github.com/Rosettea/Hilbish/issues/197
 
 ### Changed
@@ -158,6 +160,7 @@ will result in the files being completed.
 - Fixed grid menu display if cell width ends up being the width of the terminal
 - Cut off item names in grid menu if its longer than cell width
 - Fix completion search menu disappearing
+- Completion paths having duplicated characters if it's escaped
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,
