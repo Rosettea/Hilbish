@@ -73,13 +73,13 @@ func newFileHistory(path string) *fileHistory {
 		}
 	}
 
-	itms := []string{""}
 	lines := strings.Split(string(data), "\n")
+	itms := make([]string, len(lines) - 1)
 	for i, l := range lines {
 		if i == len(lines) - 1 {
 			continue
 		}
-		itms = append(itms, l)
+		itms[i] = l
 	}
 	f, err := os.OpenFile(path, os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0755)
 	if err != nil {
