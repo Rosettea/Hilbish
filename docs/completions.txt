@@ -36,9 +36,9 @@ then there is the `files` function, which is mentioned below.
 
 # Completion Interface
 ## Functions
-- `files(query, ctx, fields)` -> table, prefix: get file completions, based
+- `files(query, ctx, fields, caseInsensitive)` -> table, prefix: get file completions, based
 on the user's query.
-- `bins(query, ctx, fields)` -> table, prefix: get binary/executable
+- `bins(query, ctx, fields, caseInsensitive)` -> table, prefix: get binary/executable
 completions, based on user query.
 - `call(scope, query, ctx, fields)` -> table, prefix: call a completion handler
 with `scope`, usually being in the form of `command.<name>`
