@@ -150,7 +150,7 @@ func matchPath(query string) ([]string, string) {
 
 	files, _ := os.ReadDir(path)
 	for _, file := range files {
-		if strings.HasPrefix(file.Name(), baseName) {
+		if strings.HasPrefix(strings.ToLower(file.Name()), strings.ToLower(baseName)) {
 			entry := file.Name()
 			if file.IsDir() {
 				entry = entry + string(os.PathSeparator)
