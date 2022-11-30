@@ -49,7 +49,7 @@ func (rl *Instance) Readline() (string, error) {
 
 	// History Init
 	// We need this set to the last command, so that we can access it quickly
-	rl.histPos = 0
+	rl.histOffset = 0
 	rl.viUndoHistory = []undoItem{{line: "", pos: 0}}
 
 	// Multisplit
