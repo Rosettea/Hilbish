@@ -26,7 +26,7 @@ local defaultOpts = {
 The nice lil shell for {blue}Lua{reset} fanatics!
 ]], hilbish.user),
 	motd = true,
-	insensitive = true
+	insensitive = false
 }
 
 for optsName, default in pairs(defaultOpts) do
