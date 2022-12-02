@@ -19,18 +19,18 @@ layout: apidoc
 
 `
 
-type EmmyPiece struct {
+type emmyPiece struct {
 	FuncName string
 	Docs []string
 	Params []string // we only need to know param name to put in function
 }
 
-type Module struct {
-	Docs []DocPiece
+type module struct {
+	Docs []docPiece
 	ShortDescription string
 	Description string
 }
-type DocPiece struct {
+type docPiece struct {
 	Doc []string
 	FuncSig string
 	FuncName string
@@ -72,12 +72,12 @@ func main() {
 		"bait": "b",
 		"terminal": "term",
 	}
-	docs := make(map[string]Module)
-	emmyDocs := make(map[string][]EmmyPiece)
+	docs := make(map[string]module)
+	emmyDocs := make(map[string][]emmyPiece)
 
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
-		pieces := []DocPiece{}
+		pieces := []docPiece{}
 		for _, t := range p.Funcs {
 			mod := l
 			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
@@ -86,7 +86,7 @@ func main() {
 			funcsig := parts[0]
 			doc := parts[1:]
 			funcdoc := []string{}
-			em := EmmyPiece{FuncName: strings.TrimPrefix(t.Name, prefix[mod])}
+			em := emmyPiece{FuncName: strings.TrimPrefix(t.Name, prefix[mod])}
 			for _, d := range doc {
 				if strings.HasPrefix(d, "---") {
 					emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
@@ -104,7 +104,7 @@ func main() {
 				}
 			}
 			
-			dps := DocPiece{
+			dps := docPiece{
 				Doc: funcdoc,
 				FuncSig: funcsig,
 				FuncName: strings.TrimPrefix(t.Name, prefix[mod]),
@@ -120,7 +120,7 @@ func main() {
 				funcsig := parts[0]
 				doc := parts[1:]
 				funcdoc := []string{}
-				em := EmmyPiece{FuncName: strings.TrimPrefix(m.Name, prefix[l])}
+				em := emmyPiece{FuncName: strings.TrimPrefix(m.Name, prefix[l])}
 				for _, d := range doc {
 					if strings.HasPrefix(d, "---") {
 						emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
@@ -137,7 +137,7 @@ func main() {
 						funcdoc = append(funcdoc, d)
 					}
 				}
-				dps := DocPiece{
+				dps := docPiece{
 					Doc: funcdoc,
 					FuncSig: funcsig,
 					FuncName: strings.TrimPrefix(m.Name, prefix[l]),
@@ -151,7 +151,7 @@ func main() {
 		descParts := strings.Split(strings.TrimSpace(p.Doc), "\n")
 		shortDesc := descParts[0]
 		desc := descParts[1:]
-		docs[l] = Module{
+		docs[l] = module{
 			Docs: pieces,
 			ShortDescription: shortDesc,
 			Description: strings.Join(desc, "\n"),
