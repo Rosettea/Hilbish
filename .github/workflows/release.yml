@@ -34,7 +34,7 @@ jobs:
       with:
         submodules: true
     - name: Download Task
-        run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
+      run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
     - uses: wangyoucao577/go-release-action@v1.25
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
