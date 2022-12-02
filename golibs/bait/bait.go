@@ -286,6 +286,8 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Removes the `catcher` for the event with `name`
 // For this to work, `catcher` has to be the same function used to catch
 // an event, like one saved to a variable.
+// --- @param name string
+// --- @param catcher function
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -299,6 +301,8 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // hooks(name) -> {cb, cb...}
 // Returns a table with hooks on the event with `name`.
+// --- @param name string
+// --- @returns table
 func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
