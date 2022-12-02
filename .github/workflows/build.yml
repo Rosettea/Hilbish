@@ -25,7 +25,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.7'
+          go-version: '1.18.8'
       - name: Download Task
         run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
       - name: Build
