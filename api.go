@@ -1,6 +1,6 @@
-// Here is the core api for the hilbi shell itself
-// Basically, stuff about the shell itself and other functions
-// go here.
+// the core Hilbish API
+// The Hilbish module includes the core API, containing
+// interfaces and functions which directly relate to shell functionality.
 package main
 
 import (

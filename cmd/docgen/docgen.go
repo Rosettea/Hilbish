@@ -116,6 +116,7 @@ func main() {
 		}
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
+				if !strings.HasPrefix(t.Name, "hl") && l == "main" { continue }
 				if !strings.HasPrefix(m.Name, prefix[l]) || m.Name == "Loader" { continue }
 				parts := strings.Split(strings.TrimSpace(m.Doc), "\n")
 				funcsig := parts[0]

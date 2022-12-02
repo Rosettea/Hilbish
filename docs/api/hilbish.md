@@ -1,12 +1,12 @@
 ---
 name: Module hilbish
-description: Here is the core api for the hilbi shell itself
+description: the core Hilbish API
 layout: apidoc
 ---
 
 ## Introduction
-Basically, stuff about the shell itself and other functions
-go here.
+The Hilbish module includes the core API, containing
+interfaces and functions which directly relate to shell functionality.
 
 ## Functions
 ### alias(cmd, orig)
@@ -88,114 +88,4 @@ Returns a `timer` object (see `doc timers`).
 
 ### which(name)
 Checks if `name` is a valid command
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
-
-### 
 
