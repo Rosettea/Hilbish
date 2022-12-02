@@ -1,0 +1,23 @@
+---
+name: Module terminal
+description: 
+layout: apidoc
+---
+
+## Introduction
+
+
+## Functions
+### restoreState()
+Restores the last saved state of the terminal
+
+### saveState()
+Saves the current state of the terminal
+
+### setRaw()
+Puts the terminal in raw mode
+
+### size()
+Gets the dimensions of the terminal. Returns a table with `width` and `height`
+Note: this is not the size in relation to the dimensions of the display
+

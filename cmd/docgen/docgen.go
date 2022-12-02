@@ -11,10 +11,24 @@ import (
 	"os"
 )
 
+var header = `---
+name: Module %s
+description: %s
+layout: apidoc
+---
+
+`
+
 type EmmyPiece struct {
 	FuncName string
 	Docs []string
 	Params []string // we only need to know param name to put in function
+}
+
+type Module struct {
+	Docs []DocPiece
+	ShortDescription string
+	Description string
 }
 type DocPiece struct {
 	Doc []string
@@ -27,8 +41,8 @@ type DocPiece struct {
 func main() {
 	fset := token.NewFileSet()
 	os.Mkdir("docs", 0777)
+	os.Mkdir("docs/api", 0777)
 	os.Mkdir("emmyLuaDocs", 0777)
-	
 
 	dirs := []string{"./"}
 	filepath.Walk("golibs/", func (path string, info os.FileInfo, err error) error {
@@ -58,11 +72,12 @@ func main() {
 		"bait": "b",
 		"terminal": "term",
 	}
-	docs := make(map[string][]DocPiece)
+	docs := make(map[string]Module)
 	emmyDocs := make(map[string][]EmmyPiece)
 
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
+		pieces := []DocPiece{}
 		for _, t := range p.Funcs {
 			mod := l
 			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
@@ -95,7 +110,7 @@ func main() {
 				FuncName: strings.TrimPrefix(t.Name, prefix[mod]),
 			}
 			
-			docs[mod] = append(docs[mod], dps)
+			pieces = append(pieces, dps)
 			emmyDocs[mod] = append(emmyDocs[mod], em)
 		}
 		for _, t := range p.Types {
@@ -128,17 +143,28 @@ func main() {
 					FuncName: strings.TrimPrefix(m.Name, prefix[l]),
 				}
 
-				docs[l] = append(docs[l], dps)
+				pieces = append(pieces, dps)
 				emmyDocs[l] = append(emmyDocs[l], em)
 			}
+		}
+
+		descParts := strings.Split(strings.TrimSpace(p.Doc), "\n")
+		shortDesc := descParts[0]
+		desc := descParts[1:]
+		docs[l] = Module{
+			Docs: pieces,
+			ShortDescription: shortDesc,
+			Description: strings.Join(desc, "\n"),
 		}
 	}
 
 	for mod, v := range docs {
 		if mod == "main" { continue }
-		f, _ := os.Create("docs/" + mod + ".txt")
-		for _, dps := range v {
-			f.WriteString(dps.FuncSig + " > ")
+		f, _ := os.Create("docs/api/" + mod + ".md")
+		f.WriteString(fmt.Sprintf(header, mod, v.ShortDescription))
+		f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
+		for _, dps := range v.Docs {
+			f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
 			for _, doc := range dps.Doc {
 				if !strings.HasPrefix(doc, "---") {
 					f.WriteString(doc + "\n")
@@ -154,7 +180,7 @@ func main() {
 		f.WriteString("--- @meta\n\nlocal " + mod + " = {}\n\n")
 		for _, em := range v {
 			var funcdocs []string
-			for _, dps := range docs[mod] {
+			for _, dps := range docs[mod].Docs {
 				if dps.FuncName == em.FuncName {
 					funcdocs = dps.Doc
 				}
