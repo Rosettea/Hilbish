@@ -78,9 +78,10 @@ func main() {
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
 		pieces := []docPiece{}
+		mod := l
 		for _, t := range p.Funcs {
-			mod := l
 			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
+			if !strings.HasPrefix(t.Name, "hl") && l == "main" { continue }
 			if !strings.HasPrefix(t.Name, prefix[mod]) || t.Name == "Loader" { continue }
 			parts := strings.Split(strings.TrimSpace(t.Doc), "\n")
 			funcsig := parts[0]
@@ -151,7 +152,7 @@ func main() {
 		descParts := strings.Split(strings.TrimSpace(p.Doc), "\n")
 		shortDesc := descParts[0]
 		desc := descParts[1:]
-		docs[l] = module{
+		docs[mod] = module{
 			Docs: pieces,
 			ShortDescription: shortDesc,
 			Description: strings.Join(desc, "\n"),
