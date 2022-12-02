@@ -1,11 +1,11 @@
 ---
 name: Module terminal
-description: 
+description: low level terminal library
 layout: apidoc
 ---
 
 ## Introduction
-
+The terminal library is a simple and lower level library for certain terminal interactions.
 
 ## Functions
 ### restoreState()

@@ -1,11 +1,13 @@
 ---
 name: Module fs
-description: 
+description: filesystem interaction and functionality library
 layout: apidoc
 ---
 
 ## Introduction
-
+The fs module provides easy and simple access to filesystem functions
+and other things, and acts an addition to the Lua standard library's
+I/O and filesystem functions.
 
 ## Functions
 ### abs(path)
