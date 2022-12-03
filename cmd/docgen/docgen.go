@@ -26,7 +26,7 @@ type emmyPiece struct {
 }
 
 type module struct {
-	Docs map[string]docPiece
+	Docs []docPiece
 	ShortDescription string
 	Description string
 	Interface bool
@@ -119,19 +119,19 @@ func main() {
 
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
-		pieces := make(map[string]docPiece)
+		pieces := []docPiece{}
 		mod := l
 		for _, t := range p.Funcs {
 			piece := setupDoc(mod, t)
 			if piece != nil {	
-				pieces[piece.FuncName] = *piece
+				pieces = append(pieces, *piece)
 			}
 		}
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
 				piece := setupDoc(mod, m)
 				if piece != nil {	
-					pieces[piece.FuncName] = *piece
+					pieces = append(pieces, *piece)
 				}
 			}
 		}
@@ -151,7 +151,6 @@ func main() {
 		if mod == "main" {
 			modN = "hilbish"
 		}
-		fmt.Println(mod)
 		f, _ := os.Create("docs/api/" + modN + ".md")
 		f.WriteString(fmt.Sprintf(header, modN, v.ShortDescription))
 		f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
@@ -168,8 +167,12 @@ func main() {
 		ff, _ := os.Create("emmyLuaDocs/" + modN + ".lua")
 		ff.WriteString("--- @meta\n\nlocal " + modN + " = {}\n\n")
 		for _, em := range emmyDocs[mod] {
-			funcdocs := v.Docs[em.FuncName].Doc
-			fmt.Println(funcdocs)
+			funcdocs := []string{}
+			for _, dps := range docs[mod].Docs{
+				if dps.FuncName == em.FuncName {
+					funcdocs = dps.Doc
+				}
+			}
 			ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
 			if len(em.Docs) != 0 {
 				ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
