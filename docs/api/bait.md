@@ -12,9 +12,6 @@ happened, like when you've changed directory, a command has failed,
 etc. To find all available hooks thrown by Hilbish, see doc hooks.
 
 ## Functions
-### catch(name, cb)
-Catches a hook with `name`. Runs the `cb` when it is thrown
-
 ### catchOnce(name, cb)
 Same as catch, but only runs the `cb` once and then removes the hook
 
@@ -28,4 +25,7 @@ an event, like one saved to a variable.
 
 ### throw(name, ...args)
 Throws a hook with `name` with the provided `args`
+
+### catch(name, cb)
+Catches a hook with `name`. Runs the `cb` when it is thrown
 

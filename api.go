@@ -159,10 +159,10 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	// hilbish.timers table
-	timers = newTimerHandler()
-	timerModule := timers.loader(rtm)
-	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
-	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
+	timers = newTimersModule()
+	timersModule := timers.loader(rtm)
+	util.Document(timersModule, "Timer interface, for control of all intervals and timeouts.")
+	mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
 	editorModule := editorLoader(rtm)
 	util.Document(editorModule, "")

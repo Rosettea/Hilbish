@@ -26,14 +26,66 @@ type emmyPiece struct {
 }
 
 type module struct {
-	Docs []docPiece
+	Docs map[string]docPiece
 	ShortDescription string
 	Description string
+	Interface bool
 }
 type docPiece struct {
 	Doc []string
 	FuncSig string
 	FuncName string
+}
+
+
+var docs = make(map[string]module)
+var emmyDocs = make(map[string][]emmyPiece)
+var prefix = map[string]string{
+	"main": "hl",
+	"hilbish": "hl",
+	"fs": "f",
+	"commander": "c",
+	"bait": "b",
+	"terminal": "term",
+}
+
+func setupDoc(mod string, fun *doc.Func) *docPiece {
+	if !strings.HasPrefix(fun.Name, "hl") && mod == "main" {
+		return nil
+	}
+	if !strings.HasPrefix(fun.Name, prefix[mod]) || fun.Name == "Loader" {
+		return nil
+	}
+	parts := strings.Split(strings.TrimSpace(fun.Doc), "\n")
+	funcsig := parts[0]
+	doc := parts[1:]
+	funcdoc := []string{}
+	em := emmyPiece{FuncName: strings.TrimPrefix(fun.Name, prefix[mod])}
+	for _, d := range doc {
+		if strings.HasPrefix(d, "---") {
+			emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
+			emmyLinePieces := strings.Split(emmyLine, " ")
+			emmyType := emmyLinePieces[0]
+			if emmyType == "@param" {
+				em.Params = append(em.Params, emmyLinePieces[1])
+			}
+			if emmyType == "@vararg" {
+				em.Params = append(em.Params, "...") // add vararg
+			}
+			em.Docs = append(em.Docs, d)
+		} else {
+			funcdoc = append(funcdoc, d)
+		}
+	}
+			
+	dps := docPiece{
+		Doc: funcdoc,
+		FuncSig: funcsig,
+		FuncName: strings.TrimPrefix(fun.Name, prefix[mod]),
+	}
+			
+	emmyDocs[mod] = append(emmyDocs[mod], em)
+	return &dps
 }
 
 // feel free to clean this up
@@ -65,88 +117,22 @@ func main() {
 		}
 	}
 
-	prefix := map[string]string{
-		"hilbish": "hl",
-		"fs": "f",
-		"commander": "c",
-		"bait": "b",
-		"terminal": "term",
-	}
-	docs := make(map[string]module)
-	emmyDocs := make(map[string][]emmyPiece)
-
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
-		pieces := []docPiece{}
+		pieces := make(map[string]docPiece)
 		mod := l
 		for _, t := range p.Funcs {
-			if strings.HasPrefix(t.Name, "hl") { mod = "hilbish" }
-			if !strings.HasPrefix(t.Name, "hl") && l == "main" { continue }
-			if !strings.HasPrefix(t.Name, prefix[mod]) || t.Name == "Loader" { continue }
-			parts := strings.Split(strings.TrimSpace(t.Doc), "\n")
-			funcsig := parts[0]
-			doc := parts[1:]
-			funcdoc := []string{}
-			em := emmyPiece{FuncName: strings.TrimPrefix(t.Name, prefix[mod])}
-			for _, d := range doc {
-				if strings.HasPrefix(d, "---") {
-					emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
-					emmyLinePieces := strings.Split(emmyLine, " ")
-					emmyType := emmyLinePieces[0]
-					if emmyType == "@param" {
-						em.Params = append(em.Params, emmyLinePieces[1])
-					}
-					if emmyType == "@vararg" {
-						em.Params = append(em.Params, "...") // add vararg
-					}
-					em.Docs = append(em.Docs, d)
-				} else {
-					funcdoc = append(funcdoc, d)
-				}
+			piece := setupDoc(mod, t)
+			if piece != nil {	
+				pieces[piece.FuncName] = *piece
 			}
-			
-			dps := docPiece{
-				Doc: funcdoc,
-				FuncSig: funcsig,
-				FuncName: strings.TrimPrefix(t.Name, prefix[mod]),
-			}
-			
-			pieces = append(pieces, dps)
-			emmyDocs[mod] = append(emmyDocs[mod], em)
 		}
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
-				if !strings.HasPrefix(t.Name, "hl") && l == "main" { continue }
-				if !strings.HasPrefix(m.Name, prefix[l]) || m.Name == "Loader" { continue }
-				parts := strings.Split(strings.TrimSpace(m.Doc), "\n")
-				funcsig := parts[0]
-				doc := parts[1:]
-				funcdoc := []string{}
-				em := emmyPiece{FuncName: strings.TrimPrefix(m.Name, prefix[l])}
-				for _, d := range doc {
-					if strings.HasPrefix(d, "---") {
-						emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
-						emmyLinePieces := strings.Split(emmyLine, " ")
-						emmyType := emmyLinePieces[0]
-						if emmyType == "@param" {
-							em.Params = append(em.Params, emmyLinePieces[1])
-						}
-						if emmyType == "@vararg" {
-							em.Params = append(em.Params, "...") // add vararg
-						}
-						em.Docs = append(em.Docs, d)
-					} else {
-						funcdoc = append(funcdoc, d)
-					}
+				piece := setupDoc(mod, m)
+				if piece != nil {	
+					pieces[piece.FuncName] = *piece
 				}
-				dps := docPiece{
-					Doc: funcdoc,
-					FuncSig: funcsig,
-					FuncName: strings.TrimPrefix(m.Name, prefix[l]),
-				}
-
-				pieces = append(pieces, dps)
-				emmyDocs[l] = append(emmyDocs[l], em)
 			}
 		}
 
@@ -161,9 +147,13 @@ func main() {
 	}
 
 	for mod, v := range docs {
-		if mod == "main" { continue }
-		f, _ := os.Create("docs/api/" + mod + ".md")
-		f.WriteString(fmt.Sprintf(header, mod, v.ShortDescription))
+		modN := mod
+		if mod == "main" {
+			modN = "hilbish"
+		}
+		fmt.Println(mod)
+		f, _ := os.Create("docs/api/" + modN + ".md")
+		f.WriteString(fmt.Sprintf(header, modN, v.ShortDescription))
 		f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
 		for _, dps := range v.Docs {
 			f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
@@ -174,25 +164,18 @@ func main() {
 			}
 			f.WriteString("\n")
 		}
-	}
-	
-	for mod, v := range emmyDocs {
-		if mod == "main" { continue }
-		f, _ := os.Create("emmyLuaDocs/" + mod + ".lua")
-		f.WriteString("--- @meta\n\nlocal " + mod + " = {}\n\n")
-		for _, em := range v {
-			var funcdocs []string
-			for _, dps := range docs[mod].Docs {
-				if dps.FuncName == em.FuncName {
-					funcdocs = dps.Doc
-				}
-			}
-			f.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
+
+		ff, _ := os.Create("emmyLuaDocs/" + modN + ".lua")
+		ff.WriteString("--- @meta\n\nlocal " + modN + " = {}\n\n")
+		for _, em := range emmyDocs[mod] {
+			funcdocs := v.Docs[em.FuncName].Doc
+			fmt.Println(funcdocs)
+			ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
 			if len(em.Docs) != 0 {
-				f.WriteString(strings.Join(em.Docs, "\n") + "\n")
+				ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
 			}
-			f.WriteString("function " + mod + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
+			ff.WriteString("function " + modN + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
 		}
-		f.WriteString("return " + mod + "\n")
+		ff.WriteString("return " + modN + "\n")
 	}
 }

@@ -21,7 +21,7 @@ type timer struct{
 	running bool
 	dur time.Duration
 	fun *rt.Closure
-	th *timerHandler
+	th *timersModule
 	ticker *time.Ticker
 	ud *rt.UserData
 	channel chan struct{}

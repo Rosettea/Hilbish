@@ -10,9 +10,6 @@ and other things, and acts an addition to the Lua standard library's
 I/O and filesystem functions.
 
 ## Functions
-### abs(path)
-Gives an absolute version of `path`.
-
 ### basename(path)
 Gives the basename of `path`. For the rules,
 see Go's filepath.Base
@@ -24,6 +21,12 @@ Changes directory to `dir`
 Returns the directory part of `path`. For the rules, see Go's
 filepath.Dir
 
+### readdir(dir)
+Returns a table of files in `dir`
+
+### abs(path)
+Gives an absolute version of `path`.
+
 ### glob(pattern)
 Glob all files and directories that match the pattern.
 For the rules, see Go's filepath.Glob
@@ -34,9 +37,6 @@ directory separator (forward or backward slash).
 
 ### mkdir(name, recursive)
 Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
-
-### readdir(dir)
-Returns a table of files in `dir`
 
 ### stat(path)
 Returns info about `path`
