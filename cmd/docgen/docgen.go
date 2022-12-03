@@ -38,7 +38,6 @@ type docPiece struct {
 	FuncName string
 }
 
-
 var docs = make(map[string]module)
 var emmyDocs = make(map[string][]emmyPiece)
 var prefix = map[string]string{
@@ -156,13 +155,13 @@ func main() {
 			modN = "hilbish"
 		}
 
-		go func(modName string) {
+		go func(modName string, modu module) {
 			defer wg.Done()
 
-			f, _ := os.Create("docs/api/" + modN + ".md")
-			f.WriteString(fmt.Sprintf(header, modN, v.ShortDescription))
-			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
-			for _, dps := range v.Docs {
+			f, _ := os.Create("docs/api/" + modName + ".md")
+			f.WriteString(fmt.Sprintf(header, modName, modu.ShortDescription))
+			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", modu.Description))
+			for _, dps := range modu.Docs {
 				f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
 				for _, doc := range dps.Doc {
 					if !strings.HasPrefix(doc, "---") {
@@ -171,16 +170,16 @@ func main() {
 				}
 				f.WriteString("\n")
 			}
-		}(modN)
+		}(modN, v)
 
 		go func(md, modName string) {
 			defer wg.Done()
 
-			ff, _ := os.Create("emmyLuaDocs/" + modN + ".lua")
-			ff.WriteString("--- @meta\n\nlocal " + modN + " = {}\n\n")
+			ff, _ := os.Create("emmyLuaDocs/" + modName + ".lua")
+			ff.WriteString("--- @meta\n\nlocal " + modName + " = {}\n\n")
 			for _, em := range emmyDocs[md] {
 				funcdocs := []string{}
-				for _, dps := range docs[md].Docs{
+				for _, dps := range docs[md].Docs {
 					if dps.FuncName == em.FuncName {
 						funcdocs = dps.Doc
 					}
@@ -189,9 +188,9 @@ func main() {
 				if len(em.Docs) != 0 {
 					ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
 				}
-				ff.WriteString("function " + modN + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
+				ff.WriteString("function " + modName + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
 			}
-			ff.WriteString("return " + modN + "\n")
+			ff.WriteString("return " + modName + "\n")
 		}(mod, modN)
 	}
 	wg.Wait()
