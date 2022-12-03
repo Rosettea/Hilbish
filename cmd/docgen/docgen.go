@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"strings"
 	"os"
+	"sync"
 )
 
 var header = `---
@@ -146,39 +147,52 @@ func main() {
 		}
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(docs) * 2)
+
 	for mod, v := range docs {
 		modN := mod
 		if mod == "main" {
 			modN = "hilbish"
 		}
-		f, _ := os.Create("docs/api/" + modN + ".md")
-		f.WriteString(fmt.Sprintf(header, modN, v.ShortDescription))
-		f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
-		for _, dps := range v.Docs {
-			f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
-			for _, doc := range dps.Doc {
-				if !strings.HasPrefix(doc, "---") {
-					f.WriteString(doc + "\n")
-				}
-			}
-			f.WriteString("\n")
-		}
 
-		ff, _ := os.Create("emmyLuaDocs/" + modN + ".lua")
-		ff.WriteString("--- @meta\n\nlocal " + modN + " = {}\n\n")
-		for _, em := range emmyDocs[mod] {
-			funcdocs := []string{}
-			for _, dps := range docs[mod].Docs{
-				if dps.FuncName == em.FuncName {
-					funcdocs = dps.Doc
+		go func(modName string) {
+			defer wg.Done()
+
+			f, _ := os.Create("docs/api/" + modN + ".md")
+			f.WriteString(fmt.Sprintf(header, modN, v.ShortDescription))
+			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", v.Description))
+			for _, dps := range v.Docs {
+				f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
+				for _, doc := range dps.Doc {
+					if !strings.HasPrefix(doc, "---") {
+						f.WriteString(doc + "\n")
+					}
 				}
+				f.WriteString("\n")
 			}
-			ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
-			if len(em.Docs) != 0 {
-				ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
+		}(modN)
+
+		go func(md, modName string) {
+			defer wg.Done()
+
+			ff, _ := os.Create("emmyLuaDocs/" + modN + ".lua")
+			ff.WriteString("--- @meta\n\nlocal " + modN + " = {}\n\n")
+			for _, em := range emmyDocs[md] {
+				funcdocs := []string{}
+				for _, dps := range docs[md].Docs{
+					if dps.FuncName == em.FuncName {
+						funcdocs = dps.Doc
+					}
+				}
+				ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
+				if len(em.Docs) != 0 {
+					ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
+				}
+				ff.WriteString("function " + modN + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
 			}
-			ff.WriteString("function " + modN + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
-		}
-		ff.WriteString("return " + modN + "\n")
+			ff.WriteString("return " + modN + "\n")
+		}(mod, modN)
 	}
+	wg.Wait()
 }
