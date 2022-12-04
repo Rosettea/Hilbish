@@ -172,6 +172,9 @@ func escapeFilename(fname string) string {
 	return escapeReplaer.Replace(fname)
 }
 
+// #interface completions
+// tab completions
+// The completions interface deals with tab completions.
 func completionLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
 		"files": {luaFileComplete, 3, false},

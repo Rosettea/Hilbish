@@ -66,8 +66,9 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 
 // lua section
 
-// #interface
-// ALIAS LOADER TEST
+// #interface aliases
+// command aliasing
+// The alias interface deals with all command aliases in Hilbish.
 func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 	// create a lua module with our functions
 	hshaliasesLua := map[string]util.LuaExport{
@@ -83,6 +84,9 @@ func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
+// #interface aliases
+// list()
+// Get a table of all aliases.
 func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	aliasesList := rt.NewTable()
 	for k, v := range a.All() {

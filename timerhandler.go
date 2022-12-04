@@ -100,6 +100,11 @@ func (th *timersModule) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface timers
+// timeout and interval API
+// The timers interface si one to easily set timeouts and intervals
+// to run functions after a certain time or repeatedly without using
+// odd tricks.
 func (th *timersModule) loader(rtm *rt.Runtime) *rt.Table {
 	timerMethods := rt.NewTable()
 	timerFuncs := map[string]util.LuaExport{

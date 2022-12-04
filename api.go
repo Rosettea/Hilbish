@@ -250,11 +250,12 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt?) -> input?
+// read(prompt) -> input
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
-// --- @param prompt string
+// --- @param prompt string|nil
+// --- @returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaprompt := c.Arg(0)
 	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
@@ -281,7 +282,7 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 /*
-prompt(str, typ?)
+prompt(str, typ)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
@@ -289,7 +290,7 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 --- @param str string
---- @param typ string Type of prompt, being left or right. Left by default.
+--- @param typ string|nil Type of prompt, being left or right. Left by default.
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()

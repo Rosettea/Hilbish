@@ -91,6 +91,10 @@ func timerStart(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface timers
+// #member
+// stop()
+// Stops a timer.
 func timerStop(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

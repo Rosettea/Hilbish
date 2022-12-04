@@ -225,7 +225,11 @@ func (lr *lineReader) Resize() {
 	return
 }
 
-// lua module
+// #interface history
+// command history
+// The history interface deals with command history. 
+// This includes the ability to override functions to change the main
+// method of saving history.
 func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	lrLua := map[string]util.LuaExport{
 		"add": {lr.luaAddHistory, 1, false},

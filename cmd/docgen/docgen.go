@@ -13,7 +13,7 @@ import (
 )
 
 var header = `---
-name: Module %s
+name: %s %s
 description: %s
 layout: apidoc
 ---
@@ -21,24 +21,33 @@ layout: apidoc
 `
 
 type emmyPiece struct {
-	FuncName string
-	Docs []string
+	DocPiece *docPiece
+	Annotations []string
 	Params []string // we only need to know param name to put in function
+	FuncName string
 }
 
 type module struct {
 	Docs []docPiece
 	ShortDescription string
 	Description string
-	Interface bool
+	ParentModule string
+	HasInterfaces bool
 }
+
 type docPiece struct {
 	Doc []string
 	FuncSig string
 	FuncName string
+	Interfacing string
+	ParentModule string
+	GoFuncName string
+	IsInterface bool
+	IsMember bool
 }
 
 var docs = make(map[string]module)
+var interfaceDocs = make(map[string]module)
 var emmyDocs = make(map[string][]emmyPiece)
 var prefix = map[string]string{
 	"main": "hl",
@@ -50,17 +59,36 @@ var prefix = map[string]string{
 }
 
 func setupDoc(mod string, fun *doc.Func) *docPiece {
-	if !strings.HasPrefix(fun.Name, "hl") && mod == "main" {
+	docs := strings.TrimSpace(fun.Doc)
+	inInterface := strings.HasPrefix(docs, "#interface")
+	if (!strings.HasPrefix(fun.Name, prefix[mod]) && !inInterface) || (strings.ToLower(fun.Name) == "loader" && !inInterface) {
 		return nil
 	}
-	if !strings.HasPrefix(fun.Name, prefix[mod]) || fun.Name == "Loader" {
-		return nil
+
+	pts := strings.Split(docs, "\n")
+	parts := []string{}
+	tags := make(map[string][]string)
+	for _, part := range pts {
+		if strings.HasPrefix(part, "#") {
+			tagParts := strings.Split(strings.TrimPrefix(part, "#"), " ")
+			tags[tagParts[0]] = tagParts[1:]
+		} else {
+			parts = append(parts, part)
+		}
 	}
-	parts := strings.Split(strings.TrimSpace(fun.Doc), "\n")
+
+	var interfaces string
 	funcsig := parts[0]
 	doc := parts[1:]
+	funcName := strings.TrimPrefix(fun.Name, prefix[mod])
 	funcdoc := []string{}
-	em := emmyPiece{FuncName: strings.TrimPrefix(fun.Name, prefix[mod])}
+
+	if inInterface {
+		interfaces = tags["interface"][0]
+		funcName = interfaces + "." + strings.Split(funcsig, "(")[0]
+	}
+	em := emmyPiece{FuncName: funcName}
+
 	for _, d := range doc {
 		if strings.HasPrefix(d, "---") {
 			emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
@@ -72,24 +100,39 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 			if emmyType == "@vararg" {
 				em.Params = append(em.Params, "...") // add vararg
 			}
-			em.Docs = append(em.Docs, d)
+			em.Annotations = append(em.Annotations, d)
 		} else {
 			funcdoc = append(funcdoc, d)
 		}
 	}
-			
-	dps := docPiece{
+
+	var isMember bool
+	if tags["member"] != nil {
+		isMember = true
+	}
+	var parentMod string
+	if inInterface {
+		parentMod = mod
+	}
+	dps := &docPiece{
 		Doc: funcdoc,
 		FuncSig: funcsig,
-		FuncName: strings.TrimPrefix(fun.Name, prefix[mod]),
+		FuncName: funcName,
+		Interfacing: interfaces,
+		GoFuncName: strings.ToLower(fun.Name),
+		IsInterface: inInterface,
+		IsMember: isMember,
+		ParentModule: parentMod,
 	}
+	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
+		dps.Doc = parts
+	}
+	em.DocPiece = dps
 			
 	emmyDocs[mod] = append(emmyDocs[mod], em)
-	return &dps
+	return dps
 }
 
-// feel free to clean this up
-// it works, dont really care about the code
 func main() {
 	fset := token.NewFileSet()
 	os.Mkdir("docs", 0777)
@@ -117,21 +160,36 @@ func main() {
 		}
 	}
 
+	interfaceModules := make(map[string]*module)
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
 		pieces := []docPiece{}
 		mod := l
+		if mod == "main" {
+			mod = "hilbish"
+		}
+		var hasInterfaces bool
 		for _, t := range p.Funcs {
 			piece := setupDoc(mod, t)
-			if piece != nil {	
-				pieces = append(pieces, *piece)
+			if piece == nil {
+				continue
+			}
+
+			pieces = append(pieces, *piece)
+			if piece.IsInterface {
+				hasInterfaces = true
 			}
 		}
 		for _, t := range p.Types {
 			for _, m := range t.Methods {
 				piece := setupDoc(mod, m)
-				if piece != nil {	
-					pieces = append(pieces, *piece)
+				if piece == nil {
+					continue
+				}
+
+				pieces = append(pieces, *piece)
+				if piece.IsInterface {
+					hasInterfaces = true
 				}
 			}
 		}
@@ -139,27 +197,65 @@ func main() {
 		descParts := strings.Split(strings.TrimSpace(p.Doc), "\n")
 		shortDesc := descParts[0]
 		desc := descParts[1:]
+		filteredPieces := []docPiece{}
+		for _, piece := range pieces {
+			if !piece.IsInterface {
+				filteredPieces = append(filteredPieces, piece)
+				continue
+			}
+
+			modname := piece.ParentModule + "." + piece.Interfacing
+			if interfaceModules[modname] == nil {
+				interfaceModules[modname] = &module{
+					ParentModule: piece.ParentModule,
+				}
+			}
+
+			if strings.HasSuffix(piece.GoFuncName, strings.ToLower("loader")) {
+				shortDesc := piece.Doc[0]
+				desc := piece.Doc[1:]
+				interfaceModules[modname].ShortDescription = shortDesc
+				interfaceModules[modname].Description = strings.Join(desc, "\n")
+				continue
+			}
+			interfaceModules[modname].Docs = append(interfaceModules[modname].Docs, piece)
+		}
+
 		docs[mod] = module{
-			Docs: pieces,
+			Docs: filteredPieces,
 			ShortDescription: shortDesc,
 			Description: strings.Join(desc, "\n"),
+			HasInterfaces: hasInterfaces,
 		}
+	}
+
+	for key, mod := range interfaceModules {
+		docs[key] = *mod
 	}
 
 	var wg sync.WaitGroup
 	wg.Add(len(docs) * 2)
 
 	for mod, v := range docs {
-		modN := mod
-		if mod == "main" {
-			modN = "hilbish"
+		docPath := "docs/api/" + mod + ".md"
+		if v.HasInterfaces {
+			os.Mkdir("docs/api/" + mod, 0777)
+			os.Remove(docPath) // remove old doc path if it exists
+			docPath = "docs/api/" + mod + "/_index.md"
+		}
+		if v.ParentModule != "" {
+			docPath = "docs/api/" + v.ParentModule + "/" + mod + ".md"
 		}
 
-		go func(modName string, modu module) {
+		go func(modname, docPath string, modu module) {
 			defer wg.Done()
+			modOrIface := "Module"
+			if modu.ParentModule != "" {
+				modOrIface = "Interface"
+			}
 
-			f, _ := os.Create("docs/api/" + modName + ".md")
-			f.WriteString(fmt.Sprintf(header, modName, modu.ShortDescription))
+			f, _ := os.Create(docPath)
+			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
 			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", modu.Description))
 			for _, dps := range modu.Docs {
 				f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
@@ -170,28 +266,41 @@ func main() {
 				}
 				f.WriteString("\n")
 			}
-		}(modN, v)
+		}(mod, docPath, v)
 
-		go func(md, modName string) {
+		go func(md, modname string, modu module) {
 			defer wg.Done()
 
-			ff, _ := os.Create("emmyLuaDocs/" + modName + ".lua")
-			ff.WriteString("--- @meta\n\nlocal " + modName + " = {}\n\n")
-			for _, em := range emmyDocs[md] {
-				funcdocs := []string{}
-				for _, dps := range docs[md].Docs {
-					if dps.FuncName == em.FuncName {
-						funcdocs = dps.Doc
-					}
-				}
-				ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
-				if len(em.Docs) != 0 {
-					ff.WriteString(strings.Join(em.Docs, "\n") + "\n")
-				}
-				ff.WriteString("function " + modName + "." + em.FuncName + "(" + strings.Join(em.Params, ", ") + ") end\n\n")
+			if modu.ParentModule != "" {
+				return
 			}
-			ff.WriteString("return " + modName + "\n")
-		}(mod, modN)
+
+			ff, _ := os.Create("emmyLuaDocs/" + modname + ".lua")
+			ff.WriteString("--- @meta\n\nlocal " + modname + " = {}\n\n")
+			for _, em := range emmyDocs[modname] {
+				if strings.HasSuffix(em.DocPiece.GoFuncName, strings.ToLower("loader")) {
+					continue
+				}
+
+				dps := em.DocPiece
+				funcdocs := dps.Doc
+				ff.WriteString("--- " + strings.Join(funcdocs, "\n--- ") + "\n")
+				if len(em.Annotations) != 0 {
+					ff.WriteString(strings.Join(em.Annotations, "\n") + "\n")
+				}
+				accessor := "."
+				if dps.IsMember {
+					accessor = ":"
+				}
+				signature := strings.Split(dps.FuncSig, " ->")[0]
+				var intrface string
+				if dps.IsInterface {
+					intrface = "." + dps.Interfacing
+				}
+				ff.WriteString("function " + modname + intrface + accessor + signature + " end\n\n")
+			}
+			ff.WriteString("return " + modname + "\n")
+		}(mod, mod, v)
 	}
 	wg.Wait()
 }
