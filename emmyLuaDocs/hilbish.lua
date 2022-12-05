@@ -2,6 +2,9 @@
 
 local hilbish = {}
 
+--- This is an alias (ha) for the `hilbish.alias` function.
+function hilbish.aliases.add(alias, cmd) end
+
 --- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
@@ -111,7 +114,15 @@ function hilbish.which(name) end
 --- Stops a timer.
 function hilbish.timers:stop() end
 
+--- Removes an alias.
+--- @param name string
+function hilbish.aliases.delete(name) end
+
 --- Get a table of all aliases.
 function hilbish.aliases.list() end
+
+--- Tries to resolve an alias to its command.
+--- @param alias string
+function hilbish.aliases.resolve(alias) end
 
 return hilbish

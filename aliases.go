@@ -85,6 +85,13 @@ func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 }
 
 // #interface aliases
+// add(alias, cmd)
+// This is an alias (ha) for the `hilbish.alias` function.
+// --- @param alias string
+// --- @param cmd string
+func _hlalias() {}
+
+// #interface aliases
 // list()
 // Get a table of all aliases.
 func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -96,6 +103,10 @@ func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(aliasesList)), nil
 }
 
+// #interface aliases
+// delete(name)
+// Removes an alias.
+// --- @param name string
 func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -109,6 +120,10 @@ func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface aliases
+// resolve(alias)
+// Tries to resolve an alias to its command.
+// --- @param alias string
 func (a *aliasModule) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
