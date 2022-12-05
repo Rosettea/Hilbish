@@ -3,6 +3,8 @@
 local hilbish = {}
 
 --- This is an alias (ha) for the `hilbish.alias` function.
+--- @param alias string
+--- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
 --- Sets an alias of `cmd` to `orig`
@@ -124,5 +126,20 @@ function hilbish.aliases.list() end
 --- Tries to resolve an alias to its command.
 --- @param alias string
 function hilbish.aliases.resolve(alias) end
+
+--- Adds a command to the history.
+--- @param cmd string
+function hilbish.history.add(cmd) end
+
+--- Deletes all commands from the history.
+function hilbish.history.clear() end
+
+--- Retrieves a command from the history based on the `idx`.
+--- @param idx number
+function hilbish.history.get(idx) end
+
+--- Returns the amount of commands in the history.
+--- @returns number
+function hilbish.history.size() end
 
 return hilbish
