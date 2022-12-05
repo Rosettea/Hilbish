@@ -27,10 +27,10 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 sed -i '\|/etc/shells|d' Taskfile.yaml
 
 %build
-task PREFIX=%{buildroot}
+go-task PREFIX=%{buildroot}
 
 %install
-task install PREFIX=%{buildroot} BINDIR=%{_bindir}
+go-task install PREFIX=%{buildroot} BINDIR=%{_bindir}
 
 %post
 if [ "$1" = 1 ]; then
