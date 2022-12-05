@@ -1,5 +1,6 @@
 *.exe
 hilbish
+!docs/api/hilbish
 docgen
 
 .vim
