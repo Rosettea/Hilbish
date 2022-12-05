@@ -19,7 +19,6 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/maxlandon/readline"
-	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -119,12 +118,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 	// hilbish.os table
-	hshos := rt.NewTable()
-	info, _ := osinfo.GetOSInfo()
-
-	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
-	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
-	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
+	hshos := hshosLoader(rtm)
 	util.Document(hshos, "OS info interface")
 	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
