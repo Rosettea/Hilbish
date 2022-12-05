@@ -30,7 +30,7 @@ sed -i '\|/etc/shells|d' Taskfile.yaml
 go-task PREFIX=%{buildroot}
 
 %install
-go-task install PREFIX=%{buildroot} BINDIR=%{_bindir}
+go-task install PREFIX=%{buildroot} BINDIR=%{buildroot}/%{_bindir}
 
 %post
 if [ "$1" = 1 ]; then
