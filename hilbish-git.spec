@@ -5,7 +5,7 @@ Summary: The flower shell. A comfy and nice little shell for Lua fans!
 License: MIT
 
 Source: {{{ git_dir_pack }}}
-BuildRequires: golang go-task
+BuildRequires: git golang go-task
 Requires: inspect succulent lunacolors
 
 Url: https://github.com/Rosettea/Hilbish
