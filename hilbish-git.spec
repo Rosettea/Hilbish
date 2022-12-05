@@ -1,3 +1,5 @@
+%global _missing_build_ids_terminate_build 0
+
 Name: hilbish-git
 Version: {{{ git_dir_version }}}
 Release: 1%{?dist}
