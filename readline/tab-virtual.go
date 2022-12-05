@@ -75,6 +75,7 @@ func (rl *Instance) insertCandidate() {
 		// Ensure no indexing error happens with prefix
 		if len(completion) >= prefix {
 			rl.viDeleteByAdjust(-prefix)
+
 			rl.insert([]rune(completion))
 			if !cur.TrimSlash && !cur.NoSpace {
 				rl.insert([]rune(" "))
@@ -99,7 +100,7 @@ func (rl *Instance) updateVirtualComp() {
 			rl.viUndoSkipAppend = true
 			rl.resetTabCompletion()
 		} else {
-			if strings.HasSuffix(string(rl.line), rl.tcPrefix) {
+			if strings.HasSuffix(string(rl.line), rl.tcPrefix) && (!rl.modeAutoFind || rl.searchMode != HistoryFind) {
 				rl.viDeleteByAdjust(-prefix)
 			}
 
@@ -112,7 +113,12 @@ func (rl *Instance) updateVirtualComp() {
 
 			// Or insert it virtually.
 			if len(completion) >= prefix {
-				rl.insertCandidateVirtual([]rune(completion))
+				comp := completion
+				if rl.modeAutoFind && rl.searchMode == HistoryFind {
+					comp = completion[prefix:]
+				}
+
+				rl.insertCandidateVirtual([]rune(comp))
 			}
 		}
 	}
