@@ -24,7 +24,7 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 
 %prep
 {{{ git_dir_setup_macro }}}
-sed -i '\|/etc/shells|d' Taskfile.yml
+sed -i '\|/etc/shells|d' Taskfile.yaml
 
 %build
 task PREFIX=%{buildroot}
