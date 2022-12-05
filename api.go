@@ -114,10 +114,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
-	hshuser := rt.NewTable()
-
-	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
-	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
+	hshuser := userDirLoader(rtm)
 	util.Document(hshuser, "User directories to store configs and/or modules.")
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 

@@ -29,6 +29,7 @@ type emmyPiece struct {
 
 type module struct {
 	Docs []docPiece
+	Properties []docPiece
 	ShortDescription string
 	Description string
 	ParentModule string
@@ -44,6 +45,12 @@ type docPiece struct {
 	GoFuncName string
 	IsInterface bool
 	IsMember bool
+	Properties []docPiece
+}
+
+type tag struct {
+	id string
+	fields []string
 }
 
 var docs = make(map[string]module)
@@ -67,11 +74,31 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 
 	pts := strings.Split(docs, "\n")
 	parts := []string{}
-	tags := make(map[string][]string)
+	tags := make(map[string][]tag)
 	for _, part := range pts {
 		if strings.HasPrefix(part, "#") {
 			tagParts := strings.Split(strings.TrimPrefix(part, "#"), " ")
-			tags[tagParts[0]] = tagParts[1:]
+			if tags[tagParts[0]] == nil {
+				var id string
+				if len(tagParts) > 1 {
+					id = tagParts[1]
+				}
+				tags[tagParts[0]] = []tag{
+					{id: id},
+				}
+				if len(tagParts) >= 2 {
+					tags[tagParts[0]][0].fields = tagParts[2:]
+				}
+			} else {
+				fleds := []string{}
+				if len(tagParts) >= 2 {
+					fleds = tagParts[2:]
+				}
+				tags[tagParts[0]] = append(tags[tagParts[0]], tag{
+					id: tagParts[1],
+					fields: fleds,
+				})
+			}
 		} else {
 			parts = append(parts, part)
 		}
@@ -84,10 +111,19 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 	funcdoc := []string{}
 
 	if inInterface {
-		interfaces = tags["interface"][0]
+		interfaces = tags["interface"][0].id
 		funcName = interfaces + "." + strings.Split(funcsig, "(")[0]
 	}
 	em := emmyPiece{FuncName: funcName}
+
+	// manage properties
+	properties := []docPiece{}
+	for _, tag := range tags["property"] {
+		properties = append(properties, docPiece{
+			FuncName: tag.id,
+			Doc: tag.fields,
+		})
+	}
 
 	for _, d := range doc {
 		if strings.HasPrefix(d, "---") {
@@ -123,6 +159,7 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 		IsInterface: inInterface,
 		IsMember: isMember,
 		ParentModule: parentMod,
+		Properties: properties,
 	}
 	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
 		dps.Doc = parts
@@ -216,6 +253,7 @@ func main() {
 				desc := piece.Doc[1:]
 				interfaceModules[modname].ShortDescription = shortDesc
 				interfaceModules[modname].Description = strings.Join(desc, "\n")
+				interfaceModules[modname].Properties = piece.Properties
 				continue
 			}
 			interfaceModules[modname].Docs = append(interfaceModules[modname].Docs, piece)
@@ -256,7 +294,18 @@ func main() {
 
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
-			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n## Functions\n", modu.Description))
+			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modu.Description))
+			if len(modu.Properties) != 0 {
+				f.WriteString("## Properties\n")
+				for _, dps := range modu.Properties {
+					f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
+					f.WriteString(strings.Join(dps.Doc, " "))
+					f.WriteString("\n")
+				}
+			}
+			if len(modu.Docs) != 0 {
+				f.WriteString("## Functions\n")
+			}
 			for _, dps := range modu.Docs {
 				f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
 				for _, doc := range dps.Doc {
