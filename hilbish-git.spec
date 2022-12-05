@@ -1,5 +1,4 @@
 %global _missing_build_ids_terminate_build 0
-
 Name: hilbish-git
 Version: {{{ git_dir_version }}}
 Release: 1%{?dist}
@@ -29,7 +28,8 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 sed -i '\|/etc/shells|d' Taskfile.yaml
 
 %build
-go-task
+# We have to build with debug info for COPR
+go-task build GOFLAGS=" "
 
 %install
 go-task install PREFIX=%{buildroot}/usr BINDIR=%{buildroot}/%{_bindir}
