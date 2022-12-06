@@ -161,6 +161,7 @@ will result in the files being completed.
 - Cut off item names in grid menu if its longer than cell width
 - Fix completion search menu disappearing
 - Completion paths having duplicated characters if it's escaped
+- Get custom completion command properly to call from Lua
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,
