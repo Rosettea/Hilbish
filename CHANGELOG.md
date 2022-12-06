@@ -103,6 +103,7 @@ of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
 - **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
 always printed by default. To disable it, set the opt to false.
+- **Breaking Change:** `command.no-perm` hook has been replaced with `command.not-executable`
 - History is now fetched from Lua, which means users can override `hilbish.history`
 methods to make it act how they want.
 - `guide` has been removed. See the [website](https://rosettea.github.io/Hilbish/)
