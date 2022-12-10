@@ -546,6 +546,10 @@ func (rl *Instance) Readline() (string, error) {
 // entry readline is currently configured for and then update the line entries
 // accordingly.
 func (rl *Instance) editorInput(r []rune) {
+	if len(r) == 0 {
+		return
+	}
+
 	switch rl.modeViMode {
 	case VimKeys:
 		rl.vi(r[0])
