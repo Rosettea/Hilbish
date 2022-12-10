@@ -69,7 +69,8 @@ If you're new to nix you should probably read up on how to do that [here](https:
 ## Manual Build
 ### Prerequisites
 - [Go 1.17+](https://go.dev)
-- [Task](https://taskfile.dev/#/)
+- [Task](https://taskfile.dev/#/) 
+	- **Do go to the link here for the installation of Task. Too much people install taskwarrior, which is the wrong program**
 
 ### Build
 First, clone Hilbish. The recursive is required, as some Lua libraries
