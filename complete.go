@@ -189,11 +189,19 @@ func completionLoader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
-// left as a shim, might doc in the same way as hilbish functions
+// #interface completions
+// handler(line, pos)
+// The handler function is the callback for tab completion in Hilbish.
+// You can check the completions doc for more info.
 func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface completions
+// call(name, query, ctx, fields)
+// Calls a completer function. This is mainly used to call
+// a command completer, which will have a `name` in the form
+// of `command.name`, example: `command.git`
 func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(4); err != nil {
 		return nil, err
@@ -233,6 +241,9 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, completerReturn), nil
 }
 
+// #interface completions
+// files(query, ctx, fields)
+// Returns file completion candidates based on the provided query.
 func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {
@@ -249,6 +260,9 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
+// #interface completions
+// bins(query, ctx, fields)
+// Returns binary/executale completion candidates based on the provided query.
 func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {

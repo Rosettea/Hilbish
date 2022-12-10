@@ -7,6 +7,15 @@ local hilbish = {}
 --- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
+--- Calls a completer function. This is mainly used to call
+--- a command completer, which will have a `name` in the form
+--- of `command.name`, example: `command.git`
+function hilbish.completions.call(name, query, ctx, fields) end
+
+--- The handler function is the callback for tab completion in Hilbish.
+--- You can check the completions doc for more info.
+function hilbish.completions.handler(line, pos) end
+
 --- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
@@ -112,6 +121,12 @@ function hilbish.timeout(cb, time) end
 --- Checks if `name` is a valid command
 --- @param binName string
 function hilbish.which(name) end
+
+--- Returns binary/executale completion candidates based on the provided query.
+function hilbish.completions.bins(query, ctx, fields) end
+
+--- Returns file completion candidates based on the provided query.
+function hilbish.completions.files(query, ctx, fields) end
 
 --- Stops a timer.
 function hilbish.timers:stop() end
