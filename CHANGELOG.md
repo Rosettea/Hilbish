@@ -1,9 +1,16 @@
 # 🎀 Changelog
 
 ## Unreleased
-**NOTE:** Hilbish now uses [Task] insead of Make for builds.
-Windows support is also now at a lower tier; The only thing guaranteed is
-Hilbish *compiling* on Windows.
+**NOTES FOR USERS/PACKAGERS UPDATING:**
+- Hilbish now uses [Task] insead of Make for builds.
+- The doc format has been changed from plain text to markdown.
+**YOU MUST reinstall Hilbish to remove the duplicate, old docs.**
+- Hilbish will by default install to **`/usr/local`** instead of just `/usr/`
+when building via Task. This is mainly to avoid conflict of distro packages
+and local installs, and is the correct place when building from git either way.
+To keep Hilbish in `/usr`, you must have `PREFIX="/usr/"` when running `task build` or `task install`
+- Windows is no longer supported. It will build and run, but **will** have problems.
+If you want to help fix the situation, start a discussion or open an issue and contribute.
 
 [Task]: https://taskfile.dev/#/
 
@@ -103,6 +110,7 @@ of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
 - **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
 always printed by default. To disable it, set the opt to false.
+- **Breaking Change:** `command.no-perm` hook has been replaced with `command.not-executable`
 - History is now fetched from Lua, which means users can override `hilbish.history`
 methods to make it act how they want.
 - `guide` has been removed. See the [website](https://rosettea.github.io/Hilbish/)
@@ -161,6 +169,8 @@ will result in the files being completed.
 - Cut off item names in grid menu if its longer than cell width
 - Fix completion search menu disappearing
 - Completion paths having duplicated characters if it's escaped
+- Get custom completion command properly to call from Lua
+- Put proper command on the line when using up and down arrow keys to go through command history
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,

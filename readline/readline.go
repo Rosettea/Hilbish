@@ -49,7 +49,7 @@ func (rl *Instance) Readline() (string, error) {
 
 	// History Init
 	// We need this set to the last command, so that we can access it quickly
-	rl.histPos = 0
+	rl.histOffset = 0
 	rl.viUndoHistory = []undoItem{{line: "", pos: 0}}
 
 	// Multisplit
@@ -546,6 +546,10 @@ func (rl *Instance) Readline() (string, error) {
 // entry readline is currently configured for and then update the line entries
 // accordingly.
 func (rl *Instance) editorInput(r []rune) {
+	if len(r) == 0 {
+		return
+	}
+
 	switch rl.modeViMode {
 	case VimKeys:
 		rl.vi(r[0])

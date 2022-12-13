@@ -69,3 +69,11 @@ end
 bait.catch('error', function(event, handler, err)
 	bait.release(event, handler)
 end)
+
+bait.catch('command.not-found', function(cmd)
+	print(string.format('hilbish: %s not found', cmd))
+end)
+
+bait.catch('command.not-executable', function(cmd)
+	print(string.format('hilbish: %s: not executable', cmd))
+end)
