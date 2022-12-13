@@ -85,6 +85,7 @@ random errors introduced with the new Lua runtime (see [#197])
 - `exec`, `clear` and `cat` builtin commands
 - `hilbish.cancel` hook
 - 1st item on history is now inserted when history search menu is opened ([#148])
+- Case insensitive tab completion! It can be enabled with the `insensitive` opt.
 
 [#148]: https://github.com/Rosettea/Hilbish/issues/148
 [#197]: https://github.com/Rosettea/Hilbish/issues/197

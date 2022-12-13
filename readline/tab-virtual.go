@@ -74,7 +74,9 @@ func (rl *Instance) insertCandidate() {
 
 		// Ensure no indexing error happens with prefix
 		if len(completion) >= prefix {
-			rl.insert([]rune(completion[prefix:]))
+			rl.viDeleteByAdjust(-prefix)
+
+			rl.insert([]rune(completion))
 			if !cur.TrimSlash && !cur.NoSpace {
 				rl.insert([]rune(" "))
 			}
@@ -86,7 +88,6 @@ func (rl *Instance) insertCandidate() {
 func (rl *Instance) updateVirtualComp() {
 	cur := rl.getCurrentGroup()
 	if cur != nil {
-
 		completion := cur.getCurrentCell(rl)
 		prefix := len(rl.tcPrefix)
 
@@ -99,6 +100,9 @@ func (rl *Instance) updateVirtualComp() {
 			rl.viUndoSkipAppend = true
 			rl.resetTabCompletion()
 		} else {
+			if strings.HasSuffix(string(rl.line), rl.tcPrefix) && (!rl.modeAutoFind || rl.searchMode != HistoryFind) {
+				rl.viDeleteByAdjust(-prefix)
+			}
 
 			// Special case for the only special escape, which
 			// if not handled, will make us insert the first
@@ -109,7 +113,12 @@ func (rl *Instance) updateVirtualComp() {
 
 			// Or insert it virtually.
 			if len(completion) >= prefix {
-				rl.insertCandidateVirtual([]rune(completion[prefix:]))
+				comp := completion
+				if rl.modeAutoFind && rl.searchMode == HistoryFind {
+					comp = completion[prefix:]
+				}
+
+				rl.insertCandidateVirtual([]rune(comp))
 			}
 		}
 	}
@@ -173,7 +182,7 @@ func (rl *Instance) resetVirtualComp(drop bool) {
 				completion = completion + " "
 			}
 		}
-		rl.insertCandidateVirtual([]rune(completion[prefix:]))
+		rl.insertCandidateVirtual([]rune(completion))
 	}
 
 	// Reset virtual

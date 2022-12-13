@@ -72,13 +72,13 @@ func splitForFile(str string) []string {
 	return split
 }
 
-func fileComplete(query, ctx string, fields []string) ([]string, string) {
+func fileComplete(query, ctx string, fields []string, caseInsensitive bool) ([]string, string) {
 	q := splitForFile(ctx)
 
-	return matchPath(q[len(q) - 1])
+	return matchPath(q[len(q) - 1], caseInsensitive)
 }
 
-func binaryComplete(query, ctx string, fields []string) ([]string, string) {
+func binaryComplete(query, ctx string, fields []string, caseInsensitive bool) ([]string, string) {
 	q := splitForFile(ctx)
 	query = q[len(q) - 1]
 
@@ -87,7 +87,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	prefixes := []string{"./", "../", "/", "~/"}
 	for _, prefix := range prefixes {
 		if strings.HasPrefix(query, prefix) {
-			fileCompletions, filePref := matchPath(query)
+			fileCompletions, filePref := matchPath(query, caseInsensitive)
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
@@ -132,7 +132,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	return completions, query
 }
 
-func matchPath(query string) ([]string, string) {
+func matchPath(query string, caseInsensitive bool) ([]string, string) {
 	oldQuery := query
 	query = strings.TrimPrefix(query, "\"")
 	var entries []string
@@ -148,9 +148,17 @@ func matchPath(query string) ([]string, string) {
 		baseName = filepath.Base(query)
 	}
 
+	if caseInsensitive {
+		baseName = strings.ToLower(baseName)
+	}
+
 	files, _ := os.ReadDir(path)
 	for _, file := range files {
-		if strings.HasPrefix(file.Name(), baseName) {
+		fname := file.Name()
+		if caseInsensitive {
+			fname = strings.ToLower(fname)
+		}
+		if strings.HasPrefix(fname, baseName) {
 			entry := file.Name()
 			if file.IsDir() {
 				entry = entry + string(os.PathSeparator)
@@ -174,8 +182,8 @@ func escapeFilename(fname string) string {
 
 func completionLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
-		"files": {luaFileComplete, 3, false},
-		"bins": {luaBinaryComplete, 3, false},
+		"files": {luaFileComplete, 3, true},
+		"bins": {luaBinaryComplete, 3, true},
 		"call": {callLuaCompleter, 4, false},
 		"handler": {completionHandler, 2, false},
 	}
@@ -231,12 +239,12 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
+	query, ctx, fds, insensitive, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
 	}
 
-	completions, pfx := fileComplete(query, ctx, fds)
+	completions, pfx := fileComplete(query, ctx, fds, insensitive)
 	luaComps := rt.NewTable()
 
 	for i, comp := range completions {
@@ -247,12 +255,12 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
+	query, ctx, fds, insensitive, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
 	}
 
-	completions, pfx := binaryComplete(query, ctx, fds)
+	completions, pfx := binaryComplete(query, ctx, fds, insensitive)
 	luaComps := rt.NewTable()
 
 	for i, comp := range completions {
@@ -262,21 +270,30 @@ func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
+func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, bool, error) {
 	if err := c.CheckNArgs(3); err != nil {
-		return "", "", []string{}, err
+		return "", "", []string{}, false, err
 	}
 	query, err := c.StringArg(0)
 	if err != nil {
-		return "", "", []string{}, err
+		return "", "", []string{}, false, err
 	}
 	ctx, err := c.StringArg(1)
 	if err != nil {
-		return "", "", []string{}, err
+		return "", "", []string{}, false, err
 	}
 	fields, err := c.TableArg(2)
 	if err != nil {
-		return "", "", []string{}, err
+		return "", "", []string{}, false, err
+	}
+	var insensitive bool
+	if len(c.Etc()) != 0 {
+		typ := c.Etc()[0]
+		var ok bool
+		insensitive, ok = typ.TryBool()
+		if !ok {
+			return "", "", []string{}, false, errors.New("bad argument #4 (expected bool, got " + typ.TypeName() + ")")
+		}
 	}
 
 	var fds []string
@@ -286,5 +303,5 @@ func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, er
 		}
 	})
 
-	return query, ctx, fds, err
+	return query, ctx, fds, insensitive, err
 }

@@ -15,7 +15,7 @@ function hilbish.completion.handler(line, pos)
 	local query = fields[#fields]
 
 	if #fields == 1 then
-		local comps, pfx = hilbish.completion.bins(query, ctx, fields)
+		local comps, pfx = hilbish.completion.bins(query, ctx, fields, hilbish.opts.insensitive)
 		local compGroup = {
 			items = comps,
 			type = 'grid'
@@ -29,7 +29,7 @@ function hilbish.completion.handler(line, pos)
 			return compGroups, pfx
 		end
 
-		local comps, pfx = hilbish.completion.files(query, ctx, fields)
+		local comps, pfx = hilbish.completion.files(query, ctx, fields, hilbish.opts.insensitive)
 		local compGroup = {
 			items = comps,
 			type = 'grid'
