@@ -1,9 +1,16 @@
 # 🎀 Changelog
 
 ## Unreleased
-**NOTE:** Hilbish now uses [Task] insead of Make for builds.
-Windows support is also now at a lower tier; The only thing guaranteed is
-Hilbish *compiling* on Windows.
+**NOTES FOR USERS/PACKAGERS UPDATING:**
+- Hilbish now uses [Task] insead of Make for builds.
+- The doc format has been changed from plain text to markdown.
+**YOU MUST reinstall Hilbish to remove the duplicate, old docs.**
+- Hilbish will by default install to **`/usr/local`** instead of just `/usr/`
+when building via Task. This is mainly to avoid conflict of distro packages
+and local installs, and is the correct place when building from git either way.
+To keep Hilbish in `/usr`, you must have `PREFIX="/usr/"` when running `task build` or `task install`
+- Windows is no longer supported. It will build and run, but **will** have problems.
+If you want to help fix the situation, start a discussion or open an issue and contribute.
 
 [Task]: https://taskfile.dev/#/
 
