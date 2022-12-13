@@ -11,11 +11,77 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
+var charEscapeMap = []string{
+	"\"", "\\\"",
+	"'", "\\'",
+	"`", "\\`",
+	" ", "\\ ",
+	"(", "\\(",
+	")", "\\)",
+	"[", "\\[",
+	"]", "\\]",
+	"$", "\\$",
+	"&", "\\&",
+	"*", "\\*",
+	">", "\\>",
+	"<", "\\<",
+	"|", "\\|",
+}
+var charEscapeMapInvert = invert(charEscapeMap)
+var escapeReplaer = strings.NewReplacer(charEscapeMap...)
+var escapeInvertReplaer = strings.NewReplacer(charEscapeMapInvert...)
+
+func invert(m []string) []string {
+	newM := make([]string, len(charEscapeMap))
+	for i := range m {
+		if (i + 1) % 2 == 0 {
+			newM[i] = m[i - 1]
+			newM[i - 1] = m[i]
+		}
+	}
+
+	return newM
+}
+
+func splitForFile(str string) []string {
+	split := []string{}
+	sb := &strings.Builder{}
+	quoted := false
+
+	for i, r := range str {
+		if r == '"' {
+			quoted = !quoted
+			sb.WriteRune(r)
+		} else if r == ' ' && str[i - 1] == '\\' {
+			sb.WriteRune(r)
+		} else if !quoted && r == ' ' {
+			split = append(split, sb.String())
+			sb.Reset()
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+	if strings.HasSuffix(str, " ") {
+		split = append(split, "")
+	}
+
+	if sb.Len() > 0 {
+		split = append(split, sb.String())
+	}
+
+	return split
+}
+
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
-	return matchPath(query)
+	q := splitForFile(ctx)
+
+	return matchPath(q[len(q) - 1])
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
+	q := splitForFile(ctx)
+	query = q[len(q) - 1]
+
 	var completions []string
 
 	prefixes := []string{"./", "../", "/", "~/"}
@@ -25,7 +91,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
-					if err := findExecutable(fullPath, false, true); err != nil {
+					if err := findExecutable(escapeInvertReplaer.Replace(fullPath), false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
@@ -37,7 +103,6 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 
 	// filter out executables, but in path
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
-		// print dir to stderr for debugging
 		// search for an executable which matches our query string
 		if matches, err := filepath.Glob(filepath.Join(dir, query + "*")); err == nil {
 			// get basename from matches
@@ -68,9 +133,12 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 }
 
 func matchPath(query string) ([]string, string) {
+	oldQuery := query
+	query = strings.TrimPrefix(query, "\"")
 	var entries []string
 	var baseName string
 
+	query = escapeInvertReplaer.Replace(query)
 	path, _ := filepath.Abs(util.ExpandHome(filepath.Dir(query)))
 	if string(query) == "" {
 		// filepath base below would give us "."
@@ -87,34 +155,21 @@ func matchPath(query string) ([]string, string) {
 			if file.IsDir() {
 				entry = entry + string(os.PathSeparator)
 			}
-			entry = escapeFilename(entry)
+			if !strings.HasPrefix(oldQuery, "\"") {
+				entry = escapeFilename(entry)
+			}
 			entries = append(entries, entry)
 		}
+	}
+	if !strings.HasPrefix(oldQuery, "\"") {
+		baseName = escapeFilename(baseName)
 	}
 
 	return entries, baseName
 }
 
 func escapeFilename(fname string) string {
-	args := []string{
-		"\"", "\\\"",
-		"'", "\\'",
-		"`", "\\`",
-		" ", "\\ ",
-		"(", "\\(",
-		")", "\\)",
-		"[", "\\[",
-		"]", "\\]",
-		"$", "\\$",
-		"&", "\\&",
-		"*", "\\*",
-		">", "\\>",
-		"<", "\\<",
-		"|", "\\|",
-	}
-
-	r := strings.NewReplacer(args...)
-	return r.Replace(fname)
+	return escapeReplaer.Replace(fname)
 }
 
 func completionLoader(rtm *rt.Runtime) *rt.Table {

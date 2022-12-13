@@ -28,13 +28,13 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	input, exitCode, cont, err := handleSh(cmd)
+	_, exitCode, cont, err := execSh(aliases.Resolve(cmd))
 	var luaErr rt.Value = rt.NilValue
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
 	}
 	runnerRet := rt.NewTable()
-	runnerRet.Set(rt.StringValue("input"), rt.StringValue(input))
+	runnerRet.Set(rt.StringValue("input"), rt.StringValue(cmd))
 	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
 	runnerRet.Set(rt.StringValue("continue"), rt.BoolValue(cont))
 	runnerRet.Set(rt.StringValue("err"), luaErr)

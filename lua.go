@@ -12,12 +12,16 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
+	"github.com/arnodel/golua/lib/debuglib"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
 	l = rt.New(os.Stdout)
+	l.PushContext(rt.RuntimeContextDef{
+		MessageHandler: debuglib.Traceback,
+	})
 	lib.LoadAll(l)
 
 	lib.LoadLibs(l, hilbishLoader)
@@ -28,25 +32,39 @@ func luaInit() {
 	lib.LoadLibs(l, fs.Loader)
 	lib.LoadLibs(l, terminal.Loader)
 
-	cmds := commander.New()
+	cmds := commander.New(l)
 	// When a command from Lua is added, register it for use
-	cmds.Events.On("commandRegister", func(cmdName string, cmd *rt.Closure) {
+	cmds.Events.On("commandRegister", func(args ...interface{}) {
+		cmdName := args[0].(string)
+		cmd := args[1].(*rt.Closure)
+
 		commands[cmdName] = cmd
 	})
-	cmds.Events.On("commandDeregister", func(cmdName string) {
+	cmds.Events.On("commandDeregister", func(args ...interface{}) {
+		cmdName := args[0].(string)
+
 		delete(commands, cmdName)
 	})
 	lib.LoadLibs(l, cmds.Loader)
 
-	hooks = bait.New()
+	hooks = bait.New(l)
+	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
+		fmt.Println("Error in `error` hook handler:", err)
+		hooks.Off(event, handler)
+	})
+
 	lib.LoadLibs(l, hooks.Loader)
 
 	// Add Ctrl-C handler
-	hooks.Em.On("signal.sigint", func() {
+	hooks.On("signal.sigint", func(...interface{}) {
 		if !interactive {
 			os.Exit(0)
 		}
 	})
+
+	lr.rl.RawInputCallback = func(r []rune) {
+		hooks.Emit("hilbish.rawInput", string(r))
+	}
 
 	// Add more paths that Lua can require from
 	err := util.DoString(l, "package.path = package.path .. " + requirePaths)

@@ -13,18 +13,22 @@ import (
 
 type lineReader struct {
 	rl *readline.Instance
+	fileHist *fileHistory
 }
-var fileHist *fileHistory
 var hinter *rt.Closure
 var highlighter *rt.Closure
 
 func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
+	lr := &lineReader{
+		rl: rl,
+	}
+
 	// we don't mind hilbish.read rl instances having completion,
 	// but it cant have shared history
 	if !noHist {
-		fileHist = newFileHistory()
-		rl.SetHistoryCtrlR("History", fileHist)
+		lr.fileHist = newFileHistory(defaultHistPath)
+		rl.SetHistoryCtrlR("History", &luaHistory{})
 		rl.HistoryAutoWrite = false
 	}
 	rl.ShowVimMode = false
@@ -44,14 +48,14 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 			case readline.VimActionPaste: actionStr = "paste"
 			case readline.VimActionYank: actionStr = "yank"
 		}
-		hooks.Em.Emit("hilbish.vimAction", actionStr, args)
+		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
 		if hinter == nil {
 			return []rune{}
 		}
 
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(hinter),
 		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
@@ -171,13 +175,11 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return pfx, compGroups
 	}
 
-	return &lineReader{
-		rl,
-	}
+	return lr
 }
 
 func (lr *lineReader) Read() (string, error) {
-	hooks.Em.Emit("command.precmd", nil)
+	hooks.Emit("command.precmd", nil)
 	s, err := lr.rl.Readline()
 	// this is so dumb
 	if err == readline.EOF {
@@ -212,7 +214,7 @@ func (lr *lineReader) SetRightPrompt(p string) {
 }
 
 func (lr *lineReader) AddHistory(cmd string) {
-	fileHist.Write(cmd)
+	lr.fileHist.Write(cmd)
 }
 
 func (lr *lineReader) ClearInput() {
@@ -253,7 +255,7 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 }
 
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.PushingNext1(t.Runtime, rt.IntValue(int64(fileHist.Len()))), nil
+	return c.PushingNext1(t.Runtime, rt.IntValue(int64(lr.fileHist.Len()))), nil
 }
 
 func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -265,17 +267,17 @@ func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 		return nil, err
 	}
 
-	cmd, _ := fileHist.GetLine(int(idx))
+	cmd, _ := lr.fileHist.GetLine(int(idx))
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 }
 
 func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	tbl := rt.NewTable()
-	size := fileHist.Len()
+	size := lr.fileHist.Len()
 
 	for i := 1; i < size; i++ {
-		cmd, _ := fileHist.GetLine(i)
+		cmd, _ := lr.fileHist.GetLine(i)
 		tbl.Set(rt.IntValue(int64(i)), rt.StringValue(cmd))
 	}
 
@@ -283,6 +285,6 @@ func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 }
 
 func (lr *lineReader) luaClearHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	fileHist.clear()
+	lr.fileHist.clear()
 	return c.Next(), nil
 }

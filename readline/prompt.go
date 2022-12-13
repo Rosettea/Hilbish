@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	ansi "github.com/acarl005/stripansi"
-	"github.com/rivo/uniseg"
 )
 
 // SetPrompt will define the readline prompt string.
@@ -209,7 +208,7 @@ func (rl *Instance) colorizeVimPrompt(p []rune) (cp []rune) {
 // getting its real-printed length.
 func getRealLength(s string) (l int) {
 	stripped := ansi.Strip(s)
-	return uniseg.GraphemeClusterCount(stripped)
+	return getWidth([]rune(stripped))
 }
 
 func (rl *Instance) echoRightPrompt() {

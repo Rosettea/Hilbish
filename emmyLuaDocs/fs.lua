@@ -22,6 +22,10 @@ function fs.dir() end
 --- For the rules, see Go's filepath.Glob
 function fs.glob() end
 
+--- Takes paths and joins them together with the OS's
+--- directory separator (forward or backward slash).
+function fs.join() end
+
 --- Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
 --- @param name string
 --- @param recursive boolean

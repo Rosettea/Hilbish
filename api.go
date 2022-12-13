@@ -44,7 +44,6 @@ var exports = map[string]util.LuaExport{
 	"which": {hlwhich, 1, false},
 }
 
-var greeting string
 var hshMod *rt.Table
 var hilbishLoader = packagelib.Loader{
 	Load: hilbishLoad,
@@ -103,10 +102,6 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	greeting = `Welcome to {magenta}Hilbish{reset}, {cyan}` + username + `{reset}.
-The nice lil shell for {blue}Lua{reset} fanatics!
-Check out the {blue}{bold}guide{reset} command to get started.
-`
 	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()), "Hilbish version")
 	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
 	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
@@ -114,7 +109,6 @@ Check out the {blue}{bold}guide{reset} command to get started.
 	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
 	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
 	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
-	util.SetFieldProtected(fakeMod, mod, "greeting", rt.StringValue(greeting), "Hilbish's welcome message for interactive shells. It has Lunacolors formatting.")
 	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
 	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
 	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
@@ -195,7 +189,7 @@ func getenv(key, fallback string) string {
 
 func setVimMode(mode string) {
 	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	hooks.Em.Emit("hilbish.vimMode", mode)
+	hooks.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
@@ -256,21 +250,27 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt) -> input?
+// read(prompt?) -> input?
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 // --- @param prompt string
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
+	luaprompt := c.Arg(0)
+	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
+		return nil, errors.New("expected #1 to be a string")
 	}
-	luaprompt, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
+	prompt, ok := luaprompt.TryString()
+	if !ok {
+		// if we are here and `luaprompt` is not a string, it's nil
+		// substitute with an empty string
+		prompt = ""
 	}
-	lualr := newLineReader("", true)
-	lualr.SetPrompt(luaprompt)
+	
+	lualr := &lineReader{
+		rl: readline.NewInstance(),
+	}
+	lualr.SetPrompt(prompt)
 
 	input, err := lualr.Read()
 	if err != nil {

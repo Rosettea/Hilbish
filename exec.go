@@ -85,7 +85,7 @@ func isExecError(err error) (execError, bool) {
 func runInput(input string, priv bool) {
 	running = true
 	cmdString := aliases.Resolve(input)
-	hooks.Em.Emit("command.preexec", input, cmdString)
+	hooks.Emit("command.preexec", input, cmdString)
 
 	rerun:
 	var exitCode uint8
@@ -96,7 +96,7 @@ func runInput(input string, priv bool) {
 	if currentRunner.Type() == rt.StringType {
 		switch currentRunner.AsString() {
 			case "hybrid":
-				_, _, err = handleLua(cmdString)
+				_, _, err = handleLua(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -108,9 +108,9 @@ func runInput(input string, priv bool) {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "lua":
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "sh":
 				input, exitCode, cont, err = handleSh(input)
 		}
@@ -140,10 +140,10 @@ func runInput(input string, priv bool) {
 
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
-			hooks.Em.Emit("command." + exErr.typ, exErr.cmd)
-			err = exErr.sprint()
+			hooks.Emit("command." + exErr.typ, exErr.cmd)
+		} else {
+			fmt.Fprintln(os.Stderr, err)
 		}
-		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
 }
@@ -152,6 +152,7 @@ func reprompt(input string) (string, error) {
 	for {
 		in, err := continuePrompt(strings.TrimSuffix(input, "\\"))
 		if err != nil {
+			lr.SetPrompt(fmtPrompt(prompt))
 			return input, err
 		}
 
@@ -194,7 +195,8 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	return
 }
 
-func handleLua(cmdString string) (string, uint8, error) {
+func handleLua(input string) (string, uint8, error) {
+	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
@@ -220,7 +222,17 @@ func handleLua(cmdString string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (string, uint8, bool, error) {
+func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr error) {
+	shRunner := hshMod.Get(rt.StringValue("runner")).AsTable().Get(rt.StringValue("sh"))
+	var err error
+	input, exitCode, cont, runErr, err = runLuaRunner(shRunner, cmdString)
+	if err != nil {
+		runErr = err
+	}
+	return
+}
+
+func execSh(cmdString string) (string, uint8, bool, error) {
 	_, _, err := execCommand(cmdString, true)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
@@ -540,13 +552,9 @@ func splitInput(input string) ([]string, string) {
 }
 
 func cmdFinish(code uint8, cmdstr string, private bool) {
-	// if input has space at the beginning, dont put in history
-	if interactive && !private {
-		handleHistory(cmdstr)
-	}
 	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)), "Exit code of last exected command")
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values
-	hooks.Em.Emit("command.exit", rt.IntValue(int64(code)), cmdstr)
+	hooks.Emit("command.exit", rt.IntValue(int64(code)), cmdstr, private)
 }

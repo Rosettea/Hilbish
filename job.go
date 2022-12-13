@@ -67,7 +67,7 @@ func (j *job) start() error {
 	j.pid = proc.Pid
 	j.running = true
 
-	hooks.Em.Emit("job.start", rt.UserDataValue(j.ud))
+	hooks.Emit("job.start", rt.UserDataValue(j.ud))
 
 	return err
 }
@@ -82,7 +82,7 @@ func (j *job) stop() {
 
 func (j *job) finish() {
 	j.running = false
-	hooks.Em.Emit("job.done", rt.UserDataValue(j.ud))
+	hooks.Emit("job.done", rt.UserDataValue(j.ud))
 }
 
 func (j *job) wait() {
@@ -236,7 +236,7 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 	jb.ud = jobUserData(jb)
 
 	j.jobs[j.latestID] = jb
-	hooks.Em.Emit("job.add", rt.UserDataValue(jb.ud))
+	hooks.Emit("job.add", rt.UserDataValue(jb.ud))
 
 	return jb
 }

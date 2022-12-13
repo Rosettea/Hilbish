@@ -1,13 +1,8 @@
 local fs = require 'fs'
 
-function cdHandle(inp)
-	local res = hilbish.runner.lua(inp)
-
-	if not res.err then
-		return res
-	end
-
-	res = hilbish.runner.sh(inp)
+local oldShRunner = hilbish.runner.sh
+function hilbish.runner.sh(input)
+	local res = oldShRunner(input)
 
 	if res.exit ~= 0 and hilbish.opts.autocd then
 		local ok, stat = pcall(fs.stat, res.input)
@@ -21,5 +16,3 @@ function cdHandle(inp)
 
 	return res
 end
-
-hilbish.runner.setMode(cdHandle)

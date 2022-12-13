@@ -24,7 +24,7 @@ func delayedSyntaxTimer(rl *Instance, i int64) {
 	// }
 
 	// We pass either the current line or the one with the current completion.
-	newLine := rl.DelayedSyntaxWorker(rl.getLine())
+	newLine := rl.DelayedSyntaxWorker(rl.GetLine())
 	var sLine string
 	count := atomic.LoadInt64(&rl.delayedSyntaxCount)
 	if count != i {

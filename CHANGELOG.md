@@ -1,6 +1,19 @@
 # 🎀 Changelog
 
 ## Unreleased
+**NOTES FOR USERS/PACKAGERS UPDATING:**
+- Hilbish now uses [Task] insead of Make for builds.
+- The doc format has been changed from plain text to markdown.
+**YOU MUST reinstall Hilbish to remove the duplicate, old docs.**
+- Hilbish will by default install to **`/usr/local`** instead of just `/usr/`
+when building via Task. This is mainly to avoid conflict of distro packages
+and local installs, and is the correct place when building from git either way.
+To keep Hilbish in `/usr`, you must have `PREFIX="/usr/"` when running `task build` or `task install`
+- Windows is no longer supported. It will build and run, but **will** have problems.
+If you want to help fix the situation, start a discussion or open an issue and contribute.
+
+[Task]: https://taskfile.dev/#/
+
 ### Added
 - Inline hints, akin to fish and the others.
 To make a handler for hint text, you can set the `hilbish.hinter` function.
@@ -52,11 +65,29 @@ having and using multiple runners.
   - `fs.basename(path)` gets the basename of path
   - `fs.dir(path)` gets the directory part of path
   - `fs.glob(pattern)` globs files and directories based on patterns
+  - `fs.join(dirs...)` joins directories by OS dir separator
 - .. and 2 properties
   - `fs.pathSep` is the separator for filesystem paths and directories
   - `fs.pathListSep` is the separator for $PATH env entries
 - Lua modules located in `hilbish.userDir.data .. '/hilbish/start'` (like `~/.local/share/hilbish/start/foo/init.lua`)
 will be ran on startup
+- `hilbish.init` hook, thrown after Hilbish has initialized Lua side
+- Message of the day on startup (`hilbish.motd`), mainly intended as quick
+small news pieces for releases. It is printed by default. To disable it,
+set `hilbish.opts.motd` to false.
+- `history` opt has been added and is true by default. Setting it to false
+disables commands being added to history.
+- `hilbish.rawInput` hook for input from the readline library
+- Completion of files in quotes
+- A new and "safer" event emitter has been added. This causes a performance deficit, but avoids a lot of
+random errors introduced with the new Lua runtime (see [#197])
+- `bait.release(name, catcher)` removes `handler` for the named `event`
+- `exec`, `clear` and `cat` builtin commands
+- `hilbish.cancel` hook
+- 1st item on history is now inserted when history search menu is opened ([#148])
+
+[#148]: https://github.com/Rosettea/Hilbish/issues/148
+[#197]: https://github.com/Rosettea/Hilbish/issues/197
 
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
@@ -72,12 +103,18 @@ It can (at the moment) have 4 variables:
 User input has been added to the return to account for runners wanting to
 prompt for continued input, and to add it properly to history. `continue`
 got added so that it would be easier for runners to get continued input
-without having to actually handle it at all.
-
+without having to actually handle it at all.  
 - **Breaking Change:** Job objects and timers are now Lua userdata instead
 of a table, so their functions require you to call them with a colon instead
 of a dot. (ie. `job.stop()` -> `job:stop()`)
 - All `fs` module functions which take paths now implicitly expand ~ to home.
+- **Breaking Change:** `hilbish.greeting` has been moved to an opt (`hilbish.opts.greeting`) and is
+always printed by default. To disable it, set the opt to false.
+- **Breaking Change:** `command.no-perm` hook has been replaced with `command.not-executable`
+- History is now fetched from Lua, which means users can override `hilbish.history`
+methods to make it act how they want.
+- `guide` has been removed. See the [website](https://rosettea.github.io/Hilbish/)
+for general tips and documentation
 
 ### Fixed
 - If in Vim replace mode, input at the end of the line inserts instead of
@@ -112,6 +149,33 @@ for explanation.
 Lua `job.stop` function.
 - Jobs are always started in sh exec handler now instead of only successful start.
 - SIGTERM is handled properly now, which means stopping jobs and timers.
+- Fix panic on trailing newline on pasted multiline text.
+- Completions will no longer be refreshed if the prompt refreshes while the
+menu is open.
+- Print error on search fail instead of panicking
+- Windows related fixes:
+  - `hilbish.dataDir` now has tilde (`~`) expanded.
+  - Arrow keys now work on Windows terminals.
+  - Escape codes now work.
+- Escape percentage symbols in completion entries, so you will no longer see
+an error of missing format variable
+- Fix an error with sh syntax in aliases
+- Prompt now works with east asian characters (CJK)
+- Set back the prompt to normal after exiting the continue prompt with ctrl-d
+- Users can now tab complete files with spaces while quoted or with escaped spaces.
+This means a query of `Files\ to\ ` with file names of `Files to tab complete` and `Files to complete`
+will result in the files being completed.
+- Fixed grid menu display if cell width ends up being the width of the terminal
+- Cut off item names in grid menu if its longer than cell width
+- Fix completion search menu disappearing
+- Completion paths having duplicated characters if it's escaped
+- Get custom completion command properly to call from Lua
+- Put proper command on the line when using up and down arrow keys to go through command history
+
+## [2.0.0-rc1] - 2022-09-14
+This is a pre-release version of Hilbish for testing. To see the changelog,
+refer to the `Unreleased` section of the [full changelog](CHANGELOG.md)
+(version 2.0.0 for future reference).
 
 ## [1.2.0] - 2022-03-17
 ### Added
@@ -536,6 +600,8 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.0.0-rc1]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0-rc1
+[1.2.0]: https://github.com/Rosettea/Hilbish/compare/v1.1.4...v1.2.0
 [1.1.0]: https://github.com/Rosettea/Hilbish/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/Rosettea/Hilbish/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/Rosettea/Hilbish/compare/v1.0.2...v1.0.3

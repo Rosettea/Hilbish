@@ -134,6 +134,7 @@ type Instance struct {
 	// history operating params
 	lineBuf    string
 	histPos    int
+	histOffset int
 	histNavIdx int // Used for quick history navigation.
 
 	//
@@ -198,6 +199,8 @@ type Instance struct {
 
 	ViModeCallback func(ViMode)
 	ViActionCallback func(ViAction, []string)
+
+	RawInputCallback func([]rune) // called on all input
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.

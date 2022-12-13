@@ -15,11 +15,11 @@ func handleSignals() {
 
 	for s := range c {
 		switch s {
-		case os.Interrupt: hooks.Em.Emit("signal.sigint")
+		case os.Interrupt: hooks.Emit("signal.sigint")
 		case syscall.SIGTERM: exit(0)
-		case syscall.SIGWINCH: hooks.Em.Emit("signal.resize")
-		case syscall.SIGUSR1: hooks.Em.Emit("signal.sigusr1")
-		case syscall.SIGUSR2: hooks.Em.Emit("signal.sigusr2")
+		case syscall.SIGWINCH: hooks.Emit("signal.resize")
+		case syscall.SIGUSR1: hooks.Emit("signal.sigusr1")
+		case syscall.SIGUSR2: hooks.Emit("signal.sigusr2")
 		}
 	}
 }
