@@ -141,9 +141,9 @@ func runInput(input string, priv bool) {
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Emit("command." + exErr.typ, exErr.cmd)
-			err = exErr.sprint()
+		} else {
+			fmt.Fprintln(os.Stderr, err)
 		}
-		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
 }
