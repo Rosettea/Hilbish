@@ -7,6 +7,12 @@ local hilbish = {}
 --- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
+--- This is the same as the `hilbish.runnerMode` function. It takes a callback,
+--- which will be used to execute all interactive input.
+--- In normal cases, neither callbacks should be overrided by the user,
+--- as the higher level functions listed below this will handle it.
+function hilbish.runner.setMode(cb) end
+
 --- Calls a completer function. This is mainly used to call
 --- a command completer, which will have a `name` in the form
 --- of `command.name`, example: `command.git`
@@ -127,6 +133,14 @@ function hilbish.completions.bins(query, ctx, fields) end
 
 --- Returns file completion candidates based on the provided query.
 function hilbish.completions.files(query, ctx, fields) end
+
+--- Evaluates `cmd` as Lua input. This is the same as using `dofile`
+--- or `load`, but is appropriated for the runner interface.
+function hilbish.runner.lua(cmd) end
+
+--- Runs a command in Hilbish's shell script interpreter.
+--- This is the equivalent of using `source`.
+function hilbish.runner.sh(cmd) end
 
 --- Stops a timer.
 function hilbish.timers:stop() end
