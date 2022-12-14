@@ -5,7 +5,8 @@ layout: apidoc
 ---
 
 ## Introduction
- Manage interactive jobs in Hilbish via Lua.
+
+Manage interactive jobs in Hilbish via Lua.
 
 Jobs are the name of background tasks/commands. A job can be started via
 interactive usage or with the functions defined below for use in external runners.

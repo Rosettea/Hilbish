@@ -155,6 +155,9 @@ function hilbish.jobs.stop() end
 --- This is the equivalent of using `source`.
 function hilbish.runner.sh(cmd) end
 
+--- Starts a timer.
+function hilbish.timers:start() end
+
 --- Stops a timer.
 function hilbish.timers:stop() end
 
@@ -198,5 +201,12 @@ function hilbish.history.get(idx) end
 --- Returns the amount of commands in the history.
 --- @returns number
 function hilbish.history.size() end
+
+--- Creates a timer that runs based on the specified `time` in milliseconds.
+--- The `type` can either be interval (value of 0) or timeout (value of 1).
+function hilbish.timers.create(type, time, callback) end
+
+--- Retrieves a timer via its ID.
+function hilbish.timers.get(id) end
 
 return hilbish

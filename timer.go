@@ -73,6 +73,10 @@ func (t *timer) stop() error {
 	return nil
 }
 
+// #interface timers
+// #member
+// start()
+// Starts a timer.
 func timerStart(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
