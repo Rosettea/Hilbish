@@ -12,9 +12,9 @@ import (
 // The `os` interface provides simple text information properties about
 // the current OS on the systen. This mainly includes the name and
 // version.
-// #property family Family name of the current OS
-// #property name Pretty name of the current OS
-// #property version Version of the current OS
+// #field family Family name of the current OS
+// #field name Pretty name of the current OS
+// #field version Version of the current OS
 func hshosLoader(rtm *rt.Runtime) *rt.Table {
 	info, _ := osinfo.GetOSInfo()
 	mod := rt.NewTable()

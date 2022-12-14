@@ -29,6 +29,7 @@ type emmyPiece struct {
 
 type module struct {
 	Docs []docPiece
+	Fields []docPiece
 	Properties []docPiece
 	ShortDescription string
 	Description string
@@ -45,6 +46,7 @@ type docPiece struct {
 	GoFuncName string
 	IsInterface bool
 	IsMember bool
+	Fields []docPiece
 	Properties []docPiece
 }
 
@@ -116,7 +118,15 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 	}
 	em := emmyPiece{FuncName: funcName}
 
-	// manage properties
+	// manage fields
+	fields := []docPiece{}
+	for _, tag := range tags["field"] {
+		fields = append(fields, docPiece{
+			FuncName: tag.id,
+			Doc: tag.fields,
+		})
+	}
+
 	properties := []docPiece{}
 	for _, tag := range tags["property"] {
 		properties = append(properties, docPiece{
@@ -159,6 +169,7 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 		IsInterface: inInterface,
 		IsMember: isMember,
 		ParentModule: parentMod,
+		Fields: fields,
 		Properties: properties,
 	}
 	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
@@ -253,6 +264,7 @@ func main() {
 				desc := piece.Doc[1:]
 				interfaceModules[modname].ShortDescription = shortDesc
 				interfaceModules[modname].Description = strings.Join(desc, "\n")
+				interfaceModules[modname].Fields = piece.Fields
 				interfaceModules[modname].Properties = piece.Properties
 				continue
 			}
@@ -295,13 +307,23 @@ func main() {
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
 			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modu.Description))
+			if len(modu.Fields) != 0 {
+				f.WriteString("## Interface fields\n")
+				for _, dps := range modu.Fields {
+					f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
+					f.WriteString(strings.Join(dps.Doc, " "))
+					f.WriteString("\n")
+				}
+				f.WriteString("\n")
+			}
 			if len(modu.Properties) != 0 {
-				f.WriteString("## Properties\n")
+				f.WriteString("## Object properties\n")
 				for _, dps := range modu.Properties {
 					f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
 					f.WriteString(strings.Join(dps.Doc, " "))
 					f.WriteString("\n")
 				}
+				f.WriteString("\n")
 			}
 			if len(modu.Docs) != 0 {
 				f.WriteString("## Functions\n")

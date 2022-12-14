@@ -128,15 +128,28 @@ function hilbish.timeout(cb, time) end
 --- @param binName string
 function hilbish.which(name) end
 
+--- Puts a job in the background. This acts the same as initially running a job.
+function hilbish.jobs:background() end
+
 --- Returns binary/executale completion candidates based on the provided query.
 function hilbish.completions.bins(query, ctx, fields) end
 
 --- Returns file completion candidates based on the provided query.
 function hilbish.completions.files(query, ctx, fields) end
 
+--- Puts a job in the foreground. This will cause it to run like it was
+--- executed normally and wait for it to complete.
+function hilbish.jobs:foreground() end
+
 --- Evaluates `cmd` as Lua input. This is the same as using `dofile`
 --- or `load`, but is appropriated for the runner interface.
 function hilbish.runner.lua(cmd) end
+
+--- Starts running the job.
+function hilbish.jobs:start() end
+
+--- Stops the job from running.
+function hilbish.jobs.stop() end
 
 --- Runs a command in Hilbish's shell script interpreter.
 --- This is the equivalent of using `source`.
@@ -155,6 +168,21 @@ function hilbish.aliases.list() end
 --- Tries to resolve an alias to its command.
 --- @param alias string
 function hilbish.aliases.resolve(alias) end
+
+--- Adds a new job to the job table. Note that this does not immediately run it.
+function hilbish.jobs.add(cmdstr, args, execPath) end
+
+--- Returns a table of all job objects.
+function hilbish.jobs.all() end
+
+--- Disowns a job. This deletes it from the job table.
+function hilbish.jobs.disown(id) end
+
+--- Get a job object via its ID.
+function hilbish.jobs.get(id) end
+
+--- Returns the last added job from the table.
+function hilbish.jobs.last() end
 
 --- Adds a command to the history.
 --- @param cmd string
