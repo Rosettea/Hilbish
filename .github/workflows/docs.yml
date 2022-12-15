@@ -7,11 +7,12 @@ on:
 jobs:
   gen:
     runs-on: ubuntu-latest
+    needs: build
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
       - name: Run docgen
         run: go run cmd/docgen/docgen.go
+      - name: Run Lua docgen
+        run: ./hilbish cmd/docgen/docgen.lua
       - name: Commit new docs
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
