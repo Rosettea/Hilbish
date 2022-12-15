@@ -2,7 +2,9 @@ name: Generate docs
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+      - docs-refactor
 
 jobs:
   gen:
