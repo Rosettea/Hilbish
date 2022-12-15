@@ -22,6 +22,18 @@ function hilbish.completions.call(name, query, ctx, fields) end
 --- You can check the completions doc for more info.
 function hilbish.completions.handler(line, pos) end
 
+--- Returns the current input line.
+function hilbish.editor.getLine() end
+
+--- Returns the text that is at the register.
+function hilbish.editor.getVimRegister(register) end
+
+--- Inserts text into the line.
+function hilbish.editor.insert(text) end
+
+--- Sets the vim register at `register` to hold the passed text.
+function hilbish.editor.setVimRegister(register, text) end
+
 --- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
