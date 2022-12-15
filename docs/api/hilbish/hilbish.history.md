@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.history
+title: Interface hilbish.history
 description: command history
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

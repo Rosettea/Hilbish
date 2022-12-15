@@ -1,7 +1,10 @@
 ---
-name: Module bait
+title: Module bait
 description: the event emitter
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

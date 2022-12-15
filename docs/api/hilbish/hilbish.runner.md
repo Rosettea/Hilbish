@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.runner
+title: Interface hilbish.runner
 description: interactive command runner customization
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

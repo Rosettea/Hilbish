@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.jobs
+title: Interface hilbish.jobs
 description: background job management
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

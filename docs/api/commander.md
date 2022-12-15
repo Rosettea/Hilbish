@@ -1,7 +1,10 @@
 ---
-name: Module commander
+title: Module commander
 description: library for custom commands
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

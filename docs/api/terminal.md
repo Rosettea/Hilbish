@@ -1,7 +1,10 @@
 ---
-name: Module terminal
+title: Module terminal
 description: low level terminal library
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

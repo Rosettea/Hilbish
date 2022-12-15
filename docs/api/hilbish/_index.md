@@ -1,7 +1,10 @@
 ---
-name: Module hilbish
+title: Module hilbish
 description: the core Hilbish API
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

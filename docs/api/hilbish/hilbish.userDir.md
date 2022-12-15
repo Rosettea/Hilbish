@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.userDir
+title: Interface hilbish.userDir
 description: user-related directories
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.os
+title: Interface hilbish.os
 description: OS Info
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

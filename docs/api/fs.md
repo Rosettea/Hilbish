@@ -1,7 +1,10 @@
 ---
-name: Module fs
+title: Module fs
 description: filesystem interaction and functionality library
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

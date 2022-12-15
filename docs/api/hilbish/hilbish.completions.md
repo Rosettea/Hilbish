@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.completions
+title: Interface hilbish.completions
 description: tab completions
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

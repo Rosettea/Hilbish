@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.aliases
+title: Interface hilbish.aliases
 description: command aliasing
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

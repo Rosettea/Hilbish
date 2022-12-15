@@ -1,7 +1,10 @@
 ---
-name: Interface hilbish.timers
+title: Interface hilbish.timers
 description: timeout and interval API
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 ## Introduction

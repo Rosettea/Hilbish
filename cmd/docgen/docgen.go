@@ -13,9 +13,12 @@ import (
 )
 
 var header = `---
-name: %s %s
+title: %s %s
 description: %s
-layout: apidoc
+layout: doc
+menu:
+  docs:
+    parent: "API"
 ---
 
 `
