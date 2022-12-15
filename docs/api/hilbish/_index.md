@@ -11,6 +11,16 @@ menu:
 The Hilbish module includes the core API, containing
 interfaces and functions which directly relate to shell functionality.
 
+## Interface fields
+- `ver`: The version of Hilbish
+- `user`: Username of the user
+- `host`: Hostname of the machine
+- `dataDir`: Directory for Hilbish data files, including the docs and default modules
+- `interactive`: Is Hilbish in an interactive shell?
+- `login`: Is Hilbish the login shell?
+- `vimMode`: Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
+- `exitCode`: xit code of the last executed command
+
 ## Functions
 ### alias(cmd, orig)
 Sets an alias of `cmd` to `orig`

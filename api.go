@@ -1,6 +1,14 @@
 // the core Hilbish API
 // The Hilbish module includes the core API, containing
 // interfaces and functions which directly relate to shell functionality.
+// #field ver The version of Hilbish
+// #field user Username of the user
+// #field host Hostname of the machine
+// #field dataDir Directory for Hilbish data files, including the docs and default modules
+// #field interactive Is Hilbish in an interactive shell?
+// #field login Is Hilbish the login shell?
+// #field vimMode Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
+// #field exitCode xit code of the last executed command
 package main
 
 import (

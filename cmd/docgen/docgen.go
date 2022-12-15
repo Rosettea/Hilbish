@@ -70,16 +70,11 @@ var prefix = map[string]string{
 	"terminal": "term",
 }
 
-func setupDoc(mod string, fun *doc.Func) *docPiece {
-	docs := strings.TrimSpace(fun.Doc)
-	inInterface := strings.HasPrefix(docs, "#interface")
-	if (!strings.HasPrefix(fun.Name, prefix[mod]) && !inInterface) || (strings.ToLower(fun.Name) == "loader" && !inInterface) {
-		return nil
-	}
-
+func getTagsAndDocs(docs string) (map[string][]tag, []string) {
 	pts := strings.Split(docs, "\n")
 	parts := []string{}
 	tags := make(map[string][]tag)
+
 	for _, part := range pts {
 		if strings.HasPrefix(part, "#") {
 			tagParts := strings.Split(strings.TrimPrefix(part, "#"), " ")
@@ -109,6 +104,30 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 		}
 	}
 
+	return tags, parts
+}
+
+func docPieceTag(tagName string, tags map[string][]tag) []docPiece {
+	dps := []docPiece{}
+	for _, tag := range tags[tagName] {
+		dps = append(dps, docPiece{
+			FuncName: tag.id,
+			Doc: tag.fields,
+		})
+	}
+
+	return dps
+}
+
+func setupDoc(mod string, fun *doc.Func) *docPiece {
+	docs := strings.TrimSpace(fun.Doc)
+	inInterface := strings.HasPrefix(docs, "#interface")
+	if (!strings.HasPrefix(fun.Name, prefix[mod]) && !inInterface) || (strings.ToLower(fun.Name) == "loader" && !inInterface) {
+		return nil
+	}
+
+	tags, parts := getTagsAndDocs(docs)
+
 	var interfaces string
 	funcsig := parts[0]
 	doc := parts[1:]
@@ -121,22 +140,8 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 	}
 	em := emmyPiece{FuncName: funcName}
 
-	// manage fields
-	fields := []docPiece{}
-	for _, tag := range tags["field"] {
-		fields = append(fields, docPiece{
-			FuncName: tag.id,
-			Doc: tag.fields,
-		})
-	}
-
-	properties := []docPiece{}
-	for _, tag := range tags["property"] {
-		properties = append(properties, docPiece{
-			FuncName: tag.id,
-			Doc: tag.fields,
-		})
-	}
+	fields := docPieceTag("field", tags)
+	properties := docPieceTag("property", tags)
 
 	for _, d := range doc {
 		if strings.HasPrefix(d, "---") {
@@ -245,7 +250,7 @@ func main() {
 			}
 		}
 
-		descParts := strings.Split(strings.TrimSpace(p.Doc), "\n")
+		tags, descParts := getTagsAndDocs(strings.TrimSpace(p.Doc))
 		shortDesc := descParts[0]
 		desc := descParts[1:]
 		filteredPieces := []docPiece{}
@@ -279,6 +284,8 @@ func main() {
 			ShortDescription: shortDesc,
 			Description: strings.Join(desc, "\n"),
 			HasInterfaces: hasInterfaces,
+			Properties: docPieceTag("property", tags),
+			Fields: docPieceTag("field", tags),
 		}
 	}
 
