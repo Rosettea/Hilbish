@@ -11,11 +11,12 @@ for _, fname in ipairs(files) do
 	local header = f:read '*l'
 	if not header:match(emmyPattern) then goto continue end
 
+	print(fname)
+
 	local iface = header:match(emmyPattern)
 	pieces[iface] = {}
 
 	local docPiece = {}
-
 	for line in f:lines() do
 		if line == header then goto continue2 end
 		if not line:match(emmyPattern) then
@@ -38,6 +39,8 @@ for iface, dps in pairs(pieces) do
 	local mod = iface:match '(%w+)%.'
 	local path = string.format('docs/api/%s/%s.md', mod, iface)
 	local f <close> = io.open(path, 'a+')
+
+	print(mod, path)
 
 	for func, docs in pairs(dps) do
 		local params = table.filter(docs, function(t)
