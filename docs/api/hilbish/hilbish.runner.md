@@ -29,20 +29,3 @@ or `load`, but is appropriated for the runner interface.
 Runs a command in Hilbish's shell script interpreter.
 This is the equivalent of using `source`.
 
-## setCurrent(name)
-Sets the current interactive/command line runner mode.
-
-## add(name, runner)
-Adds a runner to the table of available runners. If runner is a table,
-it must have the run function in it.
-
-## get(name)
-Get a runner by name.
-
-## set(name, runner)
-Sets a runner by name. The runner table must have the run function in it.
-
-## exec(cmd, runnerName)
-Executes cmd with a runner. If runnerName isn't passed, it uses
-the user's current runner.
-
