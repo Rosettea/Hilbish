@@ -10,7 +10,9 @@ jobs:
   gen:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
       - uses: actions/setup-go@v2
       - name: Download Task
         run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
