@@ -10,10 +10,10 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-var timers *timerHandler
+var timers *timersModule
 var timerMetaKey = rt.StringValue("hshtimer")
 
-type timerHandler struct {
+type timersModule struct {
 	mu *sync.RWMutex
 	wg *sync.WaitGroup
 	timers map[int]*timer
@@ -21,8 +21,8 @@ type timerHandler struct {
 	running int
 }
 
-func newTimerHandler() *timerHandler {
-	return &timerHandler{
+func newTimersModule() *timersModule {
+	return &timersModule{
 		timers: make(map[int]*timer),
 		latestID: 0,
 		mu: &sync.RWMutex{},
@@ -30,11 +30,11 @@ func newTimerHandler() *timerHandler {
 	}
 }
 
-func (th *timerHandler) wait() {
+func (th *timersModule) wait() {
 	th.wg.Wait()
 }
 
-func (th *timerHandler) create(typ timerType, dur time.Duration, fun *rt.Closure) *timer {
+func (th *timersModule) create(typ timerType, dur time.Duration, fun *rt.Closure) *timer {
 	th.mu.Lock()
 	defer th.mu.Unlock()
 
@@ -54,14 +54,18 @@ func (th *timerHandler) create(typ timerType, dur time.Duration, fun *rt.Closure
 	return t
 }
 
-func (th *timerHandler) get(id int) *timer {
+func (th *timersModule) get(id int) *timer {
 	th.mu.RLock()
 	defer th.mu.RUnlock()
 
 	return th.timers[id]
 }
 
-func (th *timerHandler) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface timers
+// create(type, time, callback)
+// Creates a timer that runs based on the specified `time` in milliseconds.
+// The `type` can either be interval (value of 0) or timeout (value of 1).
+func (th *timersModule) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
 	}
@@ -83,7 +87,10 @@ func (th *timerHandler) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(tmr.ud)), nil
 }
 
-func (th *timerHandler) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface timers
+// get(id)
+// Retrieves a timer via its ID.
+func (th *timersModule) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -100,7 +107,15 @@ func (th *timerHandler) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (th *timerHandler) loader(rtm *rt.Runtime) *rt.Table {
+// #interface timers
+// #property type What type of timer it is
+// #property running If the timer is running
+// #property duration The duration in milliseconds that the timer will run
+// timeout and interval API
+// The timers interface si one to easily set timeouts and intervals
+// to run functions after a certain time or repeatedly without using
+// odd tricks.
+func (th *timersModule) loader(rtm *rt.Runtime) *rt.Table {
 	timerMethods := rt.NewTable()
 	timerFuncs := map[string]util.LuaExport{
 		"start": {timerStart, 1, false},

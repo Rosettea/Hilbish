@@ -9,40 +9,40 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-var aliases *aliasHandler
+var aliases *aliasModule
 
-type aliasHandler struct {
+type aliasModule struct {
 	aliases map[string]string
 	mu *sync.RWMutex
 }
 
 // initialize aliases map
-func newAliases() *aliasHandler {
-	return &aliasHandler{
+func newAliases() *aliasModule {
+	return &aliasModule{
 		aliases: make(map[string]string),
 		mu: &sync.RWMutex{},
 	}
 }
 
-func (a *aliasHandler) Add(alias, cmd string) {
+func (a *aliasModule) Add(alias, cmd string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
 	a.aliases[alias] = cmd
 }
 
-func (a *aliasHandler) All() map[string]string {
+func (a *aliasModule) All() map[string]string {
 	return a.aliases
 }
 
-func (a *aliasHandler) Delete(alias string) {
+func (a *aliasModule) Delete(alias string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
 	delete(a.aliases, alias)
 }
 
-func (a *aliasHandler) Resolve(cmdstr string) string {
+func (a *aliasModule) Resolve(cmdstr string) string {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -66,7 +66,10 @@ func (a *aliasHandler) Resolve(cmdstr string) string {
 
 // lua section
 
-func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
+// #interface aliases
+// command aliasing
+// The alias interface deals with all command aliases in Hilbish.
+func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 	// create a lua module with our functions
 	hshaliasesLua := map[string]util.LuaExport{
 		"add": util.LuaExport{hlalias, 2, false},
@@ -81,7 +84,17 @@ func (a *aliasHandler) Loader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
-func (a *aliasHandler) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface aliases
+// add(alias, cmd)
+// This is an alias (ha) for the `hilbish.alias` function.
+// --- @param alias string
+// --- @param cmd string
+func _hlalias() {}
+
+// #interface aliases
+// list()
+// Get a table of all aliases.
+func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	aliasesList := rt.NewTable()
 	for k, v := range a.All() {
 		aliasesList.Set(rt.StringValue(k), rt.StringValue(v))
@@ -90,7 +103,11 @@ func (a *aliasHandler) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(aliasesList)), nil
 }
 
-func (a *aliasHandler) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface aliases
+// delete(name)
+// Removes an alias.
+// --- @param name string
+func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -103,7 +120,11 @@ func (a *aliasHandler) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func (a *aliasHandler) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface aliases
+// resolve(alias)
+// Tries to resolve an alias to its command.
+// --- @param alias string
+func (a *aliasModule) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}

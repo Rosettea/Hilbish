@@ -1,3 +1,5 @@
+// low level terminal library
+// The terminal library is a simple and lower level library for certain terminal interactions.
 package terminal
 
 import (

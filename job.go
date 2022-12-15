@@ -110,6 +110,10 @@ func (j *job) getProc() *os.Process {
 	return nil
 }
 
+// #interface jobs
+// #member
+// start()
+// Starts running the job.
 func luaStartJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -130,6 +134,9 @@ func luaStartJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface jobs
+// stop()
+// Stops the job from running.
 func luaStopJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -148,6 +155,11 @@ func luaStopJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface jobs
+// #member
+// foreground()
+// Puts a job in the foreground. This will cause it to run like it was
+// executed normally and wait for it to complete.
 func luaForegroundJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -180,6 +192,10 @@ func luaForegroundJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface jobs
+// #member
+// background()
+// Puts a job in the background. This acts the same as initially running a job.
 func luaBackgroundJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -276,6 +292,20 @@ func (j *jobHandler) stopAll() {
 	}
 }
 
+// #interface jobs
+// #property cmd The user entered command string for the job.
+// #property running Whether the job is running or not.
+// #property id The ID of the job in the job table
+// #property pid The Process ID
+// #property exitCode The last exit code of the job.
+// #property stdout The standard output of the job. This just means the normal logs of the process.
+// #property stderr The standard error stream of the process. This (usually) includes error messages of the job.
+// background job management
+/*
+Manage interactive jobs in Hilbish via Lua.
+
+Jobs are the name of background tasks/commands. A job can be started via
+interactive usage or with the functions defined below for use in external runners. */
 func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 	jobMethods := rt.NewTable()
 	jFuncs := map[string]util.LuaExport{
@@ -353,6 +383,9 @@ func jobUserData(j *job) *rt.UserData {
 	return rt.NewUserData(j, jobMeta.AsTable())
 }
 
+// #interface jobs
+// get(id)
+// Get a job object via its ID.
 func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
@@ -373,6 +406,9 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.UserDataValue(job.ud)), nil
 }
 
+// #interface jobs
+// add(cmdstr, args, execPath)
+// Adds a new job to the job table. Note that this does not immediately run it.
 func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
@@ -402,6 +438,9 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(jb.ud)), nil
 }
 
+// #interface jobs
+// all()
+// Returns a table of all job objects.
 func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
@@ -414,6 +453,9 @@ func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(jobTbl)), nil
 }
 
+// #interface jobs
+// disown(id)
+// Disowns a job. This deletes it from the job table.
 func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -431,6 +473,9 @@ func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #interface jobs
+// last() -> Job
+// Returns the last added job from the table.
 func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()

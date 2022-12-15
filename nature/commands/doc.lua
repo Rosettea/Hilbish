@@ -4,34 +4,34 @@ local lunacolors = require 'lunacolors'
 
 commander.register('doc', function(args)
 	local moddocPath = hilbish.dataDir .. '/docs/'
-	local modDocFormat = [[
-%s
-%s
-# Functions
+	local apidocHeader = [[
+# %s
+{grayBg}  {white}{italic}%s  {reset}
+
 ]]
 
 	if #args > 0 then
 		local mod = args[1]
 
-		local f = io.open(moddocPath .. mod .. '.txt', 'rb')
+		local f = io.open(moddocPath .. mod .. '.md', 'rb')
 		local funcdocs = nil
 		if not f then
 			-- assume subdir
-			-- dataDir/docs/<mod>/<mod>.txt
+			-- dataDir/docs/<mod>/<mod>.md
 			moddocPath = moddocPath .. mod .. '/'
 			local subdocName = args[2]
 			if not subdocName then
 				subdocName = 'index'
 			end
-			f = io.open(moddocPath .. subdocName .. '.txt', 'rb')
+			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			if not f then
 				print('No documentation found for ' .. mod .. '.')
 				return
 			end
 			funcdocs = f:read '*a'
-			local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= 'index.txt' end)
+			local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= 'index.md' end)
 			local subdocs = table.map(moddocs, function(fname)
-				return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.txt', '')))
+				return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 			end)
 			if subdocName == 'index' then
 				funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
@@ -41,8 +41,24 @@ commander.register('doc', function(args)
 		if not funcdocs then
 			funcdocs = f:read '*a'
 		end
-		local desc = ''
-		local ok = pcall(require, mod)
+		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'
+		local vals = {}
+		if valsStr then
+			local _, endpos = funcdocs:find('---\n' .. valsStr .. '\n---\n\n', 1, true)
+			funcdocs = funcdocs:sub(endpos + 1, #funcdocs)
+
+			-- parse vals
+			local lines = string.split(valsStr, '\n')
+			for _, line in ipairs(lines) do
+				local key = line:match '(%w+): '
+				local val = line:match '^%w+: (.-)$'
+
+				vals[key] = val
+			end
+		end
+		if mod == 'api' then
+			funcdocs = string.format(apidocHeader, vals.name, vals.description) .. funcdocs
+		end
 		local backtickOccurence = 0
 		local formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
 			backtickOccurence = backtickOccurence + 1
@@ -51,34 +67,16 @@ commander.register('doc', function(args)
 			else
 				return '{underline}{green}'
 			end
+		end):gsub('#+.-\n', function(t)
+			return '{bold}{magenta}' .. t .. '{reset}'
 		end))
-
-		if ok then
-			local props = {}
-			local propstr = ''
-			local modDesc = ''
-			local modmt = getmetatable(require(mod))
-			if modmt then
-				modDesc = modmt.__doc
-				if modmt.__docProp then
-					-- not all modules have docs for properties
-					props = table.map(modmt.__docProp, function(v, k)
-						return lunacolors.underline(lunacolors.blue(k)) .. ' > ' .. v
-					end)
-				end
-				if #props > 0 then
-					propstr = '\n# Properties\n' .. table.concat(props, '\n') .. '\n'
-				end
-				desc = string.format(modDocFormat, modDesc, propstr)
-			end
-		end
-		print(desc .. formattedFuncs)
+		print(formattedFuncs)
 		f:close()
 
 		return
 	end
 	local modules = table.map(fs.readdir(moddocPath), function(f)
-		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.txt', '')))
+		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
 	end)
 
 	io.write [[
