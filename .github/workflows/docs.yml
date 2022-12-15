@@ -18,6 +18,8 @@ jobs:
         run: ./bin/task
       - name: Run docgen
         run: go run cmd/docgen/docgen.go
+      - name: Run lua docgen
+        run: ./hilbish cmd/docgen/docgen.lua
       - name: Commit new docs
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
