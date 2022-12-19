@@ -2,7 +2,7 @@
 <div class="container py-3 row">
 	<div class="container" style="width: 240px;">
 		<div class="p-3 col">
-			<ul class="nav nav-pills mb-auto">
+			<ul class="nav nav-pills mb-auto collapse navbar-collapse" id="navbarSupportedContent">
 				{{ $currentPage := . }}
 				{{ range .Site.Menus.docs.ByWeight.Reverse }}
 					<li class="nav-item">
