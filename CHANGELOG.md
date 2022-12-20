@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.0.0] - 2022-12-20
 **NOTES FOR USERS/PACKAGERS UPDATING:**
 - Hilbish now uses [Task] insead of Make for builds.
 - The doc format has been changed from plain text to markdown.
@@ -600,6 +600,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.0.0]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0
 [2.0.0-rc1]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0-rc1
 [1.2.0]: https://github.com/Rosettea/Hilbish/compare/v1.1.4...v1.2.0
 [1.1.0]: https://github.com/Rosettea/Hilbish/compare/v1.0.4...v1.1.0
