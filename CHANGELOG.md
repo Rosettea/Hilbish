@@ -48,7 +48,7 @@ without arguments will disown the last job.
 fields on a job object.
 - Documentation for jobs is now available via `doc jobs`.
 - `hilbish.alias.resolve(cmdstr)` to resolve a command alias.
-- `hilbish.opts` for shell options. Currently, the only opt is `autocd`.
+- `hilbish.opts` for shell options.
 - `hilbish.editor` interface for interacting with the line editor that
 Hilbish uses.
 - `hilbish.vim` interface to dynamically get/set vim registers.
@@ -83,8 +83,9 @@ disables commands being added to history.
 random errors introduced with the new Lua runtime (see [#197])
 - `bait.release(name, catcher)` removes `handler` for the named `event`
 - `exec`, `clear` and `cat` builtin commands
-- `hilbish.cancel` hook
+- `hilbish.cancel` hook thrown when user cancels input with Ctrl-C
 - 1st item on history is now inserted when history search menu is opened ([#148])
+- Documentation has been improved vastly!
 
 [#148]: https://github.com/Rosettea/Hilbish/issues/148
 [#197]: https://github.com/Rosettea/Hilbish/issues/197
@@ -92,6 +93,9 @@ random errors introduced with the new Lua runtime (see [#197])
 ### Changed
 - **Breaking Change:** Upgraded to Lua 5.4.
 This is probably one of (if not the) biggest things in this release.
+To recap quickly on what matters (mostly):
+  - `os.execute` returns 3 values instead of 1 (but you should be using `hilbish.run`)
+  - I/O operations must be flushed (`io.flush()`)
 - **Breaking Change:** MacOS config paths now match Linux.
 - Overrides on the `hilbish` table are no longer permitted.
 - **Breaking Change:** Runner functions are now required to return a table.
@@ -126,7 +130,7 @@ replacing the last character.
 - `hilbish.login` being the wrong value.
 - Put full input in history if prompted for continued input
 - Don't put alias expanded command in history (sound familiar?)
-- Handle cases of stdin being nonblocking (in the case of [#130](https://github.com/Rosettea/Hilbish/issues/130))
+- Handle cases of stdin being nonblocking (in the case of [#136](https://github.com/Rosettea/Hilbish/issues/136))
 - Don't prompt for continued input if non interactive
 - Don't insert unhandled control keys.
 - Handle sh syntax error in alias
@@ -136,11 +140,12 @@ certain color rules.
 - Home/End keys now go to the actual start/end of the input.
 - Input getting cut off on enter in certain cases.
 - Go to the next line properly if input reaches end of terminal width.
-- Cursor position with CJK characters. ([#145](https://github.com/Rosettea/Hilbish/pull/145))
-- Files with same name as parent folder in completions getting cut off [#136](https://github.com/Rosettea/Hilbish/issues/136))
+- Cursor position with CJK characters has been corrected ([#145](https://github.com/Rosettea/Hilbish/pull/145))
+- Files with same name as parent folder in completions getting cut off [#130](https://github.com/Rosettea/Hilbish/issues/130))
 - `hilbish.which` now works with commanders and aliases.
 - Background jobs no longer take stdin so they do not interfere with shell
 input.
+- Full name of completion entry is used instead of being cut off
 - Completions are fixed in cases where the query/line is an alias alone
 where it can also resolve to the beginning of command names.
 (reference [this commit](https://github.com/Rosettea/Hilbish/commit/2790982ad123115c6ddbc5764677fdca27668cea))
@@ -162,15 +167,21 @@ an error of missing format variable
 - Fix an error with sh syntax in aliases
 - Prompt now works with east asian characters (CJK)
 - Set back the prompt to normal after exiting the continue prompt with ctrl-d
+- Take into account newline in input when calculating input width. Prevents
+extra reprinting of the prompt, but input with newlines inserted is still a problem
+- Put cursor at the end of input when exiting $EDITOR with Vim mode bind
+- Calculate width of virtual input properly (completion candidates)
 - Users can now tab complete files with spaces while quoted or with escaped spaces.
 This means a query of `Files\ to\ ` with file names of `Files to tab complete` and `Files to complete`
 will result in the files being completed.
 - Fixed grid menu display if cell width ends up being the width of the terminal
 - Cut off item names in grid menu if its longer than cell width
 - Fix completion search menu disappearing
+- Make binary completion work with bins that have spaces in the name
 - Completion paths having duplicated characters if it's escaped
 - Get custom completion command properly to call from Lua
 - Put proper command on the line when using up and down arrow keys to go through command history
+- Don't do anything if length of input rune slice is 0 ([commit for explanation](https://github.com/Rosettea/Hilbish/commit/8d40179a73fe5942707cd43f9c0463dee53eedd8))
 
 ## [2.0.0-rc1] - 2022-09-14
 This is a pre-release version of Hilbish for testing. To see the changelog,
