@@ -16,6 +16,23 @@ For the latest **stable release**, check here: https://github.com/Rosettea/Hilbi
 For a **development build**: https://nightly.link/Rosettea/Hilbish/workflows/build/master
 
 ## Package Repositories
+### Fedora (COPR)
+An official COPR is offered to install Hilbish easily on Fedora.
+Enable the repo:
+```
+sudo dnf copr enable sammyette/Hilbish
+```
+
+And install Hilbish:
+```
+sudo dnf install hilbish
+```
+
+Or for the latest development build from master:
+```
+sudo dnf install hilbish-git
+```
+
 ### Arch Linux (AUR)
 Hilbish is on the AUR. Setup an AUR helper, and install.
 Example with yay:  
