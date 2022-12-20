@@ -3,7 +3,7 @@
 
 Name: hilbish-git
 Version: {{{ git_tag_version }}}
-Release: 1%.{{{ git_short_hash }}}{?dist}
+Release: 1.{{{ git_short_hash }}}%{?dist}
 Summary: The flower shell. A comfy and nice little shell for Lua fans!
 License: MIT
 
