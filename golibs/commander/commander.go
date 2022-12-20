@@ -1,3 +1,5 @@
+// library for custom commands
+// Commander is a library for writing custom commands in Lua.
 package commander
 
 import (

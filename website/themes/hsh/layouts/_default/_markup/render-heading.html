@@ -1,0 +1,6 @@
+<h{{ (add .Level 1) }} id="{{ .Anchor | safeURL }}">
+	{{ .Text | safeHTML }}
+</h{{ (add .Level 1) }}>
+{{ if eq .Text ""}}
+<hr>
+{{ end }}

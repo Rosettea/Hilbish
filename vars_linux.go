@@ -14,7 +14,7 @@ var (
 	.. hilbish.userDir.config	.. '/hilbish/?/init.lua;'
 	.. hilbish.userDir.config	.. '/hilbish/?/?.lua;'
 	.. hilbish.userDir.config	.. '/hilbish/?.lua'`
-	dataDir = "/usr/share/hilbish"
+	dataDir = "/usr/local/share/hilbish"
 	preloadPath = dataDir + "/nature/init.lua"
 	sampleConfPath = dataDir + "/.hilbishrc.lua" // Path to default/sample config
 	defaultConfDir = ""

@@ -3,12 +3,12 @@
 version: '3'
 
 vars:
-  PREFIX: '{{default "/usr" .PREFIX}}'
+  PREFIX: '{{default "/usr/local" .PREFIX}}'
   bindir__: '{{.PREFIX}}/bin'
   BINDIR: '{{default .bindir__ .BINDIR}}'
   libdir__: '{{.PREFIX}}/share/hilbish'
   LIBDIR: '{{default .libdir__ .LIBDIR}}'
-  goflags__: '-ldflags "-s -w"'
+  goflags__: '-ldflags "-s -w -X main.dataDir={{.LIBDIR}}"'
   GOFLAGS: '{{default .goflags__ .GOFLAGS}}'
 
 tasks:
@@ -16,7 +16,7 @@ tasks:
     cmds:
       - CGO_ENABLED=0 go build {{.GOFLAGS}}
     vars:
-      GOFLAGS: '-ldflags "-s -w -X main.gitCommit=$(git rev-parse --short HEAD) -X main.gitBranch=$(git rev-parse --abbrev-ref HEAD)"'
+      GOFLAGS: '-ldflags "-s -w -X main.dataDir={{.LIBDIR}} -X main.gitCommit=$(git rev-parse --short HEAD) -X main.gitBranch=$(git rev-parse --abbrev-ref HEAD)"'
 
   build:
     cmds:

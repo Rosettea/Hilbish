@@ -1,3 +1,9 @@
+// the event emitter
+// Bait is the event emitter for Hilbish. Why name it bait? Why not.
+// It throws hooks that you can catch. This is what you will use if
+// you want to listen in on hooks to know when certain things have
+// happened, like when you've changed directory, a command has failed,
+// etc. To find all available hooks thrown by Hilbish, see doc hooks.
 package bait
 
 import (

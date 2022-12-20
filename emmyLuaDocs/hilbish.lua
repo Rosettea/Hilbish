@@ -2,6 +2,38 @@
 
 local hilbish = {}
 
+--- This is an alias (ha) for the `hilbish.alias` function.
+--- @param alias string
+--- @param cmd string
+function hilbish.aliases.add(alias, cmd) end
+
+--- This is the same as the `hilbish.runnerMode` function. It takes a callback,
+--- which will be used to execute all interactive input.
+--- In normal cases, neither callbacks should be overrided by the user,
+--- as the higher level functions listed below this will handle it.
+function hilbish.runner.setMode(cb) end
+
+--- Calls a completer function. This is mainly used to call
+--- a command completer, which will have a `name` in the form
+--- of `command.name`, example: `command.git`
+function hilbish.completions.call(name, query, ctx, fields) end
+
+--- The handler function is the callback for tab completion in Hilbish.
+--- You can check the completions doc for more info.
+function hilbish.completions.handler(line, pos) end
+
+--- Returns the current input line.
+function hilbish.editor.getLine() end
+
+--- Returns the text that is at the register.
+function hilbish.editor.getVimRegister(register) end
+
+--- Inserts text into the line.
+function hilbish.editor.insert(text) end
+
+--- Sets the vim register at `register` to hold the passed text.
+function hilbish.editor.setVimRegister(register, text) end
+
 --- Sets an alias of `cmd` to `orig`
 --- @param cmd string
 --- @param orig string
@@ -73,20 +105,21 @@ function hilbish.prependPath(dir) end
 --- `%u` - Name of current user
 --- `%h` - Hostname of device
 --- @param str string
---- @param typ string Type of prompt, being left or right. Left by default.
+--- @param typ string|nil Type of prompt, being left or right. Left by default.
 function hilbish.prompt(str, typ) end
 
 --- Read input from the user, using Hilbish's line editor/input reader.
 --- This is a separate instance from the one Hilbish actually uses.
 --- Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
---- @param prompt string
+--- @param prompt string|nil
+--- @returns string|nil
 function hilbish.read(prompt) end
 
 --- Runs `cmd` in Hilbish's sh interpreter.
 --- If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
 --- 3rd values instead of being outputted to the terminal.
 --- @param cmd string
-function hilbish.run(cmd) end
+function hilbish.run(cmd, returnOut) end
 
 --- Sets the execution/runner mode for interactive Hilbish. This determines whether
 --- Hilbish wll try to run input as Lua and/or sh or only do one of either.
@@ -105,6 +138,87 @@ function hilbish.timeout(cb, time) end
 
 --- Checks if `name` is a valid command
 --- @param binName string
-function hilbish.which(binName) end
+function hilbish.which(name) end
+
+--- Puts a job in the background. This acts the same as initially running a job.
+function hilbish.jobs:background() end
+
+--- Returns binary/executale completion candidates based on the provided query.
+function hilbish.completions.bins(query, ctx, fields) end
+
+--- Returns file completion candidates based on the provided query.
+function hilbish.completions.files(query, ctx, fields) end
+
+--- Puts a job in the foreground. This will cause it to run like it was
+--- executed normally and wait for it to complete.
+function hilbish.jobs:foreground() end
+
+--- Evaluates `cmd` as Lua input. This is the same as using `dofile`
+--- or `load`, but is appropriated for the runner interface.
+function hilbish.runner.lua(cmd) end
+
+--- Starts running the job.
+function hilbish.jobs:start() end
+
+--- Stops the job from running.
+function hilbish.jobs.stop() end
+
+--- Runs a command in Hilbish's shell script interpreter.
+--- This is the equivalent of using `source`.
+function hilbish.runner.sh(cmd) end
+
+--- Starts a timer.
+function hilbish.timers:start() end
+
+--- Stops a timer.
+function hilbish.timers:stop() end
+
+--- Removes an alias.
+--- @param name string
+function hilbish.aliases.delete(name) end
+
+--- Get a table of all aliases.
+function hilbish.aliases.list() end
+
+--- Tries to resolve an alias to its command.
+--- @param alias string
+function hilbish.aliases.resolve(alias) end
+
+--- Adds a new job to the job table. Note that this does not immediately run it.
+function hilbish.jobs.add(cmdstr, args, execPath) end
+
+--- Returns a table of all job objects.
+function hilbish.jobs.all() end
+
+--- Disowns a job. This deletes it from the job table.
+function hilbish.jobs.disown(id) end
+
+--- Get a job object via its ID.
+function hilbish.jobs.get(id) end
+
+--- Returns the last added job from the table.
+function hilbish.jobs.last() end
+
+--- Adds a command to the history.
+--- @param cmd string
+function hilbish.history.add(cmd) end
+
+--- Deletes all commands from the history.
+function hilbish.history.clear() end
+
+--- Retrieves a command from the history based on the `idx`.
+--- @param idx number
+function hilbish.history.get(idx) end
+
+--- Returns the amount of commands in the history.
+--- @returns number
+function hilbish.history.size() end
+
+--- Creates a timer that runs based on the specified `time` in milliseconds.
+--- The `type` can either be interval (value of 0) or timeout (value of 1).
+function hilbish.timers.create(type, time, callback) end
+
+--- Retrieves a timer via its ID.
+function hilbish.timers.get(id) end
 
 return hilbish

@@ -225,7 +225,11 @@ func (lr *lineReader) Resize() {
 	return
 }
 
-// lua module
+// #interface history
+// command history
+// The history interface deals with command history. 
+// This includes the ability to override functions to change the main
+// method of saving history.
 func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	lrLua := map[string]util.LuaExport{
 		"add": {lr.luaAddHistory, 1, false},
@@ -241,6 +245,10 @@ func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
+// #interface history
+// add(cmd)
+// Adds a command to the history.
+// --- @param cmd string
 func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -254,10 +262,18 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.Next(), nil
 }
 
+// #interface history
+// size()
+// Returns the amount of commands in the history.
+// --- @returns number
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.IntValue(int64(lr.fileHist.Len()))), nil
 }
 
+// #interface history
+// get(idx)
+// Retrieves a command from the history based on the `idx`.
+// --- @param idx number
 func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -284,6 +300,9 @@ func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.PushingNext1(t.Runtime, rt.TableValue(tbl)), nil
 }
 
+// #interface history
+// clear()
+// Deletes all commands from the history.
 func (lr *lineReader) luaClearHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	lr.fileHist.clear()
 	return c.Next(), nil

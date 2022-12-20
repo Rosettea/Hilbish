@@ -1,6 +1,14 @@
-// Here is the core api for the hilbi shell itself
-// Basically, stuff about the shell itself and other functions
-// go here.
+// the core Hilbish API
+// The Hilbish module includes the core API, containing
+// interfaces and functions which directly relate to shell functionality.
+// #field ver The version of Hilbish
+// #field user Username of the user
+// #field host Hostname of the machine
+// #field dataDir Directory for Hilbish data files, including the docs and default modules
+// #field interactive Is Hilbish in an interactive shell?
+// #field login Is Hilbish the login shell?
+// #field vimMode Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
+// #field exitCode xit code of the last executed command
 package main
 
 import (
@@ -19,7 +27,6 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/maxlandon/readline"
-	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -114,20 +121,12 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
 
 	// hilbish.userDir table
-	hshuser := rt.NewTable()
-
-	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
-	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
+	hshuser := userDirLoader(rtm)
 	util.Document(hshuser, "User directories to store configs and/or modules.")
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 	// hilbish.os table
-	hshos := rt.NewTable()
-	info, _ := osinfo.GetOSInfo()
-
-	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
-	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
-	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
+	hshos := hshosLoader(rtm)
 	util.Document(hshos, "OS info interface")
 	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
@@ -159,10 +158,10 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	// hilbish.timers table
-	timers = newTimerHandler()
-	timerModule := timers.loader(rtm)
-	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
-	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
+	timers = newTimersModule()
+	timersModule := timers.loader(rtm)
+	util.Document(timersModule, "Timer interface, for control of all intervals and timeouts.")
+	mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
 	editorModule := editorLoader(rtm)
 	util.Document(editorModule, "")
@@ -250,11 +249,12 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt?) -> input?
+// read(prompt) -> input
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
-// --- @param prompt string
+// --- @param prompt string|nil
+// --- @returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaprompt := c.Arg(0)
 	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
@@ -281,7 +281,7 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 /*
-prompt(str, typ?)
+prompt(str, typ)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
@@ -289,7 +289,7 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 --- @param str string
---- @param typ string Type of prompt, being left or right. Left by default.
+--- @param typ string|nil Type of prompt, being left or right. Left by default.
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()

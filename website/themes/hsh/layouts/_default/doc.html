@@ -1,0 +1,53 @@
+{{ define "main" }}
+<div class="container py-3 row">
+	<div class="container" style="width: 240px;">
+		<div class="p-3 col">
+			<ul class="nav nav-pills mb-auto collapse navbar-collapse" id="navbarSupportedContent">
+				{{ $currentPage := . }}
+				{{ range .Site.Menus.docs.ByWeight.Reverse }}
+					<li class="nav-item">
+						<a href="{{ .URL }}" class="nav-link">
+							<strong>{{ .Title }}</strong>
+						</a>
+					</li>
+					{{ if .Children }}
+						<ul style="list-style: none;">
+							{{ range .Children }}
+								<li class="nav-item">
+									<a href="{{ .URL }}" class="nav-link">
+										{{ .Title }}
+									</a>
+								</li>
+							{{ end }}
+						</ul>
+					{{ end }}
+				{{ end }}
+			</ul>
+		</div>
+	</div>
+	<div class="p-3 col">
+		<div>
+			<h1>{{ .Title }}</h1>
+			<p><em>
+			{{ $date := .Date.UTC.Format "Jan 2, 2006" }}
+			{{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
+			{{ if and (ne $lastmod $date) (gt .Lastmod .Date) }}
+				Last updated {{ $lastmod }}<br>
+			{{ end }}
+
+			{{ if .Description }}
+				{{ .Description }}<br>
+			{{ end}}
+			</em></p>
+			{{.Content}}
+		</div>
+
+		<div class="footer mt-auto">
+			<p class="card-small text-muted">
+				Want to help improve this page? <a href="https://github.com/Rosettea/Hilbish/issues/new/choose">Create an issue.</a>
+			</p>
+		</div>
+	</div>
+</div>
+{{ end }}
+
