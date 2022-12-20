@@ -26,8 +26,8 @@ commander.register('doc', function(args)
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			if not f then
 				moddocPath = moddocPath .. subdocName .. '/'
-				local subsubDocName = args[3] or '_index'
-				f = io.open(moddocPath .. subsubDocName .. '.md', 'rb')
+				subdocName = args[3] or '_index'
+				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
 				print('No documentation found for ' .. mod .. '.')
