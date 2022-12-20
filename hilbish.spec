@@ -1,13 +1,13 @@
 %global _missing_build_ids_terminate_build 0
 %global debug_package %{nil}
 
-Name: hilbish-git
+Name: hilbish
 Version: {{{ git_tag_version }}}
-Release: 1%.{{{ git_short_hash }}}{?dist}
+Release: 1%{?dist}
 Summary: The flower shell. A comfy and nice little shell for Lua fans!
 License: MIT
 
-Source: {{{ git_dir_pack }}}
+Source: https://github.com/Rosettea/Hilbish/archive/refs/tags/v{{{ git_tag_version }}}.tar.gz
 BuildRequires: git golang go-task
 Requires: inspect succulent lunacolors
 
