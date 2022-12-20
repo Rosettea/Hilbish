@@ -15,32 +15,34 @@ commander.register('doc', function(args)
 
 		local f = io.open(moddocPath .. mod .. '.md', 'rb')
 		local funcdocs = nil
+		local subdocName = args[2]
 		if not f then
 			-- assume subdir
 			-- dataDir/docs/<mod>/<mod>.md
 			moddocPath = moddocPath .. mod .. '/'
-			local subdocName = args[2]
 			if not subdocName then
-				subdocName = 'index'
+				subdocName = '_index'
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
+			if not f then
+				moddocPath = moddocPath .. subdocName .. '/'
+				local subsubDocName = args[3] or '_index'
+				f = io.open(moddocPath .. subsubDocName .. '.md', 'rb')
+			end
 			if not f then
 				print('No documentation found for ' .. mod .. '.')
 				return
 			end
-			funcdocs = f:read '*a'
-			local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= 'index.md' end)
-			local subdocs = table.map(moddocs, function(fname)
-				return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
-			end)
-			if subdocName == 'index' then
-				funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
-			end
+		end
+		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
+		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' end)
+		local subdocs = table.map(moddocs, function(fname)
+			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
+		end)
+		if subdocName == '_index' then
+			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
 		end
 
-		if not funcdocs then
-			funcdocs = f:read '*a'
-		end
 		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'
 		local vals = {}
 		if valsStr then
@@ -53,11 +55,13 @@ commander.register('doc', function(args)
 				local key = line:match '(%w+): '
 				local val = line:match '^%w+: (.-)$'
 
-				vals[key] = val
+				if key then
+					vals[key] = val
+				end
 			end
 		end
 		if mod == 'api' then
-			funcdocs = string.format(apidocHeader, vals.name, vals.description) .. funcdocs
+			funcdocs = string.format(apidocHeader, vals.title, vals.description or 'no description.') .. funcdocs
 		end
 		local backtickOccurence = 0
 		local formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()

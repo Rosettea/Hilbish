@@ -5,3 +5,4 @@ weight: -50
 menu: docs
 ---
 
+Hello!
