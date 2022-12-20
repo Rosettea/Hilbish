@@ -17,7 +17,7 @@ checkout [the discussion](https://github.com/Rosettea/Hilbish/discussions/165).
 
 # Where is the API documentation?
 The builtin `doc` command supplies all documentation of Hilbish provided
-APIs. This will be on the website in the near future.
+APIs. You can also check the sidebar.
 
 # Why?
 Hilbish emerged from the desire of a Lua configured shell.
