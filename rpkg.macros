@@ -19,5 +19,7 @@ function git_tag_version {
     if [[ $tag =~ ^v[0-9].* ]]; then
         tag="${tag:1}"
     fi
+
+    tag="${tag/"-"/"."}"
     output "$tag"
 }
