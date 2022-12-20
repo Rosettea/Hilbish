@@ -5,15 +5,9 @@ weight: -1
 menu: docs
 ---
 
-Here lies the documentation for Hilbish, the hyper extensible Lua shell.  
-Hilbish provides you with a few quality of life features and useful
-functions to ensure you can make the shell fully yours.
+Hilbish is a hyper-extensible shell mainly intended for interactive use.
+To enhance the interactive experience, Hilbish comes with a wide range
+of features and sane defaults, including a nice looking prompt,
+advanced completion menus and history search.
 
-These features include:
-- Completion and history search menus
-- Hinting and syntax highlighting (scripted by user)
-
-# Installation
-Steps on installing Hilbish will be at the Install page in the navigation bar
-at the top. This also included getting development builds from the GitHub
-repository.
+Here documents some of the features of Hilbish and the Lua API.
