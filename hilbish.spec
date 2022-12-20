@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 
 Name: hilbish
-Version: {{{ git_tag_version }}}
+Version: 2.0.0-rc1
 Release: 1%{?dist}
 Summary: The flower shell. A comfy and nice little shell for Lua fans!
 License: MIT
