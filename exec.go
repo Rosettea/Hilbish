@@ -552,7 +552,7 @@ func splitInput(input string) ([]string, string) {
 }
 
 func cmdFinish(code uint8, cmdstr string, private bool) {
-	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)), "Exit code of last exected command")
+	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)))
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values

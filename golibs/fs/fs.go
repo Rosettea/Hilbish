@@ -39,10 +39,6 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	mod.Set(rt.StringValue("pathSep"), rt.StringValue(string(os.PathSeparator)))
 	mod.Set(rt.StringValue("pathListSep"), rt.StringValue(string(os.PathListSeparator)))
 
-	util.Document(mod, `The fs module provides easy and simple access to
-filesystem functions and other things, and acts an
-addition to the Lua standard library's I/O and filesystem functions.`)
-
 	return rt.TableValue(mod), nil
 }
 

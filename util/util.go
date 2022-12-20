@@ -10,53 +10,18 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-// Document adds a documentation string to a module.
-// It is accessible via the __doc metatable.
-func Document(module *rt.Table, doc string) {
-	mt := module.Metatable()
-	
-	if mt == nil {
-		mt = rt.NewTable()
-		module.SetMetatable(mt)
-	}
-
-	mt.Set(rt.StringValue("__doc"), rt.StringValue(doc))
-}
-
 // SetField sets a field in a table, adding docs for it.
 // It is accessible via the __docProp metatable. It is a table of the names of the fields.
-func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value, doc string) {
+func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value) {
 	// TODO:    ^ rtm isnt needed, i should remove it
-	SetFieldDoc(module, field, doc)
 	module.Set(rt.StringValue(field), value)
-}
-
-// SetFieldDoc sets the __docProp metatable for a field on the
-// module.
-func SetFieldDoc(module *rt.Table, field, doc string) {
-	mt := module.Metatable()
-
-	if mt == nil {
-		mt = rt.NewTable()
-		module.SetMetatable(mt)
-	}
-
-	docProp := mt.Get(rt.StringValue("__docProp"))
-	if docProp == rt.NilValue {
-		docPropTbl := rt.NewTable()
-		mt.Set(rt.StringValue("__docProp"), rt.TableValue(docPropTbl))
-		docProp = mt.Get(rt.StringValue("__docProp"))
-	}
-
-	docProp.AsTable().Set(rt.StringValue(field), rt.StringValue(doc))
 }
 
 // SetFieldProtected sets a field in a protected table. A protected table
 // is one which has a metatable proxy to ensure no overrides happen to it.
 // It sets the field in the table and sets the __docProp metatable on the
 // user facing table.
-func SetFieldProtected(module, realModule *rt.Table, field string, value rt.Value, doc string) {
-	SetFieldDoc(module, field, doc)
+func SetFieldProtected(module, realModule *rt.Table, field string, value rt.Value) {
 	realModule.Set(rt.StringValue(field), value)
 }
 

@@ -28,7 +28,6 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
-	util.Document(mod, "The terminal library is a simple and lower level library for certain terminal interactions.")
 
 	return rt.TableValue(mod), nil
 }

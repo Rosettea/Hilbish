@@ -109,70 +109,59 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()), "Hilbish version")
-	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
-	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
-	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
-	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
-	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
-	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
-	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
-	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()))
+	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username))
+	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host))
+	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir))
+	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir))
+	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive))
+	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login))
+	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue)
+	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0))
 
 	// hilbish.userDir table
 	hshuser := userDirLoader(rtm)
-	util.Document(hshuser, "User directories to store configs and/or modules.")
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 	// hilbish.os table
 	hshos := hshosLoader(rtm)
-	util.Document(hshos, "OS info interface")
 	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
 	// hilbish.aliases table
 	aliases = newAliases()
 	aliasesModule := aliases.Loader(rtm)
-	util.Document(aliasesModule, "Alias inferface for Hilbish.")
 	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
 	// hilbish.history table
 	historyModule := lr.Loader(rtm)
 	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
-	util.Document(historyModule, "History interface for Hilbish.")
 
 	// hilbish.completion table
 	hshcomp := completionLoader(rtm)
-	util.Document(hshcomp, "Completions interface for Hilbish.")
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
 	runnerModule := runnerModeLoader(rtm)
-	util.Document(runnerModule, "Runner/exec interface for Hilbish.")
 	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
 	jobModule := jobs.loader(rtm)
-	util.Document(jobModule, "(Background) job interface.")
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	// hilbish.timers table
 	timers = newTimersModule()
 	timersModule := timers.loader(rtm)
-	util.Document(timersModule, "Timer interface, for control of all intervals and timeouts.")
 	mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
 	editorModule := editorLoader(rtm)
-	util.Document(editorModule, "")
 	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
 
 	versionModule := rt.NewTable()
-	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch), "Git branch Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()), "Full version info, including release name")
-	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit), "Git commit Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName), "Release name")
-	util.Document(versionModule, "Version info interface.")
+	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch))
+	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()))
+	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit))
+	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName))
 	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
 	return rt.TableValue(fakeMod), nil
@@ -187,12 +176,12 @@ func getenv(key, fallback string) string {
 }
 
 func setVimMode(mode string) {
-	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode))
 	hooks.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
-	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
 // run(cmd, returnOut) -> exitCode, stdout, stderr
