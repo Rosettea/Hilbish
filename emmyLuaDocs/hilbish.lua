@@ -217,6 +217,7 @@ function hilbish.jobs.add(cmdstr, args, execPath) end
 function hilbish.jobs.all() end
 
 --- Disowns a job. This deletes it from the job table.
+--- @param id number
 function hilbish.jobs.disown(id) end
 
 --- Get a job object via its ID.
