@@ -40,15 +40,15 @@ Stops the job from running.
 ### add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
 
-### all()
+### all() -> jobs (table<Job/Table>)
 Returns a table of all job objects.
 
 ### disown(id)
 Disowns a job. This deletes it from the job table.
 
-### get(id)
+### get(id) -> job (Job/Table)
 Get a job object via its ID.
 
-### last() -> Job
+### last() -> job (Job/Table)
 Returns the last added job from the table.
 

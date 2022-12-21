@@ -12,6 +12,10 @@ The timers interface si one to easily set timeouts and intervals
 to run functions after a certain time or repeatedly without using
 odd tricks.
 
+## Interface fields
+- `INTERVAL`: Constant for an interval timer type
+- `TIMEOUT`: Constant for a timeout timer type
+
 ## Object properties
 - `type`: What type of timer it is
 - `running`: If the timer is running
@@ -26,8 +30,8 @@ Stops a timer.
 
 ### create(type, time, callback)
 Creates a timer that runs based on the specified `time` in milliseconds.
-The `type` can either be interval (value of 0) or timeout (value of 1).
+The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
 
-### get(id)
+### get(id) -> timer (Timer/Table)
 Retrieves a timer via its ID.
 

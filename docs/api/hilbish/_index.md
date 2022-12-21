@@ -78,12 +78,12 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 
-### read(prompt) -> input
+### read(prompt) -> input (string)
 Read input from the user, using Hilbish's line editor/input reader.
 This is a separate instance from the one Hilbish actually uses.
 Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 
-### run(cmd, returnOut) -> exitCode, stdout, stderr
+### run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
 Runs `cmd` in Hilbish's sh interpreter.
 If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
 3rd values instead of being outputted to the terminal.
