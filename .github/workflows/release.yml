@@ -41,6 +41,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        build_command: task
+        build_command: ./bin/task
         binary_name: hilbish
         extra_files: LICENSE README.md CHANGELOG.md .hilbishrc.lua nature libs docs emmyLuaDocs
