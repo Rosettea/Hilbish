@@ -462,6 +462,7 @@ func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface jobs
 // disown(id)
 // Disowns a job. This deletes it from the job table.
+// --- @param id number
 func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
