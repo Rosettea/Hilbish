@@ -108,6 +108,8 @@ func (th *timersModule) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface timers
+// #field INTERVAL Constant for an interval timer type
+// #field TIMEOUT Constant for a timeout timer type
 // #property type What type of timer it is
 // #property running If the timer is running
 // #property duration The duration in milliseconds that the timer will run
@@ -155,6 +157,9 @@ func (th *timersModule) loader(rtm *rt.Runtime) *rt.Table {
 
 	luaTh := rt.NewTable()
 	util.SetExports(rtm, luaTh, thExports)
+
+	util.SetField(rtm, luaTh, "INTERVAL", rt.IntValue(0))
+	util.SetField(rtm, luaTh, "TIMEOUT", rt.IntValue(1))
 
 	return luaTh
 }
