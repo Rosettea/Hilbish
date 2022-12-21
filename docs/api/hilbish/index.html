@@ -20,9 +20,9 @@ There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 <code>%d</code> - Current working directory
 <code>%u</code> - Name of current user
-<code>%h</code> - Hostname of device</p><h4 id=readprompt---input>read(prompt) -> input</h4><p>Read input from the user, using Hilbish&rsquo;s line editor/input reader.
+<code>%h</code> - Hostname of device</p><h4 id=readprompt---input-string>read(prompt) -> input (string)</h4><p>Read input from the user, using Hilbish&rsquo;s line editor/input reader.
 This is a separate instance from the one Hilbish actually uses.
-Returns <code>input</code>, will be nil if ctrl + d is pressed, or an error occurs (which shouldn&rsquo;t happen)</p><h4 id=runcmd-returnout---exitcode-stdout-stderr>run(cmd, returnOut) -> exitCode, stdout, stderr</h4><p>Runs <code>cmd</code> in Hilbish&rsquo;s sh interpreter.
+Returns <code>input</code>, will be nil if ctrl + d is pressed, or an error occurs (which shouldn&rsquo;t happen)</p><h4 id=runcmd-returnout---exitcode-number-stdout-string-stderr-string>run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)</h4><p>Runs <code>cmd</code> in Hilbish&rsquo;s sh interpreter.
 If returnOut is true, the outputs of <code>cmd</code> will be returned as the 2nd and
 3rd values instead of being outputted to the terminal.</p><h4 id=runnermodemode>runnerMode(mode)</h4><p>Sets the execution/runner mode for interactive Hilbish. This determines whether
 Hilbish wll try to run input as Lua and/or sh or only do one of either.
