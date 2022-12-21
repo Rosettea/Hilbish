@@ -31,16 +31,21 @@ filepath.Dir
 Glob all files and directories that match the pattern.
 For the rules, see Go's filepath.Glob
 
-### join(paths...)
+### join(...)
 Takes paths and joins them together with the OS's
 directory separator (forward or backward slash).
 
 ### mkdir(name, recursive)
 Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
 
-### readdir(dir)
-Returns a table of files in `dir`
+### readdir(dir) -> {}
+Returns a table of files in `dir`.
 
-### stat(path)
-Returns info about `path`
+### stat(path) -> {}
+Returns a table of info about the `path`.
+It contains the following keys:
+name (string) - Name of the path
+size (number) - Size of the path
+mode (string) - Permission mode in an octal format string (with leading 0)
+isDir (boolean) - If the path is a directory
 

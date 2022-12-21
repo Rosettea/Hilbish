@@ -93,9 +93,15 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), err
 }
 
-// stat(path)
-// Returns info about `path`
+// stat(path) -> {}
+// Returns a table of info about the `path`.
+// It contains the following keys:
+// name (string) - Name of the path
+// size (number) - Size of the path
+// mode (string) - Permission mode in an octal format string (with leading 0)
+// isDir (boolean) - If the path is a directory
 // --- @param path string
+// --- @returns table
 func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -119,8 +125,8 @@ func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(statTbl)), nil
 }
 
-// readdir(dir)
-// Returns a table of files in `dir`
+// readdir(dir) -> {}
+// Returns a table of files in `dir`.
 // --- @param dir string
 // --- @return table
 func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -181,6 +187,7 @@ func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // dir(path)
 // Returns the directory part of `path`. For the rules, see Go's
 // filepath.Dir
+// --- @param path string
 func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -196,6 +203,7 @@ func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // glob(pattern)
 // Glob all files and directories that match the pattern.
 // For the rules, see Go's filepath.Glob
+// --- @param pattern string
 func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -219,9 +227,10 @@ func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaMatches)), nil
 }
 
-// join(paths...)
+// join(...)
 // Takes paths and joins them together with the OS's
 // directory separator (forward or backward slash).
+// --- @vararg any
 func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	strs := make([]string, len(c.Etc()))
 	for i, v := range c.Etc() {

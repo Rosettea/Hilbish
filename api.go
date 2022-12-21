@@ -184,11 +184,13 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
-// run(cmd, returnOut) -> exitCode, stdout, stderr
+// run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's sh interpreter.
 // If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
 // 3rd values instead of being outputted to the terminal.
 // --- @param cmd string
+// --- @param returnOut boolean
+// --- @returns number, string, string
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -238,11 +240,11 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt) -> input
+// read(prompt) -> input (string)
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
 // Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
-// --- @param prompt string|nil
+// --- @param prompt? string
 // --- @returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaprompt := c.Arg(0)
@@ -278,7 +280,7 @@ These will be formatted and replaced with the appropriate values.
 `%u` - Name of current user
 `%h` - Hostname of device
 --- @param str string
---- @param typ string|nil Type of prompt, being left or right. Left by default.
+--- @param typ? string Type of prompt, being left or right. Left by default.
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()
@@ -447,7 +449,7 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Returns a `timer` object (see `doc timers`).
 // --- @param cb function
 // --- @param time number
-// --- @return table
+// --- @returns table
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -536,7 +538,7 @@ func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // which(name)
 // Checks if `name` is a valid command
-// --- @param binName string
+// --- @param name string
 func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -621,7 +623,7 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // as the text for the hint. This is by default a shim. To set hints,
 // override this function with your custom handler.
 // --- @param line string
-// --- @param pos int
+// --- @param pos number
 func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }

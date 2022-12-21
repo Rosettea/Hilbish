@@ -296,10 +296,10 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// hooks(name) -> {cb, cb...}
-// Returns a table with hooks on the event with `name`.
+// hooks(name) -> {}
+// Returns a table with hooks (callback functions) on the event with `name`.
 // --- @param name string
-// --- @returns table
+// --- @returns table<function>
 func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

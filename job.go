@@ -384,8 +384,10 @@ func jobUserData(j *job) *rt.UserData {
 }
 
 // #interface jobs
-// get(id)
+// get(id) -> job (Job/Table)
 // Get a job object via its ID.
+// --- @param id number
+// --- @returns Job
 func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
@@ -409,6 +411,9 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface jobs
 // add(cmdstr, args, execPath)
 // Adds a new job to the job table. Note that this does not immediately run it.
+// --- @param cmdstr string
+// --- @param args table
+// --- @param execPath string
 func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
@@ -439,8 +444,9 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface jobs
-// all()
+// all() -> jobs (table<Job/Table>)
 // Returns a table of all job objects.
+// --- @returns table<Job>
 func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
@@ -474,8 +480,9 @@ func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface jobs
-// last() -> Job
+// last() -> job (Job/Table)
 // Returns the last added job from the table.
+// --- @returns Job
 func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	j.mu.RLock()
 	defer j.mu.RUnlock()

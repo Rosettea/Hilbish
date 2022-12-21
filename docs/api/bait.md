@@ -21,8 +21,8 @@ Catches a hook with `name`. Runs the `cb` when it is thrown
 ### catchOnce(name, cb)
 Same as catch, but only runs the `cb` once and then removes the hook
 
-### hooks(name) -> {cb, cb...}
-Returns a table with hooks on the event with `name`.
+### hooks(name) -> {}
+Returns a table with hooks (callback functions) on the event with `name`.
 
 ### release(name, catcher)
 Removes the `catcher` for the event with `name`

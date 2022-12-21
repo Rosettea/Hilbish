@@ -64,7 +64,10 @@ func (th *timersModule) get(id int) *timer {
 // #interface timers
 // create(type, time, callback)
 // Creates a timer that runs based on the specified `time` in milliseconds.
-// The `type` can either be interval (value of 0) or timeout (value of 1).
+// The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
+// --- @param type number
+// --- @param time number
+// --- @param callback function
 func (th *timersModule) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
@@ -88,8 +91,10 @@ func (th *timersModule) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface timers
-// get(id)
+// get(id) -> timer (Timer/Table)
 // Retrieves a timer via its ID.
+// --- @param id number
+// --- @returns Timer
 func (th *timersModule) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

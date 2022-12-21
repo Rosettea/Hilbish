@@ -45,6 +45,8 @@ func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface editor
 // setVimRegister(register, text)
 // Sets the vim register at `register` to hold the passed text.
+// --- @param register string
+// --- @param text string
 func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -68,6 +70,7 @@ func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface editor
 // getVimRegister(register)
 // Returns the text that is at the register.
+// --- @param register string
 func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

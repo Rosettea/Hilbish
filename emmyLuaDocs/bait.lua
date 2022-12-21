@@ -12,9 +12,9 @@ function bait.catch(name, cb) end
 --- @param cb function
 function bait.catchOnce(name, cb) end
 
---- Returns a table with hooks on the event with `name`.
+--- Returns a table with hooks (callback functions) on the event with `name`.
 --- @param name string
---- @returns table
+--- @returns table<function>
 function bait.hooks(name) end
 
 --- Removes the `catcher` for the event with `name`

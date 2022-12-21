@@ -92,8 +92,9 @@ func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 func _hlalias() {}
 
 // #interface aliases
-// list()
-// Get a table of all aliases.
+// list() -> aliases (table)
+// Get a table of all aliases, with string keys as the alias and the value as the command.
+// @returns table<string, string>
 func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	aliasesList := rt.NewTable()
 	for k, v := range a.All() {
@@ -121,9 +122,10 @@ func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface aliases
-// resolve(alias)
+// resolve(alias) -> command (string)
 // Tries to resolve an alias to its command.
 // --- @param alias string
+// --- @returns string
 func (a *aliasModule) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
