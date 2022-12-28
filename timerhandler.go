@@ -137,11 +137,11 @@ An example of usage:
 local t = hilbish.timers.create(1, 5000, function()
 	print 'hello!'
 end)
-```
 
 t:stop()
 print(t.running, t.duration, t.type)
 t:start()
+```
 */
 func (th *timersModule) loader(rtm *rt.Runtime) *rt.Table {
 	timerMethods := rt.NewTable()
