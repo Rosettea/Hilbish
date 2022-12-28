@@ -8,9 +8,28 @@ menu:
 ---
 
 ## Introduction
-The timers interface si one to easily set timeouts and intervals
-to run functions after a certain time or repeatedly without using
-odd tricks.
+
+If you ever want to run a piece of code on a timed interval, or want to wait
+a few seconds, you don't have to rely on timing tricks, as Hilbish has a
+timer API to set intervals and timeouts.
+
+These are the simple functions `hilbish.interval` and `hilbish.timeout` (doc
+accessible with `doc hilbish`). But if you want slightly more control over
+them, there is the `hilbish.timers` interface. It allows you to get
+a timer via ID and control them.
+
+All functions documented with the `Timer` type refer to a Timer object.
+
+An example of usage:
+```
+local t = hilbish.timers.create(1, 5000, function()
+	print 'hello!'
+end)
+
+t:stop()
+print(t.running, t.duration, t.type)
+t:start()
+```
 
 ## Interface fields
 - `INTERVAL`: Constant for an interval timer type
