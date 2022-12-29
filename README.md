@@ -31,8 +31,8 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 
 # Screenshots
 <div align="center">
-<img src="gallery/default.png"><br><br>
 <img src="gallery/terminal.png"><br><br>
+<img src="gallery/tab.png"><br><br>
 <img src="gallery/pillprompt.png">
 </div>
 
