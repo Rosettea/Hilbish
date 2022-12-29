@@ -2,6 +2,7 @@
 title: Install
 description: Steps on how to install Hilbish on all the OSes and distros supported.
 layout: page
+draft: true
 ---
 
 ## Official Binaries
