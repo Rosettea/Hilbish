@@ -4,6 +4,11 @@ local lunacolors = require 'lunacolors'
 
 commander.register('doc', function(args)
 	local moddocPath = hilbish.dataDir .. '/docs/'
+	local stat = fs.stat '.git/refs/heads/extended-job-api'
+	if stat then
+		-- hilbish git
+		moddocPath = './docs/'
+	end
 	local apidocHeader = [[
 # %s
 {grayBg}  {white}{italic}%s  {reset}
@@ -35,13 +40,16 @@ Available sections: ]] .. table.concat(modules, ', ')
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			if not f then
+				f = io.open(moddocPath .. subdocName:match '%w+' .. '/' .. subdocName .. '.md', 'rb')
+			end
+			if not f then
 				moddocPath = moddocPath .. subdocName .. '/'
 				subdocName = args[3] or '_index'
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				print('No documentation found for ' .. args[#args] .. '.')
-				return
+				print('No documentation found for ' .. mod .. '.')
+				return 1
 			end
 		end
 		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
