@@ -92,9 +92,9 @@ func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 func _hlalias() {}
 
 // #interface aliases
-// list() -> aliases (table)
+// list() -> table<string, string>
 // Get a table of all aliases, with string keys as the alias and the value as the command.
-// @returns table<string, string>
+// --- @returns table<string, string>
 func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	aliasesList := rt.NewTable()
 	for k, v := range a.All() {
