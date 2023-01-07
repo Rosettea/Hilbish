@@ -39,7 +39,7 @@ commander.register('doc', function(args)
 			end
 			if not f then
 				print('No documentation found for ' .. mod .. '.')
-				return
+				return 1
 			end
 		end
 		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
