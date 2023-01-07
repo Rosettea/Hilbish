@@ -67,7 +67,7 @@ do
 end
 
 bait.catch('error', function(event, handler, err)
-	bait.release(event, handler)
+	print(string.format('Encountered an error in %s handler\n%s', event, err:sub(8)))
 end)
 
 bait.catch('command.not-found', function(cmd)
