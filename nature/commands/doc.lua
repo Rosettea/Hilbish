@@ -40,7 +40,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				print('No documentation found for ' .. mod .. '.')
+				print('No documentation found for ' .. args[#args] .. '.')
 				return
 			end
 		end
