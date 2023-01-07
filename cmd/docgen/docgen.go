@@ -430,31 +430,14 @@ func main() {
 				}
 				f.WriteString("\n")
 			}
-			if len(modu.Types) != 0 {
-				f.WriteString("## Types\n")
-				for _, dps := range modu.Types {
-					f.WriteString(fmt.Sprintf("### %s\n", dps.FuncName))
-					for _, doc := range dps.Doc {
-						if !strings.HasPrefix(doc, "---") {
-							f.WriteString(doc + "\n")
-						}
-					}
-					if len(dps.Properties) != 0 {
-						f.WriteString("#### Properties\n")
-						for _, dps := range dps.Properties {
-							f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
-							f.WriteString(strings.Join(dps.Doc, " "))
-							f.WriteString("\n")
-						}
-					}
-					f.WriteString("\n")
-				}
-			}
 
 			if len(modu.Docs) != 0 {
 				typeTag, _ := regexp.Compile(`@\w+`)
 				f.WriteString("## Functions\n")
 				for _, dps := range modu.Docs {
+					if dps.IsMember {
+						continue
+					}
 					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						// todo: get type from global table to link to
 						// other pages (hilbish page can link to hilbish.jobs#Job)
@@ -469,6 +452,49 @@ func main() {
 						}
 					}
 					f.WriteString("\n")
+				}
+			}
+
+			if len(modu.Types) != 0 {
+				f.WriteString("## Types\n")
+				for _, dps := range modu.Types {
+					f.WriteString(fmt.Sprintf("## %s\n", dps.FuncName))
+					for _, doc := range dps.Doc {
+						if !strings.HasPrefix(doc, "---") {
+							f.WriteString(doc + "\n")
+						}
+					}
+					if len(dps.Properties) != 0 {
+						f.WriteString("### Properties\n")
+						for _, dps := range dps.Properties {
+							f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
+							f.WriteString(strings.Join(dps.Doc, " "))
+							f.WriteString("\n")
+						}
+					}
+					f.WriteString("\n")
+					typeTag, _ := regexp.Compile(`@\w+`)
+
+					f.WriteString("### Methods\n")
+					for _, dps := range modu.Docs {
+						if !dps.IsMember {
+							continue
+						}
+						htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
+							// todo: get type from global table to link to
+							// other pages (hilbish page can link to hilbish.jobs#Job)
+							typName := typ[1:]
+							linkedTyp := strings.ToLower(typName) // TODO: link
+							return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+						})
+						f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))
+						for _, doc := range dps.Doc {
+							if !strings.HasPrefix(doc, "---") {
+								f.WriteString(doc + "\n")
+							}
+						}
+						f.WriteString("\n")
+					}
 				}
 			}
 		}(mod, docPath, v)
