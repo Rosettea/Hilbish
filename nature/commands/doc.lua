@@ -4,6 +4,11 @@ local lunacolors = require 'lunacolors'
 
 commander.register('doc', function(args)
 	local moddocPath = hilbish.dataDir .. '/docs/'
+	local stat = fs.stat '.git/refs/heads/extended-job-api'
+	if stat then
+		-- hilbish git
+		moddocPath = './docs/'
+	end
 	local apidocHeader = [[
 # %s
 {grayBg}  {white}{italic}%s  {reset}
