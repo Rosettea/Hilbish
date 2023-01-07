@@ -14,7 +14,10 @@ Manage interactive jobs in Hilbish via Lua.
 Jobs are the name of background tasks/commands. A job can be started via
 interactive usage or with the functions defined below for use in external runners.
 
-## Object properties
+## Types
+### Job
+Job Type.
+#### Properties
 - `cmd`: The user entered command string for the job.
 - `running`: Whether the job is running or not.
 - `id`: The ID of the job in the job table
@@ -40,15 +43,15 @@ Stops the job from running.
 ### add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
 
-### all() -> jobs (table<Job/Table>)
+### all() -> table\<<a href="#job" style="text-decoration: none;">Job</a>>
 Returns a table of all job objects.
 
 ### disown(id)
 Disowns a job. This deletes it from the job table.
 
-### get(id) -> job (Job/Table)
+### get(id) -> <a href="#job" style="text-decoration: none;">Job</a>
 Get a job object via its ID.
 
-### last() -> job (Job/Table)
+### last() -> <a href="#job" style="text-decoration: none;">Job</a>
 Returns the last added job from the table.
 
