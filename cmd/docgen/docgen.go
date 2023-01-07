@@ -65,6 +65,7 @@ type tag struct {
 var docs = make(map[string]module)
 var interfaceDocs = make(map[string]module)
 var emmyDocs = make(map[string][]emmyPiece)
+var typeTable = make(map[string][]string) // [0] = parentMod, [1] = interfaces
 var prefix = map[string]string{
 	"main": "hl",
 	"hilbish": "hl",
@@ -182,6 +183,8 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 		Fields: fields,
 		Properties: properties,
 	}
+
+	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
 
 	return dps
 }
@@ -442,8 +445,9 @@ func main() {
 						// todo: get type from global table to link to
 						// other pages (hilbish page can link to hilbish.jobs#Job)
 						typName := typ[1:]
-						linkedTyp := strings.ToLower(typName) // TODO: link
-						return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+						typLookup := typeTable[strings.ToLower(typName)]
+						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 					})
 					f.WriteString(fmt.Sprintf("### %s\n", htmlSig))
 					for _, doc := range dps.Doc {

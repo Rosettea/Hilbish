@@ -21,16 +21,16 @@ Stops the job from running.
 ### add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
 
-### all() -> table\<<a href="#job" style="text-decoration: none;">Job</a>>
+### all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>>
 Returns a table of all job objects.
 
 ### disown(id)
 Disowns a job. This deletes it from the job table.
 
-### get(id) -> <a href="#job" style="text-decoration: none;">Job</a>
+### get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>
 Get a job object via its ID.
 
-### last() -> <a href="#job" style="text-decoration: none;">Job</a>
+### last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>
 Returns the last added job from the table.
 
 ## Types

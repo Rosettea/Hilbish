@@ -231,8 +231,9 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
 }
 
-// cwd()
+// cwd() -> string
 // Returns the current directory of the shell
+// --- @returns string
 func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
 
@@ -444,12 +445,12 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// timeout(cb, time)
-// Runs the `cb` function after `time` in milliseconds
-// Returns a `timer` object (see `doc timers`).
+// timeout(cb, time) -> @Timer
+// Runs the `cb` function after `time` in milliseconds.
+// This creates a timer that starts immediately.
 // --- @param cb function
 // --- @param time number
-// --- @returns table
+// --- @returns Timer
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -470,12 +471,12 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(timer.ud)), nil
 }
 
-// interval(cb, time)
+// interval(cb, time) -> @Timer
 // Runs the `cb` function every `time` milliseconds.
-// Returns a `timer` object (see `doc timers`).
+// This creates a timer that starts immediately.
 // --- @param cb function
 // --- @param time number
-// --- @return table
+// --- @return Timer
 func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -536,9 +537,11 @@ func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// which(name)
-// Checks if `name` is a valid command
+// which(name) -> string
+// Checks if `name` is a valid command.
+// Will return the path of the binary, or a basename if it's a commander.
 // --- @param name string
+// --- @returns string
 func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

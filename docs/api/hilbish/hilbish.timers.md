@@ -35,11 +35,11 @@ print(t.running) // true
 - `TIMEOUT`: Constant for a timeout timer type
 
 ## Functions
-### create(type, time, callback) -> <a href="#timer" style="text-decoration: none;">Timer</a>
+### create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
 Creates a timer that runs based on the specified `time` in milliseconds.
 The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
 
-### get(id) -> <a href="#timer" style="text-decoration: none;">Timer</a>
+### get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
 Retrieves a timer via its ID.
 
 ## Types
