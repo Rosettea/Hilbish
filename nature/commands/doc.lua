@@ -25,6 +25,9 @@ commander.register('doc', function(args)
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			if not f then
+				f = io.open(moddocPath .. subdocName:match '%w+' .. '/' .. subdocName .. '.md', 'rb')
+			end
+			if not f then
 				moddocPath = moddocPath .. subdocName .. '/'
 				subdocName = args[3] or '_index'
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
