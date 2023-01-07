@@ -19,7 +19,7 @@ const (
 // #property type What type of timer it is
 // #property running If the timer is running
 // #property duration The duration in milliseconds that the timer will run
-// Timer type.
+// The Job type describes a Hilbish timer.
 type timer struct{
 	id int
 	typ timerType

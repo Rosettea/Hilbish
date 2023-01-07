@@ -26,7 +26,7 @@ var jobMetaKey = rt.StringValue("hshjob")
 // #property exitCode The last exit code of the job.
 // #property stdout The standard output of the job. This just means the normal logs of the process.
 // #property stderr The standard error stream of the process. This (usually) includes error messages of the job.
-// Job Type.
+// The Job type describes a Hilbish job.
 type job struct {
 	cmd string
 	running bool

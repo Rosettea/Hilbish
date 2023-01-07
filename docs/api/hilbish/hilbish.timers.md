@@ -44,7 +44,7 @@ Retrieves a timer via its ID.
 
 ## Types
 ## Timer
-Timer type.
+The Job type describes a Hilbish timer.
 ### Properties
 - `type`: What type of timer it is
 - `running`: If the timer is running

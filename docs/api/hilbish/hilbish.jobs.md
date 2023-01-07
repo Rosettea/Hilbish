@@ -35,7 +35,7 @@ Returns the last added job from the table.
 
 ## Types
 ## Job
-Job Type.
+The Job type describes a Hilbish job.
 ### Properties
 - `cmd`: The user entered command string for the job.
 - `running`: Whether the job is running or not.
