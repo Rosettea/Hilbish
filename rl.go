@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"strings"
+	//"io"
+	//"strings"
 
 	"hilbish/util"
 
-	"github.com/maxlandon/readline"
+	"github.com/reeflective/readline"
 	rt "github.com/arnodel/golua/runtime"
 )
 
@@ -28,9 +28,10 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	// but it cant have shared history
 	if !noHist {
 		lr.fileHist = newFileHistory(defaultHistPath)
-		rl.SetHistoryCtrlR("History", &luaHistory{})
-		rl.HistoryAutoWrite = false
+		rl.AddHistorySource("History", &luaHistory{})
+		//rl.HistoryAutoWrite = false
 	}
+	/*
 	rl.ShowVimMode = false
 	rl.ViModeCallback = func(mode readline.ViMode) {
 		modeStr := ""
@@ -50,6 +51,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		}
 		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
+	*/
 	rl.HintText = func(line []rune, pos int) []rune {
 		if hinter == nil {
 			return []rune{}
@@ -87,27 +89,29 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		
 		return highlighted
 	}
-	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
+	rl.Completer = func(line []rune, pos int) readline.Completions {
 		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 2, false)
 		compHandle := hshMod.Get(rt.StringValue("completion")).AsTable().Get(rt.StringValue("handler"))
 		err := rt.Call(l.MainThread(), compHandle, []rt.Value{rt.StringValue(string(line)),
 		rt.IntValue(int64(pos))}, term)
 
-		var compGroups []*readline.CompletionGroup
+		comps := readline.Completions{}
+		comps.NoSpace()
 		if err != nil {
-			return "", compGroups
+			return comps
 		}
 
 		luaCompGroups := term.Get(0)
-		luaPrefix := term.Get(1)
+		//luaPrefix := term.Get(1)
 
 		if luaCompGroups.Type() != rt.TableType {
-			return "", compGroups
+			return comps
 		}
 
 		groups := luaCompGroups.AsTable()
 		// prefix is optional
-		pfx, _ := luaPrefix.TryString()
+		//pfx, _ := luaPrefix.TryString()
+		//comps = comps.Prefix(pfx)
 
 		util.ForEach(groups, func(key rt.Value, val rt.Value) {
 			if key.Type() != rt.IntType || val.Type() != rt.TableType {
@@ -155,6 +159,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 				}
 			})
 
+			/*
 			var dispType readline.TabDisplayType
 			switch luaCompType.AsString() {
 				case "grid": dispType = readline.TabDisplayGrid
@@ -162,17 +167,12 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 				// need special cases, will implement later
 				//case "map": dispType = readline.TabDisplayMap
 			}
+			*/
 
-			compGroups = append(compGroups, &readline.CompletionGroup{
-				DisplayType: dispType,
-				Descriptions: itemDescriptions,
-				Suggestions: items,
-				TrimSlash: false,
-				NoSpace: true,
-			})
+			comps = comps.Merge(readline.CompleteValues(items...))
 		})
 
-		return pfx, compGroups
+		return comps
 	}
 
 	return lr
@@ -182,15 +182,16 @@ func (lr *lineReader) Read() (string, error) {
 	hooks.Emit("command.precmd", nil)
 	s, err := lr.rl.Readline()
 	// this is so dumb
-	if err == readline.EOF {
+	/*if err == readline.EOF {
 		fmt.Println("")
 		return "", io.EOF
-	}
+	}*/
 
 	return s, err // might get another error
 }
 
 func (lr *lineReader) SetPrompt(p string) {
+	/*
 	halfPrompt := strings.Split(p, "\n")
 	if len(halfPrompt) > 1 {
 		lr.rl.Multiline = true
@@ -204,13 +205,17 @@ func (lr *lineReader) SetPrompt(p string) {
 	if initialized && !running {
 		lr.rl.RefreshPromptInPlace("")
 	}
+	*/
 }
 
 func (lr *lineReader) SetRightPrompt(p string) {
+/*
+	
 	lr.rl.SetRightPrompt(p)
 	if initialized && !running {
 		lr.rl.RefreshPromptInPlace("")
 	}
+*/
 }
 
 func (lr *lineReader) AddHistory(cmd string) {

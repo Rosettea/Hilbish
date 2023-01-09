@@ -15,7 +15,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
-	"github.com/maxlandon/readline"
+	"github.com/reeflective/readline"
 	"golang.org/x/term"
 )
 
@@ -181,7 +181,7 @@ input:
 			break
 		}
 		if err != nil {
-			if err == readline.CtrlC {
+			if err == readline.ErrCtrlC {
 				fmt.Println("^C")
 				hooks.Emit("hilbish.cancel")
 			} else {

@@ -26,7 +26,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
-	"github.com/maxlandon/readline"
+	"github.com/reeflective/readline"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -579,10 +579,10 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	switch mode {
 		case "emacs":
 			unsetVimMode()
-			lr.rl.InputMode = readline.Emacs
+			//lr.rl.InputMode = readline.Emacs
 		case "vim":
 			setVimMode("insert")
-			lr.rl.InputMode = readline.Vim
+			//lr.rl.InputMode = readline.Vim
 		default:
 			return nil, errors.New("inputMode: expected vim or emacs, received " + mode)
 	}

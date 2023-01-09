@@ -62,9 +62,9 @@ func luaInit() {
 		}
 	})
 
-	lr.rl.RawInputCallback = func(r []rune) {
+	/*lr.rl.RawInputCallback = func(r []rune) {
 		hooks.Emit("hilbish.rawInput", string(r))
-	}
+	}*/
 
 	// Add more paths that Lua can require from
 	err := util.DoString(l, "package.path = package.path .. " + requirePaths)

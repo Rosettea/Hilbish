@@ -28,6 +28,7 @@ func editorLoader(rtm *rt.Runtime) *rt.Table {
 // insert(text)
 // Inserts text into the line.
 func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+/*
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -38,6 +39,7 @@ func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	lr.rl.Insert(text)
+*/
 
 	return c.Next(), nil
 }
@@ -48,6 +50,7 @@ func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // --- @param register string
 // --- @param text string
 func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+/*
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -63,6 +66,7 @@ func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	lr.rl.SetRegisterBuf(register, []rune(text))
+*/
 
 	return c.Next(), nil
 }
@@ -72,6 +76,7 @@ func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Returns the text that is at the register.
 // --- @param register string
 func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	/*
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -84,13 +89,19 @@ func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	buf := lr.rl.GetFromRegister(register)
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
+	*/
+
+	return c.Next(), nil
 }
 
 // #interface editor
 // getLine()
 // Returns the current input line.
 func editorGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	/*
 	buf := lr.rl.GetLine()
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
+	*/
+	return c.Next(), nil
 }
