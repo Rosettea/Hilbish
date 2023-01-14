@@ -191,6 +191,9 @@ func (lr *lineReader) Read() (string, error) {
 }
 
 func (lr *lineReader) SetPrompt(p string) {
+	lr.rl.Prompt.Primary(func() string {
+		return p
+	})
 	/*
 	halfPrompt := strings.Split(p, "\n")
 	if len(halfPrompt) > 1 {
@@ -209,8 +212,11 @@ func (lr *lineReader) SetPrompt(p string) {
 }
 
 func (lr *lineReader) SetRightPrompt(p string) {
+	lr.rl.Prompt.Right(func() string {
+		return p
+	})
+
 /*
-	
 	lr.rl.SetRightPrompt(p)
 	if initialized && !running {
 		lr.rl.RefreshPromptInPlace("")

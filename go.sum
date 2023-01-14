@@ -6,6 +6,8 @@ github.com/Rosettea/golua v0.0.0-20220621002945-b05143999437 h1:6lWu4YVLeKuZ8jR9
 github.com/Rosettea/golua v0.0.0-20220621002945-b05143999437/go.mod h1:9jzpYPiU2is0HVGCiuIOBSXdergHUW44IEjmuN1UrIE=
 github.com/Rosettea/golua v0.0.0-20221213193027-cbf6d4e4d345 h1:QNYjYDogUSiNUkffbhFSrSCtpZhofeiVYGFN2FI4wSs=
 github.com/Rosettea/golua v0.0.0-20221213193027-cbf6d4e4d345/go.mod h1:9jzpYPiU2is0HVGCiuIOBSXdergHUW44IEjmuN1UrIE=
+github.com/Rosettea/rl v0.0.0-20230109220413-32e3c6f4baaa h1:48kPGi0HKC+iGwxwXLi6HeqeGj14zm5XYeyyD8VvFOo=
+github.com/Rosettea/rl v0.0.0-20230109220413-32e3c6f4baaa/go.mod h1:zSJq1ZyoiM0vGRBaF0uan1jbnoF+6M2hgZnQDtV3MX4=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e h1:P2XupP8SaylWaudD1DqbWtZ3mIa8OsE9635LmR+Q+lg=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220306140409-795a84b00b4e/go.mod h1:R09vh/04ILvP2Gj8/Z9Jd0Dh0ZIvaucowMEs6abQpWs=
 github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20220524215627-dfd9a4fa219b h1:s5eDMhBk6H1BgipgLub/gv9qeyBaTuiHM0k3h2/9TSE=

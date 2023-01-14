@@ -579,10 +579,10 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	switch mode {
 		case "emacs":
 			unsetVimMode()
-			//lr.rl.InputMode = readline.Emacs
+			lr.rl.Config.InputMode = readline.Emacs
 		case "vim":
 			setVimMode("insert")
-			//lr.rl.InputMode = readline.Vim
+			lr.rl.Config.InputMode = readline.Vim
 		default:
 			return nil, errors.New("inputMode: expected vim or emacs, received " + mode)
 	}
