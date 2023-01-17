@@ -32,4 +32,4 @@ replace layeh.com/gopher-luar => github.com/layeh/gopher-luar v1.0.10
 
 replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20221213193027-cbf6d4e4d345
 
-replace github.com/reeflective/readline => github.com/Rosettea/rl v0.0.0-20230109220413-32e3c6f4baaa
+replace github.com/reeflective/readline => github.com/Rosettea/rl v0.0.0-20230114144324-1e2af14177c3
