@@ -144,6 +144,7 @@ func luaStartJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface jobs
+// #member
 // stop()
 // Stops the job from running.
 func luaStopJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
