@@ -2,7 +2,7 @@ local commander = require 'commander'
 local fs = require 'fs'
 local lunacolors = require 'lunacolors'
 
-commander.register('doc', function(args)
+commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
 	local apidocHeader = [[
 # %s
@@ -30,7 +30,7 @@ commander.register('doc', function(args)
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				print('No documentation found for ' .. mod .. '.')
+				sinks.out:write('No documentation found for ' .. mod .. '.')
 				return
 			end
 		end
@@ -74,7 +74,7 @@ commander.register('doc', function(args)
 		end):gsub('#+.-\n', function(t)
 			return '{bold}{magenta}' .. t .. '{reset}'
 		end))
-		print(formattedFuncs)
+		sinks.out:write(formattedFuncs)
 		f:close()
 
 		return
@@ -83,7 +83,7 @@ commander.register('doc', function(args)
 		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
 	end)
 
-	io.write [[
+	sinks.out:write [[
 Welcome to Hilbish's doc tool! Here you can find documentation for builtin
 functions and other things.
 
@@ -91,7 +91,6 @@ Usage: doc <section> [subdoc]
 A section is a module or a literal section and a subdoc is a subsection for it.
 
 Available sections: ]]
-	io.flush()
 
-	print(table.concat(modules, ', '))
+	sinks.out:write(table.concat(modules, ', ') .. '\n')
 end)
