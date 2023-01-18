@@ -75,6 +75,12 @@ function hilbish.runner.setCurrent(name)
 	hilbish.runner.setMode(r.run)
 end
 
+--- Returns the current runner by name.
+--- @returns string
+function hilbish.runner.getCurrent()
+	return currentRunner
+end
+
 hilbish.runner.add('hybrid', function(input)
 	local cmdStr = hilbish.aliases.resolve(input)
 
