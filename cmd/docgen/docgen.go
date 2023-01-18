@@ -442,8 +442,6 @@ func main() {
 						continue
 					}
 					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
-						// todo: get type from global table to link to
-						// other pages (hilbish page can link to hilbish.jobs#Job)
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]
 						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
