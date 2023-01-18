@@ -1,5 +1,10 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- Documented custom userdata types (Job and Timer Objects)
+  - Coming with fix is also adding the return types for some functions that were missing it
+
 ## [2.0.1] - 2022-12-28
 ### Fixed
 - Corrected documentation for hooks, removing outdated `command.no-perm`
