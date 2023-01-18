@@ -551,7 +551,10 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	cmd := aliases.Resolve(name)
+	// itll return either the original command or what was passed
+	// if name isnt empty its not an issue
+	alias := aliases.Resolve(name)
+	cmd := strings.Split(alias, " ")[0]
 
 	// check for commander
 	if commands[cmd] != nil {
