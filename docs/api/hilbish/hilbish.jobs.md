@@ -15,9 +15,6 @@ Jobs are the name of background tasks/commands. A job can be started via
 interactive usage or with the functions defined below for use in external runners.
 
 ## Functions
-### stop()
-Stops the job from running.
-
 ### add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
 
@@ -55,4 +52,7 @@ executed normally and wait for it to complete.
 
 #### start()
 Starts running the job.
+
+#### stop()
+Stops the job from running.
 

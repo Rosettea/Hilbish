@@ -183,7 +183,7 @@ function hilbish.runner.lua(cmd) end
 function hilbish.jobs:start() end
 
 --- Stops the job from running.
-function hilbish.jobs.stop() end
+function hilbish.jobs:stop() end
 
 --- Runs a command in Hilbish's shell script interpreter.
 --- This is the equivalent of using `source`.
