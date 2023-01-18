@@ -1,7 +1,7 @@
 local commander = require 'commander'
 local fs = require 'fs'
 
-commander.register('cat', function(args)
+commander.register('cat', function(args, sinks)
 	local exit = 0
 
 	if #args == 0 then
@@ -17,7 +17,7 @@ usage: cat [file]...]]
 			goto continue
 		end
 
-		io.write(f:read '*a')
+		sinks.out:write(f:read '*a')
 		::continue::
 	end
 	io.flush()

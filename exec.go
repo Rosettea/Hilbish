@@ -323,8 +323,18 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			luacmdArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(str))
 		}
 
+		hc := interp.HandlerCtx(ctx)
 		if commands[args[0]] != nil {
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs))
+			stdin := newSinkInput(hc.Stdin)
+			stdout := newSinkOutput(hc.Stdout)
+			stderr := newSinkOutput(hc.Stderr)
+
+			sinks := rt.NewTable()
+			sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
+			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
+
+			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -364,7 +374,6 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		killTimeout := 2 * time.Second
 		// from here is basically copy-paste of the default exec handler from
 		// sh/interp but with our job handling
-		hc := interp.HandlerCtx(ctx)
 		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
 		if err != nil {
 			fmt.Fprintln(hc.Stderr, err)
