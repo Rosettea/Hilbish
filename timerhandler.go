@@ -62,7 +62,7 @@ func (th *timersModule) get(id int) *timer {
 }
 
 // #interface timers
-// create(type, time, callback)
+// create(type, time, callback) -> @Timer
 // Creates a timer that runs based on the specified `time` in milliseconds.
 // The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
 // --- @param type number
@@ -91,7 +91,7 @@ func (th *timersModule) luaCreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface timers
-// get(id) -> timer (Timer/Table)
+// get(id) -> @Timer
 // Retrieves a timer via its ID.
 // --- @param id number
 // --- @returns Timer
@@ -115,9 +115,6 @@ func (th *timersModule) luaGet(thr *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface timers
 // #field INTERVAL Constant for an interval timer type
 // #field TIMEOUT Constant for a timeout timer type
-// #property type What type of timer it is
-// #property running If the timer is running
-// #property duration The duration in milliseconds that the timer will run
 // timeout and interval API
 /*
 If you ever want to run a piece of code on a timed interval, or want to wait
@@ -134,13 +131,12 @@ All functions documented with the `Timer` type refer to a Timer object.
 
 An example of usage:
 ```
-local t = hilbish.timers.create(1, 5000, function()
+local t = hilbish.timers.create(hilbish.timers.TIMEOUT, 5000, function()
 	print 'hello!'
 end)
 
-t:stop()
-print(t.running, t.duration, t.type)
 t:start()
+print(t.running) // true
 ```
 */
 func (th *timersModule) loader(rtm *rt.Runtime) *rt.Table {

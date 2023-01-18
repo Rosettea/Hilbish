@@ -35,7 +35,7 @@ replacing <cmd> with the name of the command (for example `command.git`).
 `cb` must be a function that returns a table of "completion groups."
 Check `doc completions` for more information.
 
-### cwd()
+### cwd() -> string
 Returns the current directory of the shell
 
 ### exec(cmd)
@@ -60,9 +60,9 @@ override this function with your custom handler.
 ### inputMode(mode)
 Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 
-### interval(cb, time)
+### interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
 Runs the `cb` function every `time` milliseconds.
-Returns a `timer` object (see `doc timers`).
+This creates a timer that starts immediately.
 
 ### multiprompt(str)
 Changes the continued line prompt to `str`
@@ -95,10 +95,11 @@ Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua)
 sh, and lua. It also accepts a function, to which if it is passed one
 will call it to execute user input instead.
 
-### timeout(cb, time)
-Runs the `cb` function after `time` in milliseconds
-Returns a `timer` object (see `doc timers`).
+### timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
+Runs the `cb` function after `time` in milliseconds.
+This creates a timer that starts immediately.
 
-### which(name)
-Checks if `name` is a valid command
+### which(name) -> string
+Checks if `name` is a valid command.
+Will return the path of the binary, or a basename if it's a commander.
 

@@ -18,6 +18,15 @@ import (
 var jobs *jobHandler
 var jobMetaKey = rt.StringValue("hshjob")
 
+// #interface jobs
+// #property cmd The user entered command string for the job.
+// #property running Whether the job is running or not.
+// #property id The ID of the job in the job table
+// #property pid The Process ID
+// #property exitCode The last exit code of the job.
+// #property stdout The standard output of the job. This just means the normal logs of the process.
+// #property stderr The standard error stream of the process. This (usually) includes error messages of the job.
+// The Job type describes a Hilbish job.
 type job struct {
 	cmd string
 	running bool
@@ -293,13 +302,6 @@ func (j *jobHandler) stopAll() {
 }
 
 // #interface jobs
-// #property cmd The user entered command string for the job.
-// #property running Whether the job is running or not.
-// #property id The ID of the job in the job table
-// #property pid The Process ID
-// #property exitCode The last exit code of the job.
-// #property stdout The standard output of the job. This just means the normal logs of the process.
-// #property stderr The standard error stream of the process. This (usually) includes error messages of the job.
 // background job management
 /*
 Manage interactive jobs in Hilbish via Lua.
@@ -384,7 +386,7 @@ func jobUserData(j *job) *rt.UserData {
 }
 
 // #interface jobs
-// get(id) -> job (Job/Table)
+// get(id) -> @Job
 // Get a job object via its ID.
 // --- @param id number
 // --- @returns Job
@@ -444,7 +446,7 @@ func (j *jobHandler) luaAddJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface jobs
-// all() -> jobs (table<Job/Table>)
+// all() -> table<@Job>
 // Returns a table of all job objects.
 // --- @returns table<Job>
 func (j *jobHandler) luaAllJobs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -481,7 +483,7 @@ func (j *jobHandler) luaDisownJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface jobs
-// last() -> job (Job/Table)
+// last() -> @Job
 // Returns the last added job from the table.
 // --- @returns Job
 func (j *jobHandler) luaLastJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {

@@ -17,7 +17,7 @@ This is an alias (ha) for the `hilbish.alias` function.
 ### delete(name)
 Removes an alias.
 
-### list() -> table<string, string>
+### list() -> table\<string, string>
 Get a table of all aliases, with string keys as the alias and the value as the command.
 
 ### resolve(alias) -> command (string)
