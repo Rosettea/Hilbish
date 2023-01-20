@@ -53,11 +53,11 @@ Available sections: ]] .. table.concat(modules, ', ')
 			end
 		end
 		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
-		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' or f ~= 'index.md' end)
+		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' and f ~= 'index.md' end)
 		local subdocs = table.map(moddocs, function(fname)
 			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 		end)
-		if subdocName == '_index' then
+		if #moddocs ~= 0 then
 			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
 		end
 
