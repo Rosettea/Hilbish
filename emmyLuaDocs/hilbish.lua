@@ -63,6 +63,7 @@ function hilbish.appendPath(dir) end
 function hilbish.complete(scope, cb) end
 
 --- Returns the current directory of the shell
+--- @returns string
 function hilbish.cwd() end
 
 --- Replaces running hilbish with `cmd`
@@ -94,10 +95,10 @@ function hilbish.hinter(line, pos) end
 function hilbish.inputMode(mode) end
 
 --- Runs the `cb` function every `time` milliseconds.
---- Returns a `timer` object (see `doc timers`).
+--- This creates a timer that starts immediately.
 --- @param cb function
 --- @param time number
---- @return table
+--- @return Timer
 function hilbish.interval(cb, time) end
 
 --- Changes the continued line prompt to `str`
@@ -141,15 +142,17 @@ function hilbish.run(cmd, returnOut) end
 --- @param mode string|function
 function hilbish.runnerMode(mode) end
 
---- Runs the `cb` function after `time` in milliseconds
---- Returns a `timer` object (see `doc timers`).
+--- Runs the `cb` function after `time` in milliseconds.
+--- This creates a timer that starts immediately.
 --- @param cb function
 --- @param time number
---- @returns table
+--- @returns Timer
 function hilbish.timeout(cb, time) end
 
---- Checks if `name` is a valid command
+--- Checks if `name` is a valid command.
+--- Will return the path of the binary, or a basename if it's a commander.
 --- @param name string
+--- @returns string
 function hilbish.which(name) end
 
 --- Puts a job in the background. This acts the same as initially running a job.
@@ -180,7 +183,7 @@ function hilbish.runner.lua(cmd) end
 function hilbish.jobs:start() end
 
 --- Stops the job from running.
-function hilbish.jobs.stop() end
+function hilbish.jobs:stop() end
 
 --- Runs a command in Hilbish's shell script interpreter.
 --- This is the equivalent of using `source`.

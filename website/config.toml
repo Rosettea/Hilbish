@@ -20,6 +20,16 @@ enableGitInfo = true
 	name = 'Docs'
 	pageref = '/docs'
 	weight = 3
-	
+[[menu.nav]]
+	identifier = 'blog'
+	name = 'Blog'
+	pageref = '/blog'
+	weight = 4
+
 [markup.goldmark.renderer]
 unsafe = true
+
+[author]
+	[author.sammyette]
+		name = 'sammyette'
+		picture = 'https://avatars1.githubusercontent.com/u/38820196?s=460&u=b9f4efb2375bae6cb30656d790c6e0a2939327c0&v=4'

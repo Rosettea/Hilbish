@@ -4,12 +4,27 @@ local lunacolors = require 'lunacolors'
 
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
+	local stat = fs.stat '.git/refs/heads/extended-job-api'
+	if stat then
+		-- hilbish git
+		moddocPath = './docs/'
+	end
 	local apidocHeader = [[
 # %s
 {grayBg}  {white}{italic}%s  {reset}
 
 ]]
 
+	local modules = table.map(fs.readdir(moddocPath), function(f)
+		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
+	end)
+	local doc = [[
+Welcome to Hilbish's documentation viewer! Here you can find
+documentation for builtin functions and other things related
+to Hilbish.
+
+Usage: doc <section> [subdoc]
+Available sections: ]] .. table.concat(modules, ', ')
 	if #args > 0 then
 		local mod = args[1]
 
@@ -25,17 +40,20 @@ commander.register('doc', function(args, sinks)
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			if not f then
+				f = io.open(moddocPath .. subdocName:match '%w+' .. '/' .. subdocName .. '.md', 'rb')
+			end
+			if not f then
 				moddocPath = moddocPath .. subdocName .. '/'
 				subdocName = args[3] or '_index'
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
 				sinks.out:writeln('No documentation found for ' .. mod .. '.')
-				return
+				return 1
 			end
 		end
 		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
-		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' end)
+		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' or f ~= 'index.md' end)
 		local subdocs = table.map(moddocs, function(fname)
 			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 		end)
@@ -63,34 +81,20 @@ commander.register('doc', function(args, sinks)
 		if mod == 'api' then
 			funcdocs = string.format(apidocHeader, vals.title, vals.description or 'no description.') .. funcdocs
 		end
-		local backtickOccurence = 0
-		local formattedFuncs = lunacolors.format(funcdocs:sub(1, #funcdocs - 1):gsub('`', function()
-			backtickOccurence = backtickOccurence + 1
-			if backtickOccurence % 2 == 0 then
-				return '{reset}'
-			else
-				return '{underline}{green}'
-			end
-		end):gsub('#+.-\n', function(t)
-			return '{bold}{magenta}' .. t .. '{reset}'
-		end))
-		sinks.out:writeln(formattedFuncs)
+		doc = funcdocs:sub(1, #funcdocs - 1)
 		f:close()
-
-		return
 	end
-	local modules = table.map(fs.readdir(moddocPath), function(f)
-		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
-	end)
 
-	sinks.out:writeln [[
-Welcome to Hilbish's doc tool! Here you can find documentation for builtin
-functions and other things.
-
-Usage: doc <section> [subdoc]
-A section is a module or a literal section and a subdoc is a subsection for it.
-
-Available sections: ]]
-
-	sinks.out:writeln(table.concat(modules, ', '))
+	local backtickOccurence = 0
+	sinks.out:writeln(lunacolors.format(doc:gsub('`', function()
+		backtickOccurence = backtickOccurence + 1
+		if backtickOccurence % 2 == 0 then
+			return '{reset}'
+		else
+			return '{underline}{green}'
+		end
+	end):gsub('#+.-\n', function(t)
+		local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
+		return '{bold}{yellow}' .. signature .. '{reset}'
+	end)))
 end)

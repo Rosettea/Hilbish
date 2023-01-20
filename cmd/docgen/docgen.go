@@ -7,6 +7,7 @@ import (
 	"go/doc"
 	"go/parser"
 	"go/token"
+	"regexp"
 	"strings"
 	"os"
 	"sync"
@@ -31,6 +32,7 @@ type emmyPiece struct {
 }
 
 type module struct {
+	Types []docPiece
 	Docs []docPiece
 	Fields []docPiece
 	Properties []docPiece
@@ -38,6 +40,7 @@ type module struct {
 	Description string
 	ParentModule string
 	HasInterfaces bool
+	HasTypes bool
 }
 
 type docPiece struct {
@@ -49,6 +52,7 @@ type docPiece struct {
 	GoFuncName string
 	IsInterface bool
 	IsMember bool
+	IsType bool
 	Fields []docPiece
 	Properties []docPiece
 }
@@ -61,6 +65,7 @@ type tag struct {
 var docs = make(map[string]module)
 var interfaceDocs = make(map[string]module)
 var emmyDocs = make(map[string][]emmyPiece)
+var typeTable = make(map[string][]string) // [0] = parentMod, [1] = interfaces
 var prefix = map[string]string{
 	"main": "hl",
 	"hilbish": "hl",
@@ -115,6 +120,71 @@ func docPieceTag(tagName string, tags map[string][]tag) []docPiece {
 			Doc: tag.fields,
 		})
 	}
+
+	return dps
+}
+
+func setupDocType(mod string, typ *doc.Type) *docPiece {
+	docs := strings.TrimSpace(typ.Doc)
+	inInterface := strings.HasPrefix(docs, "#interface")
+	if !inInterface {
+		return nil
+	}
+
+	tags, doc := getTagsAndDocs(docs)
+
+	var interfaces string
+	typeName := strings.ToUpper(string(typ.Name[0])) + typ.Name[1:]
+	typeDoc := []string{}
+
+	if inInterface {
+		interfaces = tags["interface"][0].id
+	}
+
+	fields := docPieceTag("field", tags)
+	properties := docPieceTag("property", tags)
+
+	for _, d := range doc {
+		if strings.HasPrefix(d, "---") {
+			// TODO: document types in lua
+			/*
+			emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
+			emmyLinePieces := strings.Split(emmyLine, " ")
+			emmyType := emmyLinePieces[0]
+			if emmyType == "@param" {
+				em.Params = append(em.Params, emmyLinePieces[1])
+			}
+			if emmyType == "@vararg" {
+				em.Params = append(em.Params, "...") // add vararg
+			}
+			em.Annotations = append(em.Annotations, d)
+			*/
+		} else {
+			typeDoc = append(typeDoc, d)
+		}
+	}
+
+	var isMember bool
+	if tags["member"] != nil {
+		isMember = true
+	}
+	var parentMod string
+	if inInterface {
+		parentMod = mod
+	}
+	dps := &docPiece{
+		Doc: typeDoc,
+		FuncName: typeName,
+		Interfacing: interfaces,
+		IsInterface: inInterface,
+		IsMember: isMember,
+		IsType: true,
+		ParentModule: parentMod,
+		Fields: fields,
+		Properties: properties,
+	}
+
+	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
 
 	return dps
 }
@@ -220,6 +290,7 @@ func main() {
 	for l, f := range pkgs {
 		p := doc.New(f, "./", doc.AllDecls)
 		pieces := []docPiece{}
+		typePieces := []docPiece{}
 		mod := l
 		if mod == "main" {
 			mod = "hilbish"
@@ -237,6 +308,14 @@ func main() {
 			}
 		}
 		for _, t := range p.Types {
+			typePiece := setupDocType(mod, t)
+			if typePiece != nil {
+				typePieces = append(typePieces, *typePiece)
+				if typePiece.IsInterface {
+					hasInterfaces = true
+				}
+			}
+
 			for _, m := range t.Methods {
 				piece := setupDoc(mod, m)
 				if piece == nil {
@@ -254,6 +333,7 @@ func main() {
 		shortDesc := descParts[0]
 		desc := descParts[1:]
 		filteredPieces := []docPiece{}
+		filteredTypePieces := []docPiece{}
 		for _, piece := range pieces {
 			if !piece.IsInterface {
 				filteredPieces = append(filteredPieces, piece)
@@ -276,10 +356,28 @@ func main() {
 				interfaceModules[modname].Properties = piece.Properties
 				continue
 			}
+
 			interfaceModules[modname].Docs = append(interfaceModules[modname].Docs, piece)
 		}
 
+		for _, piece := range typePieces {
+			if !piece.IsInterface {
+				filteredTypePieces = append(filteredTypePieces, piece)
+				continue
+			}
+
+			modname := piece.ParentModule + "." + piece.Interfacing
+			if interfaceModules[modname] == nil {
+				interfaceModules[modname] = &module{
+					ParentModule: piece.ParentModule,
+				}
+			}
+
+			interfaceModules[modname].Types = append(interfaceModules[modname].Types, piece)
+		}
+
 		docs[mod] = module{
+			Types: filteredTypePieces,
 			Docs: filteredPieces,
 			ShortDescription: shortDesc,
 			Description: strings.Join(desc, "\n"),
@@ -335,17 +433,71 @@ func main() {
 				}
 				f.WriteString("\n")
 			}
+
 			if len(modu.Docs) != 0 {
+				typeTag, _ := regexp.Compile(`@\w+`)
 				f.WriteString("## Functions\n")
+				for _, dps := range modu.Docs {
+					if dps.IsMember {
+						continue
+					}
+					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
+						typName := typ[1:]
+						typLookup := typeTable[strings.ToLower(typName)]
+						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+					})
+					f.WriteString(fmt.Sprintf("### %s\n", htmlSig))
+					for _, doc := range dps.Doc {
+						if !strings.HasPrefix(doc, "---") {
+							f.WriteString(doc + "\n")
+						}
+					}
+					f.WriteString("\n")
+				}
 			}
-			for _, dps := range modu.Docs {
-				f.WriteString(fmt.Sprintf("### %s\n", dps.FuncSig))
-				for _, doc := range dps.Doc {
-					if !strings.HasPrefix(doc, "---") {
-						f.WriteString(doc + "\n")
+
+			if len(modu.Types) != 0 {
+				f.WriteString("## Types\n")
+				for _, dps := range modu.Types {
+					f.WriteString(fmt.Sprintf("## %s\n", dps.FuncName))
+					for _, doc := range dps.Doc {
+						if !strings.HasPrefix(doc, "---") {
+							f.WriteString(doc + "\n")
+						}
+					}
+					if len(dps.Properties) != 0 {
+						f.WriteString("### Properties\n")
+						for _, dps := range dps.Properties {
+							f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
+							f.WriteString(strings.Join(dps.Doc, " "))
+							f.WriteString("\n")
+						}
+					}
+					f.WriteString("\n")
+					typeTag, _ := regexp.Compile(`@\w+`)
+
+					f.WriteString("### Methods\n")
+					for _, dps := range modu.Docs {
+						if !dps.IsMember {
+							continue
+						}
+						htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
+							// todo: get type from global table to link to
+							// other pages (hilbish page can link to hilbish.jobs#Job)
+							typName := typ[1:]
+							linkedTyp := strings.ToLower(typName) // TODO: link
+							return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+						})
+						f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))
+						for _, doc := range dps.Doc {
+							if !strings.HasPrefix(doc, "---") {
+								f.WriteString(doc + "\n")
+							}
+						}
+						f.WriteString("\n")
 					}
 				}
-				f.WriteString("\n")
 			}
 		}(mod, docPath, v)
 

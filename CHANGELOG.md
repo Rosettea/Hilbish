@@ -1,5 +1,19 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- Documented custom userdata types (Job and Timer Objects)
+  - Coming with fix is also adding the return types for some functions that were missing it
+
+### Fixed
+- `hilbish.which` not working correctly with aliases
+
+## [2.0.1] - 2022-12-28
+### Fixed
+- Corrected documentation for hooks, removing outdated `command.no-perm`
+- Fixed an issue where `cd` with no args would not update the old pwd
+- Tiny documentation enhancements for the `hilbish.timer` interface
+
 ## [2.0.0] - 2022-12-20
 **NOTES FOR USERS/PACKAGERS UPDATING:**
 - Hilbish now uses [Task] insead of Make for builds.
@@ -611,6 +625,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.0.1]: https://github.com/Rosettea/Hilbish/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0
 [2.0.0-rc1]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0-rc1
 [1.2.0]: https://github.com/Rosettea/Hilbish/compare/v1.1.4...v1.2.0
