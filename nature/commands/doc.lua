@@ -30,7 +30,7 @@ commander.register('doc', function(args, sinks)
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				sinks.out:write('No documentation found for ' .. mod .. '.')
+				sinks.out:writeln('No documentation found for ' .. mod .. '.')
 				return
 			end
 		end
@@ -74,7 +74,7 @@ commander.register('doc', function(args, sinks)
 		end):gsub('#+.-\n', function(t)
 			return '{bold}{magenta}' .. t .. '{reset}'
 		end))
-		sinks.out:write(formattedFuncs)
+		sinks.out:writeln(formattedFuncs)
 		f:close()
 
 		return
@@ -83,7 +83,7 @@ commander.register('doc', function(args, sinks)
 		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
 	end)
 
-	sinks.out:write [[
+	sinks.out:writeln [[
 Welcome to Hilbish's doc tool! Here you can find documentation for builtin
 functions and other things.
 
@@ -92,5 +92,5 @@ A section is a module or a literal section and a subdoc is a subsection for it.
 
 Available sections: ]]
 
-	sinks.out:write(table.concat(modules, ', ') .. '\n')
+	sinks.out:writeln(table.concat(modules, ', '))
 end)

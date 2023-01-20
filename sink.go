@@ -25,6 +25,7 @@ func setupSinkType(rtm *rt.Runtime) {
 	sinkMethods := rt.NewTable()
 	sinkFuncs := map[string]util.LuaExport{
 		"write": {luaSinkWrite, 2, false},
+		"writeln": {luaSinkWriteln, 2, false},
 	}
 	util.SetExports(l, sinkMethods, sinkFuncs)
 
@@ -54,6 +55,25 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	s.writer.Write([]byte(data))
+
+	return c.Next(), nil
+}
+
+func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+	data, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
+
+	s.writer.Write([]byte(data + "\n"))
 
 	return c.Next(), nil
 }
