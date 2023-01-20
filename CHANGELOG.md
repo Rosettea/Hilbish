@@ -4,9 +4,11 @@
 ### Added
 - Documented custom userdata types (Job and Timer Objects)
   - Coming with fix is also adding the return types for some functions that were missing it
+- Added a dedicated input and dedicated outputs for commanders.
 
 ### Fixed
 - `hilbish.which` not working correctly with aliases
+- Commanders not being able to pipe with commands or any related operator.
 
 ## [2.0.1] - 2022-12-28
 ### Fixed
