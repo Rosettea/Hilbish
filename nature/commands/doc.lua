@@ -2,7 +2,7 @@ local commander = require 'commander'
 local fs = require 'fs'
 local lunacolors = require 'lunacolors'
 
-commander.register('doc', function(args)
+commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
 	local stat = fs.stat '.git/refs/heads/extended-job-api'
 	if stat then
@@ -48,7 +48,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				print('No documentation found for ' .. mod .. '.')
+				sinks.out:writeln('No documentation found for ' .. mod .. '.')
 				return 1
 			end
 		end
@@ -86,7 +86,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 	end
 
 	local backtickOccurence = 0
-	print(lunacolors.format(doc:gsub('`', function()
+	sinks.out:writeln(lunacolors.format(doc:gsub('`', function()
 		backtickOccurence = backtickOccurence + 1
 		if backtickOccurence % 2 == 0 then
 			return '{reset}'

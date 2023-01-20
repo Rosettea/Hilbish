@@ -1,11 +1,11 @@
 local commander = require 'commander'
 local fs = require 'fs'
 
-commander.register('cat', function(args)
+commander.register('cat', function(args, sinks)
 	local exit = 0
 
 	if #args == 0 then
-		print [[
+		sinks.out:writeln [[
 usage: cat [file]...]]
 	end
 
@@ -13,11 +13,11 @@ usage: cat [file]...]]
 		local f = io.open(fName)
 		if f == nil then
 			exit = 1
-			print(string.format('cat: %s: no such file or directory', fName))
+			sinks.out:writeln(string.format('cat: %s: no such file or directory', fName))
 			goto continue
 		end
 
-		io.write(f:read '*a')
+		sinks.out:writeln(f:read '*a')
 		::continue::
 	end
 	io.flush()

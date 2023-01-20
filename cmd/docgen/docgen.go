@@ -414,7 +414,14 @@ func main() {
 
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
-			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modu.Description))
+			typeTag, _ := regexp.Compile(`@\w+`)
+			modDescription := typeTag.ReplaceAllStringFunc(strings.Replace(modu.Description, "<", `\<`, -1), func(typ string) string {
+				typName := typ[1:]
+				typLookup := typeTable[strings.ToLower(typName)]
+				linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+				return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+			})
+			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modDescription))
 			if len(modu.Fields) != 0 {
 				f.WriteString("## Interface fields\n")
 				for _, dps := range modu.Fields {
@@ -435,7 +442,6 @@ func main() {
 			}
 
 			if len(modu.Docs) != 0 {
-				typeTag, _ := regexp.Compile(`@\w+`)
 				f.WriteString("## Functions\n")
 				for _, dps := range modu.Docs {
 					if dps.IsMember {
@@ -475,8 +481,6 @@ func main() {
 						}
 					}
 					f.WriteString("\n")
-					typeTag, _ := regexp.Compile(`@\w+`)
-
 					f.WriteString("### Methods\n")
 					for _, dps := range modu.Docs {
 						if !dps.IsMember {

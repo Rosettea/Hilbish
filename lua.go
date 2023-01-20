@@ -23,6 +23,7 @@ func luaInit() {
 		MessageHandler: debuglib.Traceback,
 	})
 	lib.LoadAll(l)
+	setupSinkType(l)
 
 	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
