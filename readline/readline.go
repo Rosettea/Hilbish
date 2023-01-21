@@ -52,22 +52,6 @@ func (rl *Instance) Readline() (string, error) {
 	rl.histOffset = 0
 	rl.viUndoHistory = []undoItem{{line: "", pos: 0}}
 
-	// Multisplit
-	if len(rl.multisplit) > 0 {
-		r := []rune(rl.multisplit[0])
-		if len(r) >= 1 {
-			rl.editorInput(r)
-		}
-
-		rl.carridgeReturn()
-		if len(rl.multisplit) > 1 {
-			rl.multisplit = rl.multisplit[1:]
-		} else {
-			rl.multisplit = []string{}
-		}
-		return string(rl.line), nil
-	}
-
 	// Finally, print any info or completions
 	// if the TabCompletion engines so desires
 	rl.renderHelpers()
@@ -96,33 +80,6 @@ func (rl *Instance) Readline() (string, error) {
 		r := []rune(string(b))
 		if rl.RawInputCallback != nil {
 			rl.RawInputCallback(r[:i])
-		}
-
-		if isMultiline(r[:i]) || len(rl.multiline) > 0 {
-			rl.multiline = append(rl.multiline, b[:i]...)
-			if i == len(b) {
-				continue
-			}
-
-			if !rl.allowMultiline(rl.multiline) {
-				rl.multiline = []byte{}
-				continue
-			}
-
-			s := string(rl.multiline)
-			rl.multisplit = rxMultiline.Split(s, -1)
-
-			r = []rune(rl.multisplit[0])
-			rl.modeViMode = VimInsert
-			rl.editorInput(r)
-			rl.carridgeReturn()
-			rl.multiline = []byte{}
-			if len(rl.multisplit) > 1 {
-				rl.multisplit = rl.multisplit[1:]
-			} else {
-				rl.multisplit = []string{}
-			}
-			return string(rl.line), nil
 		}
 
 		s := string(r[:i])
@@ -448,7 +405,7 @@ func (rl *Instance) Readline() (string, error) {
 				completion := cur.getCurrentCell(rl)
 				prefix := len(rl.tcPrefix)
 				if prefix > len(completion) {
-					rl.carridgeReturn()
+					rl.lineCarriageReturn()
 					return string(rl.line), nil
 				}
 
@@ -459,7 +416,7 @@ func (rl *Instance) Readline() (string, error) {
 
 				// If we were in history completion, immediately execute the line.
 				if rl.modeAutoFind && rl.searchMode == HistoryFind {
-					rl.carridgeReturn()
+					rl.lineCarriageReturn()
 					return string(rl.line), nil
 				}
 
@@ -470,8 +427,10 @@ func (rl *Instance) Readline() (string, error) {
 
 				continue
 			}
-			rl.carridgeReturn()
-			return string(rl.line), nil
+			rl.lineCarriageReturn()
+			if rl.accepted {
+				return string(rl.line), nil
+			}
 
 		// Vim --------------------------------------------------------------------------------------
 		case charEscape:

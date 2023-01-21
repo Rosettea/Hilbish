@@ -238,11 +238,11 @@ func (rl *Instance) vi(r rune) {
 	case 'v':
 		rl.clearHelpers()
 		var multiline []rune
-		if rl.GetMultiLine == nil {
+		/*if rl.GetMultiLine == nil {
 			multiline = rl.line
 		} else {
 			multiline = rl.GetMultiLine(rl.line)
-		}
+		}*/
 
 		// Keep the previous cursor position
 		//prev := rl.pos
