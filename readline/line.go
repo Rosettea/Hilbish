@@ -92,7 +92,7 @@ func (rl *Instance) computeLinePos() {
 func (rl *Instance) computeCursorPos(startLine, cpos, lineIdx int) {
 	termWidth := GetTermWidth()
 	cursorStart := cpos - startLine
-	//cursorStart += rl.Prompt.inputAt(rl)
+	cursorStart += rl.getPromptPos()
 
 	cursorY := cursorStart / termWidth
 	cursorX := cursorStart % termWidth
@@ -159,22 +159,11 @@ func (rl *Instance) echo() {
 		// Print the prompt
 		print(string(rl.realPrompt))
 
-		// Assemble the line, taking virtual completions into account
-		var line []rune
-		if len(rl.currentComp) > 0 {
-			line = rl.lineComp
-		} else {
-			line = rl.line
-		}
+		// print the line
+		rl.printBuffer()
 
-		printed := string(line)
-		// Print the input line with optional syntax highlighting
-		if rl.SyntaxHighlighter != nil {
-			printed = (rl.SyntaxHighlighter(line))
-		}
-
+		// update cursor positions
 		rl.computeLinePos()
-		print(printed)
 	}
 
 	// Update references with new coordinates only now, because
@@ -323,6 +312,32 @@ func (rl *Instance) clearLine() {
 
 	// Completions are also reset
 	rl.clearVirtualComp()
+}
+
+func (rl *Instance) printBuffer() {
+	// Generate the entire line as an highlighted line,
+	// and split it at each newline.
+	line := string(rl.GetLine())
+	lines := strings.Split(line, "\n")
+
+	if len(line) > 0 && line[len(line)-1] == '\n' {
+		lines = append(lines, "")
+	}
+
+	for i, line := range lines {
+		// Indent according to the prompt.
+		if i > 0 {
+			moveCursorForwards(rl.getPromptPos())
+		}
+
+		if i < len(lines)-1 {
+			line += "\n"
+		} else {
+			line += seqClearScreenBelow
+		}
+
+		print(line)
+	}
 }
 
 func (rl *Instance) deleteToBeginning() {
