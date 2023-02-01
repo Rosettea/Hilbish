@@ -115,9 +115,11 @@ func main() {
 		os.Setenv("SHELL", os.Args[0])
 	}
 
-	go handleSignals()
 	lr = newLineReader("", false)
 	luaInit()
+
+	go handleSignals()
+
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
