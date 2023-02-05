@@ -4,7 +4,7 @@ local lunacolors = require 'lunacolors'
 
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
-	local stat = fs.stat '.git/refs/heads/extended-job-api'
+	local stat = pcall(fs.stat, '.git/refs/heads/extended-job-api')
 	if stat then
 		-- hilbish git
 		moddocPath = './docs/'
