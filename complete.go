@@ -149,7 +149,15 @@ func matchPath(query string) ([]string, string) {
 	}
 
 	files, _ := os.ReadDir(path)
-	for _, file := range files {
+	for _, entry := range files {
+		// should we handle errors here?
+		file, _ := entry.Info()
+		fileInfo, err := entry.Info()
+		if err == nil && fileInfo.Mode() & os.ModeSymlink != 0 {
+			path, _ := filepath.EvalSymlinks(filepath.Join(path, file.Name()))
+			file, _ = os.Lstat(path)
+		}
+
 		if strings.HasPrefix(file.Name(), baseName) {
 			entry := file.Name()
 			if file.IsDir() {
