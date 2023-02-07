@@ -103,3 +103,15 @@ This creates a timer that starts immediately.
 Checks if `name` is a valid command.
 Will return the path of the binary, or a basename if it's a commander.
 
+## Types
+## Sink
+A sink is a structure that has input and/or output to/from
+a desination.
+
+### Methods
+#### write(str)
+Writes data to a sink.
+
+#### writeln(str)
+Writes data to a sink with a newline at the end.
+

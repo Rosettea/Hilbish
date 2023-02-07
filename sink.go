@@ -11,8 +11,9 @@ import (
 
 var sinkMetaKey = rt.StringValue("hshsink")
 
-// a sink is a structure that has input and/or output
-// it is like a lua file when used in popen, but specific to hilbish
+// #type
+// A sink is a structure that has input and/or output to/from
+// a desination.
 type sink struct{
 	writer io.Writer
 	reader io.Reader
@@ -40,6 +41,9 @@ func setupSinkType(rtm *rt.Runtime) {
 	l.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
 }
 
+// #member
+// write(str)
+// Writes data to a sink.
 func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -59,6 +63,9 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #member
+// writeln(str)
+// Writes data to a sink with a newline at the end.
 func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err

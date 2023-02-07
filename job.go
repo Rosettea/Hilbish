@@ -18,6 +18,7 @@ import (
 var jobs *jobHandler
 var jobMetaKey = rt.StringValue("hshjob")
 
+// #type
 // #interface jobs
 // #property cmd The user entered command string for the job.
 // #property running Whether the job is running or not.

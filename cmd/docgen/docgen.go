@@ -126,12 +126,12 @@ func docPieceTag(tagName string, tags map[string][]tag) []docPiece {
 
 func setupDocType(mod string, typ *doc.Type) *docPiece {
 	docs := strings.TrimSpace(typ.Doc)
-	inInterface := strings.HasPrefix(docs, "#interface")
-	if !inInterface {
+	tags, doc := getTagsAndDocs(docs)
+
+	if tags["type"] == nil {
 		return nil
 	}
-
-	tags, doc := getTagsAndDocs(docs)
+	inInterface := tags["interface"] != nil
 
 	var interfaces string
 	typeName := strings.ToUpper(string(typ.Name[0])) + typ.Name[1:]
@@ -168,10 +168,7 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 	if tags["member"] != nil {
 		isMember = true
 	}
-	var parentMod string
-	if inInterface {
-		parentMod = mod
-	}
+	parentMod := mod
 	dps := &docPiece{
 		Doc: typeDoc,
 		FuncName: typeName,
@@ -191,13 +188,19 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 
 func setupDoc(mod string, fun *doc.Func) *docPiece {
 	docs := strings.TrimSpace(fun.Doc)
-	inInterface := strings.HasPrefix(docs, "#interface")
-	if (!strings.HasPrefix(fun.Name, prefix[mod]) && !inInterface) || (strings.ToLower(fun.Name) == "loader" && !inInterface) {
+	tags, parts := getTagsAndDocs(docs)
+
+	// i couldnt fit this into the condition below for some reason so here's a goto!
+	if tags["member"] != nil {
+		goto start
+	}
+
+	if (!strings.HasPrefix(fun.Name, prefix[mod]) && tags["interface"] == nil) || (strings.ToLower(fun.Name) == "loader" && tags["interface"] == nil) {
 		return nil
 	}
 
-	tags, parts := getTagsAndDocs(docs)
-
+start:
+	inInterface := tags["interface"] != nil
 	var interfaces string
 	funcsig := parts[0]
 	doc := parts[1:]
@@ -418,7 +421,11 @@ func main() {
 			modDescription := typeTag.ReplaceAllStringFunc(strings.Replace(modu.Description, "<", `\<`, -1), func(typ string) string {
 				typName := typ[1:]
 				typLookup := typeTable[strings.ToLower(typName)]
-				linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+				ifaces := typLookup[0] + "." + typLookup[1] + "/"
+				if typLookup[1] == "" {
+					ifaces = ""
+				}
+				linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s#%s", typLookup[0], ifaces, strings.ToLower(typName))
 				return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 			})
 			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modDescription))
@@ -450,7 +457,11 @@ func main() {
 					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]
-						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+						ifaces := typLookup[0] + "." + typLookup[1] + "/"
+						if typLookup[1] == "" {
+							ifaces = ""
+						}
+						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s#%s", typLookup[0], ifaces, strings.ToLower(typName))
 						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 					})
 					f.WriteString(fmt.Sprintf("### %s\n", htmlSig))
@@ -487,10 +498,10 @@ func main() {
 							continue
 						}
 						htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
-							// todo: get type from global table to link to
-							// other pages (hilbish page can link to hilbish.jobs#Job)
-							typName := typ[1:]
-							linkedTyp := strings.ToLower(typName) // TODO: link
+							typName := regexp.MustCompile(`\w+`).FindString(typ[1:])
+							typLookup := typeTable[strings.ToLower(typName)]
+							fmt.Printf("%+q, \n", typLookup)
+							linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
 							return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 						})
 						f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))

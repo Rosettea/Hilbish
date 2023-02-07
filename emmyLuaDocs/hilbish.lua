@@ -179,6 +179,12 @@ function hilbish.jobs:foreground() end
 --- @param cmd string
 function hilbish.runner.lua(cmd) end
 
+--- Writes data to a sink.
+function hilbish:write(str) end
+
+--- Writes data to a sink with a newline at the end.
+function hilbish:writeln(str) end
+
 --- Starts running the job.
 function hilbish.jobs:start() end
 

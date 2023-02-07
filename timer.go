@@ -15,6 +15,7 @@ const (
 	timerTimeout
 )
 
+// #type
 // #interface timers
 // #property type What type of timer it is
 // #property running If the timer is running
