@@ -16,12 +16,15 @@ method of saving history.
 ### add(cmd)
 Adds a command to the history.
 
+### all() -> table
+Retrieves all history.
+
 ### clear()
 Deletes all commands from the history.
 
 ### get(idx)
 Retrieves a command from the history based on the `idx`.
 
-### size()
+### size() -> number
 Returns the amount of commands in the history.
 

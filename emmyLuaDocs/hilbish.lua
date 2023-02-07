@@ -16,7 +16,8 @@ function hilbish.runner.setMode(cb) end
 
 --- Calls a completer function. This is mainly used to call
 --- a command completer, which will have a `name` in the form
---- of `command.name`, example: `command.git`
+--- of `command.name`, example: `command.git`.
+--- You can check `doc completions` for info on the `completionGroups` return value.
 --- @param name string
 --- @param query string
 --- @param ctx string
@@ -241,6 +242,10 @@ function hilbish.jobs.last() end
 --- Adds a command to the history.
 --- @param cmd string
 function hilbish.history.add(cmd) end
+
+--- Retrieves all history.
+--- @returns table
+function hilbish.history.all() end
 
 --- Deletes all commands from the history.
 function hilbish.history.clear() end

@@ -12,10 +12,10 @@ The hilbish.editor interface provides functions to
 directly interact with the line editor in use.
 
 ## Functions
-### getLine()
+### getLine() -> string
 Returns the current input line.
 
-### getVimRegister(register)
+### getVimRegister(register) -> string
 Returns the text that is at the register.
 
 ### insert(text)

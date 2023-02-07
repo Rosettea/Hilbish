@@ -13,25 +13,25 @@ and other things, and acts an addition to the Lua standard library's
 I/O and filesystem functions.
 
 ## Functions
-### abs(path)
+### abs(path) -> string
 Gives an absolute version of `path`.
 
-### basename(path)
+### basename(path) -> string
 Gives the basename of `path`. For the rules,
 see Go's filepath.Base
 
 ### cd(dir)
 Changes directory to `dir`
 
-### dir(path)
+### dir(path) -> string
 Returns the directory part of `path`. For the rules, see Go's
 filepath.Dir
 
-### glob(pattern)
+### glob(pattern) -> matches (table)
 Glob all files and directories that match the pattern.
 For the rules, see Go's filepath.Glob
 
-### join(...)
+### join(...) -> string
 Takes paths and joins them together with the OS's
 directory separator (forward or backward slash).
 

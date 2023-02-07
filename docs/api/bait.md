@@ -21,11 +21,11 @@ Catches a hook with `name`. Runs the `cb` when it is thrown
 ### catchOnce(name, cb)
 Same as catch, but only runs the `cb` once and then removes the hook
 
-### hooks(name) -> {}
+### hooks(name) -> table
 Returns a table with hooks (callback functions) on the event with `name`.
 
 ### release(name, catcher)
-Removes the `catcher` for the event with `name`
+Removes the `catcher` for the event with `name`.
 For this to work, `catcher` has to be the same function used to catch
 an event, like one saved to a variable.
 

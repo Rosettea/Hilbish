@@ -17,7 +17,7 @@ function bait.catchOnce(name, cb) end
 --- @returns table<function>
 function bait.hooks(name) end
 
---- Removes the `catcher` for the event with `name`
+--- Removes the `catcher` for the event with `name`.
 --- For this to work, `catcher` has to be the same function used to catch
 --- an event, like one saved to a variable.
 --- @param name string
