@@ -3,17 +3,17 @@ Functions add(alias, cmd) This is an alias (ha) for the hilbish.alias function.
 delete(name) Removes an alias.
 list() -&amp;gt; table&amp;lt;string, string&amp;gt; Get a table of all aliases, with string keys as the alias and the value as the command.
 resolve(alias) -&amp;gt; command (string) Tries to resolve an alias to its command.</description></item><item><title>Interface hilbish.completions</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.completions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.completions/</guid><description>Introduction The completions interface deals with tab completions.
-Functions call(name, query, ctx, fields) Calls a completer function. This is mainly used to call a command completer, which will have a name in the form of command.name, example: command.git
-handler(line, pos) The handler function is the callback for tab completion in Hilbish. You can check the completions doc for more info.
-bins(query, ctx, fields) Returns binary/executale completion candidates based on the provided query.</description></item><item><title>Interface hilbish.editor</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.editor/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.editor/</guid><description>Introduction The hilbish.editor interface provides functions to directly interact with the line editor in use.
-Functions getLine() Returns the current input line.
-getVimRegister(register) Returns the text that is at the register.
+Functions call(name, query, ctx, fields) -&amp;gt; completionGroups (table), prefix (string) Calls a completer function. This is mainly used to call a command completer, which will have a name in the form of command.name, example: command.git. You can check doc completions for info on the completionGroups return value.
+handler(line, pos) The handler function is the callback for tab completion in Hilbish. You can check the completions doc for more info.</description></item><item><title>Interface hilbish.editor</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.editor/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.editor/</guid><description>Introduction The hilbish.editor interface provides functions to directly interact with the line editor in use.
+Functions getLine() -&amp;gt; string Returns the current input line.
+getVimRegister(register) -&amp;gt; string Returns the text that is at the register.
 insert(text) Inserts text into the line.
 setVimRegister(register, text) Sets the vim register at register to hold the passed text.</description></item><item><title>Interface hilbish.history</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.history/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.history/</guid><description>Introduction The history interface deals with command history. This includes the ability to override functions to change the main method of saving history.
 Functions add(cmd) Adds a command to the history.
+all() -&amp;gt; table Retrieves all history.
 clear() Deletes all commands from the history.
 get(idx) Retrieves a command from the history based on the idx.
-size() Returns the amount of commands in the history.</description></item><item><title>Interface hilbish.jobs</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.jobs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.jobs/</guid><description>Introduction Manage interactive jobs in Hilbish via Lua.
+size() -&amp;gt; number Returns the amount of commands in the history.</description></item><item><title>Interface hilbish.jobs</title><link>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.jobs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.jobs/</guid><description>Introduction Manage interactive jobs in Hilbish via Lua.
 Jobs are the name of background tasks/commands. A job can be started via interactive usage or with the functions defined below for use in external runners.
 Functions add(cmdstr, args, execPath) Adds a new job to the job table. Note that this does not immediately run it.
 all() -&amp;gt; table&amp;lt;Job&amp;gt; Returns a table of all job objects.
