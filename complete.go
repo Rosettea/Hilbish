@@ -74,13 +74,20 @@ func splitForFile(str string) []string {
 
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
 	q := splitForFile(ctx)
+	path := ""
+	if len(q) != 0 {
+		path = q[len(q) - 1]
+	}
 
-	return matchPath(q[len(q) - 1])
+	return matchPath(path)
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	q := splitForFile(ctx)
-	query = q[len(q) - 1]
+	query = ""
+	if len(q) != 0 {
+		query = q[len(q) - 1]
+	}
 
 	var completions []string
 
