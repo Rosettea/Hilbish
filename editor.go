@@ -68,7 +68,7 @@ func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface editor
-// getVimRegister(register)
+// getVimRegister(register) -> string
 // Returns the text that is at the register.
 // --- @param register string
 func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -87,7 +87,7 @@ func editorGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface editor
-// getLine()
+// getLine() -> string
 // Returns the current input line.
 func editorGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	buf := lr.rl.GetLine()

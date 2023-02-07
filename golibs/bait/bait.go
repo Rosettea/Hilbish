@@ -280,7 +280,7 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // release(name, catcher)
-// Removes the `catcher` for the event with `name`
+// Removes the `catcher` for the event with `name`.
 // For this to work, `catcher` has to be the same function used to catch
 // an event, like one saved to a variable.
 // --- @param name string
@@ -296,7 +296,7 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// hooks(name) -> {}
+// hooks(name) -> table
 // Returns a table with hooks (callback functions) on the event with `name`.
 // --- @param name string
 // --- @returns table<function>

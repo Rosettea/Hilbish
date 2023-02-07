@@ -216,10 +216,11 @@ func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface completions
-// call(name, query, ctx, fields)
+// call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
 // Calls a completer function. This is mainly used to call
 // a command completer, which will have a `name` in the form
-// of `command.name`, example: `command.git`
+// of `command.name`, example: `command.git`.
+// You can check `doc completions` for info on the `completionGroups` return value.
 // --- @param name string
 // --- @param query string
 // --- @param ctx string
@@ -264,7 +265,7 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface completions
-// files(query, ctx, fields)
+// files(query, ctx, fields) -> entries (table), prefix (string)
 // Returns file completion candidates based on the provided query.
 // --- @param query string
 // --- @param ctx string
@@ -286,7 +287,7 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface completions
-// bins(query, ctx, fields)
+// bins(query, ctx, fields) -> entries (table), prefix (string)
 // Returns binary/executale completion candidates based on the provided query.
 // --- @param query string
 // --- @param ctx string

@@ -263,7 +263,7 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 }
 
 // #interface history
-// size()
+// size() -> number
 // Returns the amount of commands in the history.
 // --- @returns number
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -288,6 +288,10 @@ func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 }
 
+// #interface history
+// all() -> table
+// Retrieves all history.
+// --- @returns table
 func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	tbl := rt.NewTable()
 	size := lr.fileHist.Len()
