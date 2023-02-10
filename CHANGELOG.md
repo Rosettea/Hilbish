@@ -1,14 +1,22 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.1.0] - 2022-02-10
 ### Added
 - Documented custom userdata types (Job and Timer Objects)
-  - Coming with fix is also adding the return types for some functions that were missing it
-- Added a dedicated input and dedicated outputs for commanders.
+  - Coming with this fix is also adding the return types for some functions that were missing it
+- Added a dedicated input and dedicated outputs for commanders (sinks - info at `doc api commander`).
+- Local docs is used if one of Hilbish's branches is found
+- Return 1 exit code on doc not found
+- `hilbish.runner.getCurrent()` to get the current runner
+- Initialize Hilbish Lua API before handling signals
 
 ### Fixed
+- `index` or `_index` subdocs should not show up anymore
 - `hilbish.which` not working correctly with aliases
 - Commanders not being able to pipe with commands or any related operator.
+- Resolve symlinks in completions
+- Updated `runner-mode` docs
+- Fix `hilbish.completion` functions panicking when empty input is provided
 
 ## [2.0.1] - 2022-12-28
 ### Fixed
@@ -627,6 +635,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.1.0]: https://github.com/Rosettea/Hilbish/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Rosettea/Hilbish/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0
 [2.0.0-rc1]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0-rc1
