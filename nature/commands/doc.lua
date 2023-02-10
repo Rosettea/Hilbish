@@ -93,7 +93,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 		else
 			return '{underline}{green}'
 		end
-	end):gsub('#+.-\n', function(t)
+	end):gsub('\n#+.-\n', function(t)
 		local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
 		return '{bold}{yellow}' .. signature .. '{reset}'
 	end)))
