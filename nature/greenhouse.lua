@@ -35,11 +35,14 @@ function Greenhouse:draw()
 end
 
 function Greenhouse:scroll(direction)
+	local oldOffset = self.offset
 	if direction == 'down' then
 		self.offset = math.min(self.offset + 1, #self.lines)
 	elseif direction == 'up' then
 		self.offset = math.max(self.offset - 1, 1)
 	end
+
+	if self.offset ~= oldOffset then self:draw() end
 end
 
 function Greenhouse:update()
