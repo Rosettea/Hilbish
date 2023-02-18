@@ -1,4 +1,5 @@
 -- Default Hilbish config
+local hilbish = require 'hilbish'
 local lunacolors = require 'lunacolors'
 local bait = require 'bait'
 local ansikit = require 'ansikit'
@@ -21,4 +22,18 @@ bait.catch('hilbish.vimMode', function(mode)
 	else
 		ansikit.cursorStyle(ansikit.lineCursor)
 	end
+end)
+
+--[[
+hilbish.timeout(function()
+	hilbish.messages.send {title = 'greetings!', text = 'hello world :D'}
+end, 2000)
+]]--
+
+bait.catch('hilbish.notification', function()
+	hilbish.prompt(lunacolors.blue('• 1 new notification'), 'right')
+
+	hilbish.timeout(function()
+		hilbish.prompt('', 'right')
+	end, 3000)
 end)
