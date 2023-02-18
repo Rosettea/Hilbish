@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 
@@ -15,8 +16,8 @@ var sinkMetaKey = rt.StringValue("hshsink")
 // A sink is a structure that has input and/or output to/from
 // a desination.
 type sink struct{
-	writer io.Writer
-	reader io.Reader
+	writer *bufio.Writer
+	reader *bufio.Reader
 	ud *rt.UserData
 }
 
@@ -25,6 +26,7 @@ func setupSinkType(rtm *rt.Runtime) {
 
 	sinkMethods := rt.NewTable()
 	sinkFuncs := map[string]util.LuaExport{
+		"read": {luaSinkRead, 0, false},
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
 	}
@@ -39,6 +41,17 @@ func setupSinkType(rtm *rt.Runtime) {
 
 	sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
 	l.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
+}
+
+func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	str, _ := s.reader.ReadString('\n')
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(str)), nil
 }
 
 // #member
@@ -87,7 +100,7 @@ func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 func newSinkInput(r io.Reader) *sink {
 	s := &sink{
-		reader: r,
+		reader: bufio.NewReader(r),
 	}
 	s.ud = sinkUserData(s)
 
@@ -96,7 +109,7 @@ func newSinkInput(r io.Reader) *sink {
 
 func newSinkOutput(w io.Writer) *sink {
 	s := &sink{
-		writer: w,
+		writer: bufio.NewWriter(w),
 	}
 	s.ud = sinkUserData(s)
 
