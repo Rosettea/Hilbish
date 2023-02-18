@@ -14,7 +14,7 @@ function Greenhouse:new(sink)
 	local size = terminal.size()
 	self.region = size
 	self.start = 1
-	self.offset = 0
+	self.offset = 1
 	self.sink = sink
 
 	return self
@@ -27,11 +27,9 @@ end
 function Greenhouse:draw()
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 
-	for i = 1, #self.lines do
-		if i > self.region.height - 1 then break end
-		if not self.lines[i + self.offset] then break end
-
-		self.sink:writeln(self.lines[i + self.offset]:gsub('\t', '        '):sub(0, self.region.width - 2))
+	for i = self.offset, self.offset + (self.region.height - self.start) - 1 do
+		self.sink:write(ansikit.getCSI(2, 'K'))
+		self.sink:writeln(self.lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
 	end
 end
 
