@@ -19,6 +19,7 @@ type sink struct{
 	writer *bufio.Writer
 	reader *bufio.Reader
 	ud *rt.UserData
+	autoFlush bool
 }
 
 func setupSinkType(rtm *rt.Runtime) {
@@ -43,7 +44,15 @@ func setupSinkType(rtm *rt.Runtime) {
 	l.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
 }
 
+// #member
+// read() -> string
+// --- @returns string
+// Reads input from the sink.
 func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
 	s, err := sinkArg(c, 0)
 	if err != nil {
 		return nil, err
@@ -72,6 +81,9 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	s.writer.Write([]byte(data))
+	if s.autoFlush {
+		s.writer.Flush()
+	}
 
 	return c.Next(), nil
 }
@@ -94,6 +106,27 @@ func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	s.writer.Write([]byte(data + "\n"))
+	if s.autoFlush {
+		s.writer.Flush()
+	}
+
+	return c.Next(), nil
+}
+
+// #member
+// flush()
+// Flush writes all buffered input to the sink.
+func luaSinkFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	s.writer.Flush()
 
 	return c.Next(), nil
 }
