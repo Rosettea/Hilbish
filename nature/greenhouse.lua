@@ -35,9 +35,9 @@ end
 
 function Greenhouse:scroll(direction)
 	if direction == 'down' then
-		self.offset = self.offset + 1
+		self.offset = math.min(self.offset + 1, #self.lines)
 	elseif direction == 'up' then
-		self.offset = self.offset - 1
+		self.offset = math.max(self.offset - 1, 1)
 	end
 	self:draw()
 end
