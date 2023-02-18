@@ -1,4 +1,4 @@
--- Greenhouse is a simple text scrolling handler for terminal program.
+-- Greenhouse is a simple text scrolling handler for terminal programs.
 -- The idea is that it can be set a region to do its scrolling and paging
 -- job and then the user can draw whatever outside it.
 -- This reduces code duplication for the message viewer
@@ -29,8 +29,9 @@ function Greenhouse:draw()
 
 	for i = self.offset, self.offset + (self.region.height - self.start) - 1 do
 		self.sink:write(ansikit.getCSI(2, 'K'))
-		self.sink:writeln(self.lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
+		self.sink:writeln('\r' .. self.lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
 	end
+	self.sink:write '\r'
 end
 
 function Greenhouse:scroll(direction)
@@ -39,6 +40,12 @@ function Greenhouse:scroll(direction)
 	elseif direction == 'up' then
 		self.offset = math.max(self.offset - 1, 1)
 	end
+end
+
+function Greenhouse:update()
+	local size = terminal.size()
+	self.region = size
+
 	self:draw()
 end
 

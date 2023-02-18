@@ -13,12 +13,16 @@ commander.register('greenhouse', function(args, sinks)
 		sinks.err:writeln(string.format('could not open file %s', fname))
 	end
 
+	local gh = Greenhouse(sinks.out)
+	gh:setText(f:read '*a')
+
 	bait.catch('signal.sigint', function()
 		done = true
 	end)
 
-	local gh = Greenhouse(sinks.out)
-	gh:setText(f:read '*a')
+	bait.catch('signal.resize', function()
+		gh:update()
+	end)
 
 	ansikit.screenAlt()
 	ansikit.clear(true)
