@@ -7,7 +7,7 @@ commander.register('fg', function(_, sinks)
 		return 1
 	end
 
-	local err = job.foreground() -- waits for job; blocks
+	local err = job:foreground() -- waits for job; blocks
 	if err then
 		sinks.out:writeln('fg: ' .. err)
 		return 2
