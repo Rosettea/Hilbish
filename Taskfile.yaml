@@ -34,4 +34,4 @@ tasks:
       - rm -vrf
         "{{.DESTDIR}}{{.BINDIR}}/hilbish"
         "{{.DESTDIR}}{{.LIBDIR}}"
-      - sed -i '/hilbish/d' /etc/shells
+      - grep -v 'hilbish' /etc/shells > /tmp/shells.hilbish_uninstall && mv /tmp/shells.hilbish_uninstall /etc/shells
