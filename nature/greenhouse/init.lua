@@ -68,14 +68,21 @@ function Greenhouse:update()
 end
 
 function Greenhouse:next()
+	local oldCurrent = self.curPage
 	self.curPage = math.min(self.curPage + 1, #self.pages)
-	self.sink:write(ansikit.getCSI(2, 'J'))
-	self:draw()
+	if self.curPage ~= oldCurrent then
+		self.offset = 1
+		self:draw()
+	end
 end
 
 function Greenhouse:previous()
+	local oldCurrent = self.curPage
 	self.curPage = math.max(self.curPage - 1, 1)
-	self:draw()
+	if self.curPage ~= oldCurrent then
+		self.offset = 1
+		self:draw()
+	end
 end
 
 return Greenhouse
