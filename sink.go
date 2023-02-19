@@ -31,6 +31,7 @@ func setupSinkType(rtm *rt.Runtime) {
 	sinkFuncs := map[string]util.LuaExport{
 		"flush": {luaSinkFlush, 1, false},
 		"read": {luaSinkRead, 1, false},
+		"autoFlush": {luaSinkAutoFlush, 2, false},
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
 	}
@@ -151,6 +152,32 @@ func luaSinkFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #member
+// autoFlush(auto)
+// Sets/toggles the option of automatically flushing output.
+// A call with no argument will toggle the value.
+// --- @param auto boolean|nil
+func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	v := c.Arg(1)
+	if v.Type() != rt.BoolType && v.Type() != rt.NilType {
+		return nil, fmt.Errorf("#1 must be a boolean")
+	}
+
+	value := !s.autoFlush
+	if v.Type() == rt.BoolType {
+		value = v.AsBool()
+	}
+
+	s.autoFlush = value
+
+	return c.Next(), nil
+}
+
 func newSinkInput(r io.Reader) *sink {
 	s := &sink{
 		reader: bufio.NewReader(r),
@@ -167,6 +194,7 @@ func newSinkInput(r io.Reader) *sink {
 func newSinkOutput(w io.Writer) *sink {
 	s := &sink{
 		writer: bufio.NewWriter(w),
+		autoFlush: true,
 	}
 	s.ud = sinkUserData(s)
 
