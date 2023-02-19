@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 
 	"hilbish/util"
 
@@ -18,6 +19,7 @@ var sinkMetaKey = rt.StringValue("hshsink")
 type sink struct{
 	writer *bufio.Writer
 	reader *bufio.Reader
+	file *os.File
 	ud *rt.UserData
 	autoFlush bool
 }
@@ -35,8 +37,25 @@ func setupSinkType(rtm *rt.Runtime) {
 	util.SetExports(l, sinkMethods, sinkFuncs)
 
 	sinkIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		s, _ := sinkArg(c, 0)
+
 		arg := c.Arg(1)
 		val := sinkMethods.Get(arg)
+
+		if val != rt.NilValue {
+			return c.PushingNext1(t.Runtime, val), nil
+		}
+
+		keyStr, _ := arg.TryString()
+
+		switch keyStr {
+			case "pipe":
+				val = rt.BoolValue(false)
+				if s.file != nil {
+					fileInfo, _ := s.file.Stat();
+					val = rt.BoolValue(fileInfo.Mode() & os.ModeCharDevice == 0)
+				}
+		}
 
 		return c.PushingNext1(t.Runtime, val), nil
 	}
@@ -137,6 +156,10 @@ func newSinkInput(r io.Reader) *sink {
 		reader: bufio.NewReader(r),
 	}
 	s.ud = sinkUserData(s)
+
+	if f, ok := r.(*os.File); ok {
+		s.file = f
+	}
 
 	return s
 }
