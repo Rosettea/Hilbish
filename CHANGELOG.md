@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## [Unreleased]
+## Unreleased
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
 
