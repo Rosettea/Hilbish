@@ -4,17 +4,21 @@ local commander = require 'commander'
 local hilbish = require 'hilbish'
 local terminal = require 'terminal'
 local Greenhouse = require 'nature.greenhouse'
+local Page = require 'nature.greenhouse.page'
 
 commander.register('greenhouse', function(args, sinks)
-	local fname = args[1]
-	local done = false
-	local f <close> = io.open(fname, 'r')
-	if not f then
-		sinks.err:writeln(string.format('could not open file %s', fname))
-	end
-
 	local gh = Greenhouse(sinks.out)
-	gh:setText(f:read '*a')
+	local done = false
+
+	for _, name in ipairs(args) do
+		local f <close> = io.open(name, 'r')
+		if not f then
+			sinks.err:writeln(string.format('could not open file %s', name))
+		end
+
+		local page = Page(f:read '*a')
+		gh:addPage(page)
+	end
 
 	bait.catch('signal.sigint', function()
 		done = true
@@ -43,6 +47,21 @@ commander.register('greenhouse', function(args, sinks)
 						gh:scroll 'down'
 					elseif c2 == 65 then -- arrow up
 						gh:scroll 'up'
+					end
+
+					if c2 == 49 then
+						local c3 = read()
+						if c3 == 59 then
+							local c4 = read()
+							if c4 == 53 then
+								local c5 = read()
+								if c5 == 67 then
+									gh:next()
+								elseif c5 == 68 then
+									gh:previous()
+								end
+							end
+						end
 					end
 				end
 				goto continue

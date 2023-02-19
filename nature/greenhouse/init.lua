@@ -16,28 +16,43 @@ function Greenhouse:new(sink)
 	self.start = 1
 	self.offset = 1
 	self.sink = sink
+	self.pages = {}
+	self.curPage = 1
 
 	return self
 end
 
-function Greenhouse:setText(text)
-	self.lines = string.split(text, '\n')
+function Greenhouse:addPage(page)
+	table.insert(self.pages, page)
+end
+
+function Greenhouse:updateCurrentPage(text)
+	local page = self.pages[self.curPage]
+	page:setText(text)
 end
 
 function Greenhouse:draw()
+	local lines = self.pages[self.curPage].lines
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
+	self.sink:write(ansikit.getCSI(2, 'J'))
 
-	for i = self.offset, self.offset + (self.region.height - self.start) - 1 do
-		self.sink:write(ansikit.getCSI(2, 'K'))
-		self.sink:writeln('\r' .. self.lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
+	-- the -2 negate is for the command and status line
+	for i = self.offset, self.offset + (self.region.height - self.start) - 2 do
+		if i > #lines then break end
+		self.sink:writeln('\r' .. lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
 	end
 	self.sink:write '\r'
+
+	self.sink:write(ansikit.getCSI(self.region.height - self.start.. ';1', 'H'))
+	self.sink:writeln(string.format('Page %d', self.curPage))
 end
 
 function Greenhouse:scroll(direction)
+	local lines = self.pages[self.curPage].lines
+
 	local oldOffset = self.offset
 	if direction == 'down' then
-		self.offset = math.min(self.offset + 1, #self.lines)
+		self.offset = math.min(self.offset + 1, #lines)
 	elseif direction == 'up' then
 		self.offset = math.max(self.offset - 1, 1)
 	end
@@ -49,6 +64,17 @@ function Greenhouse:update()
 	local size = terminal.size()
 	self.region = size
 
+	self:draw()
+end
+
+function Greenhouse:next()
+	self.curPage = math.min(self.curPage + 1, #self.pages)
+	self.sink:write(ansikit.getCSI(2, 'J'))
+	self:draw()
+end
+
+function Greenhouse:previous()
+	self.curPage = math.max(self.curPage - 1, 1)
 	self:draw()
 end
 
