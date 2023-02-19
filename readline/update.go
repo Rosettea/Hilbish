@@ -1,6 +1,10 @@
 package readline
 
-import "golang.org/x/text/width"
+import (
+	"strings"
+
+	"golang.org/x/text/width"
+)
 
 // updateHelpers is a key part of the whole refresh process:
 // it should coordinate reprinting the input line, any Infos and completions
@@ -52,19 +56,19 @@ func (rl *Instance) updateReferences() {
 	rl.posY = 0
 	rl.fullY = 0
 
-	var fullLine, cPosLine int
+	var curLine []rune
 	if len(rl.currentComp) > 0 {
-		fullLine = getWidth(rl.lineComp)
-		cPosLine = getWidth(rl.lineComp[:rl.pos])
+		curLine = rl.lineComp
 	} else {
-		fullLine = getWidth(rl.line)
-		cPosLine = getWidth(rl.line[:rl.pos])
+		curLine = rl.line
 	}
+	fullLine := getWidth(curLine)
+	cPosLine := getWidth(curLine[:rl.pos])
 
 	// We need the X offset of the whole line
 	toEndLine := rl.promptLen + fullLine
 	fullOffset := toEndLine / GetTermWidth()
-	rl.fullY = fullOffset
+	rl.fullY = fullOffset + strings.Count(string(curLine), "\n")
 	fullRest := toEndLine % GetTermWidth()
 	rl.fullX = fullRest
 

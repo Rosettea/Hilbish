@@ -1,5 +1,6 @@
 -- Prelude initializes everything else for our shell
 local _ = require 'succulent' -- Function additions
+local bait = require 'bait'
 local fs = require 'fs'
 
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
@@ -28,7 +29,9 @@ do
 				return got_virt
 			end
 
-			virt_G[key] = os.getenv(key)
+			if type(key) == 'string' then
+				virt_G[key] = os.getenv(key)
+			end
 			return virt_G[key]
 		end,
 
@@ -54,7 +57,6 @@ do
 	if ok then
 		for _, module in ipairs(modules) do
 			local entry = package.searchpath(module, startSearchPath)
-			print(entry)
 			if entry then
 				dofile(entry)
 			end
@@ -63,3 +65,15 @@ do
 
 	package.path = package.path .. ';' .. startSearchPath
 end
+
+bait.catch('error', function(event, handler, err)
+	print(string.format('Encountered an error in %s handler\n%s', event, err:sub(8)))
+end)
+
+bait.catch('command.not-found', function(cmd)
+	print(string.format('hilbish: %s not found', cmd))
+end)
+
+bait.catch('command.not-executable', function(cmd)
+	print(string.format('hilbish: %s: not executable', cmd))
+end)

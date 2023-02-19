@@ -96,23 +96,23 @@ func runInput(input string, priv bool) {
 	if currentRunner.Type() == rt.StringType {
 		switch currentRunner.AsString() {
 			case "hybrid":
-				_, _, err = handleLua(cmdString)
+				_, _, err = handleLua(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 			case "hybridRev":
 				_, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "lua":
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "sh":
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
@@ -141,9 +141,9 @@ func runInput(input string, priv bool) {
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Emit("command." + exErr.typ, exErr.cmd)
-			err = exErr.sprint()
+		} else {
+			fmt.Fprintln(os.Stderr, err)
 		}
-		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
 }
@@ -195,7 +195,8 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	return
 }
 
-func handleLua(cmdString string) (string, uint8, error) {
+func handleLua(input string) (string, uint8, error) {
+	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
@@ -322,8 +323,18 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			luacmdArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(str))
 		}
 
+		hc := interp.HandlerCtx(ctx)
 		if commands[args[0]] != nil {
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs))
+			stdin := newSinkInput(hc.Stdin)
+			stdout := newSinkOutput(hc.Stdout)
+			stderr := newSinkOutput(hc.Stderr)
+
+			sinks := rt.NewTable()
+			sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
+			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
+
+			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -363,7 +374,6 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		killTimeout := 2 * time.Second
 		// from here is basically copy-paste of the default exec handler from
 		// sh/interp but with our job handling
-		hc := interp.HandlerCtx(ctx)
 		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
 		if err != nil {
 			fmt.Fprintln(hc.Stderr, err)
@@ -551,7 +561,7 @@ func splitInput(input string) ([]string, string) {
 }
 
 func cmdFinish(code uint8, cmdstr string, private bool) {
-	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)), "Exit code of last exected command")
+	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)))
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values

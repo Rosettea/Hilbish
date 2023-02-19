@@ -1,6 +1,14 @@
+// the event emitter
+// Bait is the event emitter for Hilbish. Why name it bait? Why not.
+// It throws hooks that you can catch. This is what you will use if
+// you want to listen in on hooks to know when certain things have
+// happened, like when you've changed directory, a command has failed,
+// etc. To find all available hooks thrown by Hilbish, see doc hooks.
 package bait
 
 import (
+	"errors"
+
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -72,8 +80,12 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 			}
 			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
 			if err != nil {
-				// panicking here won't actually cause hilbish to panic and instead will
-				// print the error and remove the hook. reference the recoverer function in lua.go
+				if event != "error" {
+					b.Emit("error", event, handle.luaCaller, err.Error())
+					return
+				}
+				// if there is an error in an error event handler, panic instead
+				// (calls the go recoverer function)
 				panic(err)
 			}
 		} else {
@@ -187,18 +199,10 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
 		"release": util.LuaExport{b.brelease, 2, false},
+		"hooks": util.LuaExport{b.bhooks, 1, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
-
-	util.Document(mod,
-`Bait is the event emitter for Hilbish. Why name it bait?
-Because it throws hooks that you can catch (emits events
-that you can listen to) and because why not, fun naming
-is fun. This is what you will use if you want to listen
-in on hooks to know when certain things have happened,
-like when you've changed directory, a command has
-failed, etc. To find all available hooks, see doc hooks.`)
 
 	return rt.TableValue(mod), nil
 }
@@ -276,9 +280,11 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // release(name, catcher)
-// Removes the `catcher` for the event with `name`
+// Removes the `catcher` for the event with `name`.
 // For this to work, `catcher` has to be the same function used to catch
 // an event, like one saved to a variable.
+// --- @param name string
+// --- @param catcher function
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -288,4 +294,36 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	b.OffLua(name, catcher)
 
 	return c.Next(), nil
+}
+
+// hooks(name) -> table
+// Returns a table with hooks (callback functions) on the event with `name`.
+// --- @param name string
+// --- @returns table<function>
+func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	evName, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	noHooks := errors.New("no hooks for event " + evName)
+
+	handlers := b.handlers[evName]
+	if handlers == nil {
+		return nil, noHooks
+	}
+
+	luaHandlers := rt.NewTable()
+	for _, handler := range handlers {
+		if handler.typ != luaListener { continue }
+		luaHandlers.Set(rt.IntValue(luaHandlers.Len() + 1), rt.FunctionValue(handler.luaCaller))
+	}
+
+	if luaHandlers.Len() == 0 {
+		return nil, noHooks
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaHandlers)), nil
 }

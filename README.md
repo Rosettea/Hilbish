@@ -26,49 +26,30 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 
 # Table of Contents
 - [Screenshots](#Screenshots)
-- [Installation](#Installation)
-  - [Prebuilt Bins](#Prebuilt-binaries)
-  - [AUR](#AUR)
-  - [Nixpkgs](#Nixpkgs)
-  - [Manual Build](#Manual-Build)
-- [Getting Started](#Getting-Started)
+- [Getting Hilbish](#Getting-Hilbish)
 - [Contributing](#Contributing)
 
 # Screenshots
 <div align="center">
-<img src="gallery/default.png"><br><br>
 <img src="gallery/terminal.png"><br><br>
+<img src="gallery/tab.png"><br><br>
 <img src="gallery/pillprompt.png">
 </div>
 
-# Installation
-## Prebuilt binaries
-Go [here](https://nightly.link/Rosettea/Hilbish/workflows/build/master) for
-builds on the master branch.
+# Getting Hilbish
+**NOTE:** Hilbish is not guaranteed to work properly on Windows, starting
+from the 2.0 version. It will still be able to compile, but functionality
+may be lacking.
 
-## AUR
-[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish)  
-Arch Linux users can install Hilbish from the AUR with the following command:  
-```sh
-yay -S hilbish
-```
+You can check the [install page](https://rosettea.github.io/Hilbish/install/)
+on the website for distributed binaries from GitHub or other package repositories.
+Otherwise, continue reading for steps on compiling.
 
-[![AUR maintainer](https://img.shields.io/aur/maintainer/hilbish?logo=arch-linux&style=flat-square)](https://aur.archlinux.org/packages/hilbish-git)  
-Or from the latest `master` commit with:  
-```sh
-yay -S hilbish-git
-```
-
-## Nixpkgs
-Nix/NixOS users can install Hilbish from the central repository, nixpkgs, through the usual ways.
-If you're new to nix you should probably read up on how to do that [here](https://nixos.wiki/wiki/Cheatsheet).
-
-## Manual Build
-### Prerequisites
+## Prerequisites
 - [Go 1.17+](https://go.dev)
-- [Task](https://taskfile.dev/#/)
+- [Task](https://taskfile.dev/installation/) (**Go on the hyperlink here to see Task's install method for your OS.**)
 
-### Build
+## Build
 First, clone Hilbish. The recursive is required, as some Lua libraries
 are submodules.  
 ```sh

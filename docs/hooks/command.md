@@ -3,5 +3,5 @@
 
 + `command.not-found` -> cmdStr > Thrown when a command is not found.
 
-+ `command.no-perm` -> cmdStr > Thrown when Hilbish attempts to execute a file but
-has no permission.
++ `command.not-executable` -> cmdStr > Thrown when Hilbish attempts to run a file
+that is not executable.

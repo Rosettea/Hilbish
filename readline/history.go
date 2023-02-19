@@ -123,23 +123,20 @@ func (rl *Instance) walkHistory(i int) {
 
 	// When we are exiting the current line buffer to move around
 	// the history, we make buffer the current line
-	if rl.histPos == 0 && (rl.histPos+i) == 1 {
+	if rl.histOffset == 0 && rl.histOffset + i == 1 {
 		rl.lineBuf = string(rl.line)
 	}
 
-	switch rl.histPos + i {
-	case 0, history.Len() + 1:
-		rl.histPos = 0
+	rl.histOffset += i
+	if rl.histOffset == 0 {
 		rl.line = []rune(rl.lineBuf)
 		rl.pos = len(rl.lineBuf)
-		return
-	case -1:
-		rl.histPos = 0
-		rl.lineBuf = string(rl.line)
-	default:
+	} else if rl.histOffset <= -1 {
+		rl.histOffset = 0
+	} else {
 		dedup = true
 		old = string(rl.line)
-		new, err = history.GetLine(history.Len() - rl.histPos - 1)
+		new, err = history.GetLine(history.Len() - rl.histOffset)
 		if err != nil {
 			rl.resetHelpers()
 			print("\r\n" + err.Error() + "\r\n")
@@ -148,7 +145,6 @@ func (rl *Instance) walkHistory(i int) {
 		}
 
 		rl.clearLine()
-		rl.histPos += i
 		rl.line = []rune(new)
 		rl.pos = len(rl.line)
 		if rl.pos > 0 {

@@ -115,9 +115,11 @@ func main() {
 		os.Setenv("SHELL", os.Args[0])
 	}
 
-	go handleSignals()
 	lr = newLineReader("", false)
 	luaInit()
+
+	go handleSignals()
+
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
@@ -181,11 +183,14 @@ input:
 			break
 		}
 		if err != nil {
-			if err != readline.CtrlC {
+			if err == readline.CtrlC {
+				fmt.Println("^C")
+				hooks.Emit("hilbish.cancel")
+			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
 			}
-			fmt.Println("^C")
+			// TODO: Halt if any other error occurs
 			continue
 		}
 		var priv bool

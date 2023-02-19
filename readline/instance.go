@@ -134,6 +134,7 @@ type Instance struct {
 	// history operating params
 	lineBuf    string
 	histPos    int
+	histOffset int
 	histNavIdx int // Used for quick history navigation.
 
 	//
