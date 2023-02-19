@@ -1,20 +1,14 @@
 package main
 
 import (
-	"encoding/gob"
-	"errors"
-	"os"
-	"os/exec"
+	"plugin"
 
 	"hilbish/util"
 
-	"github.com/Rosettea/Malvales"
-	"github.com/hashicorp/go-plugin"
 	rt "github.com/arnodel/golua/runtime"
 )
 
 func moduleLoader(rtm *rt.Runtime) *rt.Table {
-	gob.Register(os.File{})
 	exports := map[string]util.LuaExport{
 		"load": {moduleLoad, 2, false},
 	}
@@ -26,7 +20,7 @@ func moduleLoader(rtm *rt.Runtime) *rt.Table {
 }
 
 func moduleLoad(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
+	if err := c.CheckNArgs(1); err != nil {
 		return nil, err
 	}
 	
@@ -35,46 +29,22 @@ func moduleLoad(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	name, err := c.StringArg(1)
+	p, err := plugin.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	// plugin is just go executable; check if it is (or exists)
-	if err := findExecutable(path, false, false); err != nil {
-		return nil, err
-	}
-
-	moduleHandshake := plugin.HandshakeConfig{
-		ProtocolVersion:  1,
-		MagicCookieKey:   "HSH_PLUGIN",
-		MagicCookieValue: name,
-	}
-
-	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: moduleHandshake,
-		Plugins: map[string]plugin.Plugin{
-			"entry": &malvales.Entry{},
-		},
-		Cmd: exec.Command(path),
-	})
-
-	rpcClient, err := client.Client()
+	value, err := p.Lookup("Loader")
 	if err != nil {
 		return nil, err
 	}
 
-	ret, err := rpcClient.Dispense("entry")
-	if err != nil {
-		return nil, err
-	}
-
-	plug, ok := ret.(malvales.Plugin)
+	loader, ok := value.(func(*rt.Runtime) rt.Value)
 	if !ok {
-		return nil, errors.New("did not get plugin from module")
+		return nil, nil
 	}
 
-	val := plug.Loader(t.Runtime)
+	val := loader(t.Runtime)
 
 	return c.PushingNext1(t.Runtime, val), nil
 }
