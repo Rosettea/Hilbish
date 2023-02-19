@@ -27,7 +27,8 @@ func setupSinkType(rtm *rt.Runtime) {
 
 	sinkMethods := rt.NewTable()
 	sinkFuncs := map[string]util.LuaExport{
-		"read": {luaSinkRead, 0, false},
+		"flush": {luaSinkFlush, 1, false},
+		"read": {luaSinkRead, 1, false},
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
 	}
