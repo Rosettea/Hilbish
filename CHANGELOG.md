@@ -1,5 +1,15 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- Made a few additions to the sink type:
+  - `read()` method for retrieving input (so now the `in` sink of commanders is useful)
+  - `flush()` and `autoFlush()` related to flushing outputs
+  - `pipe` property to check if a sink with input is a pipe (like stdin)
+
+### Fixed
+- Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
+
 ## [2.1.0] - 2022-02-10
 ### Added
 - Documented custom userdata types (Job and Timer Objects)

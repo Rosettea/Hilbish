@@ -109,6 +109,16 @@ A sink is a structure that has input and/or output to/from
 a desination.
 
 ### Methods
+#### autoFlush(auto)
+Sets/toggles the option of automatically flushing output.
+A call with no argument will toggle the value.
+
+#### flush()
+Flush writes all buffered input to the sink.
+
+#### read() -> string
+Reads input from the sink.
+
 #### write(str)
 Writes data to a sink.
 
