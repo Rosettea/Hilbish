@@ -10,6 +10,11 @@ commander.register('greenhouse', function(args, sinks)
 	local gh = Greenhouse(sinks.out)
 	local done = false
 
+	if sinks['in'].pipe then
+		local page = Page(sinks['in']:readAll())
+		gh:addPage(page)
+	end
+
 	for _, name in ipairs(args) do
 		local f <close> = io.open(name, 'r')
 		if not f then
