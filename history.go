@@ -12,6 +12,14 @@ import (
 
 type luaHistory struct {}
 
+
+func (h *luaHistory) Delete(idx int) error {
+	histWrite := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("delete"))
+	_, err := rt.Call1(l.MainThread(), histWrite, rt.IntValue(int64(idx)))
+
+	return err
+}
+
 func (h *luaHistory) Write(line string) (int, error) {
 	histWrite := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("add"))
 	ln, err := rt.Call1(l.MainThread(), histWrite, rt.StringValue(line))
@@ -107,6 +115,14 @@ func (h *fileHistory) Write(line string) (int, error) {
 
 	h.items = append(h.items, line)
 	return len(h.items), nil
+}
+
+func (h *fileHistory) Delete(idx int) error {
+	h.items[idx] = ""
+	h.f.WriteAt([]byte(strings.Join(h.items, "\n")), 0)
+	h.f.Sync()
+
+	return nil
 }
 
 func (h *fileHistory) GetLine(idx int) (string, error) {

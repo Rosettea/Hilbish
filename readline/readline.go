@@ -837,6 +837,15 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 
 	case seqCtrlDelete, seqCtrlDelete2, seqAltD:
+		if rl.searchMode == HistoryFind {
+			fmt.Println("\nCURRENT COMP\n", string(rl.lineComp), "\n\n\n")
+			rl.resetVirtualComp(true)
+
+			rl.renderHelpers()
+			rl.viUndoSkipAppend = true
+			return
+		}
+
 		if rl.modeTabCompletion {
 			rl.resetVirtualComp(false)
 		}

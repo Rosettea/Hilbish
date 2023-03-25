@@ -13,6 +13,9 @@ type History interface {
 	// Append takes the line and returns an updated number of lines or an error
 	Write(string) (int, error)
 
+	// Delete removes an entry from the history based on the index.
+	Delete(int) error
+
 	// GetLine takes the historic line number and returns the line or an error
 	GetLine(int) (string, error)
 
@@ -61,6 +64,10 @@ func (h *ExampleHistory) Write(s string) (int, error) {
 	return len(h.items), nil
 }
 
+func (h *ExampleHistory) Delete(idx int) error {
+	return nil
+}
+
 // GetLine returns a line from history
 func (h *ExampleHistory) GetLine(i int) (string, error) {
 	return h.items[i], nil
@@ -83,6 +90,10 @@ type NullHistory struct{}
 // Write to history
 func (h *NullHistory) Write(s string) (int, error) {
 	return 0, nil
+}
+
+func (h *NullHistory) Delete(idx int) error {
+	return nil
 }
 
 // GetLine returns a line from history
