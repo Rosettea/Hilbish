@@ -1,5 +1,9 @@
 # 🎀 Changelog
 
+## Unreleased
+### Fixed
+- Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
+
 ## [2.1.0] - 2022-02-10
 ### Added
 - Documented custom userdata types (Job and Timer Objects)
