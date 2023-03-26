@@ -71,10 +71,9 @@ func (g *CompletionGroup) init(rl *Instance) {
 // The rx parameter is passed, as the shell already checked that the search pattern is valid.
 func (g *CompletionGroup) updateTabFind(rl *Instance) {
 
-	suggs := make([]string, 0)
-
+	suggs := rl.Searcher(rl.search, g.Suggestions)
 	// We perform filter right here, so we create a new completion group, and populate it with our results.
-	for i := range g.Suggestions {
+	/*for i := range g.Suggestions {
 		if rl.regexSearch == nil { continue }
 		if rl.regexSearch.MatchString(g.Suggestions[i]) {
 			suggs = append(suggs, g.Suggestions[i])
@@ -82,7 +81,7 @@ func (g *CompletionGroup) updateTabFind(rl *Instance) {
 			// this is a list so lets also check the descriptions
 			suggs = append(suggs, g.Suggestions[i])
 		}
-	}
+	}*/
 
 	// We overwrite the group's items, (will be refreshed as soon as something is typed in the search)
 	g.Suggestions = suggs

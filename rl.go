@@ -7,8 +7,9 @@ import (
 
 	"hilbish/util"
 
-	"github.com/maxlandon/readline"
 	rt "github.com/arnodel/golua/runtime"
+	"github.com/maxlandon/readline"
+	"github.com/sahilm/fuzzy"
 )
 
 type lineReader struct {
@@ -22,6 +23,17 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
 	lr := &lineReader{
 		rl: rl,
+	}
+
+	rl.Searcher = func(needle string, haystack []string) []string {
+		matches := fuzzy.Find(needle, haystack)
+		suggs := make([]string, 0)
+
+		for _, match := range matches {
+			suggs = append(suggs, match.Str)
+		}
+
+		return suggs
 	}
 
 	// we don't mind hilbish.read rl instances having completion,
