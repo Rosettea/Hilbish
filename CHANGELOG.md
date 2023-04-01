@@ -4,6 +4,7 @@
 ### Added
 - Validation checks for command input
 - Improved runtime performance
+- Validate Lua code
 
 ## [2.1.0] - 2022-02-10
 ### Added
