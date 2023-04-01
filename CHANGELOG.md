@@ -1,5 +1,10 @@
 # 🎀 Changelog
 
+## [2.1.1] - 2022-04-01
+### Added
+- Validation checks for command input
+- Improved runtime performance
+
 ## [2.1.0] - 2022-02-10
 ### Added
 - Documented custom userdata types (Job and Timer Objects)

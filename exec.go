@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -118,6 +119,11 @@ func runInput(input string, priv bool) {
 		// can only be a string or function so
 		var runnerErr error
 		input, exitCode, cont, runnerErr, err = runLuaRunner(currentRunner, input)
+		t := time.Now()
+		if t.Month() == 4 && t.Day() == 1 {
+			fmt.Println("april fools")
+		}
+
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
@@ -196,6 +202,17 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 }
 
 func handleLua(input string) (string, uint8, error) {
+	t := time.Now()
+	if t.Month() == 4 && t.Day() == 1 {
+		rand.Seed(t.UnixNano())
+		p := rand.Intn(100-1) + 1
+
+		if p >= 42 {
+			time.Sleep(2 * time.Second)
+			return input, 69, fmt.Errorf("how do i deal with this input?")
+		}
+	}
+
 	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
@@ -223,12 +240,28 @@ func handleLua(input string) (string, uint8, error) {
 }
 
 func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr error) {
+	t := time.Now()
+	if t.Month() == 4 && t.Day() == 1 {
+		rand.Seed(time.Now().UnixNano())
+		p := rand.Intn(100-1) + 1
+
+		if p >= 42 {
+			input = cmdString
+			exitCode = 69
+			runErr = fmt.Errorf("sorry i forgot how to run commands")
+			time.Sleep(2 * time.Second)
+		}
+
+		return
+	}
+
 	shRunner := hshMod.Get(rt.StringValue("runner")).AsTable().Get(rt.StringValue("sh"))
 	var err error
 	input, exitCode, cont, runErr, err = runLuaRunner(shRunner, cmdString)
 	if err != nil {
 		runErr = err
 	}
+
 	return
 }
 
