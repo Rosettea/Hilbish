@@ -250,9 +250,8 @@ func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr
 			exitCode = 69
 			runErr = fmt.Errorf("sorry i forgot how to run commands")
 			time.Sleep(2 * time.Second)
+			return
 		}
-
-		return
 	}
 
 	shRunner := hshMod.Get(rt.StringValue("runner")).AsTable().Get(rt.StringValue("sh"))
