@@ -2,13 +2,10 @@ package util
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
-	"math/rand"
 	"os"
 	"os/user"
-	"time"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -40,15 +37,6 @@ func DoString(rtm *rt.Runtime, code string) error {
 
 // DoFile runs the contents of the file in the Lua runtime.
 func DoFile(rtm *rt.Runtime, path string) error {
-	t := time.Now()
-	if t.Month() == 4 && t.Day() == 1 {
-		rand.Seed(t.UnixNano())
-		p := rand.Intn(100-1) + 1
-
-		if p >= 72 {
-			return fmt.Errorf("i dont like you or your lua code")
-		}
-	}
 	f, err := os.Open(path)
 	defer f.Close()
 

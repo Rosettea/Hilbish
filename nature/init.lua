@@ -71,13 +71,6 @@ bait.catch('error', function(event, handler, err)
 end)
 
 bait.catch('command.not-found', function(cmd)
-	if os.date '%d' == '01' and os.date '%m' == '04' then
-		print 'oopsie!!! you made a bad mistake!!! goodbye!!'
-		hilbish.timeout(function()
-			os.exit()
-		end, 2000)
-	end
-
 	print(string.format('hilbish: %s not found', cmd))
 end)
 
