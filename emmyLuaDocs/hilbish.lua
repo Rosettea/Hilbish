@@ -180,6 +180,18 @@ function hilbish.jobs:foreground() end
 --- @param cmd string
 function hilbish.runner.lua(cmd) end
 
+--- Sets/toggles the option of automatically flushing output.
+--- A call with no argument will toggle the value.
+--- @param auto boolean|nil
+function hilbish:autoFlush(auto) end
+
+--- Flush writes all buffered input to the sink.
+function hilbish:flush() end
+
+--- Reads input from the sink.
+--- @returns string
+function hilbish:read() end
+
 --- Writes data to a sink.
 function hilbish:write(str) end
 
