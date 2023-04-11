@@ -36,9 +36,38 @@ function hilbish.messages.send(message)
 	expect(message, 'title')
 	counter = counter + 1
 	message.index = counter
+	message.read = false
 
 	M._messages[message.index] = message
 	bait.throw('hilbish.notification', message)
+end
+
+function hilbish.messages.read(idx)
+	local msg = M._messages[idx]
+	if msg then
+		M._messages[idx].read = true
+	end
+end
+
+function hilbish.messages.readAll(idx)
+	for _, msg in ipairs(hilbish.messages.all()) do
+		hilbish.messages.read(msg.index)
+	end
+end
+
+function hilbish.messages.delete(idx)
+	local msg = M._messages[idx]
+	if not msg then
+		error(string.format('invalid message index %d', idx or -1))
+	end
+
+	M._messages[idx] = nil
+end
+
+function hilbish.messages.clear()
+	for _, msg in ipairs(hilbish.messages.all()) do
+		hilbish.messages.delete(msg.index)
+	end
 end
 
 function hilbish.messages.all()
@@ -46,11 +75,14 @@ function hilbish.messages.all()
 end
 
 commander.register('messages', function(_, sinks)
-	for _, msg in ipairs(hilbish.messages.all()) do
-		local heading = lunacolors.format(string.format('Message {cyan}#%d{reset}: %s', msg.index, msg.title))
-		sinks.out:writeln(heading)
-		sinks.out:writeln(string.rep('=', string.len(heading)))
-		sinks.out:writeln(msg.text)
+	for idx = counter, 1, -1  do
+		local msg = M._messages[idx]
+		if msg then
+			local heading = lunacolors.format(string.format('Message {cyan}#%d{reset}: %s', msg.index, msg.title))
+			sinks.out:writeln(heading)
+			sinks.out:writeln(string.rep('=', string.len(heading)))
+			sinks.out:writeln(msg.text)
+		end
 	end
 end)
 
