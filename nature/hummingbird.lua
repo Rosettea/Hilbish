@@ -34,7 +34,8 @@ end
 function hilbish.messages.send(message)
 	expect(message, 'text')
 	expect(message, 'title')
-	message.index = counter + 1
+	counter = counter + 1
+	message.index = counter
 
 	M._messages[message.index] = message
 	bait.throw('hilbish.notification', message)
