@@ -44,7 +44,7 @@ function Greenhouse:draw()
 	self.sink:write '\r'
 
 	self.sink:write(ansikit.getCSI(self.region.height - self.start.. ';1', 'H'))
-	self.sink:writeln(string.format('Page %d', self.curPage))
+	self.sink:writeln(string.format('\27[0mPage %d', self.curPage))
 end
 
 function Greenhouse:scroll(direction)
@@ -83,6 +83,84 @@ function Greenhouse:previous()
 		self.offset = 1
 		self:draw()
 	end
+end
+
+function Greenhouse:initUi()
+	local ansikit = require 'ansikit'
+	local bait = require 'bait'
+	local commander = require 'commander'
+	local hilbish = require 'hilbish'
+	local terminal = require 'terminal'
+	local Page = require 'nature.greenhouse.page'
+	local done = false
+
+	bait.catch('signal.sigint', function()
+		ansikit.clear()
+		done = true
+	end)
+
+	bait.catch('signal.resize', function()
+		self:update()
+	end)
+
+	ansikit.screenAlt()
+	ansikit.clear(true)
+	self:draw()
+
+	hilbish.goro(function()
+		while not done do
+			local c = read()
+			if c == 3 then
+				done = true
+			end
+
+			if c == 27 then
+				local c1 = read()
+				if c1 == 91 then
+					local c2 = read()
+					if c2 == 66 then -- arrow down
+						self:scroll 'down'
+					elseif c2 == 65 then -- arrow up
+						self:scroll 'up'
+					end
+
+					if c2 == 49 then
+						local c3 = read()
+						if c3 == 59 then
+							local c4 = read()
+							if c4 == 53 then
+								local c5 = read()
+								if c5 == 67 then
+									self:next()
+								elseif c5 == 68 then
+									self:previous()
+								end
+							end
+						end
+					end
+				end
+				goto continue
+			end
+			print('\nchar:')
+			print(c)
+
+			::continue::
+		end
+	end)
+
+	while not done do
+		--
+	end
+	ansikit.screenMain()
+end
+
+function read()
+	terminal.saveState()
+	terminal.setRaw()
+	local c = io.read(1)
+
+	terminal.restoreState()
+	return c:byte()
 end
 
 return Greenhouse

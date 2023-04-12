@@ -1,6 +1,8 @@
 local commander = require 'commander'
 local fs = require 'fs'
 local lunacolors = require 'lunacolors'
+local Greenhouse = require 'nature.greenhouse'
+local Page = require 'nature.greenhouse.page'
 
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
@@ -85,8 +87,9 @@ Available sections: ]] .. table.concat(modules, ', ')
 		f:close()
 	end
 
+	local gh = Greenhouse(sinks.out)
 	local backtickOccurence = 0
-	sinks.out:writeln(lunacolors.format(doc:gsub('`', function()
+	local page = Page(lunacolors.format(doc:gsub('`', function()
 		backtickOccurence = backtickOccurence + 1
 		if backtickOccurence % 2 == 0 then
 			return '{reset}'
@@ -97,4 +100,6 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
 		return '{bold}{yellow}' .. signature .. '{reset}'
 	end)))
+	gh:addPage(page)
+	gh:initUi()
 end)
