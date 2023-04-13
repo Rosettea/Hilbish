@@ -115,7 +115,7 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 </p>
 <ul class="list-group" style="max-width: 64em;">
 	<li class="list-group-item"><i class="fa-solid fa-battery-full"></i> Batteries included Lua runtime that's also your user shell!</li>
-	<li class="list-group-item"><i class="fa-solid fa-network-wired"></i> Hilbish is easily cross platform. It has OS agnostic interfaces for easy cross platform Lua code.</li>
+	<li class="list-group-item"><i class="fa-solid fa-network-wired"></i> Provides cross-platform and OS agnostic APIs to ensure your Lua code works everywhere Hilbish does, as expected.</li>
 </ul>
 
 <hr>
@@ -123,9 +123,8 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 <h1 class="fw-light">Try It Today!</h1>
 <p>
 	Hilbish is known to run on the 3 major platforms (Windows, MacOS, Linux)
-	but likely builds on other Unixes!
-	<br>
-	Windows doesn't work as well as it should, so if you're a Windows user,
+	but likely builds on other Unixes! Windows doesn't work as well as it should,
+	so if you're a Windows user,
 	<a href="https://github.com/Rosettea/Hilbish/discussions/165">say something</a>!
 	<ul class="list-group" style="max-width: 64em;">
 		<li class="list-group-item"><i class="fa-solid fa-cloud-arrow-down"></i> <a href="/Hilbish/install" style="text-decoration: none;"><strong>Download</strong></a> the binary</li>
