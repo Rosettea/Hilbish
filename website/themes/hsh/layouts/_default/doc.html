@@ -7,11 +7,11 @@
 		}
 	</style>
 <div class="row">
-	<nav class="navbar-expand-md bg-light sidenav">
+	<nav class="navbar-expand-md bg-light sidenav border-end">
 		<div class="container">
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<nav class="navbar navbar-expand-md bg-light sidenav col" style="margin-top: -20px;">
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-column col">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-column col mt-4">
 						{{ $currentPage := . }}
 						{{ range .Site.Menus.docs.ByWeight.Reverse }}
 							<li class="nav-item">
@@ -37,7 +37,7 @@
 		</div>
 	</nav>
 
-	<container class="col" style="padding-left: 15px; padding-right: 15px">
+	<container class="col mt-2" style="padding-left: 15px; padding-right: 15px">
 		<div>
 			<h1>{{ .Title }}</h1>
 			<p><em>
