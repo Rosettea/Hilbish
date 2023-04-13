@@ -1,31 +1,43 @@
 {{ define "main" }}
-<div class="container py-3 row">
-	<div class="container" style="width: 240px;">
-		<div class="p-3 col">
-			<ul class="nav nav-pills mb-auto-collapse" id="navbarSupportedContent">
-				{{ $currentPage := . }}
-				{{ range .Site.Menus.docs.ByWeight.Reverse }}
-					<li class="nav-item">
-						<a href="{{ .URL }}" class="nav-link">
-							<strong>{{ .Title }}</strong>
-						</a>
-					</li>
-					{{ if .Children }}
-						<ul style="list-style: none;">
-							{{ range .Children }}
-								<li class="nav-item">
-									<a href="{{ .URL }}" class="nav-link">
-										{{ .Title }}
-									</a>
-								</li>
+	<style>
+		@media (min-width: 768px) {
+			.sidenav {
+				width: 240px;
+			}
+		}
+	</style>
+<div class="row">
+	<nav class="navbar-expand-md bg-light sidenav">
+		<div class="container">
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<nav class="navbar navbar-expand-md bg-light sidenav col" style="margin-top: -20px;">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-column col">
+						{{ $currentPage := . }}
+						{{ range .Site.Menus.docs.ByWeight.Reverse }}
+							<li class="nav-item">
+								<a href="{{ .URL }}" class="nav-link">
+									<strong>{{ .Title }}</strong>
+								</a>
+							</li>
+							{{ if .Children }}
+								<ul style="list-style: none;">
+									{{ range .Children }}
+										<li class="nav-item">
+											<a href="{{ .URL }}" class="nav-link">
+												{{ .Title }}
+											</a>
+										</li>
+									{{ end }}
+								</ul>
 							{{ end }}
-						</ul>
-					{{ end }}
-				{{ end }}
-			</ul>
+						{{ end }}
+					</ul>
+				</nav>
+			</div>
 		</div>
-	</div>
-	<div class="p-3 col">
+	</nav>
+
+	<container class="col" style="padding-left: 15px; padding-right: 15px">
 		<div>
 			<h1>{{ .Title }}</h1>
 			<p><em>
@@ -47,7 +59,7 @@
 				Want to help improve this page? <a href="https://github.com/Rosettea/Hilbish/issues/new/choose">Create an issue.</a>
 			</p>
 		</div>
-	</div>
+	</container>
 </div>
 {{ end }}
 
