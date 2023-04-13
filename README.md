@@ -1,4 +1,4 @@
-<img src="./assets/hilbish-logo-and-text.png" width=256><br>
+<img src="./assets/hilbish-logo-and-text.png" width=512><br>
 <blockquote>
 🌓 The Moon-powered shell! A comfy and extensible shell for Lua fans! 🌺 ✨
 </blockquote>
