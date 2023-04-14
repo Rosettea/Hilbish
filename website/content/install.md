@@ -15,7 +15,12 @@ have breaking changes.
 For the latest **stable release**, check here: https://github.com/Rosettea/Hilbish/releases/latest  
 For a **development build**: https://nightly.link/Rosettea/Hilbish/workflows/build/master
 
+## Compiling
+To read the steps for compiling Hilbish, head over to the [GitHub repository.](https://github.com/Rosettea/Hilbish#build)
+
 ## Package Repositories
+Methods of installing Hilbish for your Linux distro.
+
 ### Fedora (COPR)
 An official COPR is offered to install Hilbish easily on Fedora.
 Enable the repo:
