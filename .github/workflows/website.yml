@@ -25,7 +25,7 @@ jobs:
 
       - name: Fix base URL
         if: steps.branch.outputs.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'      
-        run: sed -i "s%baseURL = 'https://rosettea.github.io/Hilbish/'%https://rosettea.github.io/Hilbish/versions/${{ steps.branch.outputs.BRANCH_NAME }}%" website/config.toml
+        run: sed -i "s%baseURL = 'https://rosettea.github.io/Hilbish/'%baseURL = 'https://rosettea.github.io/Hilbish/versions/${{ steps.branch.outputs.BRANCH_NAME }}'%" website/config.toml
 
       - name: Build
         run: 'cd website && hugo --minify'
