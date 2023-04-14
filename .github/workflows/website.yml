@@ -1,10 +1,8 @@
 name: Build website
 
 on:
-  push:
-    branches:
-      - master
-      - docs-refactor
+  - push
+  - pull_request
 
 jobs:
   deploy:
@@ -24,8 +22,22 @@ jobs:
       - name: Build
         run: 'cd website && hugo --minify'
 
+      - name: Set branch name
+        id: branch
+        run: echo "::set-output name=BRANCH_NAME::${GITHUB_REF##*/}"
+
       - name: Deploy
+        if: steps.branch.outputs.BRANCH_NAME == 'master' && github.repository_owner == 'Rosettea'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/public
+          keep_files: true
+      - name: Deploy
+        if: steps.branch.outputs.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/public
+          destination_dir: versions/${( steps.branch.outputs.BRANCH_NAME }}
+          keep_files: true
