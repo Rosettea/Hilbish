@@ -19,15 +19,10 @@ than old shell script. It's fine for basic interactive shell uses,
 but that's the only place Hilbish has shell script; everything else is Lua
 and aims to be infinitely configurable. If something isn't, open an issue!
 
-# Table of Contents
-- [Screenshots](#Screenshots)
-- [Getting Hilbish](#Getting-Hilbish)
-- [Contributing](#Contributing)
-
 # Screenshots
 <div align="center">
-<img src="gallery/tab.png" align="left">
-<img src="gallery/pillprompt.png" align="right">
+<img src="gallery/tab.png">
+<img src="gallery/pillprompt.png">
 </div>
 
 # Getting Hilbish
