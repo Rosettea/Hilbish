@@ -69,9 +69,9 @@ func setupSinkType(rtm *rt.Runtime) {
 
 
 // #member
-// read() -> string
+// readAll() -> string
 // --- @returns string
-// Reads input from the sink.
+// Reads all input from the sink.
 func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #member
 // read() -> string
 // --- @returns string
-// Reads input from the sink.
+// Reads a liine of input from the sink.
 func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
