@@ -26,9 +26,8 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 
 # Screenshots
 <div align="center">
-<img src="gallery/terminal.png"><br><br>
-<img src="gallery/tab.png"><br><br>
-<img src="gallery/pillprompt.png">
+<img src="gallery/tab.png" align="left">
+<img src="gallery/pillprompt.png" align="right">
 </div>
 
 # Getting Hilbish
