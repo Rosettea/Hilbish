@@ -108,6 +108,20 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 
 <hr>
 
+<h1 class="fw-light">Screenshots</h1>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+	<div class="col">
+		<img src="/Hilbish/pillprompt.png">
+	</div>
+	<div class="col">
+		<img src="/Hilbish/default.png">
+	</div>
+	<div class="col">
+		<img src="/Hilbish/tab.png">
+	</div>
+</div>
+<br>
+
 <h1 class="fw-light">Why not just Lua?</h1>
 <p>
 	Hilbish is your interactive shell as well as a just a Lua interpreter
