@@ -13,6 +13,7 @@ var (
 var (
 	ver = "v2.2.0"
 	releaseName = "Poppy"
+
 	gitCommit string
 	gitBranch string
 )
