@@ -49,6 +49,14 @@ Line highlighter handler. This is mainly for syntax highlighting, but in
 reality could set the input of the prompt to *display* anything. The
 callback is passed the current line and is expected to return a line that
 will be used as the input display.
+Note that to set a highlighter, one has to override this function.
+Example:
+```
+function hilbish.highlighter(line)
+   return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+end
+```
+This code will highlight all double quoted strings in green.
 
 ### hinter(line, pos)
 The command line hint handler. It gets called on every key insert to
