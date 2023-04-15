@@ -639,6 +639,14 @@ func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // reality could set the input of the prompt to *display* anything. The
 // callback is passed the current line and is expected to return a line that
 // will be used as the input display.
+// Note that to set a highlighter, one has to override this function.
+// Example:
+// ```
+// function hilbish.highlighter(line)
+//    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+// end
+// ```
+// This code will highlight all double quoted strings in green.
 // --- @param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
