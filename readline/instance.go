@@ -47,10 +47,12 @@ type Instance struct {
 
 	// readline operating parameters
 	line  []rune // This is the input line, with entered text: full line = mlnPrompt + line
+	accepted  bool   // Set by 'accept-line' widget, to notify return the line to the caller
 	pos   int
+	hpos  int // The line on which the cursor is (differs from posY, which accounts for wraps)
 	posX  int // Cursor position X
-	fullX int // X coordinate of the full input line, including the prompt if needed.
 	posY  int // Cursor position Y (if multiple lines span)
+	fullX int // X coordinate of the full input line, including the prompt if needed.
 	fullY int // Y offset to the end of input line.
 
 	// Buffer received from host programms
@@ -183,11 +185,12 @@ type Instance struct {
 	// $EDITOR. This will default to os.TempDir()
 	TempDirectory string
 
-	// GetMultiLine is a callback to your host program. Since multiline support
-	// is handled by the application rather than readline itself, this callback
-	// is required when calling $EDITOR. However if this function is not set
-	// then readline will just use the current line.
-	GetMultiLine func([]rune) []rune
+	// AcceptMultiline enables the caller to decide if the shell should keep reading for user input
+	// on a new line (therefore, with the secondary prompt), or if it should return the current
+	// line at the end of the `rl.Readline()` call.
+	// This function should return "true" if the line is deemed complete (thus asking the shell
+	// to return from its Readline() loop), or "false" if the shell should keep reading input.
+	AcceptMultiline func([]rune) bool
 
 	EnableGetCursorPos bool
 
@@ -229,6 +232,9 @@ func NewInstance() *Instance {
 	rl.HintFormatting = "\x1b[2m"
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
+	rl.AcceptMultiline = func([]rune) bool {
+		return false
+	}
 
 	// Registers
 	rl.initRegisters()

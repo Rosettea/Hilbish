@@ -1,6 +1,7 @@
 package readline
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -25,6 +26,118 @@ func (rl *Instance) GetLine() []rune {
 	return rl.line
 }
 
+func (rl *Instance) lineSuggested() (line []rune, cpos int) {
+	//rl.checkCursorBounds()
+
+	if len(rl.currentComp) > 0 {
+		line = rl.lineComp
+		cpos = len(rl.lineComp[:rl.pos])
+	} else {
+		line = rl.line
+		cpos = len(rl.line[:rl.pos])
+	}
+
+	/*
+	if len(rl.histSuggested) > 0 {
+		line = append(line, rl.histSuggested...)
+	}
+	*/
+
+	return line, cpos
+}
+
+// computeLinePos determines the X and Y coordinates of the cursor.
+func (rl *Instance) computeLinePos() {
+	// Use the line including any completion or line suggestion,
+	// and compute buffer/cursor length. Only add a newline when
+	// the current buffer does not end with one.
+	line, cpos := rl.lineSuggested()
+	line = append(line, '\n')
+
+	// Get the index of each newline in the buffer.
+	nl := regexp.MustCompile("\n")
+	newlinesIdx := nl.FindAllStringIndex(string(line), -1)
+
+	rl.posY = 0
+	rl.fullY = 0
+	startLine := 0
+	cursorSet := false
+
+	for pos, newline := range newlinesIdx {
+		// Compute any adjustment in case this line must be wrapped.
+		// Here, compute if line must be wrapped, to adjust posY.
+		lineY := rl.realLineLen(line[startLine:newline[0]], pos)
+
+		// All lines add to the global offset.
+		rl.fullY += lineY
+
+		switch {
+		case newline[0] < cpos:
+			// If we are not on the cursor line yet.
+			rl.posY += lineY
+		case !cursorSet:
+			// We are on the cursor line, since we didn't catch
+			// the first case, and that our cursor X coordinate
+			// has not been set yet.
+			rl.computeCursorPos(startLine, cpos, pos)
+			cursorSet = true
+			rl.hpos = pos
+		}
+
+		startLine = newline[1]
+	}
+}
+
+// computeCursorPos computes the X/Y coordinates of the cursor on a given line.
+func (rl *Instance) computeCursorPos(startLine, cpos, lineIdx int) {
+	termWidth := GetTermWidth()
+	cursorStart := cpos - startLine
+	cursorStart += rl.getPromptPos()
+
+	cursorY := cursorStart / termWidth
+	cursorX := cursorStart % termWidth
+
+	// The very first (unreal) line counts for nothing,
+	// so by opposition all others count for one more.
+	if lineIdx == 0 {
+		cursorY--
+	}
+
+	// Any excess wrap means a newline.
+	if cursorX > 0 {
+		cursorY++
+	}
+
+	rl.posY += cursorY
+	rl.posX = cursorX
+}
+
+func (rl *Instance) realLineLen(line []rune, idx int) (lineY int) {
+	lineLen := getRealLength(string(line))
+	termWidth := GetTermWidth()
+	//lineLen += rl.Prompt.inputAt(rl)
+
+	lineY = lineLen / termWidth
+	restY := lineLen % termWidth
+
+	// The very first line counts for nothing.
+	if idx == 0 {
+		lineY--
+	}
+
+	// Any excess wrap means a newline.
+	if restY > 0 {
+		lineY++
+	}
+
+	// Empty lines are still considered a line.
+	if lineY == 0 && idx != 0 {
+		lineY++
+	}
+
+	return
+}
+
 // echo - refresh the current input line, either virtually completed or not.
 // also renders the current completions and hints. To be noted, the updateReferences()
 // function is only ever called once, and after having moved back to prompt position
@@ -42,36 +155,20 @@ func (rl *Instance) echo() {
 		// Go back to prompt position, and clear everything below
 		moveCursorBackwards(GetTermWidth())
 		moveCursorUp(rl.posY)
-		print(seqClearScreenBelow)
 
 		// Print the prompt
 		print(string(rl.realPrompt))
 
-		// Assemble the line, taking virtual completions into account
-		var line []rune
-		if len(rl.currentComp) > 0 {
-			line = rl.lineComp
-		} else {
-			line = rl.line
-		}
+		// print the line
+		rl.printBuffer()
 
-		// Print the input line with optional syntax highlighting
-		if rl.SyntaxHighlighter != nil {
-			print(rl.SyntaxHighlighter(line))
-		} else {
-			print(string(line))
-		}
+		// update cursor positions
+		rl.computeLinePos()
 	}
 
 	// Update references with new coordinates only now, because
 	// the new line may be longer/shorter than the previous one.
-	rl.updateReferences()
-
-	// Go back to the current cursor position, with new coordinates
-	moveCursorBackwards(GetTermWidth())
-	moveCursorUp(rl.fullY)
-	moveCursorDown(rl.posY)
-	moveCursorForwards(rl.posX)
+	//rl.updateReferences()
 }
 
 func (rl *Instance) insert(r []rune) {
@@ -105,6 +202,49 @@ func (rl *Instance) insert(r []rune) {
 
 	// This should also update the rl.pos
 	rl.updateHelpers()
+}
+
+// lineSlice returns a subset of the current input line.
+func (rl *Instance) lineSlice(adjust int) (slice string) {
+	switch {
+	case rl.pos+adjust > len(rl.line):
+		slice = string(rl.line[rl.pos:])
+	case adjust < 0:
+		if rl.pos+adjust < 0 {
+			slice = string(rl.line[:rl.pos])
+		} else {
+			slice = string(rl.line[rl.pos+adjust : rl.pos])
+		}
+	default:
+		slice = string(rl.line[rl.pos : rl.pos+adjust])
+	}
+
+	return
+}
+
+func (rl *Instance) lineCarriageReturn() {
+	//rl.histSuggested = []rune{}
+
+	// Ask the caller if the line should be accepted as is.
+	if rl.AcceptMultiline(rl.GetLine()) {
+		// Clear the tooltip prompt if any,
+		// then go down and clear hints/completions.
+		//rl.moveToLineEnd()
+		//rl.Prompt.clearRprompt(rl, false)
+		print("\r\n")
+		print(seqClearScreenBelow)
+
+		// Save the command line and accept it.
+		//rl.writeHistoryLine()
+		rl.accepted = true
+		return
+	}
+
+	// If not, we should start editing another line,
+	// and insert a newline where our cursor value is.
+	// This has the nice advantage of being able to work
+	// in multiline mode even in the middle of the buffer.
+	rl.insert([]rune{'\n'})
 }
 
 func (rl *Instance) Insert(t string) {
@@ -172,6 +312,32 @@ func (rl *Instance) clearLine() {
 
 	// Completions are also reset
 	rl.clearVirtualComp()
+}
+
+func (rl *Instance) printBuffer() {
+	// Generate the entire line as an highlighted line,
+	// and split it at each newline.
+	line := string(rl.GetLine())
+	lines := strings.Split(line, "\n")
+
+	if len(line) > 0 && line[len(line)-1] == '\n' {
+		lines = append(lines, "")
+	}
+
+	for i, line := range lines {
+		// Indent according to the prompt.
+		if i > 0 {
+			moveCursorForwards(rl.getPromptPos())
+		}
+
+		if i < len(lines)-1 {
+			line += "\n"
+		} else {
+			line += seqClearScreenBelow
+		}
+
+		print(line)
+	}
 }
 
 func (rl *Instance) deleteToBeginning() {

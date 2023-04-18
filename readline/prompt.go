@@ -218,3 +218,11 @@ func (rl *Instance) echoRightPrompt() {
 		print(rl.rightPrompt)
 	}
 }
+
+func (rl *Instance) getPromptPos() int {
+	if !rl.Multiline {
+		return getRealLength(rl.mainPrompt)
+	} else {
+		return getRealLength(rl.MultilinePrompt)
+	}
+}
