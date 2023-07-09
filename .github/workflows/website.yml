@@ -22,7 +22,6 @@ jobs:
       - name: Set branch name
         id: branch
         run: echo "BRANCH_NAME=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
-        run: echo "::set-output name=BRANCH_NAME::${GITHUB_REF##*/}"
 
       - name: Fix base URL
         if: env.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'      
