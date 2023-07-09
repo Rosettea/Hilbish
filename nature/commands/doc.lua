@@ -60,7 +60,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 		end)
 		if #moddocs ~= 0 then
-			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
+			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\nLMAO'
 		end
 
 		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'

@@ -1,5 +1,7 @@
 package readline
 
+import "os"
+
 // Character codes
 const (
 	charCtrlA = iota + 1
@@ -134,3 +136,53 @@ const (
 const (
 	seqCtermFg255 = "\033[48;5;255m"
 )
+
+// TODO: return whether its actually a sequence or not
+// remedies the edge case of someone literally typing Ctrl-A for example.
+func (rl *Instance) ReadChar() string {
+	b := make([]byte, 1024)
+	i, _ := os.Stdin.Read(b)
+	r := []rune(string(b))
+	s := string(r[:i])
+
+	switch b[0] {
+		case charCtrlA: return "Ctrl-A"
+		case charCtrlB: return "Ctrl-B"
+		case charCtrlC: return "Ctrl-C"
+		case charEOF: return "Ctrl-D"
+		case charCtrlE: return "Ctrl-E"
+		case charCtrlF: return "Ctrl-F"
+		case charCtrlG: return "Ctrl-G"
+		case charBackspace, charBackspace2: return "Backspace"
+		case charTab: return "Tab"
+		case charCtrlJ: return "Ctrl-J"
+		case charCtrlK: return "Ctrl-K"
+		case charCtrlL: return "Ctrl-L"
+		case charCtrlM: return "Ctrl-M"
+		case charCtrlN: return "Ctrl-N"
+		case charCtrlO: return "Ctrl-O"
+		case charCtrlP: return "Ctrl-P"
+		case charCtrlQ: return "Ctrl-Q"
+		case charCtrlR: return "Ctrl-R"
+		case charCtrlS: return "Ctrl-S"
+		case charCtrlT: return "Ctrl-T"
+		case charCtrlU: return "Ctrl-U"
+		case charCtrlV: return "Ctrl-V"
+		case charCtrlW: return "Ctrl-W"
+		case charCtrlX: return "Ctrl-X"
+		case charCtrlY: return "Ctrl-Y"
+		case charCtrlZ: return "Ctrl-Z"
+		case charEscape:
+			switch s {
+				case string(charEscape): return "Escape"
+				case seqUp: return "Up"
+				case seqDown: return "Down"
+				case seqBackwards: return "Left"
+				case seqForwards: return "Right"
+				case seqCtrlLeftArrow: return "Ctrl-Left"
+				case seqCtrlRightArrow: return "Ctrl-Right"
+			}
+	}
+
+	return "???"
+}

@@ -110,10 +110,21 @@ function Greenhouse:initUi()
 	hilbish.goro(function()
 		while not done do
 			local c = read()
-			if c == 3 then
+			if c == 'Ctrl-D' then
 				done = true
 			end
 
+			if c == 'Up' then
+				self:scroll 'up'
+			end
+			if c == 'Down' then
+				self:scroll 'down'
+			end
+
+			if c == 'Ctrl-Right' then self:next() end
+			if c == 'Ctrl-Left' then self:previous() end
+
+	--[[
 			if c == 27 then
 				local c1 = read()
 				if c1 == 91 then
@@ -141,8 +152,7 @@ function Greenhouse:initUi()
 				end
 				goto continue
 			end
-			print('\nchar:')
-			print(c)
+			]]--
 
 			::continue::
 		end
@@ -157,10 +167,10 @@ end
 function read()
 	terminal.saveState()
 	terminal.setRaw()
-	local c = io.read(1)
+	local c = hilbish.editor.readChar()
 
 	terminal.restoreState()
-	return c:byte()
+	return c
 end
 
 return Greenhouse
