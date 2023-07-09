@@ -6,6 +6,7 @@
   - `read()` method for retrieving input (so now the `in` sink of commanders is useful)
   - `flush()` and `autoFlush()` related to flushing outputs
   - `pipe` property to check if a sink with input is a pipe (like stdin)
+- Show indexes on cdr list
 
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
