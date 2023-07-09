@@ -10,7 +10,7 @@ cdr: change directory to one which has been recently visied
 
 usage: cdr <index>
 
-to get a list of recent directories, use {green}{underline}cdr list{reset}]])
+to get a list of recent directories, use {green}cdr list{reset}]])
 		return
 	end
 
