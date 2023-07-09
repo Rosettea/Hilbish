@@ -21,7 +21,7 @@ jobs:
 
       - name: Set branch name
         id: branch
-        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}} >> "$GITHUB_ENV"
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> "$GITHUB_ENV"
 
       - name: Fix base URL
         if: env.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'      
