@@ -8,7 +8,6 @@ handler(line, pos) The handler function is the callback for tab completion in Hi
 Functions getLine() -&amp;gt; string Returns the current input line.
 getVimRegister(register) -&amp;gt; string Returns the text that is at the register.
 insert(text) Inserts text into the line.
-getChar() -&amp;gt; string Reads a keystroke from the user. This is in a format of something like Ctrl-L.
 setVimRegister(register, text) Sets the vim register at register to hold the passed text.</description></item><item><title>Interface hilbish.history</title><link>https://rosettea.github.io/Hilbish/versions/merge/docs/api/hilbish/hilbish.history/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://rosettea.github.io/Hilbish/versions/merge/docs/api/hilbish/hilbish.history/</guid><description>Introduction The history interface deals with command history. This includes the ability to override functions to change the main method of saving history.
 Functions add(cmd) Adds a command to the history.
 all() -&amp;gt; table Retrieves all history.
