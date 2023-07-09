@@ -1,9 +1,8 @@
 name: Generate docs
 
 on:
-  push:
-    branches:
-      - master
+  - push
+  - pull_requests
 
 jobs:
   gen:

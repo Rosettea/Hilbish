@@ -99,7 +99,7 @@ func editorGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface editor
 // getChar() -> string
 // Reads a keystroke from the user. This is in a format
-// of something like Ctrl-L..
+// of something like Ctrl-L.
 func editorReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	buf := lr.rl.ReadChar()
 
