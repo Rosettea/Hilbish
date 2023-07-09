@@ -125,7 +125,10 @@ A call with no argument will toggle the value.
 Flush writes all buffered input to the sink.
 
 #### read() -> string
-Reads input from the sink.
+Reads a liine of input from the sink.
+
+#### readAll() -> string
+Reads all input from the sink.
 
 #### write(str)
 Writes data to a sink.
