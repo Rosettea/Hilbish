@@ -181,6 +181,10 @@ func (rl *Instance) ReadChar() string {
 				case seqForwards: return "Right"
 				case seqCtrlLeftArrow: return "Ctrl-Left"
 				case seqCtrlRightArrow: return "Ctrl-Right"
+				case seqCtrlDelete, seqCtrlDelete2: return "Ctrl-Delete"
+				case seqHome, seqHomeSc: return "Home"
+				case seqEnd, seqEndSc: return "End"
+				case seqDelete, seqDelete2: return "Delete"
 			}
 	}
 
