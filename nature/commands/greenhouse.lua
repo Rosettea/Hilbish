@@ -89,7 +89,7 @@ commander.register('greenhouse', function(args, sinks)
 	gh:keybind('Enter', function(self)
 		if self.isSpecial then
 			self:jump(self.specialPageIdx)
-			self:special(true)
+			self:special(false)
 		else
 			if buffer:len() < 2 then return end
 
@@ -118,5 +118,6 @@ commander.register('greenhouse', function(args, sinks)
 		gh:addPage(page)
 	end
 
+	ansikit.hideCursor()
 	gh:initUi()
 end)

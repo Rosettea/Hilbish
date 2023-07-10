@@ -93,14 +93,25 @@ end
 function Greenhouse:update()
 	self:resize()
 	if self.isSpecial then
-		self:special()
+		self:updateSpecial()
 	end
 
 	self:draw()
 end
 
-function Greenhouse:special()
-	self.isSpecial = not self.isSpecial
+
+function Greenhouse:special(val)
+	self.isSpecial = val
+	self:update()
+end
+
+function Greenhouse:toggleSpecial()
+	self:special(not self.isSpecial)
+end
+
+--- This function will be called when the special page
+--- is on and needs to be updated.
+function Greenhouse:updateSpecial()
 end
 
 function Greenhouse:toc(toggle)
@@ -128,6 +139,9 @@ function Greenhouse:toc(toggle)
 		tocText = tocText .. title .. '\n'
 	end
 	self.specialPage = Page('TOC', tocText)
+	function self:updateSpecial()
+		self:toc()
+	end
 	self:draw()
 end
 
@@ -202,7 +216,6 @@ function Greenhouse:initUi()
 	end)
 
 	ansikit.screenAlt()
-	ansikit.hideCursor()
 	ansikit.clear(true)
 	self:draw()
 
