@@ -18,6 +18,12 @@ function Greenhouse:new(sink)
 	self.sink = sink
 	self.pages = {}
 	self.curPage = 1
+	self.keybinds = {
+		['Up'] = function(self) self:scroll 'up' end,
+		['Down'] = function(self) self:scroll 'down' end,
+		['Ctrl-Left'] = self.previous,
+		['Ctrl-Right'] = self.next
+	}
 
 	return self
 end
@@ -85,6 +91,10 @@ function Greenhouse:previous()
 	end
 end
 
+function Greenhouse:keybind(key, callback)
+	self.keybinds[key] = callback
+end
+
 function Greenhouse:initUi()
 	local ansikit = require 'ansikit'
 	local bait = require 'bait'
@@ -114,15 +124,9 @@ function Greenhouse:initUi()
 				done = true
 			end
 
-			if c == 'Up' then
-				self:scroll 'up'
+			if self.keybinds[c] then
+				self.keybinds[c](self)
 			end
-			if c == 'Down' then
-				self:scroll 'down'
-			end
-
-			if c == 'Ctrl-Right' then self:next() end
-			if c == 'Ctrl-Left' then self:previous() end
 
 	--[[
 			if c == 27 then
