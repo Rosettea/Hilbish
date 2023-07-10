@@ -7,7 +7,7 @@ commander.register('bg', function(_, sinks)
 		return 1
 	end
 
-	local err = job.background()
+	local err = job:background()
 	if err then
 		sinks.out:writeln('bg: ' .. err)
 		return 2

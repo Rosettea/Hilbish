@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
+	"os"
 
 	"hilbish/util"
 
@@ -15,9 +17,11 @@ var sinkMetaKey = rt.StringValue("hshsink")
 // A sink is a structure that has input and/or output to/from
 // a desination.
 type sink struct{
-	writer io.Writer
-	reader io.Reader
+	writer *bufio.Writer
+	reader *bufio.Reader
+	file *os.File
 	ud *rt.UserData
+	autoFlush bool
 }
 
 func setupSinkType(rtm *rt.Runtime) {
@@ -25,20 +29,59 @@ func setupSinkType(rtm *rt.Runtime) {
 
 	sinkMethods := rt.NewTable()
 	sinkFuncs := map[string]util.LuaExport{
+		"flush": {luaSinkFlush, 1, false},
+		"read": {luaSinkRead, 1, false},
+		"autoFlush": {luaSinkAutoFlush, 2, false},
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
 	}
 	util.SetExports(l, sinkMethods, sinkFuncs)
 
 	sinkIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		s, _ := sinkArg(c, 0)
+
 		arg := c.Arg(1)
 		val := sinkMethods.Get(arg)
+
+		if val != rt.NilValue {
+			return c.PushingNext1(t.Runtime, val), nil
+		}
+
+		keyStr, _ := arg.TryString()
+
+		switch keyStr {
+			case "pipe":
+				val = rt.BoolValue(false)
+				if s.file != nil {
+					fileInfo, _ := s.file.Stat();
+					val = rt.BoolValue(fileInfo.Mode() & os.ModeCharDevice == 0)
+				}
+		}
 
 		return c.PushingNext1(t.Runtime, val), nil
 	}
 
 	sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
 	l.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
+}
+
+// #member
+// read() -> string
+// --- @returns string
+// Reads input from the sink.
+func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	str, _ := s.reader.ReadString('\n')
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(str)), nil
 }
 
 // #member
@@ -59,6 +102,9 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	s.writer.Write([]byte(data))
+	if s.autoFlush {
+		s.writer.Flush()
+	}
 
 	return c.Next(), nil
 }
@@ -81,22 +127,74 @@ func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	s.writer.Write([]byte(data + "\n"))
+	if s.autoFlush {
+		s.writer.Flush()
+	}
+
+	return c.Next(), nil
+}
+
+// #member
+// flush()
+// Flush writes all buffered input to the sink.
+func luaSinkFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	s.writer.Flush()
+
+	return c.Next(), nil
+}
+
+// #member
+// autoFlush(auto)
+// Sets/toggles the option of automatically flushing output.
+// A call with no argument will toggle the value.
+// --- @param auto boolean|nil
+func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	v := c.Arg(1)
+	if v.Type() != rt.BoolType && v.Type() != rt.NilType {
+		return nil, fmt.Errorf("#1 must be a boolean")
+	}
+
+	value := !s.autoFlush
+	if v.Type() == rt.BoolType {
+		value = v.AsBool()
+	}
+
+	s.autoFlush = value
 
 	return c.Next(), nil
 }
 
 func newSinkInput(r io.Reader) *sink {
 	s := &sink{
-		reader: r,
+		reader: bufio.NewReader(r),
 	}
 	s.ud = sinkUserData(s)
+
+	if f, ok := r.(*os.File); ok {
+		s.file = f
+	}
 
 	return s
 }
 
 func newSinkOutput(w io.Writer) *sink {
 	s := &sink{
-		writer: w,
+		writer: bufio.NewWriter(w),
+		autoFlush: true,
 	}
 	s.ud = sinkUserData(s)
 
