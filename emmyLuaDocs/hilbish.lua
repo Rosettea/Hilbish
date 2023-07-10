@@ -41,7 +41,7 @@ function hilbish.editor.getVimRegister(register) end
 function hilbish.editor.insert(text) end
 
 --- Reads a keystroke from the user. This is in a format
---- of something like Ctrl-L.
+--- of something like Ctrl-L..
 function hilbish.editor.getChar() end
 
 --- Sets the vim register at `register` to hold the passed text.
