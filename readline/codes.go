@@ -188,5 +188,5 @@ func (rl *Instance) ReadChar() string {
 			}
 	}
 
-	return "???"
+	return s
 }

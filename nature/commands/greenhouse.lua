@@ -8,6 +8,15 @@ local Page = require 'nature.greenhouse.page'
 
 commander.register('greenhouse', function(args, sinks)
 	local gh = Greenhouse(sinks.out)
+
+	local buffer = ''
+	local command = false
+	local commands = {
+		q = function()
+			gh.keybinds['Ctrl-D'](gh)
+		end
+	}
+
 	function gh:resize()
 		local size = terminal.size()
 		self.region = {
@@ -15,6 +24,7 @@ commander.register('greenhouse', function(args, sinks)
 			height = size.height - 2
 		}
 	end
+
 	local oldDraw = gh.draw
 	function gh:draw()
 		oldDraw(self)
@@ -36,12 +46,43 @@ commander.register('greenhouse', function(args, sinks)
 		end
 		self.sink:write(buffer)
 	end
+	function gh:input(c)
+		-- command handling
+		if c == ':' and not command then
+			command = true
+		end
+		if c == 'Escape' then
+			command = false
+			buffer = ''
+			goto update
+		elseif c == 'Backspace' then
+			buffer = buffer:sub(0, -2)
+			goto update
+		end
+
+		if command then
+			buffer = buffer .. c
+		end
+
+		::update::
+		gh:update()
+	end
 	gh:resize()
 
 	gh:keybind('Enter', function(self)
 		if self.isToc then
 			self:jump(self.tocPageIdx)
 			self:toc(true)
+		else
+			if buffer:len() < 2 then return end
+
+			local splitBuf = string.split(buffer, " ")
+			local command = commands[splitBuf[1]:sub(2)]
+			if command then
+				table.remove(splitBuf, 1)
+				command(splitBuf)
+			end
+			self:update()
 		end
 	end)
 

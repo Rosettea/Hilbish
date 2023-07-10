@@ -176,6 +176,9 @@ function Greenhouse:toc(toggle)
 	self:draw()
 end
 
+function Greenhouse:input(char)
+end
+
 function Greenhouse:initUi()
 	local ansikit = require 'ansikit'
 	local bait = require 'bait'
@@ -201,12 +204,14 @@ function Greenhouse:initUi()
 	hilbish.goro(function()
 		while not done do
 			local c = read()
-			if c == 'Ctrl-D' then
+			self:keybind('Ctrl-D', function()
 				done = true
-			end
+			end)
 
 			if self.keybinds[c] then
 				self.keybinds[c](self)
+			else
+				self:input(c)
 			end
 
 	--[[
