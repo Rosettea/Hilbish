@@ -155,10 +155,8 @@ func (rl *Instance) ReadChar() string {
 		case charCtrlG: return "Ctrl-G"
 		case charBackspace, charBackspace2: return "Backspace"
 		case charTab: return "Tab"
-		case charCtrlJ: return "Ctrl-J"
 		case charCtrlK: return "Ctrl-K"
 		case charCtrlL: return "Ctrl-L"
-		case charCtrlM: return "Ctrl-M"
 		case charCtrlN: return "Ctrl-N"
 		case charCtrlO: return "Ctrl-O"
 		case charCtrlP: return "Ctrl-P"
@@ -172,6 +170,8 @@ func (rl *Instance) ReadChar() string {
 		case charCtrlX: return "Ctrl-X"
 		case charCtrlY: return "Ctrl-Y"
 		case charCtrlZ: return "Ctrl-Z"
+		case '\r': fallthrough
+		case '\n': return "Enter"
 		case charEscape:
 			switch s {
 				case string(charEscape): return "Escape"

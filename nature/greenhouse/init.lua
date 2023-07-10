@@ -5,7 +5,9 @@
 -- and flowerbook.
 
 local ansikit = require 'ansikit'
+local lunacolors = require 'lunacolors'
 local terminal = require 'terminal'
+local Page = require 'nature.greenhouse.page'
 local Object = require 'nature.object'
 
 local Greenhouse = Object:extend()
@@ -14,7 +16,7 @@ function Greenhouse:new(sink)
 	local size = terminal.size()
 	self.region = size
 	self.start = 1
-	self.offset = 1
+	self.offset = 1 -- vertical text offset
 	self.sink = sink
 	self.pages = {}
 	self.curPage = 1
@@ -22,8 +24,13 @@ function Greenhouse:new(sink)
 		['Up'] = function(self) self:scroll 'up' end,
 		['Down'] = function(self) self:scroll 'down' end,
 		['Ctrl-Left'] = self.previous,
-		['Ctrl-Right'] = self.next
+		['Ctrl-Right'] = self.next,
+		['Ctrl-N'] = function(self) self:toc(true) end,
 	}
+	self.isToc = false
+	self.tocPage = nil
+	self.tocPageIdx = 1
+	self.tocOffset = 1
 
 	return self
 end
@@ -38,22 +45,39 @@ function Greenhouse:updateCurrentPage(text)
 end
 
 function Greenhouse:draw()
-	local lines = self.pages[self.curPage].lines
+	local workingPage = self.pages[self.curPage]
+	local offset = self.offset
+	if self.isToc then
+		offset = self.tocOffset
+		workingPage = self.tocPage
+	end
+
+	local lines = workingPage.lines
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 	self.sink:write(ansikit.getCSI(2, 'J'))
 
 	-- the -2 negate is for the command and status line
-	for i = self.offset, self.offset + (self.region.height - self.start) - 2 do
+	for i = offset, offset + (self.region.height - self.start) do
 		if i > #lines then break end
 		self.sink:writeln('\r' .. lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
 	end
 	self.sink:write '\r'
+	self:render()
+end
 
-	self.sink:write(ansikit.getCSI(self.region.height - self.start.. ';1', 'H'))
-	self.sink:writeln(string.format('\27[0mPage %d', self.curPage))
+function Greenhouse:render()
 end
 
 function Greenhouse:scroll(direction)
+	if self.isToc then
+		if direction == 'down' then
+			self:next(true)
+		elseif direction == 'up' then
+			self:previous(true)
+		end
+		return
+	end
+
 	local lines = self.pages[self.curPage].lines
 
 	local oldOffset = self.offset
@@ -67,32 +91,89 @@ function Greenhouse:scroll(direction)
 end
 
 function Greenhouse:update()
-	local size = terminal.size()
-	self.region = size
+	self:resize()
+	if self.isToc then
+		self:toc()
+	end
 
 	self:draw()
 end
 
-function Greenhouse:next()
-	local oldCurrent = self.curPage
-	self.curPage = math.min(self.curPage + 1, #self.pages)
-	if self.curPage ~= oldCurrent then
+function Greenhouse:resize()
+	local size = terminal.size()
+	self.region = size
+end
+
+function Greenhouse:next(toc)
+	local oldCurrent = toc and self.tocPageIdx or self.curPage
+	local pageIdx = math.min(oldCurrent + 1, #self.pages)
+
+	if toc then
+		self.tocPageIdx = pageIdx
+	else
+		self.curPage = pageIdx
+	end
+
+	if pageIdx ~= oldCurrent then
 		self.offset = 1
-		self:draw()
+		self:update()
 	end
 end
 
-function Greenhouse:previous()
-	local oldCurrent = self.curPage
-	self.curPage = math.max(self.curPage - 1, 1)
-	if self.curPage ~= oldCurrent then
-		self.offset = 1
-		self:draw()
+function Greenhouse:previous(toc)
+	local oldCurrent = toc and self.tocPageIdx or self.curPage
+	local pageIdx = math.max(self.curPage - 1, 1)
+
+	if toc then
+		self.tocPageIdx = pageIdx
+	else
+		self.curPage = pageIdx
 	end
+
+	if pageIdx ~= oldCurrent then
+		self.offset = 1
+		self:update()
+	end
+end
+
+function Greenhouse:jump(idx)
+	if idx ~= self.curPage then
+		self.offset = 1
+	end
+	self.curPage = idx
+	self:update()
 end
 
 function Greenhouse:keybind(key, callback)
 	self.keybinds[key] = callback
+end
+
+function Greenhouse:toc(toggle)
+	if not self.isToc then
+		self.tocPageIdx = self.curPage
+	end
+	if toggle then self.isToc = not self.isToc end
+	-- Generate a special page for our table of contents
+	local tocText = string.format([[
+%s
+
+]], lunacolors.cyan(lunacolors.bold '―― Table of Contents ――'))
+
+	local genericPageCount = 1
+	for i, page in ipairs(self.pages) do
+		local title = page.title
+		if title == 'Page' then
+			title = 'Page #' .. genericPageCount
+			genericPageCount = genericPageCount + 1
+		end
+		if i == self.tocPageIdx then
+			title = lunacolors.invert(title)
+		end
+
+		tocText = tocText .. title .. '\n'
+	end
+	self.tocPage = Page('TOC', tocText)
+	self:draw()
 end
 
 function Greenhouse:initUi()
