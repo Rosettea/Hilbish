@@ -10,10 +10,17 @@ commander.register('greenhouse', function(args, sinks)
 	local gh = Greenhouse(sinks.out)
 
 	local buffer = ''
+	local display = ''
 	local command = false
 	local commands = {
 		q = function()
 			gh.keybinds['Ctrl-D'](gh)
+		end,
+		['goto'] = function(args)
+			if not args[1] then
+				return 'nuh uh'
+			end
+			gh:jump(tonumber(args[1]))
 		end
 	}
 
@@ -30,13 +37,13 @@ commander.register('greenhouse', function(args, sinks)
 		oldDraw(self)
 		local workingPage = self.pages[self.curPage]
 		local offset = self.offset
-		if self.isToc then
-			offset = self.tocOffset
-			workingPage = self.tocPage
+		if self.isSpecial then
+			offset = self.specialOffset
+			workingPage = self.specialPage
 		end
 
 		self.sink:write(ansikit.getCSI((self.region.height + 2) - self.start.. ';1', 'H'))
-		if not self.isToc then
+		if not self.isSpecial then
 			self.sink:write(string.format('\27[0mPage %d', self.curPage))
 			if workingPage.title ~= '' then
 				self.sink:writeln(' — ' .. workingPage.title)
@@ -44,7 +51,7 @@ commander.register('greenhouse', function(args, sinks)
 				self.sink:writeln('')
 			end
 		end
-		self.sink:write(buffer)
+		self.sink:write(buffer == '' and display or buffer)
 	end
 	function gh:input(c)
 		-- command handling
@@ -52,16 +59,26 @@ commander.register('greenhouse', function(args, sinks)
 			command = true
 		end
 		if c == 'Escape' then
-			command = false
-			buffer = ''
-			goto update
+			if command then
+				command = false
+				buffer = ''
+			else
+				if self.isSpecial then gh:special() end
+			end
 		elseif c == 'Backspace' then
 			buffer = buffer:sub(0, -2)
-			goto update
+			if buffer == '' then
+				command = false
+			else
+				goto update
+			end
 		end
 
 		if command then
-			buffer = buffer .. c
+			ansikit.showCursor()
+			if buffer:match '^:' then buffer = buffer .. c else buffer = c end
+		else
+			ansikit.hideCursor()
 		end
 
 		::update::
@@ -70,9 +87,9 @@ commander.register('greenhouse', function(args, sinks)
 	gh:resize()
 
 	gh:keybind('Enter', function(self)
-		if self.isToc then
-			self:jump(self.tocPageIdx)
-			self:toc(true)
+		if self.isSpecial then
+			self:jump(self.specialPageIdx)
+			self:special(true)
 		else
 			if buffer:len() < 2 then return end
 
@@ -80,7 +97,7 @@ commander.register('greenhouse', function(args, sinks)
 			local command = commands[splitBuf[1]:sub(2)]
 			if command then
 				table.remove(splitBuf, 1)
-				command(splitBuf)
+				buffer = command(splitBuf) or ''
 			end
 			self:update()
 		end
