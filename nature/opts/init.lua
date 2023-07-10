@@ -16,7 +16,7 @@ setmetatable(hilbish.opts, {
 
 local function setupOpt(name, default)
 	opts[name] = default
-	require('nature.opts.' .. name)
+	pcall(require, 'nature.opts.' .. name)
 end
 
 local defaultOpts = {
@@ -25,7 +25,8 @@ local defaultOpts = {
 	greeting = string.format([[Welcome to {magenta}Hilbish{reset}, {cyan}%s{reset}.
 The nice lil shell for {blue}Lua{reset} fanatics!
 ]], hilbish.user),
-	motd = true
+	motd = true,
+	fuzzy = false
 }
 
 for optsName, default in pairs(defaultOpts) do

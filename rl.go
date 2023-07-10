@@ -25,7 +25,14 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		rl: rl,
 	}
 
+	regexSearcher := rl.Searcher
 	rl.Searcher = func(needle string, haystack []string) []string {
+		fz, _ := util.DoString(l, "return hilbish.opts.fuzzy")
+		fuzz, ok := fz.TryBool()
+		if !fuzz || !ok {
+			return regexSearcher(needle, haystack)
+		}
+
 		matches := fuzzy.Find(needle, haystack)
 		suggs := make([]string, 0)
 
