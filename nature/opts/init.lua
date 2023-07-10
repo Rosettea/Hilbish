@@ -26,7 +26,8 @@ local defaultOpts = {
 The nice lil shell for {blue}Lua{reset} fanatics!
 ]], hilbish.user),
 	motd = true,
-	fuzzy = false
+	fuzzy = false,
+	notifyJobFinish = true
 }
 
 for optsName, default in pairs(defaultOpts) do

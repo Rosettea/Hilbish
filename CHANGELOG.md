@@ -10,6 +10,8 @@
 - Show indexes on cdr list
 - `hilbish.messages` interface (details in [#219])
 - `hilbish.notification` signal when a message/notification is sent
+- `notifyJobFinish` opt to send a notification when background jobs are
+completed.
 
 [#219]: https://github.com/Rosettea/Hilbish/issues/219
 ### Fixed
