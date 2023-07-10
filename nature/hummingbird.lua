@@ -74,16 +74,4 @@ function hilbish.messages.all()
 	return M._messages
 end
 
-commander.register('messages', function(_, sinks)
-	for idx = counter, 1, -1  do
-		local msg = M._messages[idx]
-		if msg then
-			local heading = lunacolors.format(string.format('Message {cyan}#%d{reset}: %s', msg.index, msg.title))
-			sinks.out:writeln(heading)
-			sinks.out:writeln(string.rep('=', string.len(heading)))
-			sinks.out:writeln(msg.text)
-		end
-	end
-end)
-
 return M
