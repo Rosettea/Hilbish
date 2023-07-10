@@ -24,14 +24,9 @@ bait.catch('hilbish.vimMode', function(mode)
 	end
 end)
 
---[[
-hilbish.timeout(function()
-	hilbish.messages.send {title = 'greetings!', text = 'hello world :D'}
-end, 2000)
-]]--
-
 bait.catch('hilbish.notification', function()
-	hilbish.prompt(lunacolors.blue('• 1 new notification'), 'right')
+	local notif = string.format('• %s unread notification%s', hilbish.messages.unreadCount(), hilbish.messages.unreadCount() > 1 and 's' or '')
+	hilbish.prompt(lunacolors.blue(notif), 'right')
 
 	hilbish.timeout(function()
 		hilbish.prompt('', 'right')

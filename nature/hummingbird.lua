@@ -4,6 +4,7 @@ local lunacolors = require 'lunacolors'
 
 local M = {}
 local counter = 0
+local unread = 0
 M._messages = {}
 M.icons = {
 	INFO = '',
@@ -35,6 +36,7 @@ function hilbish.messages.send(message)
 	expect(message, 'text')
 	expect(message, 'title')
 	counter = counter + 1
+	unread = unread + 1
 	message.index = counter
 	message.read = false
 
@@ -46,6 +48,7 @@ function hilbish.messages.read(idx)
 	local msg = M._messages[idx]
 	if msg then
 		M._messages[idx].read = true
+		unread = unread - 1
 	end
 end
 
@@ -53,6 +56,10 @@ function hilbish.messages.readAll(idx)
 	for _, msg in ipairs(hilbish.messages.all()) do
 		hilbish.messages.read(msg.index)
 	end
+end
+
+function hilbish.messages.unreadCount()
+	return unread
 end
 
 function hilbish.messages.delete(idx)
