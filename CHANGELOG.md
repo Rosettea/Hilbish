@@ -8,7 +8,12 @@
   - `pipe` property to check if a sink with input is a pipe (like stdin)
 - Add fuzzy search to history search (enable via `hilbish.opts.fuzzy = true`)
 - Show indexes on cdr list
+- `hilbish.messages` interface (details in [#219])
+- `hilbish.notification` signal when a message/notification is sent
+- `notifyJobFinish` opt to send a notification when background jobs are
+completed.
 
+[#219]: https://github.com/Rosettea/Hilbish/issues/219
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
 
