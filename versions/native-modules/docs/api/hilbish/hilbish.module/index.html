@@ -7,12 +7,10 @@ to load Hilbish plugins/modules.
 Hilbish modules are Go-written plugins (see <a href=https://pkg.go.dev/plugin target=_blank rel=noopener>https://pkg.go.dev/plugin</a>
 )
 that are used to add functionality to Hilbish that cannot be written
-n Lua for any reason.</p><p>To make a valid native module, the Go plugin
+in Lua for any reason.</p><p>To make a valid native module, the Go plugin
 has to export a Loader function with a signature like so:
-<code>func(*rt.Runtime) rt.Value</code>
-<code>rt</code> in this case refers to the Runtime type at
-<a href=https://pkg.go.dev/github.com/arnodel/golua@master/runtime#Runtime target=_blank rel=noopener>https://pkg.go.dev/github.com/arnodel/golua@master/runtime#Runtime</a>
-Hilbish uses this package as its Lua runtime. You will need to read
+<code>func(*rt.Runtime) rt.Value</code>.</p><p><code>rt</code> in this case refers to the Runtime type at
+<a href=https://pkg.go.dev/github.com/arnodel/golua@master/runtime#Runtime target=_blank rel=noopener>https://pkg.go.dev/github.com/arnodel/golua@master/runtime#Runtime</a></p><p>Hilbish uses this package as its Lua runtime. You will need to read
 it to use it for a native plugin.</p><h3 id=functions class=heading>Functions
 <a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><h4 id=loadpath class=heading>load(path)
 <a href=#loadpath class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Loads a module at the designated <code>path</code>.
