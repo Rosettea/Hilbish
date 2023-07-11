@@ -13,6 +13,7 @@ interfaces and functions which directly relate to shell functionality.
 
 ## Interface fields
 - `ver`: The version of Hilbish
+- `goVersion`: The version of Go that Hilbish was compiled with
 - `user`: Username of the user
 - `host`: Hostname of the machine
 - `dataDir`: Directory for Hilbish data files, including the docs and default modules
