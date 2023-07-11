@@ -112,8 +112,10 @@ type Instance struct {
 	modeAutoFind bool           // for when invoked via ^R or ^F outside of [tab]
 	searchMode   FindMode       // Used for varying hints, and underlying functions called
 	regexSearch  *regexp.Regexp // Holds the current search regex match
+	search       string
 	mainHist     bool           // Which history stdin do we want
 	histInfo     []rune         // We store a piece of hist info, for dual history sources
+	Searcher func(string, []string) []string
 
 	//
 	// History -----------------------------------------------------------------------------------
@@ -229,6 +231,25 @@ func NewInstance() *Instance {
 	rl.HintFormatting = "\x1b[2m"
 	rl.evtKeyPress = make(map[string]func(string, []rune, int) *EventReturn)
 	rl.TempDirectory = os.TempDir()
+	rl.Searcher = func(needle string, haystack []string) []string {
+		suggs := make([]string, 0)
+
+		var err error
+		rl.regexSearch, err = regexp.Compile("(?i)" + string(rl.tfLine))
+		if err != nil {
+			rl.RefreshPromptLog(err.Error())
+			rl.infoText = []rune(Red("Failed to match search regexp"))
+		}
+
+		for _, hay := range haystack {
+			if rl.regexSearch == nil { continue }
+			if rl.regexSearch.MatchString(hay) {
+				suggs = append(suggs, hay)
+			}
+		}
+
+		return suggs
+	}
 
 	// Registers
 	rl.initRegisters()

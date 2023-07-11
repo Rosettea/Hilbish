@@ -79,6 +79,14 @@ function hilbish.goro(fn) end
 --- reality could set the input of the prompt to *display* anything. The
 --- callback is passed the current line and is expected to return a line that
 --- will be used as the input display.
+--- Note that to set a highlighter, one has to override this function.
+--- Example:
+--- ```
+--- function hilbish.highlighter(line)
+---    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+--- end
+--- ```
+--- This code will highlight all double quoted strings in green.
 --- @param line string
 function hilbish.highlighter(line) end
 
@@ -179,6 +187,18 @@ function hilbish.jobs:foreground() end
 --- or `load`, but is appropriated for the runner interface.
 --- @param cmd string
 function hilbish.runner.lua(cmd) end
+
+--- Sets/toggles the option of automatically flushing output.
+--- A call with no argument will toggle the value.
+--- @param auto boolean|nil
+function hilbish:autoFlush(auto) end
+
+--- Flush writes all buffered input to the sink.
+function hilbish:flush() end
+
+--- Reads input from the sink.
+--- @returns string
+function hilbish:read() end
 
 --- Writes data to a sink.
 function hilbish:write(str) end

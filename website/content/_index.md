@@ -8,11 +8,11 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 <div class="text-center">
 	<h1 class="fw-light">Something Unique.</h1>
 		<p>
-			<strong>Hilbish</strong> is the new interactive shell for Lua fans.<br>
-			Extensible, scriptable, configurable: All in Lua.
+			<strong>🌺 Hilbish</strong> is the new Moon-powered interactive shell for Lua fans!<br>
+			Extensible, scriptable, configurable: All in Lua. ✨
 		</p>
 	<a href="install" class="btn btn-primary">Install</a>
-	<a href="https://github.com/Rosettea/Hilbish" class="btn btn-secondary" target="_blank">Github</a>
+	<a href="https://github.com/Rosettea/Hilbish" class="btn btn-secondary" target="_blank">GitHub</a>
 </div>
 
 <hr>
@@ -108,14 +108,28 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 
 <hr>
 
+<h1 class="fw-light">Screenshots</h1>
+<div class="row row-cols-1 row-cols-md-2 g-4">
+	<div class="col">
+		<img src="/Hilbish/pillprompt.png">
+	</div>
+	<div class="col">
+		<img src="/Hilbish/default.png">
+	</div>
+	<div class="col">
+		<img src="/Hilbish/tab.png">
+	</div>
+</div>
+<br>
+
 <h1 class="fw-light">Why not just Lua?</h1>
 <p>
 	Hilbish is your interactive shell as well as a just a Lua interpreter
 	and enhanced REPL.<br>
 </p>
-<ul class="list-group" style="max-width: 64em;">
+<ul class="list-group">
 	<li class="list-group-item"><i class="fa-solid fa-battery-full"></i> Batteries included Lua runtime that's also your user shell!</li>
-	<li class="list-group-item"><i class="fa-solid fa-network-wired"></i> Hilbish is easily cross platform. It has OS agnostic interfaces for easy cross platform Lua code.</li>
+	<li class="list-group-item"><i class="fa-solid fa-network-wired"></i> Provides cross-platform and OS agnostic APIs to ensure your Lua code works everywhere Hilbish does, as expected.</li>
 </ul>
 
 <hr>
@@ -123,11 +137,10 @@ description: 'Something Unique. Hilbish is the new interactive shell for Lua fan
 <h1 class="fw-light">Try It Today!</h1>
 <p>
 	Hilbish is known to run on the 3 major platforms (Windows, MacOS, Linux)
-	but likely builds on other Unixes!
-	<br>
-	Windows doesn't work as well as it should, so if you're a Windows user,
+	but likely builds on other Unixes! Windows doesn't work as well as it should,
+	so if you're a Windows user,
 	<a href="https://github.com/Rosettea/Hilbish/discussions/165">say something</a>!
-	<ul class="list-group" style="max-width: 64em;">
+	<ul class="list-group">
 		<li class="list-group-item"><i class="fa-solid fa-cloud-arrow-down"></i> <a href="/Hilbish/install" style="text-decoration: none;"><strong>Download</strong></a> the binary</li>
 		<li class="list-group-item"><i class="fa-solid fa-screwdriver-wrench"></i> <a href="https://github.com/Rosettea/Hilbish#manual-build" style="text-decoration: none;"><strong>Build</strong></a> from source</li>
 	</ul>

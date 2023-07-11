@@ -106,7 +106,7 @@ func main() {
 	}
 
 	if *verflag {
-		fmt.Printf("Hilbish %s\n", getVersion())
+		fmt.Printf("Hilbish %s\nCompiled with %s\n", getVersion(), runtime.Version())
 		os.Exit(0)
 	}
 

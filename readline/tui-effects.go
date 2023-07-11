@@ -14,6 +14,7 @@ var (
 	// effects
 	BOLD  = "\033[1m"
 	DIM   = "\033[2m"
+	UNDERLINE   = "\033[4m"
 	RESET = "\033[0m"
 	// colors
 	RED    = "\033[31m"
