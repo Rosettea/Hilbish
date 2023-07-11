@@ -54,12 +54,12 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 	for a.aliases[args[0]] != "" {
 		alias := a.aliases[args[0]]
 		alias = arg.ReplaceAllStringFunc(alias, func(a string) string {
-			if strings.HasPrefix(a, "\\") {
+			idx, _ := strconv.Atoi(a[1:])
+			if strings.HasPrefix(a, "\\") || idx == 0 {
 				return strings.TrimPrefix(a, "\\")
 			}
 
-			idx, _ := strconv.Atoi(a[1:])
-			if idx > len(args) {
+			if idx + 1 > len(args) {
 				return a
 			}
 			val := args[idx]
