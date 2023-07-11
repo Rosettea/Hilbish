@@ -50,7 +50,7 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 
 	arg, _ := regexp.Compile(`[\\]?%\d+`)
 
-	args := strings.Split(cmdstr, " ")
+	args, _ := splitInput(cmdstr)
 	for a.aliases[args[0]] != "" {
 		alias := a.aliases[args[0]]
 		alias = arg.ReplaceAllStringFunc(alias, func(a string) string {
