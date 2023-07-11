@@ -10,6 +10,7 @@ import (
 
 // #interface module
 // native module loading
+// #field paths A list of paths to search when loading native modules.
 /* The hilbish.module interface provides a function
 to load Hilbish plugins/modules.
 Hilbish modules are Go-written plugins (see https://pkg.go.dev/plugin)

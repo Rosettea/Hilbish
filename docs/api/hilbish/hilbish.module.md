@@ -24,6 +24,9 @@ https://pkg.go.dev/github.com/arnodel/golua@master/runtime#Runtime
 Hilbish uses this package as its Lua runtime. You will need to read
 it to use it for a native plugin.
 
+## Interface fields
+- `paths`: A list of paths to search when loading native modules.
+
 ## Functions
 ### load(path)
 Loads a module at the designated `path`.
