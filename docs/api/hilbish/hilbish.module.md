@@ -25,7 +25,7 @@ Hilbish uses this package as its Lua runtime. You will need to read
 it to use it for a native plugin.
 
 ## Interface fields
-- `paths`: A list of paths to search when loading native modules.
+- `paths`: A list of paths to search when loading native modules. This is in the style of Lua search paths and will be used when requiring native modules. Example: `?.so;?/?.so`
 
 ## Functions
 ### load(path)

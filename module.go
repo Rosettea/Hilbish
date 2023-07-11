@@ -10,7 +10,7 @@ import (
 
 // #interface module
 // native module loading
-// #field paths A list of paths to search when loading native modules.
+// #field paths A list of paths to search when loading native modules. This is in the style of Lua search paths and will be used when requiring native modules. Example: `?.so;?/?.so`
 /* The hilbish.module interface provides a function
 to load Hilbish plugins/modules.
 Hilbish modules are Go-written plugins (see https://pkg.go.dev/plugin)
