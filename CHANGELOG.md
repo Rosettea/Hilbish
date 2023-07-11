@@ -12,6 +12,9 @@
 - `hilbish.notification` signal when a message/notification is sent
 - `notifyJobFinish` opt to send a notification when background jobs are
 completed.
+- Allow numbered arg substitutions in aliases.
+  - Example: `hilbish.alias('hello', 'echo %1 says hello')` allows the user to run `hello hilbish`
+  which will output `hilbish says hello`.
 
 [#219]: https://github.com/Rosettea/Hilbish/issues/219
 ### Fixed
