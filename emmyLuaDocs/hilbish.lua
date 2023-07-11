@@ -212,6 +212,10 @@ function hilbish.jobs:start() end
 --- Stops the job from running.
 function hilbish.jobs:stop() end
 
+--- Loads a module at the designated `path`.
+--- It will throw if any error occurs.
+function hilbish.module.load(path) end
+
 --- Runs a command in Hilbish's shell script interpreter.
 --- This is the equivalent of using `source`.
 --- @param cmd string
