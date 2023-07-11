@@ -5,6 +5,15 @@ local fs = require 'fs'
 
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 .. ';' .. hilbish.dataDir .. '/?/?.lua' .. ";" .. hilbish.dataDir .. '/?.lua'
+hilbish.module.paths = '?.so;?/?.so'
+
+table.insert(package.searchers, function(module)
+	local path = package.searchpath(module, hilbish.module.paths)
+	if not path then return nil end
+
+	-- it didnt work normally, idk
+	return function() return hilbish.module.load(path) end, path
+end)
 
 require 'nature.commands'
 require 'nature.completions'
