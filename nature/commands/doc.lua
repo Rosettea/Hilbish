@@ -39,7 +39,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 				subdocName = '_index'
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
-			local oldmoddocPath
+			local oldmoddocPath = moddocPath
 			if not f then
 				moddocPath = moddocPath .. subdocName:match '%w+' .. '/'
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')

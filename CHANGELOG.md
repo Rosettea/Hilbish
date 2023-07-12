@@ -7,6 +7,7 @@
   - `flush()` and `autoFlush()` related to flushing outputs
   - `pipe` property to check if a sink with input is a pipe (like stdin)
 - Show indexes on cdr list
+- Fix doc command not displaying correct subdocs when using shorthand api doc access (`doc api hilbish.jobs` as an example)
 
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
