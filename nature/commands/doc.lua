@@ -34,18 +34,18 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local funcdocs = nil
 		local subdocName = args[2]
 		if not f then
-			-- assume subdir
-			-- dataDir/docs/<mod>/<mod>.md
 			moddocPath = moddocPath .. mod .. '/'
 			if not subdocName then
 				subdocName = '_index'
 			end
 			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
+			local oldmoddocPath
 			if not f then
-				f = io.open(moddocPath .. subdocName:match '%w+' .. '/' .. subdocName .. '.md', 'rb')
+				moddocPath = moddocPath .. subdocName:match '%w+' .. '/'
+				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
 			if not f then
-				moddocPath = moddocPath .. subdocName .. '/'
+				moddocPath = oldmoddocPath .. subdocName .. '/'
 				subdocName = args[3] or '_index'
 				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
 			end
