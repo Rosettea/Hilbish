@@ -32,9 +32,7 @@ commander.register('greenhouse', function(args, sinks)
 		}
 	end
 
-	local oldDraw = gh.draw
-	function gh:draw()
-		oldDraw(self)
+	function gh:render()
 		local workingPage = self.pages[self.curPage]
 		local offset = self.offset
 		if self.isSpecial then
@@ -42,7 +40,7 @@ commander.register('greenhouse', function(args, sinks)
 			workingPage = self.specialPage
 		end
 
-		self.sink:write(ansikit.getCSI((self.region.height + 2) - self.start.. ';1', 'H'))
+		self.sink:write(ansikit.getCSI(self.region.height + 1 .. ';1', 'H'))
 		if not self.isSpecial then
 			self.sink:write(string.format('\27[0mPage %d', self.curPage))
 			if workingPage.title ~= '' then

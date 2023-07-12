@@ -1,3 +1,4 @@
+local ansikit = require 'ansikit'
 local commander = require 'commander'
 local fs = require 'fs'
 local lunacolors = require 'lunacolors'
@@ -11,11 +12,6 @@ commander.register('doc', function(args, sinks)
 		-- hilbish git
 		moddocPath = './docs/'
 	end
-	local apidocHeader = [[
-# %s
-{grayBg}  {white}{italic}%s  {reset}
-
-]]
 
 	local modules = table.map(fs.readdir(moddocPath), function(f)
 		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
@@ -27,6 +23,8 @@ to Hilbish.
 
 Usage: doc <section> [subdoc]
 Available sections: ]] .. table.concat(modules, ', ')
+	local vals = {}
+
 	if #args > 0 then
 		local mod = args[1]
 
@@ -60,11 +58,10 @@ Available sections: ]] .. table.concat(modules, ', ')
 			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 		end)
 		if #moddocs ~= 0 then
-			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
+			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\n\n'
 		end
 
 		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'
-		local vals = {}
 		if valsStr then
 			local _, endpos = funcdocs:find('---\n' .. valsStr .. '\n---\n\n', 1, true)
 			funcdocs = funcdocs:sub(endpos + 1, #funcdocs)
@@ -80,14 +77,38 @@ Available sections: ]] .. table.concat(modules, ', ')
 				end
 			end
 		end
-		if mod == 'api' then
-			funcdocs = string.format(apidocHeader, vals.title, vals.description or 'no description.') .. funcdocs
-		end
 		doc = funcdocs:sub(1, #funcdocs - 1)
 		f:close()
 	end
 
 	local gh = Greenhouse(sinks.out)
+	function gh:resize()
+		local size = terminal.size()
+		self.region = {
+			width = size.width,
+			height = size.height - 3
+		}
+	end
+	gh:resize()
+
+	function gh:render()
+		local workingPage = self.pages[self.curPage]
+		local offset = self.offset
+		if self.isSpecial then
+			offset = self.specialOffset
+			workingPage = self.specialPage
+		end
+
+		self.sink:write(ansikit.getCSI(self.region.height + 2 .. ';1', 'H'))
+		if not self.isSpecial then
+			if args[1] == 'api' then
+				self.sink:writeln(lunacolors.reset(string.format('%s', vals.title)))
+				self.sink:write(lunacolors.format(string.format('{grayBg} ↳ {white}{italic}%s  {reset}', vals.description)))
+			else
+				self.sink:write(lunacolors.reset(string.format('Viewing doc page %s', moddocPath)))
+			end
+		end
+	end
 	local backtickOccurence = 0
 	local page = Page(nil, lunacolors.format(doc:gsub('`', function()
 		backtickOccurence = backtickOccurence + 1
@@ -101,5 +122,6 @@ Available sections: ]] .. table.concat(modules, ', ')
 		return '{bold}{yellow}' .. signature .. '{reset}'
 	end)))
 	gh:addPage(page)
+	ansikit.hideCursor()
 	gh:initUi()
 end)

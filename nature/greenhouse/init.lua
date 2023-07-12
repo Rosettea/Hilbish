@@ -15,7 +15,8 @@ local Greenhouse = Object:extend()
 function Greenhouse:new(sink)
 	local size = terminal.size()
 	self.region = size
-	self.start = 1
+	self.contents = nil -- or can be a table
+	self.start = 1 -- where to start drawing from (should replace with self.region.y)
 	self.offset = 1 -- vertical text offset
 	self.sink = sink
 	self.pages = {}
@@ -131,6 +132,9 @@ end
 function Greenhouse:updateSpecial()
 end
 
+function Greenhouse:contents()
+end
+
 function Greenhouse:toc(toggle)
 	if not self.isSpecial then
 		self.specialPageIdx = self.curPage
@@ -143,17 +147,29 @@ function Greenhouse:toc(toggle)
 ]], lunacolors.cyan(lunacolors.bold '―― Table of Contents ――'))
 
 	local genericPageCount = 1
-	for i, page in ipairs(self.pages) do
-		local title = page.title
-		if title == 'Page' then
-			title = 'Page #' .. genericPageCount
-			genericPageCount = genericPageCount + 1
-		end
-		if i == self.specialPageIdx then
-			title = lunacolors.invert(title)
-		end
+	local contents = self:contents()
+	if contents then
+		for i, c in ipairs(contents) do
+			local title = c.title
+			if c.active then
+				title = lunacolors.invert(title)
+			end
 
-		tocText = tocText .. title .. '\n'
+			tocText = tocText .. title .. '\n'
+		end
+	else
+		for i, page in ipairs(self.pages) do
+			local title = page.title
+			if title == 'Page' then
+				title = 'Page #' .. genericPageCount
+				genericPageCount = genericPageCount + 1
+			end
+			if i == self.specialPageIdx then
+				title = lunacolors.invert(title)
+			end
+
+			tocText = tocText .. title .. '\n'
+		end
 	end
 	self.specialPage = Page('TOC', tocText)
 	function self:updateSpecial()
