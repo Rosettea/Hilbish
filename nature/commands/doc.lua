@@ -60,7 +60,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
 		end)
 		if #moddocs ~= 0 then
-			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\nLMAO'
+			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
 		end
 
 		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'
@@ -89,7 +89,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 
 	local gh = Greenhouse(sinks.out)
 	local backtickOccurence = 0
-	local page = Page(lunacolors.format(doc:gsub('`', function()
+	local page = Page(nil, lunacolors.format(doc:gsub('`', function()
 		backtickOccurence = backtickOccurence + 1
 		if backtickOccurence % 2 == 0 then
 			return '{reset}'
