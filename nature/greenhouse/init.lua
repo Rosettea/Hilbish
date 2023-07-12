@@ -71,11 +71,14 @@ function Greenhouse:draw()
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 	self.sink:write(ansikit.getCSI(2, 'J'))
 
-	for i = offset, offset + (self.region.height - 1) do
+	for i = offset, offset + self.region.height - 1 do
 		if i > #lines then break end
-		self.sink:writeln('\r' .. sub(lines[i]:gsub('\t', '        '), self.region.width - 2))
+
+		local writer = self.sink.writeln
+		if i == offset + self.region.height - 1 then writer = self.sink.write end
+
+		writer(self.sink, sub(lines[i]:gsub('\t', '        '), self.region.width))
 	end
-	self.sink:write '\r'
 	self:render()
 end
 
@@ -96,7 +99,7 @@ function Greenhouse:scroll(direction)
 
 	local oldOffset = self.offset
 	if direction == 'down' then
-		self.offset = math.min(self.offset + 1, math.max(1, #lines - self.region.height + 1))
+		self.offset = math.min(self.offset + 1, math.max(1, #lines - self.region.height))
 	elseif direction == 'up' then
 		self.offset = math.max(self.offset - 1, 1)
 	end
