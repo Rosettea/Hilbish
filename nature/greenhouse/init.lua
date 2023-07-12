@@ -44,6 +44,21 @@ function Greenhouse:updateCurrentPage(text)
 	page:setText(text)
 end
 
+local function sub(str, limit)
+	local overhead = 0
+	local function addOverhead(s)
+		overhead = overhead + string.len(s)
+	end
+
+	local s = str:gsub('\x1b%[%d+;%d+;%d+;%d+;%d+%w', addOverhead)
+     :gsub('\x1b%[%d+;%d+;%d+;%d+%w', addOverhead)
+     :gsub('\x1b%[%d+;%d+;%d+%w',addOverhead)
+     :gsub('\x1b%[%d+;%d+%w', addOverhead)
+     :gsub('\x1b%[%d+%w', addOverhead)
+
+	return s:sub(0, limit + overhead)
+end
+
 function Greenhouse:draw()
 	local workingPage = self.pages[self.curPage]
 	local offset = self.offset
@@ -56,10 +71,9 @@ function Greenhouse:draw()
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 	self.sink:write(ansikit.getCSI(2, 'J'))
 
-	-- the -2 negate is for the command and status line
-	for i = offset, offset + (self.region.height - self.start) do
+	for i = offset, offset + (self.region.height - 1) do
 		if i > #lines then break end
-		self.sink:writeln('\r' .. lines[i]:gsub('\t', '        '):sub(0, self.region.width - 2))
+		self.sink:writeln('\r' .. sub(lines[i]:gsub('\t', '        '), self.region.width - 2))
 	end
 	self.sink:write '\r'
 	self:render()
@@ -82,7 +96,7 @@ function Greenhouse:scroll(direction)
 
 	local oldOffset = self.offset
 	if direction == 'down' then
-		self.offset = math.min(self.offset + 1, #lines)
+		self.offset = math.min(self.offset + 1, math.max(1, #lines - self.region.height + 1))
 	elseif direction == 'up' then
 		self.offset = math.max(self.offset - 1, 1)
 	end
