@@ -229,6 +229,8 @@ func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, ar
 }
 
 // throw(name, ...args)
+// #param name string The name of the hook.
+// #param args ...any The arguments to pass to the hook.
 // Throws a hook with `name` with the provided `args`
 // --- @param name string
 // --- @vararg any

@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.aliases
+title: Module hilbish.aliases
 description: command aliasing
 layout: doc
 menu:
@@ -11,15 +11,23 @@ menu:
 The alias interface deals with all command aliases in Hilbish.
 
 ## Functions
-### add(alias, cmd)
+### hilbish.aliases.add(alias, cmd)
 This is an alias (ha) for the `hilbish.alias` function.
+#### Parameters
+This function has no parameters.  
 
-### delete(name)
+### hilbish.aliases.delete(name)
 Removes an alias.
+#### Parameters
+This function has no parameters.  
 
-### list() -> table\<string, string>
+### hilbish.aliases.list() -> table\<string, string>
 Get a table of all aliases, with string keys as the alias and the value as the command.
+#### Parameters
+This function has no parameters.  
 
-### resolve(alias) -> command (string)
+### hilbish.aliases.resolve(alias) -> command (string)
 Tries to resolve an alias to its command.
+#### Parameters
+This function has no parameters.  
 

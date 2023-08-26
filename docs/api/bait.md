@@ -15,20 +15,35 @@ happened, like when you've changed directory, a command has failed,
 etc. To find all available hooks thrown by Hilbish, see doc hooks.
 
 ## Functions
-### catch(name, cb)
+### bait.catch(name, cb)
 Catches a hook with `name`. Runs the `cb` when it is thrown
+#### Parameters
+This function has no parameters.  
 
-### catchOnce(name, cb)
+### bait.catchOnce(name, cb)
 Same as catch, but only runs the `cb` once and then removes the hook
+#### Parameters
+This function has no parameters.  
 
-### hooks(name) -> table
+### bait.hooks(name) -> table
 Returns a table with hooks (callback functions) on the event with `name`.
+#### Parameters
+This function has no parameters.  
 
-### release(name, catcher)
+### bait.release(name, catcher)
 Removes the `catcher` for the event with `name`.
 For this to work, `catcher` has to be the same function used to catch
 an event, like one saved to a variable.
+#### Parameters
+This function has no parameters.  
 
-### throw(name, ...args)
+### bait.throw(name, ...args)
 Throws a hook with `name` with the provided `args`
+#### Parameters
+`string` **`name`**  
+The name of the hook.
+
+`any` **`args`** (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+The arguments to pass to the hook.
+
 

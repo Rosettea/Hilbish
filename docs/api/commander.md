@@ -38,9 +38,13 @@ output should go.
 name would suggest.
 
 ## Functions
-### deregister(name)
+### commander.deregister(name)
 Deregisters any command registered with `name`
+#### Parameters
+This function has no parameters.  
 
-### register(name, cb)
+### commander.register(name, cb)
 Register a command with `name` that runs `cb` when ran
+#### Parameters
+This function has no parameters.  
 

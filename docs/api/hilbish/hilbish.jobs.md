@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.jobs
+title: Module hilbish.jobs
 description: background job management
 layout: doc
 menu:
@@ -15,20 +15,30 @@ Jobs are the name of background tasks/commands. A job can be started via
 interactive usage or with the functions defined below for use in external runners.
 
 ## Functions
-### add(cmdstr, args, execPath)
+### hilbish.jobs.add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
+#### Parameters
+This function has no parameters.  
 
-### all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>>
+### hilbish.jobs.all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>>
 Returns a table of all job objects.
+#### Parameters
+This function has no parameters.  
 
-### disown(id)
+### hilbish.jobs.disown(id)
 Disowns a job. This deletes it from the job table.
+#### Parameters
+This function has no parameters.  
 
-### get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>
+### hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 Get a job object via its ID.
+#### Parameters
+This function has no parameters.  
 
-### last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;">Job</a>
+### hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 Returns the last added job from the table.
+#### Parameters
+This function has no parameters.  
 
 ## Types
 ## Job

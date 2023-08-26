@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.os
+title: Module hilbish.os
 description: OS Info
 layout: doc
 menu:

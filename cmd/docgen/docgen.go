@@ -43,6 +43,12 @@ type module struct {
 	HasTypes bool
 }
 
+type param struct{
+	Name string
+	Type string
+	Doc []string
+}
+
 type docPiece struct {
 	Doc []string
 	FuncSig string
@@ -55,6 +61,7 @@ type docPiece struct {
 	IsType bool
 	Fields []docPiece
 	Properties []docPiece
+	Params []param
 }
 
 type tag struct {
@@ -215,6 +222,17 @@ start:
 
 	fields := docPieceTag("field", tags)
 	properties := docPieceTag("property", tags)
+	var params []param
+	if paramsRaw := tags["param"]; paramsRaw != nil {
+		params = make([]param, len(paramsRaw))
+		for i, p := range paramsRaw {
+			params[i] = param{
+				Name: p.id,
+				Type: p.fields[0],
+				Doc: p.fields[1:],
+			}
+		}
+	}
 
 	for _, d := range doc {
 		if strings.HasPrefix(d, "---") {
@@ -252,6 +270,7 @@ start:
 		ParentModule: parentMod,
 		Fields: fields,
 		Properties: properties,
+		Params: params,
 	}
 	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
 		dps.Doc = parts
@@ -412,7 +431,7 @@ func main() {
 			defer wg.Done()
 			modOrIface := "Module"
 			if modu.ParentModule != "" {
-				modOrIface = "Interface"
+				modOrIface = "Module"
 			}
 
 			f, _ := os.Create(docPath)
@@ -454,7 +473,7 @@ func main() {
 					if dps.IsMember {
 						continue
 					}
-					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(dps.FuncSig, "<", `\<`, -1), func(typ string) string {
+					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(modname + "." + dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]
 						ifaces := typLookup[0] + "." + typLookup[1] + "/"
@@ -462,13 +481,33 @@ func main() {
 							ifaces = ""
 						}
 						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s#%s", typLookup[0], ifaces, strings.ToLower(typName))
-						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
+						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;" id="lol">%s</a>`, linkedTyp, typName)
 					})
 					f.WriteString(fmt.Sprintf("### %s\n", htmlSig))
 					for _, doc := range dps.Doc {
 						if !strings.HasPrefix(doc, "---") {
 							f.WriteString(doc + "\n")
 						}
+					}
+					f.WriteString("#### Parameters\n")
+					if len(dps.Params) == 0 {
+						f.WriteString("This function has no parameters.  \n")
+					}
+					for _, p := range dps.Params {
+						isVariadic := false
+						typ := p.Type
+						if strings.HasPrefix(p.Type, "...") {
+							isVariadic = true
+							typ = p.Type[3:]
+						}
+
+						f.WriteString(fmt.Sprintf("`%s` **`%s`**", typ, p.Name))
+						if isVariadic {
+							f.WriteString(" (This type is variadic. You can pass an infinite amount of parameters with this type.)")
+						}
+						f.WriteString("  \n")
+						f.WriteString(strings.Join(p.Doc, " "))
+						f.WriteString("\n\n")
 					}
 					f.WriteString("\n")
 				}

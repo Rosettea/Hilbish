@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.userDir
+title: Module hilbish.userDir
 description: user-related directories
 layout: doc
 menu:

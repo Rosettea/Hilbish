@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.editor
+title: Module hilbish.editor
 description: interactions for Hilbish's line reader
 layout: doc
 menu:
@@ -12,15 +12,23 @@ The hilbish.editor interface provides functions to
 directly interact with the line editor in use.
 
 ## Functions
-### getLine() -> string
+### hilbish.editor.getLine() -> string
 Returns the current input line.
+#### Parameters
+This function has no parameters.  
 
-### getVimRegister(register) -> string
+### hilbish.editor.getVimRegister(register) -> string
 Returns the text that is at the register.
+#### Parameters
+This function has no parameters.  
 
-### insert(text)
+### hilbish.editor.insert(text)
 Inserts text into the line.
+#### Parameters
+This function has no parameters.  
 
-### setVimRegister(register, text)
+### hilbish.editor.setVimRegister(register, text)
 Sets the vim register at `register` to hold the passed text.
+#### Parameters
+This function has no parameters.  
 

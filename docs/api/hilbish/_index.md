@@ -23,29 +23,41 @@ interfaces and functions which directly relate to shell functionality.
 - `exitCode`: xit code of the last executed command
 
 ## Functions
-### alias(cmd, orig)
+### hilbish.alias(cmd, orig)
 Sets an alias of `cmd` to `orig`
+#### Parameters
+This function has no parameters.  
 
-### appendPath(dir)
+### hilbish.appendPath(dir)
 Appends `dir` to $PATH
+#### Parameters
+This function has no parameters.  
 
-### complete(scope, cb)
+### hilbish.complete(scope, cb)
 Registers a completion handler for `scope`.
 A `scope` is currently only expected to be `command.<cmd>`,
 replacing <cmd> with the name of the command (for example `command.git`).
 `cb` must be a function that returns a table of "completion groups."
 Check `doc completions` for more information.
+#### Parameters
+This function has no parameters.  
 
-### cwd() -> string
+### hilbish.cwd() -> string
 Returns the current directory of the shell
+#### Parameters
+This function has no parameters.  
 
-### exec(cmd)
+### hilbish.exec(cmd)
 Replaces running hilbish with `cmd`
+#### Parameters
+This function has no parameters.  
 
-### goro(fn)
+### hilbish.goro(fn)
 Puts `fn` in a goroutine
+#### Parameters
+This function has no parameters.  
 
-### highlighter(line)
+### hilbish.highlighter(line)
 Line highlighter handler. This is mainly for syntax highlighting, but in
 reality could set the input of the prompt to *display* anything. The
 callback is passed the current line and is expected to return a line that
@@ -58,59 +70,83 @@ function hilbish.highlighter(line)
 end
 ```
 This code will highlight all double quoted strings in green.
+#### Parameters
+This function has no parameters.  
 
-### hinter(line, pos)
+### hilbish.hinter(line, pos)
 The command line hint handler. It gets called on every key insert to
 determine what text to use as an inline hint. It is passed the current
 line and cursor position. It is expected to return a string which is used
 as the text for the hint. This is by default a shim. To set hints,
 override this function with your custom handler.
+#### Parameters
+This function has no parameters.  
 
-### inputMode(mode)
+### hilbish.inputMode(mode)
 Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
+#### Parameters
+This function has no parameters.  
 
-### interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
+### hilbish.interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 Runs the `cb` function every `time` milliseconds.
 This creates a timer that starts immediately.
+#### Parameters
+This function has no parameters.  
 
-### multiprompt(str)
+### hilbish.multiprompt(str)
 Changes the continued line prompt to `str`
+#### Parameters
+This function has no parameters.  
 
-### prependPath(dir)
+### hilbish.prependPath(dir)
 Prepends `dir` to $PATH
+#### Parameters
+This function has no parameters.  
 
-### prompt(str, typ)
+### hilbish.prompt(str, typ)
 Changes the shell prompt to `str`
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory
 `%u` - Name of current user
 `%h` - Hostname of device
+#### Parameters
+This function has no parameters.  
 
-### read(prompt) -> input (string)
+### hilbish.read(prompt) -> input (string)
 Read input from the user, using Hilbish's line editor/input reader.
 This is a separate instance from the one Hilbish actually uses.
 Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
+#### Parameters
+This function has no parameters.  
 
-### run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
+### hilbish.run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
 Runs `cmd` in Hilbish's sh interpreter.
 If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
 3rd values instead of being outputted to the terminal.
+#### Parameters
+This function has no parameters.  
 
-### runnerMode(mode)
+### hilbish.runnerMode(mode)
 Sets the execution/runner mode for interactive Hilbish. This determines whether
 Hilbish wll try to run input as Lua and/or sh or only do one of either.
 Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 sh, and lua. It also accepts a function, to which if it is passed one
 will call it to execute user input instead.
+#### Parameters
+This function has no parameters.  
 
-### timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;">Timer</a>
+### hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 Runs the `cb` function after `time` in milliseconds.
 This creates a timer that starts immediately.
+#### Parameters
+This function has no parameters.  
 
-### which(name) -> string
+### hilbish.which(name) -> string
 Checks if `name` is a valid command.
 Will return the path of the binary, or a basename if it's a commander.
+#### Parameters
+This function has no parameters.  
 
 ## Types
 ## Sink

@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.history
+title: Module hilbish.history
 description: command history
 layout: doc
 menu:
@@ -13,18 +13,28 @@ This includes the ability to override functions to change the main
 method of saving history.
 
 ## Functions
-### add(cmd)
+### hilbish.history.add(cmd)
 Adds a command to the history.
+#### Parameters
+This function has no parameters.  
 
-### all() -> table
+### hilbish.history.all() -> table
 Retrieves all history.
+#### Parameters
+This function has no parameters.  
 
-### clear()
+### hilbish.history.clear()
 Deletes all commands from the history.
+#### Parameters
+This function has no parameters.  
 
-### get(idx)
+### hilbish.history.get(idx)
 Retrieves a command from the history based on the `idx`.
+#### Parameters
+This function has no parameters.  
 
-### size() -> number
+### hilbish.history.size() -> number
 Returns the amount of commands in the history.
+#### Parameters
+This function has no parameters.  
 
