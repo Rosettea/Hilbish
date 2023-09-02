@@ -23,6 +23,7 @@ interactive usage or with the functions defined below for use in external runner
 |<a href="#jobs.get">get(id) -> @Job</a>|Get a job object via its ID.|
 |<a href="#jobs.last">last() -> @Job</a>|Returns the last added job from the table.|
 
+## Functions
 <hr><div id='jobs.background'><hr><div id='jobs.foreground'><hr><div id='jobs.start'><hr><div id='jobs.stop'><hr><div id='jobs.add'>
 <h4 class='heading'>
 hilbish.jobs.add(cmdstr, args, execPath)
@@ -34,7 +35,9 @@ hilbish.jobs.add(cmdstr, args, execPath)
 Adds a new job to the job table. Note that this does not immediately run it.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='jobs.all'>
+</div>
+
+<hr><div id='jobs.all'>
 <h4 class='heading'>
 hilbish.jobs.all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>>
 <a href="#jobs.all" class='heading-link'>
@@ -45,7 +48,9 @@ hilbish.jobs.all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#jo
 Returns a table of all job objects.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='jobs.disown'>
+</div>
+
+<hr><div id='jobs.disown'>
 <h4 class='heading'>
 hilbish.jobs.disown(id)
 <a href="#jobs.disown" class='heading-link'>
@@ -56,7 +61,9 @@ hilbish.jobs.disown(id)
 Disowns a job. This deletes it from the job table.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='jobs.get'>
+</div>
+
+<hr><div id='jobs.get'>
 <h4 class='heading'>
 hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 <a href="#jobs.get" class='heading-link'>
@@ -67,7 +74,9 @@ hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" st
 Get a job object via its ID.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='jobs.last'>
+</div>
+
+<hr><div id='jobs.last'>
 <h4 class='heading'>
 hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 <a href="#jobs.last" class='heading-link'>
@@ -78,7 +87,9 @@ hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" sty
 Returns the last added job from the table.
 #### Parameters
 This function has no parameters.  
-</div>## Types
+</div>
+
+## Types
 ## Job
 The Job type describes a Hilbish job.
 ### Properties

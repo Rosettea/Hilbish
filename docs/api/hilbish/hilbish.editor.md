@@ -19,6 +19,7 @@ directly interact with the line editor in use.
 |<a href="#editor.insert">insert(text)</a>|Inserts text into the line.|
 |<a href="#editor.setVimRegister">setVimRegister(register, text)</a>|Sets the vim register at `register` to hold the passed text.|
 
+## Functions
 <hr><div id='editor.getLine'>
 <h4 class='heading'>
 hilbish.editor.getLine() -> string
@@ -30,7 +31,9 @@ hilbish.editor.getLine() -> string
 Returns the current input line.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='editor.getVimRegister'>
+</div>
+
+<hr><div id='editor.getVimRegister'>
 <h4 class='heading'>
 hilbish.editor.getVimRegister(register) -> string
 <a href="#editor.getVimRegister" class='heading-link'>
@@ -41,7 +44,9 @@ hilbish.editor.getVimRegister(register) -> string
 Returns the text that is at the register.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='editor.insert'>
+</div>
+
+<hr><div id='editor.insert'>
 <h4 class='heading'>
 hilbish.editor.insert(text)
 <a href="#editor.insert" class='heading-link'>
@@ -52,7 +57,9 @@ hilbish.editor.insert(text)
 Inserts text into the line.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='editor.setVimRegister'>
+</div>
+
+<hr><div id='editor.setVimRegister'>
 <h4 class='heading'>
 hilbish.editor.setVimRegister(register, text)
 <a href="#editor.setVimRegister" class='heading-link'>
@@ -64,3 +71,4 @@ Sets the vim register at `register` to hold the passed text.
 #### Parameters
 This function has no parameters.  
 </div>
+

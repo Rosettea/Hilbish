@@ -18,6 +18,7 @@ The alias interface deals with all command aliases in Hilbish.
 |<a href="#aliases.list">list() -> table<string, string></a>|Get a table of all aliases, with string keys as the alias and the value as the command.|
 |<a href="#aliases.resolve">resolve(alias) -> command (string)</a>|Tries to resolve an alias to its command.|
 
+## Functions
 <hr><div id='aliases.add'>
 <h4 class='heading'>
 hilbish.aliases.add(alias, cmd)
@@ -29,7 +30,9 @@ hilbish.aliases.add(alias, cmd)
 This is an alias (ha) for the `hilbish.alias` function.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='aliases.delete'>
+</div>
+
+<hr><div id='aliases.delete'>
 <h4 class='heading'>
 hilbish.aliases.delete(name)
 <a href="#aliases.delete" class='heading-link'>
@@ -40,7 +43,9 @@ hilbish.aliases.delete(name)
 Removes an alias.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='aliases.list'>
+</div>
+
+<hr><div id='aliases.list'>
 <h4 class='heading'>
 hilbish.aliases.list() -> table\<string, string>
 <a href="#aliases.list" class='heading-link'>
@@ -51,7 +56,9 @@ hilbish.aliases.list() -> table\<string, string>
 Get a table of all aliases, with string keys as the alias and the value as the command.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='aliases.resolve'>
+</div>
+
+<hr><div id='aliases.resolve'>
 <h4 class='heading'>
 hilbish.aliases.resolve(alias) -> command (string)
 <a href="#aliases.resolve" class='heading-link'>
@@ -63,3 +70,4 @@ Tries to resolve an alias to its command.
 #### Parameters
 This function has no parameters.  
 </div>
+

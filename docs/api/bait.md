@@ -41,6 +41,7 @@ this function will set the user prompt.
 |<a href="#release">release(name, catcher)</a>|Removes the `catcher` for the event with `name`.|
 |<a href="#throw">throw(name, ...args)</a>|Throws a hook with `name` with the provided `args`|
 
+## Functions
 <hr><div id='catch'>
 <h4 class='heading'>
 bait.catch(name, cb)
@@ -57,7 +58,9 @@ ummm
 `function` **`cb`**  
 ?
 
-</div><hr><div id='catchOnce'>
+</div>
+
+<hr><div id='catchOnce'>
 <h4 class='heading'>
 bait.catchOnce(name, cb)
 <a href="#catchOnce" class='heading-link'>
@@ -68,7 +71,9 @@ bait.catchOnce(name, cb)
 Same as catch, but only runs the `cb` once and then removes the hook
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='hooks'>
+</div>
+
+<hr><div id='hooks'>
 <h4 class='heading'>
 bait.hooks(name) -> table
 <a href="#hooks" class='heading-link'>
@@ -79,7 +84,9 @@ bait.hooks(name) -> table
 Returns a table with hooks (callback functions) on the event with `name`.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='release'>
+</div>
+
+<hr><div id='release'>
 <h4 class='heading'>
 bait.release(name, catcher)
 <a href="#release" class='heading-link'>
@@ -92,7 +99,9 @@ For this to work, `catcher` has to be the same function used to catch
 an event, like one saved to a variable.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='throw'>
+</div>
+
+<hr><div id='throw'>
 <h4 class='heading'>
 bait.throw(name, ...args)
 <a href="#throw" class='heading-link'>
@@ -109,3 +118,4 @@ The name of the hook.
 The arguments to pass to the hook.
 
 </div>
+

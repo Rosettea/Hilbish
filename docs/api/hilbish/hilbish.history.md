@@ -21,6 +21,7 @@ method of saving history.
 |<a href="#history.get">get(idx)</a>|Retrieves a command from the history based on the `idx`.|
 |<a href="#history.size">size() -> number</a>|Returns the amount of commands in the history.|
 
+## Functions
 <hr><div id='history.add'>
 <h4 class='heading'>
 hilbish.history.add(cmd)
@@ -32,7 +33,9 @@ hilbish.history.add(cmd)
 Adds a command to the history.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='history.all'>
+</div>
+
+<hr><div id='history.all'>
 <h4 class='heading'>
 hilbish.history.all() -> table
 <a href="#history.all" class='heading-link'>
@@ -43,7 +46,9 @@ hilbish.history.all() -> table
 Retrieves all history.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='history.clear'>
+</div>
+
+<hr><div id='history.clear'>
 <h4 class='heading'>
 hilbish.history.clear()
 <a href="#history.clear" class='heading-link'>
@@ -54,7 +59,9 @@ hilbish.history.clear()
 Deletes all commands from the history.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='history.get'>
+</div>
+
+<hr><div id='history.get'>
 <h4 class='heading'>
 hilbish.history.get(idx)
 <a href="#history.get" class='heading-link'>
@@ -65,7 +72,9 @@ hilbish.history.get(idx)
 Retrieves a command from the history based on the `idx`.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='history.size'>
+</div>
+
+<hr><div id='history.size'>
 <h4 class='heading'>
 hilbish.history.size() -> number
 <a href="#history.size" class='heading-link'>
@@ -77,3 +86,4 @@ Returns the amount of commands in the history.
 #### Parameters
 This function has no parameters.  
 </div>
+

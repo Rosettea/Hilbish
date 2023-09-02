@@ -13,7 +13,9 @@ the current OS on the systen. This mainly includes the name and
 version.
 
 ## Interface fields
-- `family`: Family name of the current OS
-- `name`: Pretty name of the current OS
-- `version`: Version of the current OS
+|||
+|----|----|
+|family|Family name of the current OS|
+|name|Pretty name of the current OS|
+|version|Version of the current OS|
 

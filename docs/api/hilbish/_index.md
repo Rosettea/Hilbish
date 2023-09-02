@@ -34,16 +34,19 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
 
 ## Interface fields
-- `ver`: The version of Hilbish
-- `goVersion`: The version of Go that Hilbish was compiled with
-- `user`: Username of the user
-- `host`: Hostname of the machine
-- `dataDir`: Directory for Hilbish data files, including the docs and default modules
-- `interactive`: Is Hilbish in an interactive shell?
-- `login`: Is Hilbish the login shell?
-- `vimMode`: Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
-- `exitCode`: xit code of the last executed command
+|||
+|----|----|
+|ver|The version of Hilbish|
+|goVersion|The version of Go that Hilbish was compiled with|
+|user|Username of the user|
+|host|Hostname of the machine|
+|dataDir|Directory for Hilbish data files, including the docs and default modules|
+|interactive|Is Hilbish in an interactive shell?|
+|login|Is Hilbish the login shell?|
+|vimMode|Current Vim input mode of Hilbish (will be nil if not in Vim input mode)|
+|exitCode|xit code of the last executed command|
 
+## Functions
 <hr><div id='alias'>
 <h4 class='heading'>
 hilbish.alias(cmd, orig)
@@ -55,7 +58,9 @@ hilbish.alias(cmd, orig)
 Sets an alias of `cmd` to `orig`
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='appendPath'>
+</div>
+
+<hr><div id='appendPath'>
 <h4 class='heading'>
 hilbish.appendPath(dir)
 <a href="#appendPath" class='heading-link'>
@@ -66,7 +71,9 @@ hilbish.appendPath(dir)
 Appends `dir` to $PATH
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='complete'>
+</div>
+
+<hr><div id='complete'>
 <h4 class='heading'>
 hilbish.complete(scope, cb)
 <a href="#complete" class='heading-link'>
@@ -81,7 +88,9 @@ replacing <cmd> with the name of the command (for example `command.git`).
 Check `doc completions` for more information.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='cwd'>
+</div>
+
+<hr><div id='cwd'>
 <h4 class='heading'>
 hilbish.cwd() -> string
 <a href="#cwd" class='heading-link'>
@@ -92,7 +101,9 @@ hilbish.cwd() -> string
 Returns the current directory of the shell
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='exec'>
+</div>
+
+<hr><div id='exec'>
 <h4 class='heading'>
 hilbish.exec(cmd)
 <a href="#exec" class='heading-link'>
@@ -103,7 +114,9 @@ hilbish.exec(cmd)
 Replaces running hilbish with `cmd`
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='goro'>
+</div>
+
+<hr><div id='goro'>
 <h4 class='heading'>
 hilbish.goro(fn)
 <a href="#goro" class='heading-link'>
@@ -114,7 +127,9 @@ hilbish.goro(fn)
 Puts `fn` in a goroutine
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='highlighter'>
+</div>
+
+<hr><div id='highlighter'>
 <h4 class='heading'>
 hilbish.highlighter(line)
 <a href="#highlighter" class='heading-link'>
@@ -136,7 +151,9 @@ end
 This code will highlight all double quoted strings in green.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='hinter'>
+</div>
+
+<hr><div id='hinter'>
 <h4 class='heading'>
 hilbish.hinter(line, pos)
 <a href="#hinter" class='heading-link'>
@@ -151,7 +168,9 @@ as the text for the hint. This is by default a shim. To set hints,
 override this function with your custom handler.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='inputMode'>
+</div>
+
+<hr><div id='inputMode'>
 <h4 class='heading'>
 hilbish.inputMode(mode)
 <a href="#inputMode" class='heading-link'>
@@ -162,7 +181,9 @@ hilbish.inputMode(mode)
 Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='interval'>
+</div>
+
+<hr><div id='interval'>
 <h4 class='heading'>
 hilbish.interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#interval" class='heading-link'>
@@ -174,7 +195,9 @@ Runs the `cb` function every `time` milliseconds.
 This creates a timer that starts immediately.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='multiprompt'>
+</div>
+
+<hr><div id='multiprompt'>
 <h4 class='heading'>
 hilbish.multiprompt(str)
 <a href="#multiprompt" class='heading-link'>
@@ -185,7 +208,9 @@ hilbish.multiprompt(str)
 Changes the continued line prompt to `str`
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='prependPath'>
+</div>
+
+<hr><div id='prependPath'>
 <h4 class='heading'>
 hilbish.prependPath(dir)
 <a href="#prependPath" class='heading-link'>
@@ -196,7 +221,9 @@ hilbish.prependPath(dir)
 Prepends `dir` to $PATH
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='prompt'>
+</div>
+
+<hr><div id='prompt'>
 <h4 class='heading'>
 hilbish.prompt(str, typ)
 <a href="#prompt" class='heading-link'>
@@ -212,7 +239,9 @@ These will be formatted and replaced with the appropriate values.
 `%h` - Hostname of device
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='read'>
+</div>
+
+<hr><div id='read'>
 <h4 class='heading'>
 hilbish.read(prompt) -> input (string)
 <a href="#read" class='heading-link'>
@@ -225,7 +254,9 @@ This is a separate instance from the one Hilbish actually uses.
 Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='run'>
+</div>
+
+<hr><div id='run'>
 <h4 class='heading'>
 hilbish.run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
 <a href="#run" class='heading-link'>
@@ -238,7 +269,9 @@ If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
 3rd values instead of being outputted to the terminal.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='runnerMode'>
+</div>
+
+<hr><div id='runnerMode'>
 <h4 class='heading'>
 hilbish.runnerMode(mode)
 <a href="#runnerMode" class='heading-link'>
@@ -253,7 +286,9 @@ sh, and lua. It also accepts a function, to which if it is passed one
 will call it to execute user input instead.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='timeout'>
+</div>
+
+<hr><div id='timeout'>
 <h4 class='heading'>
 hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#timeout" class='heading-link'>
@@ -265,7 +300,9 @@ Runs the `cb` function after `time` in milliseconds.
 This creates a timer that starts immediately.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='which'>
+</div>
+
+<hr><div id='which'>
 <h4 class='heading'>
 hilbish.which(name) -> string
 <a href="#which" class='heading-link'>
@@ -277,7 +314,9 @@ Checks if `name` is a valid command.
 Will return the path of the binary, or a basename if it's a commander.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='luaSinkAutoFlush'><hr><div id='luaSinkFlush'><hr><div id='luaSinkRead'><hr><div id='luaSinkWrite'><hr><div id='luaSinkWriteln'>## Types
+</div>
+
+<hr><div id='luaSinkAutoFlush'><hr><div id='luaSinkFlush'><hr><div id='luaSinkRead'><hr><div id='luaSinkWrite'><hr><div id='luaSinkWriteln'>## Types
 ## Sink
 A sink is a structure that has input and/or output to/from
 a desination.

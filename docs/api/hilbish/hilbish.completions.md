@@ -18,6 +18,7 @@ The completions interface deals with tab completions.
 |<a href="#completions.bins">bins(query, ctx, fields) -> entries (table), prefix (string)</a>|Returns binary/executale completion candidates based on the provided query.|
 |<a href="#completions.files">files(query, ctx, fields) -> entries (table), prefix (string)</a>|Returns file completion candidates based on the provided query.|
 
+## Functions
 <hr><div id='completions.call'>
 <h4 class='heading'>
 hilbish.completions.call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
@@ -32,7 +33,9 @@ of `command.name`, example: `command.git`.
 You can check `doc completions` for info on the `completionGroups` return value.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='completions.handler'>
+</div>
+
+<hr><div id='completions.handler'>
 <h4 class='heading'>
 hilbish.completions.handler(line, pos)
 <a href="#completions.handler" class='heading-link'>
@@ -44,7 +47,9 @@ The handler function is the callback for tab completion in Hilbish.
 You can check the completions doc for more info.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='completions.bins'>
+</div>
+
+<hr><div id='completions.bins'>
 <h4 class='heading'>
 hilbish.completions.bins(query, ctx, fields) -> entries (table), prefix (string)
 <a href="#completions.bins" class='heading-link'>
@@ -55,7 +60,9 @@ hilbish.completions.bins(query, ctx, fields) -> entries (table), prefix (string)
 Returns binary/executale completion candidates based on the provided query.
 #### Parameters
 This function has no parameters.  
-</div><hr><div id='completions.files'>
+</div>
+
+<hr><div id='completions.files'>
 <h4 class='heading'>
 hilbish.completions.files(query, ctx, fields) -> entries (table), prefix (string)
 <a href="#completions.files" class='heading-link'>
@@ -67,3 +74,4 @@ Returns file completion candidates based on the provided query.
 #### Parameters
 This function has no parameters.  
 </div>
+

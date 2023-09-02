@@ -481,11 +481,17 @@ func main() {
 
 			if len(modu.Fields) != 0 {
 				f.WriteString("## Interface fields\n")
-				for _, dps := range modu.Fields {
-					f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
-					f.WriteString(strings.Join(dps.Doc, " "))
-					f.WriteString("\n")
+
+				mdTable := md.NewTable(len(modu.Fields), 2)
+				mdTable.SetTitle(0, "")
+				mdTable.SetTitle(1, "")
+
+
+				for i, dps := range modu.Fields {
+					mdTable.SetContent(i, 0, dps.FuncName)
+					mdTable.SetContent(i, 1, strings.Join(dps.Doc, " "))
 				}
+				f.WriteString(mdTable.String())
 				f.WriteString("\n")
 			}
 			if len(modu.Properties) != 0 {
@@ -499,12 +505,12 @@ func main() {
 			}
 
 			if len(modu.Docs) != 0 {
-				//f.WriteString("## Functions\n")
+				f.WriteString("## Functions\n")
 				for _, dps := range modu.Docs {
-					f.WriteString(fmt.Sprintf("<hr><div id='%s'>", dps.FuncName))
 					if dps.IsMember {
 						continue
 					}
+					f.WriteString(fmt.Sprintf("<hr><div id='%s'>", dps.FuncName))
 					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(modname + "." + dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]
@@ -550,6 +556,7 @@ func main() {
 						f.WriteString("\n\n")
 					}
 					f.WriteString("</div>")
+					f.WriteString("\n\n")
 				}
 			}
 
