@@ -15,7 +15,7 @@ that works with Hilbish for writing commands. Example:</p><div class=highlight><
 that will print <code>Hello world!</code> to output. One question you may
 have is: What is the <code>sinks</code> parameter?</p><p>The <code>sinks</code> parameter is a table with 3 keys: <code>in</code>, <code>out</code>,
 and <code>err</code>. The values of these is a <a href=/Hilbish/docs/api/hilbish/#sink style=text-decoration:none>Sink</a>.</p><ul><li><code>in</code> is the standard input. You can read from this sink
-to get user input. (<strong>This is currently unimplemented.</strong>)</li><li><code>out</code> is standard output. This is usually where text meant for
+to get user input.</li><li><code>out</code> is standard output. This is usually where text meant for
 output should go.</li><li><code>err</code> is standard error. This sink is for writing errors, as the
 name would suggest.</li></ul><h3 id=functions class=heading>Functions
 <a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href=#deregister>deregister(name)</a></td><td>Deregisters any command registered with <code>name</code></td></tr><tr><td><a href=#register>register(name, cb)</a></td><td>Register a command with <code>name</code> that runs <code>cb</code> when ran</td></tr></tbody></table><hr><div id=deregister><h4 class=heading>commander.deregister(name)
