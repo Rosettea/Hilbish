@@ -22,7 +22,7 @@ The `sinks` parameter is a table with 3 keys: `in`, `out`,
 and `err`. The values of these is a @Sink.
 
 - `in` is the standard input. You can read from this sink
-to get user input. (**This is currently unimplemented.**)
+to get user input.
 - `out` is standard output. This is usually where text meant for
 output should go.
 - `err` is standard error. This sink is for writing errors, as the
