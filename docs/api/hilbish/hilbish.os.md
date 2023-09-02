@@ -12,7 +12,7 @@ The `os` interface provides simple text information properties about
 the current OS on the systen. This mainly includes the name and
 version.
 
-## Interface fields
+## Static module fields
 |||
 |----|----|
 |family|Family name of the current OS|

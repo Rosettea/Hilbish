@@ -33,7 +33,7 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#timeout">timeout(cb, time) -> @Timer</a>|Runs the `cb` function after `time` in milliseconds.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
 
-## Interface fields
+## Static module fields
 |||
 |----|----|
 |ver|The version of Hilbish|
@@ -316,7 +316,9 @@ Will return the path of the binary, or a basename if it's a commander.
 This function has no parameters.  
 </div>
 
-<hr><div id='luaSinkAutoFlush'><hr><div id='luaSinkFlush'><hr><div id='luaSinkRead'><hr><div id='luaSinkWrite'><hr><div id='luaSinkWriteln'>## Types
+## Types
+<hr>
+
 ## Sink
 A sink is a structure that has input and/or output to/from
 a desination.

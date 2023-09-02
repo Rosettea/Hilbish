@@ -36,14 +36,14 @@ print(t.running) // true
 |<a href="#timers.create">create(type, time, callback) -> @Timer</a>|Creates a timer that runs based on the specified `time` in milliseconds.|
 |<a href="#timers.get">get(id) -> @Timer</a>|Retrieves a timer via its ID.|
 
-## Interface fields
+## Static module fields
 |||
 |----|----|
 |INTERVAL|Constant for an interval timer type|
 |TIMEOUT|Constant for a timeout timer type|
 
 ## Functions
-<hr><div id='timers.start'><hr><div id='timers.stop'><hr><div id='timers.create'>
+<hr><div id='timers.create'>
 <h4 class='heading'>
 hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#timers.create" class='heading-link'>
@@ -71,12 +71,17 @@ This function has no parameters.
 </div>
 
 ## Types
+<hr>
+
 ## Timer
 The Job type describes a Hilbish timer.
-### Properties
-- `type`: What type of timer it is
-- `running`: If the timer is running
-- `duration`: The duration in milliseconds that the timer will run
+## Object properties
+|||
+|----|----|
+|type|What type of timer it is|
+|running|If the timer is running|
+|duration|The duration in milliseconds that the timer will run|
+
 
 ### Methods
 #### start()

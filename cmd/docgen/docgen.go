@@ -480,7 +480,7 @@ func main() {
 			}
 
 			if len(modu.Fields) != 0 {
-				f.WriteString("## Interface fields\n")
+				f.WriteString("## Static module fields\n")
 
 				mdTable := md.NewTable(len(modu.Fields), 2)
 				mdTable.SetTitle(0, "")
@@ -496,11 +496,17 @@ func main() {
 			}
 			if len(modu.Properties) != 0 {
 				f.WriteString("## Object properties\n")
-				for _, dps := range modu.Properties {
-					f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
-					f.WriteString(strings.Join(dps.Doc, " "))
-					f.WriteString("\n")
+
+				mdTable := md.NewTable(len(modu.Fields), 2)
+				mdTable.SetTitle(0, "")
+				mdTable.SetTitle(1, "")
+
+
+				for i, dps := range modu.Properties {
+					mdTable.SetContent(i, 0, dps.FuncName)
+					mdTable.SetContent(i, 1, strings.Join(dps.Doc, " "))
 				}
+				f.WriteString(mdTable.String())
 				f.WriteString("\n")
 			}
 
@@ -563,6 +569,7 @@ func main() {
 			if len(modu.Types) != 0 {
 				f.WriteString("## Types\n")
 				for _, dps := range modu.Types {
+					f.WriteString("<hr>\n\n")
 					f.WriteString(fmt.Sprintf("## %s\n", dps.FuncName))
 					for _, doc := range dps.Doc {
 						if !strings.HasPrefix(doc, "---") {
@@ -570,12 +577,18 @@ func main() {
 						}
 					}
 					if len(dps.Properties) != 0 {
-						f.WriteString("### Properties\n")
-						for _, dps := range dps.Properties {
-							f.WriteString(fmt.Sprintf("- `%s`: ", dps.FuncName))
-							f.WriteString(strings.Join(dps.Doc, " "))
-							f.WriteString("\n")
+						f.WriteString("## Object properties\n")
+
+						mdTable := md.NewTable(len(dps.Properties), 2)
+						mdTable.SetTitle(0, "")
+						mdTable.SetTitle(1, "")
+
+						for i, d := range dps.Properties {
+							mdTable.SetContent(i, 0, d.FuncName)
+							mdTable.SetContent(i, 1, strings.Join(d.Doc, " "))
 						}
+						f.WriteString(mdTable.String())
+						f.WriteString("\n")
 					}
 					f.WriteString("\n")
 					f.WriteString("### Methods\n")

@@ -24,7 +24,7 @@ interactive usage or with the functions defined below for use in external runner
 |<a href="#jobs.last">last() -> @Job</a>|Returns the last added job from the table.|
 
 ## Functions
-<hr><div id='jobs.background'><hr><div id='jobs.foreground'><hr><div id='jobs.start'><hr><div id='jobs.stop'><hr><div id='jobs.add'>
+<hr><div id='jobs.add'>
 <h4 class='heading'>
 hilbish.jobs.add(cmdstr, args, execPath)
 <a href="#jobs.add" class='heading-link'>
@@ -90,16 +90,21 @@ This function has no parameters.
 </div>
 
 ## Types
+<hr>
+
 ## Job
 The Job type describes a Hilbish job.
-### Properties
-- `cmd`: The user entered command string for the job.
-- `running`: Whether the job is running or not.
-- `id`: The ID of the job in the job table
-- `pid`: The Process ID
-- `exitCode`: The last exit code of the job.
-- `stdout`: The standard output of the job. This just means the normal logs of the process.
-- `stderr`: The standard error stream of the process. This (usually) includes error messages of the job.
+## Object properties
+|||
+|----|----|
+|cmd|The user entered command string for the job.|
+|running|Whether the job is running or not.|
+|id|The ID of the job in the job table|
+|pid|The Process ID|
+|exitCode|The last exit code of the job.|
+|stdout|The standard output of the job. This just means the normal logs of the process.|
+|stderr|The standard error stream of the process. This (usually) includes error messages of the job.|
+
 
 ### Methods
 #### background()
