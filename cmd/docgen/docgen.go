@@ -11,6 +11,8 @@ import (
 	"strings"
 	"os"
 	"sync"
+
+	md "github.com/atsushinee/go-markdown-generator/doc"
 )
 
 var header = `---
@@ -448,6 +450,35 @@ func main() {
 				return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 			})
 			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modDescription))
+			if len(modu.Docs) != 0 {
+				funcCount := 0
+				for _, dps := range modu.Docs {
+					if dps.IsMember {
+						continue
+					}
+					funcCount++
+				}
+
+				f.WriteString("## Functions\n")
+
+				mdTable := md.NewTable(funcCount, 2)
+				mdTable.SetTitle(0, "")
+				mdTable.SetTitle(1, "")
+
+				diff := 0
+				for i, dps := range modu.Docs {
+					if dps.IsMember {
+						diff++
+						continue
+					}
+
+					mdTable.SetContent(i - diff, 0, fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig))
+					mdTable.SetContent(i - diff, 1, dps.Doc[0])
+				}
+				f.WriteString(mdTable.String())
+				f.WriteString("\n")
+			}
+
 			if len(modu.Fields) != 0 {
 				f.WriteString("## Interface fields\n")
 				for _, dps := range modu.Fields {
@@ -468,8 +499,9 @@ func main() {
 			}
 
 			if len(modu.Docs) != 0 {
-				f.WriteString("## Functions\n")
+				//f.WriteString("## Functions\n")
 				for _, dps := range modu.Docs {
+					f.WriteString(fmt.Sprintf("<hr><div id='%s'>", dps.FuncName))
 					if dps.IsMember {
 						continue
 					}
@@ -483,7 +515,15 @@ func main() {
 						linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s#%s", typLookup[0], ifaces, strings.ToLower(typName))
 						return fmt.Sprintf(`<a href="%s" style="text-decoration: none;" id="lol">%s</a>`, linkedTyp, typName)
 					})
-					f.WriteString(fmt.Sprintf("### %s\n", htmlSig))
+					f.WriteString(fmt.Sprintf(`
+<h4 class='heading'>
+%s
+<a href="#%s" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+`, htmlSig, dps.FuncName))
 					for _, doc := range dps.Doc {
 						if !strings.HasPrefix(doc, "---") {
 							f.WriteString(doc + "\n")
@@ -509,7 +549,7 @@ func main() {
 						f.WriteString(strings.Join(p.Doc, " "))
 						f.WriteString("\n\n")
 					}
-					f.WriteString("\n")
+					f.WriteString("</div>")
 				}
 			}
 

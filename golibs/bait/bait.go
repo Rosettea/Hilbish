@@ -12,7 +12,7 @@ You can act on events via callback functions.
 
 Examples of this are in the Hilbish default config!
 Consider this part of it:
-```
+```lua
 bait.catch('command.exit', function(code)
 	running = false
 	doPrompt(code ~= 0)

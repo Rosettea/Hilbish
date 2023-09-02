@@ -37,5 +37,37 @@
 		opacity: 1;
 		transition: all .1s ease-in;
 	}
+
+	@keyframes highlight {
+		0% {
+			background: none
+		}
+		50% {
+			background: yellow;
+		}
+		100% {
+			background: none;
+		}
+	}
+
+	div:target {
+		animation: highlight 1s;
+		animation-timing-function: cubic-bezier(1,-0.02,.45,.89);
+	}
+
+	table {
+		border-width: 1px;
+		border-style: solid;
+		border-color: #565c64;;
+		border-collapse: collapse;
+	}
+
+	table td {
+		padding: 5px;
+	}
+
+	table tr {
+		border-width: 1px;
+	}
 	</style>
 </head>

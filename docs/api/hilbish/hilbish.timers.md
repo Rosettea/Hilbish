@@ -30,23 +30,40 @@ t:start()
 print(t.running) // true
 ```
 
+## Functions
+|||
+|----|----|
+|<a href="#timers.create">create(type, time, callback) -> @Timer</a>|Creates a timer that runs based on the specified `time` in milliseconds.|
+|<a href="#timers.get">get(id) -> @Timer</a>|Retrieves a timer via its ID.|
+
 ## Interface fields
 - `INTERVAL`: Constant for an interval timer type
 - `TIMEOUT`: Constant for a timeout timer type
 
-## Functions
-### hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
+<hr><div id='timers.start'><hr><div id='timers.stop'><hr><div id='timers.create'>
+<h4 class='heading'>
+hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
+<a href="#timers.create" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
 Creates a timer that runs based on the specified `time` in milliseconds.
 The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
 #### Parameters
 This function has no parameters.  
+</div><hr><div id='timers.get'>
+<h4 class='heading'>
+hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
+<a href="#timers.get" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
 
-### hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 Retrieves a timer via its ID.
 #### Parameters
 This function has no parameters.  
-
-## Types
+</div>## Types
 ## Timer
 The Job type describes a Hilbish timer.
 ### Properties

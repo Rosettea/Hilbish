@@ -38,13 +38,31 @@ output should go.
 name would suggest.
 
 ## Functions
-### commander.deregister(name)
+|||
+|----|----|
+|<a href="#deregister">deregister(name)</a>|Deregisters any command registered with `name`|
+|<a href="#register">register(name, cb)</a>|Register a command with `name` that runs `cb` when ran|
+
+<hr><div id='deregister'>
+<h4 class='heading'>
+commander.deregister(name)
+<a href="#deregister" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
 Deregisters any command registered with `name`
 #### Parameters
 This function has no parameters.  
+</div><hr><div id='register'>
+<h4 class='heading'>
+commander.register(name, cb)
+<a href="#register" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
 
-### commander.register(name, cb)
 Register a command with `name` that runs `cb` when ran
 #### Parameters
 This function has no parameters.  
-
+</div>
