@@ -9,7 +9,7 @@
 // #field interactive Is Hilbish in an interactive shell?
 // #field login Is Hilbish the login shell?
 // #field vimMode Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
-// #field exitCode xit code of the last executed command
+// #field exitCode Exit code of the last executed command
 package main
 
 import (
