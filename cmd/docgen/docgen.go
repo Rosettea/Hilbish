@@ -437,7 +437,7 @@ func main() {
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
 			typeTag, _ := regexp.Compile(`@\w+`)
-			modDescription := typeTag.ReplaceAllStringFunc(strings.Replace(modu.Description, "<", `\<`, -1), func(typ string) string {
+			modDescription := typeTag.ReplaceAllStringFunc(strings.Replace(strings.Replace(modu.Description, "<", `\<`, -1), "{{\\<", "{{<", -1), func(typ string) string {
 				typName := typ[1:]
 				typLookup := typeTable[strings.ToLower(typName)]
 				ifaces := typLookup[0] + "." + typLookup[1] + "/"

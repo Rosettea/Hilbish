@@ -1,9 +1,28 @@
 // the event emitter
-// Bait is the event emitter for Hilbish. Why name it bait? Why not.
-// It throws hooks that you can catch. This is what you will use if
-// you want to listen in on hooks to know when certain things have
-// happened, like when you've changed directory, a command has failed,
-// etc. To find all available hooks thrown by Hilbish, see doc hooks.
+/*
+Bait is the event emitter for Hilbish. Much like Node.js and
+its `events` system, many actions in Hilbish emit events.
+Unlike Node.js, Hilbish events are global. So make sure to
+pick a unique name!
+
+Usage of the Bait module consists of userstanding
+event-driven architecture, but it's pretty simple:
+If you want to act on a certain event, you can `catch` it.
+You can act on events via callback functions.
+
+Examples of this are in the Hilbish default config!
+Consider this part of it:
+```
+bait.catch('command.exit', function(code)
+	running = false
+	doPrompt(code ~= 0)
+	doNotifyPrompt()
+end)
+```
+
+What this does is, whenever the `command.exit` event is thrown,
+this function will set the user prompt.
+*/
 package bait
 
 import (
@@ -253,8 +272,8 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // catch(name, cb)
 // Catches a hook with `name`. Runs the `cb` when it is thrown
-// --- @param name string
-// --- @param cb function
+// #param name string ummm
+// #param cb function ?
 func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {

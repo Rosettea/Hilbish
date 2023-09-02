@@ -29,6 +29,9 @@ enableGitInfo = true
 [markup.goldmark.renderer]
 unsafe = true
 
+[markup.highlight]
+style = 'pastie'
+
 [author]
 	[author.sammyette]
 		name = 'sammyette'
