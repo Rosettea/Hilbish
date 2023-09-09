@@ -7,8 +7,7 @@ how Hilbish interprets interactive input.
 Users can add and change the default runner for interactive input to any
 language or script of their choosing. A good example is using it to
 write command in Fennel.</p><h3 id=functions class=heading>Functions
-<a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href=#runner.setMode>setMode(cb)</a></td><td>This is the same as the <code>hilbish.runnerMode</code> function. It takes a callback,</td></tr><tr><td><a href=#runner.lua>lua(cmd)</a></td><td>Evaluates <code>cmd</code> as Lua input. This is the same as using <code>dofile</code></td></tr><tr><td><a href=#runner.sh>sh(cmd)</a></td><td>Runs a command in Hilbish&rsquo;s shell script interpreter.</td></tr></tbody></table><h3 id=functions-1 class=heading>Functions
-<a href=#functions-1 class=heading-link><i class="fas fa-paperclip"></i></a></h3><hr><div id=runner.setMode><h4 class=heading>hilbish.runner.setMode(cb)
+<a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href=#runner.setMode>setMode(cb)</a></td><td>This is the same as the <code>hilbish.runnerMode</code> function. It takes a callback,</td></tr><tr><td><a href=#runner.lua>lua(cmd)</a></td><td>Evaluates <code>cmd</code> as Lua input. This is the same as using <code>dofile</code></td></tr><tr><td><a href=#runner.sh>sh(cmd)</a></td><td>Runs a command in Hilbish&rsquo;s shell script interpreter.</td></tr></tbody></table><hr><div id=runner.setMode><h4 class=heading>hilbish.runner.setMode(cb)
 <a href=#runner.setMode class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>This is the same as the <code>hilbish.runnerMode</code> function. It takes a callback,
 which will be used to execute all interactive input.
 In normal cases, neither callbacks should be overrided by the user,
