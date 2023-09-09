@@ -324,3 +324,7 @@ func getVersion() string {
 
 	return v.String()
 }
+
+func cut(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx + 1:]...)
+}
