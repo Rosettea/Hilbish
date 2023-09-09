@@ -289,7 +289,7 @@ func removeDupes(slice []string) []string {
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.ToLower(a) == strings.ToLower(e) {
 			return true
 		}
 	}
