@@ -19,7 +19,6 @@ directly interact with the line editor in use.
 |<a href="#editor.insert">insert(text)</a>|Inserts text into the line.|
 |<a href="#editor.setVimRegister">setVimRegister(register, text)</a>|Sets the vim register at `register` to hold the passed text.|
 
-## Functions
 <hr><div id='editor.getLine'>
 <h4 class='heading'>
 hilbish.editor.getLine() -> string

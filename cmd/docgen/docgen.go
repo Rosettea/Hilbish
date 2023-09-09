@@ -435,6 +435,7 @@ func main() {
 			if modu.ParentModule != "" {
 				modOrIface = "Module"
 			}
+			lastHeader := ""
 
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
@@ -460,6 +461,7 @@ func main() {
 				}
 
 				f.WriteString("## Functions\n")
+				lastHeader = "functions"
 
 				mdTable := md.NewTable(funcCount, 2)
 				mdTable.SetTitle(0, "")
@@ -511,7 +513,9 @@ func main() {
 			}
 
 			if len(modu.Docs) != 0 {
-				f.WriteString("## Functions\n")
+				if lastHeader != "functions" {
+					f.WriteString("## Functions\n")
+				}
 				for _, dps := range modu.Docs {
 					if dps.IsMember {
 						continue

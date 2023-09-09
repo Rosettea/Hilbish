@@ -18,7 +18,6 @@ The completions interface deals with tab completions.
 |<a href="#completions.bins">bins(query, ctx, fields) -> entries (table), prefix (string)</a>|Returns binary/executale completion candidates based on the provided query.|
 |<a href="#completions.files">files(query, ctx, fields) -> entries (table), prefix (string)</a>|Returns file completion candidates based on the provided query.|
 
-## Functions
 <hr><div id='completions.call'>
 <h4 class='heading'>
 hilbish.completions.call(name, query, ctx, fields) -> completionGroups (table), prefix (string)

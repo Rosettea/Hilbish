@@ -43,7 +43,6 @@ name would suggest.
 |<a href="#deregister">deregister(name)</a>|Deregisters any command registered with `name`|
 |<a href="#register">register(name, cb)</a>|Register a command with `name` that runs `cb` when ran|
 
-## Functions
 <hr><div id='deregister'>
 <h4 class='heading'>
 commander.deregister(name)

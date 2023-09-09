@@ -46,7 +46,6 @@ interfaces and functions which directly relate to shell functionality.
 |vimMode|Current Vim input mode of Hilbish (will be nil if not in Vim input mode)|
 |exitCode|xit code of the last executed command|
 
-## Functions
 <hr><div id='alias'>
 <h4 class='heading'>
 hilbish.alias(cmd, orig)

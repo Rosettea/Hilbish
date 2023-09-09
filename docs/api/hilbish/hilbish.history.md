@@ -21,7 +21,6 @@ method of saving history.
 |<a href="#history.get">get(idx)</a>|Retrieves a command from the history based on the `idx`.|
 |<a href="#history.size">size() -> number</a>|Returns the amount of commands in the history.|
 
-## Functions
 <hr><div id='history.add'>
 <h4 class='heading'>
 hilbish.history.add(cmd)

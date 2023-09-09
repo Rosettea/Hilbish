@@ -25,7 +25,6 @@ I/O and filesystem functions.
 |<a href="#readdir">readdir(dir) -> {}</a>|Returns a table of files in `dir`.|
 |<a href="#stat">stat(path) -> {}</a>|Returns a table of info about the `path`.|
 
-## Functions
 <hr><div id='abs'>
 <h4 class='heading'>
 fs.abs(path) -> string

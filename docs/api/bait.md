@@ -41,7 +41,6 @@ this function will set the user prompt.
 |<a href="#release">release(name, catcher)</a>|Removes the `catcher` for the event with `name`.|
 |<a href="#throw">throw(name, ...args)</a>|Throws a hook with `name` with the provided `args`|
 
-## Functions
 <hr><div id='catch'>
 <h4 class='heading'>
 bait.catch(name, cb)

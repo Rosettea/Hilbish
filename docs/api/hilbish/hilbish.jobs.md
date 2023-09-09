@@ -23,7 +23,6 @@ interactive usage or with the functions defined below for use in external runner
 |<a href="#jobs.get">get(id) -> @Job</a>|Get a job object via its ID.|
 |<a href="#jobs.last">last() -> @Job</a>|Returns the last added job from the table.|
 
-## Functions
 <hr><div id='jobs.add'>
 <h4 class='heading'>
 hilbish.jobs.add(cmdstr, args, execPath)

@@ -21,7 +21,6 @@ write command in Fennel.
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
 
-## Functions
 <hr><div id='runner.setMode'>
 <h4 class='heading'>
 hilbish.runner.setMode(cb)

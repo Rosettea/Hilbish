@@ -18,7 +18,6 @@ The alias interface deals with all command aliases in Hilbish.
 |<a href="#aliases.list">list() -> table<string, string></a>|Get a table of all aliases, with string keys as the alias and the value as the command.|
 |<a href="#aliases.resolve">resolve(alias) -> command (string)</a>|Tries to resolve an alias to its command.|
 
-## Functions
 <hr><div id='aliases.add'>
 <h4 class='heading'>
 hilbish.aliases.add(alias, cmd)

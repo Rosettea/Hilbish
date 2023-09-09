@@ -18,7 +18,6 @@ The terminal library is a simple and lower level library for certain terminal in
 |<a href="#setRaw">setRaw()</a>|Puts the terminal in raw mode|
 |<a href="#size">size()</a>|Gets the dimensions of the terminal. Returns a table with `width` and `height`|
 
-## Functions
 <hr><div id='restoreState'>
 <h4 class='heading'>
 terminal.restoreState()
