@@ -38,8 +38,22 @@ The exit code has to be a number, it will be 0 otherwise and the error can be
 These are the "low level" functions for the `hilbish.runner` interface.
 
 + setMode(mode) > The same as `hilbish.runnerMode`
-+ sh(input) -> input, code, err > Runs `input` in Hilbish's sh interpreter
-+ lua(input) -> input, code, err > Evals `input` as Lua code
++ sh(input) -> table > Runs `input` in Hilbish's sh interpreter
++ lua(input) -> table > Evals `input` as Lua code
+
+The table value that runners return can have at least 4 values:
++ input (string): The full input text.
++ exitCode (number): Exit code (usually from a command)
++ continue (boolean): Whether to prompt the user for more input
+(in the case of incomplete syntax)
++ err (string): A string that represents an error from the runner.
+This should only be set when, for example, there is a syntax error.
+It can be set to a few special values for Hilbish to throw the right
+hooks and have a better looking message.
+
++ `<command>: not-found` will throw a `command.not-found` hook
+based on what `<command>` is.
++ `<command>: not-executable` will throw a `command.not-executable` hook.
 
 The others here are defined in Lua and have EmmyLua documentation.
 These functions should be preferred over the previous ones.

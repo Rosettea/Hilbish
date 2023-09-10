@@ -109,7 +109,7 @@ func main() {
 	}
 
 	if *verflag {
-		fmt.Printf("Hilbish %s\n", getVersion())
+		fmt.Printf("Hilbish %s\nCompiled with %s\n", getVersion(), runtime.Version())
 		os.Exit(0)
 	}
 
@@ -118,9 +118,11 @@ func main() {
 		os.Setenv("SHELL", os.Args[0])
 	}
 
-	go handleSignals()
 	lr = newLineReader("", false)
 	luaInit()
+
+	go handleSignals()
+
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
@@ -184,11 +186,14 @@ input:
 			break
 		}
 		if err != nil {
-			if err != readline.CtrlC {
+			if err == readline.CtrlC {
+				fmt.Println("^C")
+				hooks.Emit("hilbish.cancel")
+			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
 			}
-			fmt.Println("^C")
+			// TODO: Halt if any other error occurs
 			continue
 		}
 		var priv bool
@@ -287,7 +292,7 @@ func removeDupes(slice []string) []string {
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.ToLower(a) == strings.ToLower(e) {
 			return true
 		}
 	}
@@ -321,4 +326,8 @@ func getVersion() string {
 	v.WriteString(" (" + releaseName + ")")
 
 	return v.String()
+}
+
+func cut(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx + 1:]...)
 }

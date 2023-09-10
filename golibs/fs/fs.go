@@ -1,3 +1,7 @@
+// filesystem interaction and functionality library
+// The fs module provides easy and simple access to filesystem functions
+// and other things, and acts an addition to the Lua standard library's
+// I/O and filesystem functions.
 package fs
 
 import (
@@ -34,10 +38,6 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	util.SetExports(rtm, mod, exports)
 	mod.Set(rt.StringValue("pathSep"), rt.StringValue(string(os.PathSeparator)))
 	mod.Set(rt.StringValue("pathListSep"), rt.StringValue(string(os.PathListSeparator)))
-
-	util.Document(mod, `The fs module provides easy and simple access to
-filesystem functions and other things, and acts an
-addition to the Lua standard library's I/O and filesystem functions.`)
 
 	return rt.TableValue(mod), nil
 }
@@ -93,9 +93,15 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), err
 }
 
-// stat(path)
-// Returns info about `path`
+// stat(path) -> {}
+// Returns a table of info about the `path`.
+// It contains the following keys:
+// name (string) - Name of the path
+// size (number) - Size of the path
+// mode (string) - Permission mode in an octal format string (with leading 0)
+// isDir (boolean) - If the path is a directory
 // --- @param path string
+// --- @returns table
 func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -119,8 +125,8 @@ func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(statTbl)), nil
 }
 
-// readdir(dir)
-// Returns a table of files in `dir`
+// readdir(dir) -> {}
+// Returns a table of files in `dir`.
 // --- @param dir string
 // --- @return table
 func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
@@ -145,9 +151,10 @@ func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(names)), nil
 }
 
-// abs(path)
+// abs(path) -> string
 // Gives an absolute version of `path`.
 // --- @param path string
+// --- @returns string
 func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	path, err := c.StringArg(0)
 	if err != nil {
@@ -163,9 +170,10 @@ func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.StringValue(abspath)), nil
 }
 
-// basename(path)
+// basename(path) -> string
 // Gives the basename of `path`. For the rules,
 // see Go's filepath.Base
+// --- @returns string
 func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -178,9 +186,11 @@ func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.StringValue(filepath.Base(path))), nil
 }
 
-// dir(path)
+// dir(path) -> string
 // Returns the directory part of `path`. For the rules, see Go's
 // filepath.Dir
+// --- @param path string
+// --- @returns string
 func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -193,9 +203,11 @@ func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.StringValue(filepath.Dir(path))), nil
 }
 
-// glob(pattern)
+// glob(pattern) -> matches (table)
 // Glob all files and directories that match the pattern.
 // For the rules, see Go's filepath.Glob
+// --- @param pattern string
+// --- @returns table
 func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -219,9 +231,11 @@ func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaMatches)), nil
 }
 
-// join(paths...)
+// join(...) -> string
 // Takes paths and joins them together with the OS's
 // directory separator (forward or backward slash).
+// --- @vararg string
+// --- @returns string
 func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	strs := make([]string, len(c.Etc()))
 	for i, v := range c.Etc() {

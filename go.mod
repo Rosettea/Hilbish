@@ -8,6 +8,7 @@ require (
 	github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9
 	github.com/maxlandon/readline v0.1.0-beta.0.20211027085530-2b76cabb8036
 	github.com/pborman/getopt v1.1.0
+	github.com/sahilm/fuzzy v0.1.0
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171
 	mvdan.cc/sh/v3 v3.5.1
@@ -29,4 +30,4 @@ replace github.com/maxlandon/readline => ./readline
 
 replace layeh.com/gopher-luar => github.com/layeh/gopher-luar v1.0.10
 
-replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20220518005949-116371948fe3
+replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20221213193027-cbf6d4e4d345

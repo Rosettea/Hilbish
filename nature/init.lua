@@ -11,6 +11,7 @@ require 'nature.completions'
 require 'nature.opts'
 require 'nature.vim'
 require 'nature.runner'
+require 'nature.hummingbird'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then
@@ -67,5 +68,13 @@ do
 end
 
 bait.catch('error', function(event, handler, err)
-	bait.release(event, handler)
+	print(string.format('Encountered an error in %s handler\n%s', event, err:sub(8)))
+end)
+
+bait.catch('command.not-found', function(cmd)
+	print(string.format('hilbish: %s not found', cmd))
+end)
+
+bait.catch('command.not-executable', function(cmd)
+	print(string.format('hilbish: %s: not executable', cmd))
 end)

@@ -5,3 +5,8 @@
 
 + `hilbish.vimAction` -> actionName, args > Sent when the user does a "vim action," being something
 like yanking or pasting text. See `doc vim-mode actions` for more info.
+
++ `hilbish.cancel` > Sent when the user cancels their input with Ctrl-C.
+
++ `hilbish.notification` -> message > Sent when a message is
+sent.

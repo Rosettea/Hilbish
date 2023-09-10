@@ -1,3 +1,9 @@
+// the event emitter
+// Bait is the event emitter for Hilbish. Why name it bait? Why not.
+// It throws hooks that you can catch. This is what you will use if
+// you want to listen in on hooks to know when certain things have
+// happened, like when you've changed directory, a command has failed,
+// etc. To find all available hooks thrown by Hilbish, see doc hooks.
 package bait
 
 import (
@@ -198,15 +204,6 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
 
-	util.Document(mod,
-`Bait is the event emitter for Hilbish. Why name it bait?
-Because it throws hooks that you can catch (emits events
-that you can listen to) and because why not, fun naming
-is fun. This is what you will use if you want to listen
-in on hooks to know when certain things have happened,
-like when you've changed directory, a command has
-failed, etc. To find all available hooks, see doc hooks.`)
-
 	return rt.TableValue(mod), nil
 }
 
@@ -283,9 +280,11 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // release(name, catcher)
-// Removes the `catcher` for the event with `name`
+// Removes the `catcher` for the event with `name`.
 // For this to work, `catcher` has to be the same function used to catch
 // an event, like one saved to a variable.
+// --- @param name string
+// --- @param catcher function
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -297,8 +296,10 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// hooks(name) -> {cb, cb...}
-// Returns a table with hooks on the event with `name`.
+// hooks(name) -> table
+// Returns a table with hooks (callback functions) on the event with `name`.
+// --- @param name string
+// --- @returns table<function>
 func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
