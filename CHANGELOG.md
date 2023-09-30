@@ -16,6 +16,9 @@ completed.
   - Example: `hilbish.alias('hello', 'echo %1 says hello')` allows the user to run `hello hilbish`
   which will output `hilbish says hello`.
 
+### Fixed
+- Return the prefix when calling `hilbish.completions.call`
+
 [#219]: https://github.com/Rosettea/Hilbish/issues/219
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
