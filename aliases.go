@@ -53,7 +53,7 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 	args, _ := splitInput(cmdstr)
 	if len(args) == 0 {
 		// this shouldnt reach but...????
-		return
+		return cmdstr
 	}
 
 	for a.aliases[args[0]] != "" {
