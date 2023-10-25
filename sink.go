@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"hilbish/util"
 
@@ -31,6 +32,7 @@ func setupSinkType(rtm *rt.Runtime) {
 	sinkFuncs := map[string]util.LuaExport{
 		"flush": {luaSinkFlush, 1, false},
 		"read": {luaSinkRead, 1, false},
+		"readAll": {luaSinkReadAll, 1, false},
 		"autoFlush": {luaSinkAutoFlush, 2, false},
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
@@ -65,10 +67,42 @@ func setupSinkType(rtm *rt.Runtime) {
 	l.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
 }
 
+
+// #member
+// readAll() -> string
+// --- @returns string
+// Reads all input from the sink.
+func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	s, err := sinkArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	lines := []string{}
+	for {
+		line, err := s.reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return nil, err
+		}
+
+		lines = append(lines, line)
+	}
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(strings.Join(lines, ""))), nil
+}
+
 // #member
 // read() -> string
 // --- @returns string
-// Reads input from the sink.
+// Reads a liine of input from the sink.
 func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

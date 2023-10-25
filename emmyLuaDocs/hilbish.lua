@@ -40,6 +40,10 @@ function hilbish.editor.getVimRegister(register) end
 --- Inserts text into the line.
 function hilbish.editor.insert(text) end
 
+--- Reads a keystroke from the user. This is in a format
+--- of something like Ctrl-L..
+function hilbish.editor.getChar() end
+
 --- Sets the vim register at `register` to hold the passed text.
 --- @param register string
 --- @param text string
@@ -196,9 +200,13 @@ function hilbish:autoFlush(auto) end
 --- Flush writes all buffered input to the sink.
 function hilbish:flush() end
 
---- Reads input from the sink.
+--- Reads a liine of input from the sink.
 --- @returns string
 function hilbish:read() end
+
+--- Reads all input from the sink.
+--- @returns string
+function hilbish:readAll() end
 
 --- Writes data to a sink.
 function hilbish:write(str) end
