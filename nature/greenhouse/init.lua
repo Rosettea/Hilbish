@@ -27,6 +27,12 @@ function Greenhouse:new(sink)
 		['Ctrl-Left'] = self.previous,
 		['Ctrl-Right'] = self.next,
 		['Ctrl-N'] = function(self) self:toc(true) end,
+		['Enter'] = function(self)
+			if self.isSpecial then
+				self:jump(self.specialPageIdx)
+				self:special(false)
+			end
+		end
 	}
 	self.isSpecial = false
 	self.specialPage = nil
