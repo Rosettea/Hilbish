@@ -43,7 +43,7 @@ commander.register('greenhouse', function(args, sinks)
 
 		self.sink:write(ansikit.getCSI(self.region.height + 1 .. ';1', 'H'))
 		if not self.isSpecial then
-			self.sink:writeln(lunacolors.format(string.format('{grayBg} ↳ Page %d %s{reset}', self.curPage, workingPage.title and ' — ' .. workingPage.title .. ' ' or '')))
+			self.sink:writeln(lunacolors.format(string.format('{grayBg} ↳ Page %d%s{reset}', self.curPage, workingPage.title and ' — ' .. workingPage.title .. ' ' or '')))
 		end
 		self.sink:write(buffer == '' and display or buffer)
 	end
@@ -98,7 +98,7 @@ commander.register('greenhouse', function(args, sinks)
 	end)
 
 	if sinks['in'].pipe then
-		local page = Page('', sinks['in']:readAll())
+		local page = Page('stdin', sinks['in']:readAll())
 		gh:addPage(page)
 	end
 
