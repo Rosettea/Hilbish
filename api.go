@@ -2,6 +2,7 @@
 // The Hilbish module includes the core API, containing
 // interfaces and functions which directly relate to shell functionality.
 // #field ver The version of Hilbish
+// #field goVersion The version of Go that Hilbish was compiled with
 // #field user Username of the user
 // #field host Hostname of the machine
 // #field dataDir Directory for Hilbish data files, including the docs and default modules
@@ -110,6 +111,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	}
 
 	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()))
+	util.SetFieldProtected(fakeMod, mod, "goVersion", rt.StringValue(runtime.Version()))
 	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username))
 	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host))
 	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir))
