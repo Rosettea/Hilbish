@@ -8,6 +8,10 @@
   - `pipe` property to check if a sink with input is a pipe (like stdin)
 - Show indexes on cdr list
 - Fix doc command not displaying correct subdocs when using shorthand api doc access (`doc api hilbish.jobs` as an example)
+- Greenhouse
+  - Greenhouse is a pager library and program. Basic usage is `greenhouse <file>`
+  - Using this also brings enhancements to the `doc` command like easy
+  navigation of neighboring doc files.
 
 ### Fixed
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
