@@ -129,7 +129,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 
 
 	local doc, vals = handleYamlInfo(#args == 0 and doc or formatDocText(f:read '*a':gsub('-([%d]+)', '%1')))
-	if #moddocs ~= 0 then
+	if #moddocs ~= 0 and f then
 		doc = doc .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\n\n'
 	end
 	if f then f:close() end
