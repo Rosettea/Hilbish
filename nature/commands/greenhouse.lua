@@ -102,23 +102,23 @@ commander.register('greenhouse', function(args, sinks)
 		gh:addPage(page)
 	end
 
-	if #args ~= 0 then
-		for _, name in ipairs(args) do
-			local f <close> = io.open(name, 'r')
-			if not f then
-				sinks.err:writeln(string.format('could not open file %s', name))
-			end
-
-			local page = Page(name, f:read '*a')
-			gh:addPage(page)
+	for _, name in ipairs(args) do
+		local f <close> = io.open(name, 'r')
+		if not f then
+			sinks.err:writeln(string.format('could not open file %s', name))
 		end
-		ansikit.hideCursor()
-		gh:initUi()
-	else
+		local page = Page(name, f:read '*a')
+		gh:addPage(page)
+	end
+
+	if #gh.pages == 0 then
 		sinks.out:writeln [[greenhouse is the Hilbish pager library and command!
 usage: greenhouse <file>...
 
 example: greenhouse hello.md]]
+		return 1
 	end
 
+	ansikit.hideCursor()
+	gh:initUi()
 end)
