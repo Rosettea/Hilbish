@@ -103,7 +103,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 		if not self.isSpecial then
 			if args[1] == 'api' then
 				self.sink:writeln(lunacolors.reset(string.format('%s', vals.title)))
-				self.sink:write(lunacolors.format(string.format('{grayBg} ↳ {white}{italic}%s  {reset}', vals.description)))
+				self.sink:write(lunacolors.format(string.format('{grayBg} ↳ {white}{italic}%s  {reset}', vals.description or 'No description.')))
 			else
 				self.sink:write(lunacolors.reset(string.format('Viewing doc page %s', moddocPath)))
 			end

@@ -2,6 +2,7 @@ local ansikit = require 'ansikit'
 local bait = require 'bait'
 local commander = require 'commander'
 local hilbish = require 'hilbish'
+local lunacolors = require 'lunacolors'
 local terminal = require 'terminal'
 local Greenhouse = require 'nature.greenhouse'
 local Page = require 'nature.greenhouse.page'
@@ -42,12 +43,7 @@ commander.register('greenhouse', function(args, sinks)
 
 		self.sink:write(ansikit.getCSI(self.region.height + 1 .. ';1', 'H'))
 		if not self.isSpecial then
-			self.sink:write(string.format('\27[0mPage %d', self.curPage))
-			if workingPage.title ~= '' then
-				self.sink:writeln(' — ' .. workingPage.title)
-			else
-				self.sink:writeln('')
-			end
+			self.sink:writeln(lunacolors.format(string.format('{grayBg} ↳ Page %d %s{reset}', self.curPage, workingPage.title and ' — ' .. workingPage.title .. ' ' or '')))
 		end
 		self.sink:write(buffer == '' and display or buffer)
 	end
@@ -106,16 +102,23 @@ commander.register('greenhouse', function(args, sinks)
 		gh:addPage(page)
 	end
 
-	for _, name in ipairs(args) do
-		local f <close> = io.open(name, 'r')
-		if not f then
-			sinks.err:writeln(string.format('could not open file %s', name))
-		end
+	if #args ~= 0 then
+		for _, name in ipairs(args) do
+			local f <close> = io.open(name, 'r')
+			if not f then
+				sinks.err:writeln(string.format('could not open file %s', name))
+			end
 
-		local page = Page(name, f:read '*a')
-		gh:addPage(page)
+			local page = Page(name, f:read '*a')
+			gh:addPage(page)
+		end
+		ansikit.hideCursor()
+		gh:initUi()
+	else
+		sinks.out:writeln [[greenhouse is the Hilbish pager library and command!
+usage: greenhouse <file>...
+
+example: greenhouse hello.md]]
 	end
 
-	ansikit.hideCursor()
-	gh:initUi()
 end)
