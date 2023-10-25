@@ -74,6 +74,10 @@ function Greenhouse:draw()
 		workingPage = self.specialPage
 	end
 
+	if workingPage.lazy and not workingPage.loaded then
+		workingPage.initialize()
+	end
+
 	local lines = workingPage.lines
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 	self.sink:write(ansikit.getCSI(2, 'J'))
