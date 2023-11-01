@@ -22,6 +22,10 @@ completed.
   navigation of neighboring doc files.
 
 ### Fixed
+- Fix infinite loop when navigating history without any history
+
+[#252]: https://github.com/Rosettea/Hilbish/issues/252
+### Fixed
 - Return the prefix when calling `hilbish.completions.call`
 
 [#219]: https://github.com/Rosettea/Hilbish/issues/219
