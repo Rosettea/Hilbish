@@ -22,10 +22,8 @@ completed.
   navigation of neighboring doc files.
 
 ### Fixed
-- Return the prefix when calling `hilbish.completions.call`
-
-[#219]: https://github.com/Rosettea/Hilbish/issues/219
-### Fixed
+- Fix infinite loop when navigating history without any history. [#252](https://github.com/Rosettea/Hilbish/issues/252)
+- Return the prefix when calling `hilbish.completions.call`. [#219](https://github.com/Rosettea/Hilbish/issues/219)
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
 
 ## [2.1.2] - 2022-04-10
