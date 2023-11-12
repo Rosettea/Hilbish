@@ -1,6 +1,8 @@
 package main
 
 import (
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -46,9 +48,32 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
-	args := strings.Split(cmdstr, " ")
+	arg, _ := regexp.Compile(`[\\]?%\d+`)
+
+	args, _ := splitInput(cmdstr)
+	if len(args) == 0 {
+		// this shouldnt reach but...????
+		return cmdstr
+	}
+
 	for a.aliases[args[0]] != "" {
 		alias := a.aliases[args[0]]
+		alias = arg.ReplaceAllStringFunc(alias, func(a string) string {
+			idx, _ := strconv.Atoi(a[1:])
+			if strings.HasPrefix(a, "\\") || idx == 0 {
+				return strings.TrimPrefix(a, "\\")
+			}
+
+			if idx + 1 > len(args) {
+				return a
+			}
+			val := args[idx]
+			args = cut(args, idx)
+			cmdstr = strings.Join(args, " ")
+
+			return val
+		})
+		
 		cmdstr = alias + strings.TrimPrefix(cmdstr, args[0])
 		cmdArgs, _ := splitInput(cmdstr)
 		args = cmdArgs

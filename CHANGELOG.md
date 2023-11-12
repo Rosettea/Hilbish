@@ -1,8 +1,40 @@
 # 🎀 Changelog
 
 ## Unreleased
+### Added
+- Made a few additions to the sink type:
+  - `read()` method for retrieving input (so now the `in` sink of commanders is useful)
+  - `flush()` and `autoFlush()` related to flushing outputs
+  - `pipe` property to check if a sink with input is a pipe (like stdin)
+- Add fuzzy search to history search (enable via `hilbish.opts.fuzzy = true`)
+- Show indexes on cdr list
+- Fix doc command not displaying correct subdocs when using shorthand api doc access (`doc api hilbish.jobs` as an example)
+- `hilbish.messages` interface (details in [#219])
+- `hilbish.notification` signal when a message/notification is sent
+- `notifyJobFinish` opt to send a notification when background jobs are
+completed.
+- Allow numbered arg substitutions in aliases.
+  - Example: `hilbish.alias('hello', 'echo %1 says hello')` allows the user to run `hello hilbish`
+  which will output `hilbish says hello`.
+- Greenhouse
+  - Greenhouse is a pager library and program. Basic usage is `greenhouse <file>`
+  - Using this also brings enhancements to the `doc` command like easy
+  navigation of neighboring doc files.
+
 ### Fixed
+- Fix infinite loop when navigating history without any history. [#252](https://github.com/Rosettea/Hilbish/issues/252)
+- Return the prefix when calling `hilbish.completions.call`. [#219](https://github.com/Rosettea/Hilbish/issues/219)
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
+
+## [2.1.2] - 2022-04-10
+### Removed
+- Bad april fools code ;(
+
+## [2.1.1] - 2022-04-01
+### Added
+- Validation checks for command input
+- Improved runtime performance
+- Validate Lua code
 
 ## [2.1.0] - 2022-02-10
 ### Added

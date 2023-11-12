@@ -6,11 +6,24 @@ local fs = require 'fs'
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 .. ';' .. hilbish.dataDir .. '/?/?.lua' .. ";" .. hilbish.dataDir .. '/?.lua'
 
+hilbish.module.paths = '?.so;?/?.so;'
+.. hilbish.userDir.data .. 'hilbish/libs/?/?.so'
+.. ";" .. hilbish.userDir.data .. 'hilbish/libs/?.so'
+
+table.insert(package.searchers, function(module)
+	local path = package.searchpath(module, hilbish.module.paths)
+	if not path then return nil end
+
+	-- it didnt work normally, idk
+	return function() return hilbish.module.load(path) end, path
+end)
+
 require 'nature.commands'
 require 'nature.completions'
 require 'nature.opts'
 require 'nature.vim'
 require 'nature.runner'
+require 'nature.hummingbird'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then

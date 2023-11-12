@@ -40,6 +40,10 @@ function hilbish.editor.getVimRegister(register) end
 --- Inserts text into the line.
 function hilbish.editor.insert(text) end
 
+--- Reads a keystroke from the user. This is in a format
+--- of something like Ctrl-L..
+function hilbish.editor.getChar() end
+
 --- Sets the vim register at `register` to hold the passed text.
 --- @param register string
 --- @param text string
@@ -79,6 +83,14 @@ function hilbish.goro(fn) end
 --- reality could set the input of the prompt to *display* anything. The
 --- callback is passed the current line and is expected to return a line that
 --- will be used as the input display.
+--- Note that to set a highlighter, one has to override this function.
+--- Example:
+--- ```
+--- function hilbish.highlighter(line)
+---    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+--- end
+--- ```
+--- This code will highlight all double quoted strings in green.
 --- @param line string
 function hilbish.highlighter(line) end
 
@@ -180,6 +192,22 @@ function hilbish.jobs:foreground() end
 --- @param cmd string
 function hilbish.runner.lua(cmd) end
 
+--- Sets/toggles the option of automatically flushing output.
+--- A call with no argument will toggle the value.
+--- @param auto boolean|nil
+function hilbish:autoFlush(auto) end
+
+--- Flush writes all buffered input to the sink.
+function hilbish:flush() end
+
+--- Reads a liine of input from the sink.
+--- @returns string
+function hilbish:read() end
+
+--- Reads all input from the sink.
+--- @returns string
+function hilbish:readAll() end
+
 --- Writes data to a sink.
 function hilbish:write(str) end
 
@@ -191,6 +219,10 @@ function hilbish.jobs:start() end
 
 --- Stops the job from running.
 function hilbish.jobs:stop() end
+
+--- Loads a module at the designated `path`.
+--- It will throw if any error occurs.
+function hilbish.module.load(path) end
 
 --- Runs a command in Hilbish's shell script interpreter.
 --- This is the equivalent of using `source`.

@@ -1,6 +1,9 @@
+local ansikit = require 'ansikit'
 local commander = require 'commander'
 local fs = require 'fs'
 local lunacolors = require 'lunacolors'
+local Greenhouse = require 'nature.greenhouse'
+local Page = require 'nature.greenhouse.page'
 
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
@@ -9,11 +12,6 @@ commander.register('doc', function(args, sinks)
 		-- hilbish git
 		moddocPath = './docs/'
 	end
-	local apidocHeader = [[
-# %s
-{grayBg}  {white}{italic}%s  {reset}
-
-]]
 
 	local modules = table.map(fs.readdir(moddocPath), function(f)
 		return lunacolors.underline(lunacolors.blue(string.gsub(f, '.md', '')))
@@ -25,47 +23,15 @@ to Hilbish.
 
 Usage: doc <section> [subdoc]
 Available sections: ]] .. table.concat(modules, ', ')
-	if #args > 0 then
-		local mod = args[1]
-
-		local f = io.open(moddocPath .. mod .. '.md', 'rb')
-		local funcdocs = nil
-		local subdocName = args[2]
-		if not f then
-			-- assume subdir
-			-- dataDir/docs/<mod>/<mod>.md
-			moddocPath = moddocPath .. mod .. '/'
-			if not subdocName then
-				subdocName = '_index'
-			end
-			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
-			if not f then
-				f = io.open(moddocPath .. subdocName:match '%w+' .. '/' .. subdocName .. '.md', 'rb')
-			end
-			if not f then
-				moddocPath = moddocPath .. subdocName .. '/'
-				subdocName = args[3] or '_index'
-				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
-			end
-			if not f then
-				sinks.out:writeln('No documentation found for ' .. mod .. '.')
-				return 1
-			end
-		end
-		funcdocs = f:read '*a':gsub('-([%d]+)', '%1')
-		local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' and f ~= 'index.md' end)
-		local subdocs = table.map(moddocs, function(fname)
-			return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
-		end)
-		if #moddocs ~= 0 then
-			funcdocs = funcdocs .. '\nSubdocs: ' .. table.concat(subdocs, ', ')
-		end
-
-		local valsStr = funcdocs:match '%-%-%-\n([^%-%-%-]+)\n'
+	local f
+	local function handleYamlInfo(d)
 		local vals = {}
+		local docs = d
+
+		local valsStr = docs:match '%-%-%-\n([^%-%-%-]+)\n'
+		print(valsStr)
 		if valsStr then
-			local _, endpos = funcdocs:find('---\n' .. valsStr .. '\n---\n\n', 1, true)
-			funcdocs = funcdocs:sub(endpos + 1, #funcdocs)
+			docs = docs:sub(valsStr:len() + 10, #docs)
 
 			-- parse vals
 			local lines = string.split(valsStr, '\n')
@@ -78,23 +44,113 @@ Available sections: ]] .. table.concat(modules, ', ')
 				end
 			end
 		end
-		if mod == 'api' then
-			funcdocs = string.format(apidocHeader, vals.title, vals.description or 'no description.') .. funcdocs
-		end
-		doc = funcdocs:sub(1, #funcdocs - 1)
-		f:close()
+
+		--docs = docs:sub(1, #docs - 1)
+		return docs, vals
 	end
 
-	local backtickOccurence = 0
-	sinks.out:writeln(lunacolors.format(doc:gsub('`', function()
-		backtickOccurence = backtickOccurence + 1
-		if backtickOccurence % 2 == 0 then
-			return '{reset}'
-		else
-			return '{underline}{green}'
+	if #args > 0 then
+		local mod = args[1]
+
+		f = io.open(moddocPath .. mod .. '.md', 'rb')
+		local funcdocs = nil
+		local subdocName = args[2]
+		if not f then
+			moddocPath = moddocPath .. mod .. '/'
+			if not subdocName then
+				subdocName = '_index'
+			end
+			f = io.open(moddocPath .. subdocName .. '.md', 'rb')
+			local oldmoddocPath = moddocPath
+			if not f then
+				moddocPath = moddocPath .. subdocName:match '%w+' .. '/'
+				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
+			end
+			if not f then
+				moddocPath = oldmoddocPath .. subdocName .. '/'
+				subdocName = args[3] or '_index'
+				f = io.open(moddocPath .. subdocName .. '.md', 'rb')
+			end
+			if not f then
+				sinks.out:writeln('No documentation found for ' .. mod .. '.')
+				return 1
+			end
 		end
-	end):gsub('\n#+.-\n', function(t)
-		local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
-		return '{bold}{yellow}' .. signature .. '{reset}'
-	end)))
+
+	end
+
+	local moddocs = table.filter(fs.readdir(moddocPath), function(f) return f ~= '_index.md' and f ~= 'index.md' end)
+	local subdocs = table.map(moddocs, function(fname)
+		return lunacolors.underline(lunacolors.blue(string.gsub(fname, '.md', '')))
+	end)
+
+	local gh = Greenhouse(sinks.out)
+	function gh:resize()
+		local size = terminal.size()
+		self.region = {
+			width = size.width,
+			height = size.height - 3
+		}
+	end
+	gh:resize()
+
+	function gh:render()
+		local workingPage = self.pages[self.curPage]
+		local offset = self.offset
+		if self.isSpecial then
+			offset = self.specialOffset
+			workingPage = self.specialPage
+		end
+
+		self.sink:write(ansikit.getCSI(self.region.height + 2 .. ';1', 'H'))
+		if not self.isSpecial then
+			if args[1] == 'api' then
+				self.sink:writeln(lunacolors.reset(string.format('%s', workingPage.title)))
+				self.sink:write(lunacolors.format(string.format('{grayBg} ↳ {white}{italic}%s {reset}', workingPage.description or 'No description.')))
+			else
+				self.sink:write(lunacolors.reset(string.format('Viewing doc page %s', moddocPath)))
+			end
+		end
+	end
+	local backtickOccurence = 0
+	local function formatDocText(d)
+		return lunacolors.format(d:gsub('`', function()
+			backtickOccurence = backtickOccurence + 1
+			if backtickOccurence % 2 == 0 then
+				return '{reset}'
+			else
+				return '{underline}{green}'
+			end
+		end):gsub('\n#+.-\n', function(t)
+			local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
+			return '{bold}{yellow}' .. signature .. '{reset}'
+		end))
+	end
+
+
+	local doc, vals = handleYamlInfo(#args == 0 and doc or formatDocText(f:read '*a':gsub('-([%d]+)', '%1')))
+	if #moddocs ~= 0 and f then
+		doc = doc .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\n\n'
+	end
+	if f then f:close() end
+
+	local page = Page(vals.title, doc)
+	page.description = vals.description
+	gh:addPage(page)
+
+	-- add subdoc pages
+	for _, sdName in ipairs(moddocs) do
+		local sdFile = fs.join(sdName, '_index.md')
+		if sdName:match '.md$' then
+			sdFile = sdName
+		end
+
+		local f = io.open(moddocPath .. sdFile, 'rb')
+		local doc, vals = handleYamlInfo(f:read '*a':gsub('-([%d]+)', '%1'))
+		local page = Page(vals.title, formatDocText(doc))
+		page.description = vals.description
+		gh:addPage(page)
+	end
+	ansikit.hideCursor()
+	gh:initUi()
 end)

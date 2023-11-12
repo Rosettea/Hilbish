@@ -26,13 +26,14 @@ func SetFieldProtected(module, realModule *rt.Table, field string, value rt.Valu
 }
 
 // DoString runs the code string in the Lua runtime.
-func DoString(rtm *rt.Runtime, code string) error {
+func DoString(rtm *rt.Runtime, code string) (rt.Value, error) {
 	chunk, err := rtm.CompileAndLoadLuaChunk("<string>", []byte(code), rt.TableValue(rtm.GlobalEnv()))
+	var ret rt.Value
 	if chunk != nil {
-		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
+		ret, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
 	}
 
-	return err
+	return ret, err
 }
 
 // DoFile runs the contents of the file in the Lua runtime.

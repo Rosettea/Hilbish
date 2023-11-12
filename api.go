@@ -2,6 +2,7 @@
 // The Hilbish module includes the core API, containing
 // interfaces and functions which directly relate to shell functionality.
 // #field ver The version of Hilbish
+// #field goVersion The version of Go that Hilbish was compiled with
 // #field user Username of the user
 // #field host Hostname of the machine
 // #field dataDir Directory for Hilbish data files, including the docs and default modules
@@ -110,6 +111,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	}
 
 	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()))
+	util.SetFieldProtected(fakeMod, mod, "goVersion", rt.StringValue(runtime.Version()))
 	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username))
 	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host))
 	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir))
@@ -163,6 +165,9 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit))
 	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName))
 	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
+
+	pluginModule := moduleLoader(rtm)
+	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
 
 	return rt.TableValue(fakeMod), nil
 }
@@ -639,6 +644,14 @@ func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // reality could set the input of the prompt to *display* anything. The
 // callback is passed the current line and is expected to return a line that
 // will be used as the input display.
+// Note that to set a highlighter, one has to override this function.
+// Example:
+// ```
+// function hilbish.highlighter(line)
+//    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+// end
+// ```
+// This code will highlight all double quoted strings in green.
 // --- @param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil

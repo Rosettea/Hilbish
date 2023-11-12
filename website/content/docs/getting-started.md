@@ -15,9 +15,10 @@ To exit, you can either run the `exit` command or hit Ctrl+D.
 There are a few ways to make Hilbish your default shell. A simple way is 
 to make it your user/login shell.
 
-{{< warning `It is not recommended to set Hilbish as your login shell. That is expected to be a 
-POSIX compliant shell, which Hilbish is not. At most, there will just be a 
-few variables missing in your environment` >}}
+{{< warning `It is not recommended to set Hilbish as your login shell. That
+is expected to be a POSIX compliant shell, which Hilbish is not. Though if
+you still decide to do it, there will just be a few variables missing in
+your environment` >}}
 
 To do that, simply run `chsh -s /usr/bin/hilbish`.
 Some distros (namely Fedora) might have `lchsh` instead, which is used like `lchsh <user>`.
