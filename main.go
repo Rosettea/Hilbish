@@ -289,7 +289,7 @@ func removeDupes(slice []string) []string {
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.ToLower(a) == strings.ToLower(e) {
 			return true
 		}
 	}
@@ -323,4 +323,8 @@ func getVersion() string {
 	v.WriteString(" (" + releaseName + ")")
 
 	return v.String()
+}
+
+func cut(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx + 1:]...)
 }

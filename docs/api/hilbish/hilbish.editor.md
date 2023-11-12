@@ -17,6 +17,7 @@ directly interact with the line editor in use.
 |<a href="#editor.getLine">getLine() -> string</a>|Returns the current input line.|
 |<a href="#editor.getVimRegister">getVimRegister(register) -> string</a>|Returns the text that is at the register.|
 |<a href="#editor.insert">insert(text)</a>|Inserts text into the line.|
+|<a href="#editor.getChar">getChar() -> string</a>|Reads a keystroke from the user. This is in a format|
 |<a href="#editor.setVimRegister">setVimRegister(register, text)</a>|Sets the vim register at `register` to hold the passed text.|
 
 <hr><div id='editor.getLine'>
@@ -54,6 +55,20 @@ hilbish.editor.insert(text)
 </h4>
 
 Inserts text into the line.
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr><div id='editor.getChar'>
+<h4 class='heading'>
+hilbish.editor.getChar() -> string
+<a href="#editor.getChar" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Reads a keystroke from the user. This is in a format
+of something like Ctrl-L..
 #### Parameters
 This function has no parameters.  
 </div>

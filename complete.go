@@ -253,15 +253,16 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	// we must keep the holy 80 cols
-	completerReturn, err := rt.Call1(l.MainThread(),
-	rt.FunctionValue(completecb), rt.StringValue(query),
-	rt.StringValue(ctx), rt.TableValue(fields))
+	cont := c.Next()
+	err = rt.Call(l.MainThread(), rt.FunctionValue(completecb),
+	[]rt.Value{rt.StringValue(query), rt.StringValue(ctx), rt.TableValue(fields)},
+	cont)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return c.PushingNext1(t.Runtime, completerReturn), nil
+	return cont, nil
 }
 
 // #interface completions

@@ -14,11 +14,21 @@ vars:
 tasks:
   default:
     cmds:
+      - go build {{.GOFLAGS}}
+    vars:
+      GOFLAGS: '-ldflags "-s -w -X main.dataDir={{.LIBDIR}} -X main.gitCommit=$(git rev-parse --short HEAD) -X main.gitBranch=$(git rev-parse --abbrev-ref HEAD)"'
+
+  default-nocgo:
+    cmds:
       - CGO_ENABLED=0 go build {{.GOFLAGS}}
     vars:
       GOFLAGS: '-ldflags "-s -w -X main.dataDir={{.LIBDIR}} -X main.gitCommit=$(git rev-parse --short HEAD) -X main.gitBranch=$(git rev-parse --abbrev-ref HEAD)"'
 
   build:
+    cmds:
+      - go build {{.GOFLAGS}}
+
+  build-nocgo:
     cmds:
       - CGO_ENABLED=0 go build {{.GOFLAGS}}
 

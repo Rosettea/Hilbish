@@ -44,7 +44,7 @@ interfaces and functions which directly relate to shell functionality.
 |interactive|Is Hilbish in an interactive shell?|
 |login|Is Hilbish the login shell?|
 |vimMode|Current Vim input mode of Hilbish (will be nil if not in Vim input mode)|
-|exitCode|xit code of the last executed command|
+|exitCode|Exit code of the last executed command|
 
 <hr><div id='alias'>
 <h4 class='heading'>
@@ -331,7 +331,10 @@ A call with no argument will toggle the value.
 Flush writes all buffered input to the sink.
 
 #### read() -> string
-Reads input from the sink.
+Reads a liine of input from the sink.
+
+#### readAll() -> string
+Reads all input from the sink.
 
 #### write(str)
 Writes data to a sink.
