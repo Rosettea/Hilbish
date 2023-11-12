@@ -156,8 +156,8 @@ func (rl *Instance) walkHistory(i int) {
 	rl.updateHelpers()
 
 	// In order to avoid having to type j/k twice each time for history navigation,
-	// we walk once again. This only ever happens when we aren't out of bounds.
-	if dedup && old == new {
+	// we walk once again. This only ever happens when we aren't out of bounds and the last history item was not a empty string.
+	if new != "" && dedup && old == new {
 		rl.walkHistory(i)
 	}
 }
