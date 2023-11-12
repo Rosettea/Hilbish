@@ -89,7 +89,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local size = terminal.size()
 		self.region = {
 			width = size.width,
-			height = size.height - 3
+			height = size.height - 2
 		}
 	end
 	gh:resize()
@@ -102,7 +102,8 @@ Available sections: ]] .. table.concat(modules, ', ')
 			workingPage = self.specialPage
 		end
 
-		self.sink:write(ansikit.getCSI(self.region.height + 2 .. ';1', 'H'))
+		self.sink:write(ansikit.getCSI(self.region.height + 1 .. ';1', 'H'))
+		self.sink:write(ansikit.getCSI(0, 'J'))
 		if not self.isSpecial then
 			if args[1] == 'api' then
 				self.sink:writeln(lunacolors.reset(string.format('%s', workingPage.title)))
