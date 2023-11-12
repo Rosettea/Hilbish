@@ -1,3 +1,12 @@
+---
+title: Hilbish
+description:
+layout: doc
+menu:
+  docs:
+    parent: "Hooks"
+---
+
 + `hilbish.exit` > Sent when Hilbish is about to exit.
 
 + `hilbish.vimMode` -> modeName > Sent when Hilbish's Vim mode is changed (example insert to normal mode),
