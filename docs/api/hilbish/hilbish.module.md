@@ -8,7 +8,8 @@ menu:
 ---
 
 ## Introduction
- The hilbish.module interface provides a function to load
+
+The hilbish.module interface provides a function to load
 Hilbish plugins/modules. Hilbish modules are Go-written
 plugins (see https://pkg.go.dev/plugin) that are used to add functionality
 to Hilbish that cannot be written in Lua for any reason.
