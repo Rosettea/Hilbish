@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"syscall"
+
+	ansi "github.com/acarl005/stripansi"
 )
 
 var rxMultiline = regexp.MustCompile(`[\r\n]+`)
@@ -838,10 +841,12 @@ func (rl *Instance) escapeSeq(r []rune) {
 
 	case seqCtrlDelete, seqCtrlDelete2, seqAltD:
 		if rl.searchMode == HistoryFind {
-			fmt.Println("\nCURRENT COMP\n", string(rl.lineComp), "\n\n\n")
-			rl.resetVirtualComp(true)
+			idx, err := strconv.Atoi(ansi.Strip(rl.lineCompDescription))
+			fmt.Println("\nCURRENT COMP\n", string(rl.lineComp), idx, "\n\n\n")
+			fmt.Println(idx, err)
+			rl.updateVirtualComp()
 
-			rl.renderHelpers()
+			rl.updateHelpers()
 			rl.viUndoSkipAppend = true
 			return
 		}

@@ -101,6 +101,7 @@ type Instance struct {
 	// Candidate /  virtual completion string / etc
 	currentComp  []rune // The currently selected item, not yet a real part of the input line.
 	lineComp     []rune // Same as rl.line, but with the currentComp inserted.
+	lineCompDescription string
 	lineRemain   []rune // When we complete in the middle of a line, we cut and keep the remain.
 	compAddSpace bool   // If true, any candidate inserted into the real line is done with an added space.
 

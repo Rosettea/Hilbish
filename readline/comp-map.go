@@ -121,6 +121,7 @@ func (g *CompletionGroup) writeMap(rl *Instance) (comp string) {
 		}
 
 		description = g.Descriptions[g.Suggestions[i]]
+		rl.lineCompDescription = description
 		if len(description) > maxLength {
 			description = description[:maxLength-3] + "..."
 		}
