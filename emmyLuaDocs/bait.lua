@@ -2,7 +2,9 @@
 
 local bait = {}
 
---- Catches a hook with `name`. Runs the `cb` when it is thrown
+--- Catches a hook. This function is used to act on hooks/events.
+--- 
+--- 
 function bait.catch(name, cb) end
 
 --- Same as catch, but only runs the `cb` once and then removes the hook

@@ -271,9 +271,16 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // catch(name, cb)
-// Catches a hook with `name`. Runs the `cb` when it is thrown
-// #param name string ummm
-// #param cb function ?
+// Catches a hook. This function is used to act on hooks/events.
+// #param name string The name of the hook.
+// #param cb function The function that will be called when the hook is thrown.
+/*
+#example
+bait.catch('hilbish.exit', function()
+	print 'Goodbye Hilbish!'
+end)
+#example
+*/
 func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {

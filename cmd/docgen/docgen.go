@@ -64,11 +64,13 @@ type docPiece struct {
 	Fields []docPiece
 	Properties []docPiece
 	Params []param
+	Tags map[string][]tag
 }
 
 type tag struct {
 	id string
 	fields []string
+	startIdx int
 }
 
 var docs = make(map[string]module)
@@ -89,7 +91,7 @@ func getTagsAndDocs(docs string) (map[string][]tag, []string) {
 	parts := []string{}
 	tags := make(map[string][]tag)
 
-	for _, part := range pts {
+	for idx, part := range pts {
 		if strings.HasPrefix(part, "#") {
 			tagParts := strings.Split(strings.TrimPrefix(part, "#"), " ")
 			if tags[tagParts[0]] == nil {
@@ -98,12 +100,21 @@ func getTagsAndDocs(docs string) (map[string][]tag, []string) {
 					id = tagParts[1]
 				}
 				tags[tagParts[0]] = []tag{
-					{id: id},
+					{id: id, startIdx: idx},
 				}
 				if len(tagParts) >= 2 {
 					tags[tagParts[0]][0].fields = tagParts[2:]
 				}
 			} else {
+				if tagParts[0] == "example" {
+					exampleIdx := tags["example"][0].startIdx
+					exampleCode := pts[exampleIdx+1:idx]
+
+					tags["example"][0].fields = exampleCode
+					parts = strings.Split(strings.Replace(strings.Join(parts, "\n"), strings.TrimPrefix(strings.Join(exampleCode, "\n"), "#example\n"), "", -1), "\n")
+					continue
+				}
+
 				fleds := []string{}
 				if len(tagParts) >= 2 {
 					fleds = tagParts[2:]
@@ -188,6 +199,7 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 		ParentModule: parentMod,
 		Fields: fields,
 		Properties: properties,
+		Tags: tags,
 	}
 
 	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
@@ -273,6 +285,7 @@ start:
 		Fields: fields,
 		Properties: properties,
 		Params: params,
+		Tags: tags,
 	}
 	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
 		dps.Doc = parts
@@ -564,6 +577,10 @@ func main() {
 						f.WriteString("  \n")
 						f.WriteString(strings.Join(p.Doc, " "))
 						f.WriteString("\n\n")
+					}
+					if codeExample := dps.Tags["example"]; codeExample != nil {
+						f.WriteString("#### Example\n")
+						f.WriteString(fmt.Sprintf("```lua\n%s\n````\n", strings.Join(codeExample[0].fields, "\n")))
 					}
 					f.WriteString("</div>")
 					f.WriteString("\n\n")

@@ -35,7 +35,7 @@ this function will set the user prompt.
 ## Functions
 |||
 |----|----|
-|<a href="#catch">catch(name, cb)</a>|Catches a hook with `name`. Runs the `cb` when it is thrown|
+|<a href="#catch">catch(name, cb)</a>|Catches a hook. This function is used to act on hooks/events.|
 |<a href="#catchOnce">catchOnce(name, cb)</a>|Same as catch, but only runs the `cb` once and then removes the hook|
 |<a href="#hooks">hooks(name) -> table</a>|Returns a table with hooks (callback functions) on the event with `name`.|
 |<a href="#release">release(name, catcher)</a>|Removes the `catcher` for the event with `name`.|
@@ -49,14 +49,22 @@ bait.catch(name, cb)
 </a>
 </h4>
 
-Catches a hook with `name`. Runs the `cb` when it is thrown
+Catches a hook. This function is used to act on hooks/events.
+
+
 #### Parameters
 `string` **`name`**  
-ummm
+The name of the hook.
 
 `function` **`cb`**  
-?
+The function that will be called when the hook is thrown.
 
+#### Example
+```lua
+bait.catch('hilbish.exit', function()
+	print 'Goodbye Hilbish!'
+end)
+````
 </div>
 
 <hr><div id='catchOnce'>
