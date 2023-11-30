@@ -247,29 +247,6 @@ func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, ar
 	}
 }
 
-// throw(name, ...args)
-// #param name string The name of the hook.
-// #param args ...any The arguments to pass to the hook.
-// Throws a hook with `name` with the provided `args`
-// --- @param name string
-// --- @vararg any
-func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	name, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-	ifaceSlice := make([]interface{}, len(c.Etc()))
-	for i, v := range c.Etc() {
-		ifaceSlice[i] = v
-	}
-	b.Emit(name, ifaceSlice...)
-
-	return c.Next(), nil
-}
-
 // catch(name, cb)
 // Catches a hook. This function is used to act on hooks/events.
 // #param name string The name of the hook.
@@ -307,23 +284,6 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// release(name, catcher)
-// Removes the `catcher` for the event with `name`.
-// For this to work, `catcher` has to be the same function used to catch
-// an event, like one saved to a variable.
-// --- @param name string
-// --- @param catcher function
-func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	b.OffLua(name, catcher)
-
-	return c.Next(), nil
-}
-
 // hooks(name) -> table
 // Returns a table with hooks (callback functions) on the event with `name`.
 // --- @param name string
@@ -354,4 +314,44 @@ func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	return c.PushingNext1(t.Runtime, rt.TableValue(luaHandlers)), nil
+}
+
+// release(name, catcher)
+// Removes the `catcher` for the event with `name`.
+// For this to work, `catcher` has to be the same function used to catch
+// an event, like one saved to a variable.
+// --- @param name string
+// --- @param catcher function
+func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	b.OffLua(name, catcher)
+
+	return c.Next(), nil
+}
+
+// throw(name, ...args)
+// #param name string The name of the hook.
+// #param args ...any The arguments to pass to the hook.
+// Throws a hook with `name` with the provided `args`
+// --- @param name string
+// --- @vararg any
+func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	name, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	ifaceSlice := make([]interface{}, len(c.Etc()))
+	for i, v := range c.Etc() {
+		ifaceSlice[i] = v
+	}
+	b.Emit(name, ifaceSlice...)
+
+	return c.Next(), nil
 }
