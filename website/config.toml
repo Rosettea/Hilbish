@@ -30,7 +30,10 @@ enableGitInfo = true
 unsafe = true
 
 [markup.highlight]
-style = 'pastie'
+lineNos = true
+lineNumbersInTable = false
+noClasses = false
+codeFences = true
 
 [author]
 	[author.sammyette]
