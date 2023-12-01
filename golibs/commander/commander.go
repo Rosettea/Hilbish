@@ -1,10 +1,9 @@
 // library for custom commands
 /*
-Commander is a library for writing custom commands in Lua.
-In order to make it easier to write commands for Hilbish,
-not require separate scripts and to be able to use in a config,
-the Commander library exists. This is like a very simple wrapper
-that works with Hilbish for writing commands. Example:
+Commander is the library which handles Hilbish commands. This makes
+the user able to add Lua-written commands to their shell without making
+a separate script in a bin folder. Instead, you may simply use the Commander
+library in your Hilbish config.
 
 ```lua
 local commander = require 'commander'
@@ -19,14 +18,14 @@ that will print `Hello world!` to output. One question you may
 have is: What is the `sinks` parameter?
 
 The `sinks` parameter is a table with 3 keys: `in`, `out`,
-and `err`. The values of these is a @Sink.
+and `err`. All of them are a @Sink.
 
-- `in` is the standard input. You can read from this sink
-to get user input.
-- `out` is standard output. This is usually where text meant for
-output should go.
-- `err` is standard error. This sink is for writing errors, as the
-name would suggest.
+- `in` is the standard input.
+You may use the read functions on this sink to get input from the user.
+- `out` is standard output.
+This is usually where command output should go.
+- `err` is standard error.
+This sink is for writing errors, as the name would suggest.
 */
 package commander
 
@@ -67,9 +66,22 @@ func (c *Commander) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 }
 
 // register(name, cb)
-// Register a command with `name` that runs `cb` when ran
-// --- @param name string
-// --- @param cb function
+// Adds a new command with the given `name`. When Hilbish has to run a command with a name,
+// it will run the function providing the arguments and sinks.
+// #param name string Name of the command
+// #param cb function Callback to handle command invocation
+/*
+#example
+-- When you run the command `hello` in the shell, it will print `Hello world`.
+-- If you run it with, for example, `hello Hilbish`, it will print 'Hello Hilbish'
+commander.register('hello', function(args, sinks)
+	local name = 'world'
+	if #args > 0 then name = args[1] end
+
+	sinks.out:writeln('Hello ' .. name)
+end)
+#example
+*/
 func (c *Commander) cregister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
 	cmdName, cmd, err := util.HandleStrCallback(t, ct)
 	if err != nil {
@@ -82,8 +94,8 @@ func (c *Commander) cregister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
 }
 
 // deregister(name)
-// Deregisters any command registered with `name`
-// --- @param name string
+// Removes the named command. Note that this will only remove Commander-registered commands.
+// #param name string Name of the command to remove.
 func (c *Commander) cderegister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
 	if err := ct.Check1Arg(); err != nil {
 		return nil, err
