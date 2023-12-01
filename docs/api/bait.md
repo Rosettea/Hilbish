@@ -141,6 +141,8 @@ bait.throw(name, ...args)
 </h4>
 
 Throws a hook with `name` with the provided `args`.
+
+
 #### Parameters
 `string` **`name`**  
 The name of the hook.
@@ -148,5 +150,14 @@ The name of the hook.
 `any` **`args`** (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 The arguments to pass to the hook.
 
+#### Example
+```lua
+bait.throw('greeting', 'world')
+
+-- This can then be listened to via
+bait.catch('gretting', function(greetTo)
+	print('Hello ' .. greetTo)
+end)
+````
 </div>
 

@@ -348,6 +348,16 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #param name string The name of the hook.
 // #param args ...any The arguments to pass to the hook.
 // Throws a hook with `name` with the provided `args`.
+/*
+#example
+bait.throw('greeting', 'world')
+
+-- This can then be listened to via
+bait.catch('gretting', function(greetTo)
+	print('Hello ' .. greetTo)
+end)
+#example
+*/
 func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

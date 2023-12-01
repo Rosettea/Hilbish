@@ -21,6 +21,8 @@ function bait.hooks(name) end
 function bait.release(name, catcher) end
 
 --- Throws a hook with `name` with the provided `args`.
+--- 
+--- 
 function bait.throw(name, ...args) end
 
 return bait
