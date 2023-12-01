@@ -35,11 +35,11 @@ this function will set the user prompt.
 ## Functions
 |||
 |----|----|
-|<a href="#catch">catch(name, cb)</a>|Catches a hook. This function is used to act on hooks/events.|
-|<a href="#catchOnce">catchOnce(name, cb)</a>|Same as catch, but only runs the `cb` once and then removes the hook|
-|<a href="#hooks">hooks(name) -> table</a>|Returns a table with hooks (callback functions) on the event with `name`.|
+|<a href="#catch">catch(name, cb)</a>|Catches an event. This function can be used to act on events.|
+|<a href="#catchOnce">catchOnce(name, cb)</a>|Catches an event, but only once. This will remove the hook immediately after it runs for the first time.|
+|<a href="#hooks">hooks(name) -> table</a>|Returns a list of callbacks that are hooked on an event with the corresponding `name`.|
 |<a href="#release">release(name, catcher)</a>|Removes the `catcher` for the event with `name`.|
-|<a href="#throw">throw(name, ...args)</a>|Throws a hook with `name` with the provided `args`|
+|<a href="#throw">throw(name, ...args)</a>|Throws a hook with `name` with the provided `args`.|
 
 <hr><div id='catch'>
 <h4 class='heading'>
@@ -49,7 +49,7 @@ bait.catch(name, cb)
 </a>
 </h4>
 
-Catches a hook. This function is used to act on hooks/events.
+Catches an event. This function can be used to act on events.
 
 
 #### Parameters
@@ -75,9 +75,14 @@ bait.catchOnce(name, cb)
 </a>
 </h4>
 
-Same as catch, but only runs the `cb` once and then removes the hook
+Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
 #### Parameters
-This function has no parameters.  
+`string` **`name`**  
+The name of the event
+
+`function` **`cb`**  
+The function that will be called when the event is thrown.
+
 </div>
 
 <hr><div id='hooks'>
@@ -88,9 +93,11 @@ bait.hooks(name) -> table
 </a>
 </h4>
 
-Returns a table with hooks (callback functions) on the event with `name`.
+Returns a list of callbacks that are hooked on an event with the corresponding `name`.
 #### Parameters
-This function has no parameters.  
+`string` **`name`**  
+The name of the function
+
 </div>
 
 <hr><div id='release'>
@@ -104,8 +111,25 @@ bait.release(name, catcher)
 Removes the `catcher` for the event with `name`.
 For this to work, `catcher` has to be the same function used to catch
 an event, like one saved to a variable.
+
+
 #### Parameters
-This function has no parameters.  
+`string` **`name`**  
+Name of the event the hook is on
+
+`function` **`catcher`**  
+Hook function to remove
+
+#### Example
+```lua
+local hookCallback = function() print 'hi' end
+
+bait.catch('event', hookCallback)
+
+-- a little while later....
+bait.release('event', hookCallback)
+-- and now hookCallback will no longer be ran for the event.
+````
 </div>
 
 <hr><div id='throw'>
@@ -116,7 +140,7 @@ bait.throw(name, ...args)
 </a>
 </h4>
 
-Throws a hook with `name` with the provided `args`
+Throws a hook with `name` with the provided `args`.
 #### Parameters
 `string` **`name`**  
 The name of the hook.

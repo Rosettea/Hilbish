@@ -2,31 +2,25 @@
 
 local bait = {}
 
---- Catches a hook. This function is used to act on hooks/events.
+--- Catches an event. This function can be used to act on events.
 --- 
 --- 
 function bait.catch(name, cb) end
 
---- Same as catch, but only runs the `cb` once and then removes the hook
---- @param name string
---- @param cb function
+--- Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
 function bait.catchOnce(name, cb) end
 
---- Returns a table with hooks (callback functions) on the event with `name`.
---- @param name string
---- @returns table<function>
+--- Returns a list of callbacks that are hooked on an event with the corresponding `name`.
 function bait.hooks(name) end
 
 --- Removes the `catcher` for the event with `name`.
 --- For this to work, `catcher` has to be the same function used to catch
 --- an event, like one saved to a variable.
---- @param name string
---- @param catcher function
+--- 
+--- 
 function bait.release(name, catcher) end
 
---- Throws a hook with `name` with the provided `args`
---- @param name string
---- @vararg any
+--- Throws a hook with `name` with the provided `args`.
 function bait.throw(name, ...args) end
 
 return bait

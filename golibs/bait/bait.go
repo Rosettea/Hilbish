@@ -248,7 +248,7 @@ func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, ar
 }
 
 // catch(name, cb)
-// Catches a hook. This function is used to act on hooks/events.
+// Catches an event. This function can be used to act on events.
 // #param name string The name of the hook.
 // #param cb function The function that will be called when the hook is thrown.
 /*
@@ -270,9 +270,9 @@ func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // catchOnce(name, cb)
-// Same as catch, but only runs the `cb` once and then removes the hook
-// --- @param name string
-// --- @param cb function
+// Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
+// #param name string The name of the event
+// #param cb function The function that will be called when the event is thrown.
 func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -285,9 +285,9 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // hooks(name) -> table
-// Returns a table with hooks (callback functions) on the event with `name`.
-// --- @param name string
-// --- @returns table<function>
+// Returns a list of callbacks that are hooked on an event with the corresponding `name`.
+// #param name string The name of the function
+// #returns table<function>
 func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -320,8 +320,19 @@ func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Removes the `catcher` for the event with `name`.
 // For this to work, `catcher` has to be the same function used to catch
 // an event, like one saved to a variable.
-// --- @param name string
-// --- @param catcher function
+// #param name string Name of the event the hook is on
+// #param catcher function Hook function to remove
+/*
+#example
+local hookCallback = function() print 'hi' end
+
+bait.catch('event', hookCallback)
+
+-- a little while later....
+bait.release('event', hookCallback)
+-- and now hookCallback will no longer be ran for the event.
+#example
+*/
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -336,9 +347,7 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // throw(name, ...args)
 // #param name string The name of the hook.
 // #param args ...any The arguments to pass to the hook.
-// Throws a hook with `name` with the provided `args`
-// --- @param name string
-// --- @vararg any
+// Throws a hook with `name` with the provided `args`.
 func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
