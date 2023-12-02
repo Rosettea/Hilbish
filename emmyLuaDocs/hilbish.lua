@@ -14,21 +14,17 @@ function hilbish.aliases.add(alias, cmd) end
 --- @param cb function
 function hilbish.runner.setMode(cb) end
 
---- Calls a completer function. This is mainly used to call
---- a command completer, which will have a `name` in the form
---- of `command.name`, example: `command.git`.
---- You can check `doc completions` for info on the `completionGroups` return value.
---- @param name string
---- @param query string
---- @param ctx string
---- @param fields table
-function hilbish.completions.call(name, query, ctx, fields) end
+--- Calls a completer function. This is mainly used to call a command completer, which will have a `name`
+--- in the form of `command.name`, example: `command.git`.
+--- You can check the Completions doc or `doc completions` for info on the `completionGroups` return value.
+function hilbish.completion.call(name, query, ctx, fields) end
 
---- The handler function is the callback for tab completion in Hilbish.
---- You can check the completions doc for more info.
---- @param line string
---- @param pos string
-function hilbish.completions.handler(line, pos) end
+--- This function contains the general completion handler for Hilbish. This function handles
+--- completion of everything, which includes calling other command handlers, binaries, and files.
+--- This function can be overriden to supply a custom handler. Note that alias resolution is required to be done in this function.
+--- 
+--- 
+function hilbish.completion.handler(line, pos) end
 
 --- Returns the current input line.
 function hilbish.editor.getLine() end
@@ -172,17 +168,15 @@ function hilbish.which(name) end
 --- Puts a job in the background. This acts the same as initially running a job.
 function hilbish.jobs:background() end
 
---- Returns binary/executale completion candidates based on the provided query.
---- @param query string
---- @param ctx string
---- @param fields table
-function hilbish.completions.bins(query, ctx, fields) end
+--- Return binaries/executables based on the provided parameters.
+--- This function is meant to be used as a helper in a command completion handler.
+--- 
+--- 
+function hilbish.completion.bins(query, ctx, fields) end
 
---- Returns file completion candidates based on the provided query.
---- @param query string
---- @param ctx string
---- @param fields table
-function hilbish.completions.files(query, ctx, fields) end
+--- Returns file matches based on the provided parameters.
+--- This function is meant to be used as a helper in a command completion handler.
+function hilbish.completion.files(query, ctx, fields) end
 
 --- Puts a job in the foreground. This will cause it to run like it was
 --- executed normally and wait for it to complete.
