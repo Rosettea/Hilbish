@@ -7,17 +7,16 @@ a few seconds, you don&rsquo;t have to rely on timing tricks, as Hilbish has a
 timer API to set intervals and timeouts.</p><p>These are the simple functions <code>hilbish.interval</code> and <code>hilbish.timeout</code> (doc
 accessible with <code>doc hilbish</code>). But if you want slightly more control over
 them, there is the <code>hilbish.timers</code> interface. It allows you to get
-a timer via ID and control them.</p><p>All functions documented with the <code>Timer</code> type refer to a Timer object.</p><p>An example of usage:</p><pre tabindex=0><code>local t = hilbish.timers.create(hilbish.timers.TIMEOUT, 5000, function()
-	print &#39;hello!&#39;
-end)
-
-t:start()
-print(t.running) // true
-</code></pre><h3 id=functions class=heading>Functions
+a timer via ID and control them.</p><p>All functions documented with the <code>Timer</code> type refer to a Timer object.</p><p>An example of usage:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=ln>1</span><span class=cl>local t = hilbish.timers.create(hilbish.timers.TIMEOUT, 5000, function()
+</span></span><span class=line><span class=ln>2</span><span class=cl>	print &#39;hello!&#39;
+</span></span><span class=line><span class=ln>3</span><span class=cl>end)
+</span></span><span class=line><span class=ln>4</span><span class=cl>
+</span></span><span class=line><span class=ln>5</span><span class=cl>t:start()
+</span></span><span class=line><span class=ln>6</span><span class=cl>print(t.running) // true
+</span></span></code></pre></div><h3 id=functions class=heading>Functions
 <a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href=#timers.create>create(type, time, callback) -> @Timer</a></td><td>Creates a timer that runs based on the specified <code>time</code> in milliseconds.</td></tr><tr><td><a href=#timers.get>get(id) -> @Timer</a></td><td>Retrieves a timer via its ID.</td></tr></tbody></table><h3 id=static-module-fields class=heading>Static module fields
 <a href=#static-module-fields class=heading-link><i class="fas fa-paperclip"></i></a></h3><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>INTERVAL</td><td>Constant for an interval timer type</td></tr><tr><td>TIMEOUT</td><td>Constant for a timeout timer type</td></tr></tbody></table><hr><div id=timers.create><h4 class=heading>hilbish.timers.create(type, time, callback) -> <a href=/Hilbish/docs/api/hilbish/hilbish.timers/#timer style=text-decoration:none id=lol>Timer</a>
-<a href=#timers.create class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Creates a timer that runs based on the specified <code>time</code> in milliseconds.
-The <code>type</code> can either be <code>hilbish.timers.INTERVAL</code> or <code>hilbish.timers.TIMEOUT</code></p><h5 id=parameters class=heading>Parameters
+<a href=#timers.create class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Creates a timer that runs based on the specified <code>time</code> in milliseconds.<br>The <code>type</code> can either be <code>hilbish.timers.INTERVAL</code> or <code>hilbish.timers.TIMEOUT</code></p><h5 id=parameters class=heading>Parameters
 <a href=#parameters class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>This function has no parameters.</p></div><hr><div id=timers.get><h4 class=heading>hilbish.timers.get(id) -> <a href=/Hilbish/docs/api/hilbish/hilbish.timers/#timer style=text-decoration:none id=lol>Timer</a>
 <a href=#timers.get class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Retrieves a timer via its ID.</p><h5 id=parameters-1 class=heading>Parameters
 <a href=#parameters-1 class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>This function has no parameters.</p></div><h3 id=types class=heading>Types

@@ -18,8 +18,8 @@ When prompted, you can put the path for Hilbish.</p><h3 id=default-with-terminal
 <a href=#default-with-terminal class=heading-link><i class="fas fa-paperclip"></i></a></h3><p>The simpler way is to set the default shell for your terminal. The way of
 doing this depends on how your terminal settings are configured.</p><h3 id=run-after-login-shell class=heading>Run after login shell
 <a href=#run-after-login-shell class=heading-link><i class="fas fa-paperclip"></i></a></h3><p>Some shells (like zsh) have an rc file, like <code>.zlogin</code>, which is ran when the shell session
-is a login shell. In that file, you can run Hilbish. Example:</p><pre tabindex=0><code>exec hilbish -S -l
-</code></pre><p>This will replace the shell with Hilbish, set $SHELL to Hilbish and launch it as a login shell.</p><h2 id=configuration class=heading>Configuration
+is a login shell. In that file, you can run Hilbish. Example:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=ln>1</span><span class=cl>exec hilbish -S -l
+</span></span></code></pre></div><p>This will replace the shell with Hilbish, set $SHELL to Hilbish and launch it as a login shell.</p><h2 id=configuration class=heading>Configuration
 <a href=#configuration class=heading-link><i class="fas fa-paperclip"></i></a></h2><p>Once installation and setup has been done, you can then configure Hilbish.
 It is configured and scripted via Lua, so the config file is a Lua file.
 You can use any pure Lua library to do whatever you want.</p><p>Hilbish&rsquo;s sample configuration is usually located in <code>hilbish.dataDir .. '/.hilbishrc.lua'</code>.
