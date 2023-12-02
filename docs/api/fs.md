@@ -8,22 +8,28 @@ menu:
 ---
 
 ## Introduction
-The fs module provides easy and simple access to filesystem functions
-and other things, and acts an addition to the Lua standard library's
-I/O and filesystem functions.
+
+The fs module provides filesystem functions to Hilbish. While Lua's standard
+library has some I/O functions, they're missing a lot of the basics. The `fs`
+library offers more functions and will work on any operating system Hilbish does.
 
 ## Functions
 |||
 |----|----|
-|<a href="#abs">abs(path) -> string</a>|Gives an absolute version of `path`.|
-|<a href="#basename">basename(path) -> string</a>|Gives the basename of `path`. For the rules,|
-|<a href="#cd">cd(dir)</a>|Changes directory to `dir`|
-|<a href="#dir">dir(path) -> string</a>|Returns the directory part of `path`. For the rules, see Go's|
-|<a href="#glob">glob(pattern) -> matches (table)</a>|Glob all files and directories that match the pattern.|
-|<a href="#join">join(...) -> string</a>|Takes paths and joins them together with the OS's|
-|<a href="#mkdir">mkdir(name, recursive)</a>|Makes a directory called `name`. If `recursive` is true, it will create its parent directories.|
-|<a href="#readdir">readdir(dir) -> {}</a>|Returns a table of files in `dir`.|
-|<a href="#stat">stat(path) -> {}</a>|Returns a table of info about the `path`.|
+|<a href="#abs">abs(path) -> string</a>|Returns an absolute version of the `path`.|
+|<a href="#basename">basename(path) -> string</a>|Returns the "basename," or the last part of the provided `path`. If path is empty,|
+|<a href="#cd">cd(dir)</a>|Changes Hilbish's directory to `dir`.|
+|<a href="#dir">dir(path) -> string</a>|Returns the directory part of `path`. If a file path like|
+|<a href="#glob">glob(pattern) -> matches (table)</a>|Match all files based on the provided `pattern`.|
+|<a href="#join">join(...path) -> string</a>|Takes any list of paths and joins them based on the operating system's path separator.|
+|<a href="#mkdir">mkdir(name, recursive)</a>|Creates a new directory with the provided `name`.|
+|<a href="#readdir">readdir(path) -> table[string]</a>|Returns a list of all files and directories in the provided path.|
+|<a href="#stat">stat(path) -> {}</a>|Returns the information about a given `path`.|
+
+## Static module fields
+|||
+|----|----|
+|pathSep|The operating system's path separator.|
 
 <hr><div id='abs'>
 <h4 class='heading'>
@@ -33,9 +39,12 @@ fs.abs(path) -> string
 </a>
 </h4>
 
-Gives an absolute version of `path`.
+Returns an absolute version of the `path`.  
+This can be used to resolve short paths like `..` to `/home/user`.  
 #### Parameters
-This function has no parameters.  
+`string` **`path`**  
+
+
 </div>
 
 <hr><div id='basename'>
@@ -46,10 +55,12 @@ fs.basename(path) -> string
 </a>
 </h4>
 
-Gives the basename of `path`. For the rules,
-see Go's filepath.Base
+Returns the "basename," or the last part of the provided `path`. If path is empty,  
+`.` will be returned.  
 #### Parameters
-This function has no parameters.  
+`string` **`path`**  
+Path to get the base name of.
+
 </div>
 
 <hr><div id='cd'>
@@ -60,9 +71,11 @@ fs.cd(dir)
 </a>
 </h4>
 
-Changes directory to `dir`
+Changes Hilbish's directory to `dir`.  
 #### Parameters
-This function has no parameters.  
+`string` **`dir`**  
+Path to change directory to.
+
 </div>
 
 <hr><div id='dir'>
@@ -73,10 +86,12 @@ fs.dir(path) -> string
 </a>
 </h4>
 
-Returns the directory part of `path`. For the rules, see Go's
-filepath.Dir
+Returns the directory part of `path`. If a file path like  
+`~/Documents/doc.txt` then this function will return `~/Documents`.  
 #### Parameters
-This function has no parameters.  
+`string` **`path`**  
+Path to get the directory for.
+
 </div>
 
 <hr><div id='glob'>
@@ -87,24 +102,50 @@ fs.glob(pattern) -> matches (table)
 </a>
 </h4>
 
-Glob all files and directories that match the pattern.
-For the rules, see Go's filepath.Glob
+Match all files based on the provided `pattern`.  
+For the syntax' refer to Go's filepath.Match function: https://pkg.go.dev/path/filepath#Match  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string` **`pattern`**  
+Pattern to compare files with.
+
+#### Example
+```lua
+--[[
+	Within a folder that contains the following files:
+	a.txt
+	init.lua
+	code.lua
+	doc.pdf
+]]--
+local matches = fs.glob './*.lua'
+print(matches)
+-- -> {'init.lua', 'code.lua'}
+````
 </div>
 
 <hr><div id='join'>
 <h4 class='heading'>
-fs.join(...) -> string
+fs.join(...path) -> string
 <a href="#join" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
-Takes paths and joins them together with the OS's
-directory separator (forward or backward slash).
+Takes any list of paths and joins them based on the operating system's path separator.  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string` **`path`** (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+Paths to join together
+
+#### Example
+```lua
+-- This prints the directory for Hilbish's config!
+print(fs.join(hilbish.userDir.config, 'hilbish'))
+-- -> '/home/user/.config/hilbish' on Linux
+````
 </div>
 
 <hr><div id='mkdir'>
@@ -115,22 +156,38 @@ fs.mkdir(name, recursive)
 </a>
 </h4>
 
-Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
+Creates a new directory with the provided `name`.  
+With `recursive`, mkdir will create parent directories.  
+  
+-- This will create the directory foo, then create the directory bar in the  
+-- foo directory. If recursive is false in this case, it will fail.  
+fs.mkdir('./foo/bar', true)  
 #### Parameters
-This function has no parameters.  
+`string` **`name`**  
+Name of the directory
+
+`boolean` **`recursive`**  
+Whether to create parent directories for the provided name
+
+#### Example
+```lua
+
+````
 </div>
 
 <hr><div id='readdir'>
 <h4 class='heading'>
-fs.readdir(dir) -> {}
+fs.readdir(path) -> table[string]
 <a href="#readdir" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
-Returns a table of files in `dir`.
+Returns a list of all files and directories in the provided path.  
 #### Parameters
-This function has no parameters.  
+`string` **`dir`**  
+
+
 </div>
 
 <hr><div id='stat'>
@@ -141,13 +198,33 @@ fs.stat(path) -> {}
 </a>
 </h4>
 
-Returns a table of info about the `path`.
-It contains the following keys:
-name (string) - Name of the path
-size (number) - Size of the path
-mode (string) - Permission mode in an octal format string (with leading 0)
-isDir (boolean) - If the path is a directory
+Returns the information about a given `path`.  
+The returned table contains the following values:  
+name (string) - Name of the path  
+size (number) - Size of the path in bytes  
+mode (string) - Unix permission mode in an octal format string (with leading 0)  
+isDir (boolean) - If the path is a directory  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string` **`path`**  
+
+
+#### Example
+```lua
+local inspect = require 'inspect'
+
+local stat = fs.stat '~'
+print(inspect(stat))
+--[[
+Would print the following:
+{
+  isDir = true,
+  mode = "0755",
+  name = "username",
+  size = 12288
+}
+]]--
+````
 </div>
 

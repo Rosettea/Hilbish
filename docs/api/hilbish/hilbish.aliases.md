@@ -26,7 +26,7 @@ hilbish.aliases.add(alias, cmd)
 </a>
 </h4>
 
-This is an alias (ha) for the `hilbish.alias` function.
+This is an alias (ha) for the `hilbish.alias` function.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -39,7 +39,7 @@ hilbish.aliases.delete(name)
 </a>
 </h4>
 
-Removes an alias.
+Removes an alias.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -52,7 +52,7 @@ hilbish.aliases.list() -> table\<string, string>
 </a>
 </h4>
 
-Get a table of all aliases, with string keys as the alias and the value as the command.
+Get a table of all aliases, with string keys as the alias and the value as the command.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -65,7 +65,7 @@ hilbish.aliases.resolve(alias) -> command (string)
 </a>
 </h4>
 
-Tries to resolve an alias to its command.
+Tries to resolve an alias to its command.  
 #### Parameters
 This function has no parameters.  
 </div>

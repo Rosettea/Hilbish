@@ -50,8 +50,8 @@ hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbis
 </a>
 </h4>
 
-Creates a timer that runs based on the specified `time` in milliseconds.
-The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
+Creates a timer that runs based on the specified `time` in milliseconds.  
+The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -64,7 +64,7 @@ hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#tim
 </a>
 </h4>
 
-Retrieves a timer via its ID.
+Retrieves a timer via its ID.  
 #### Parameters
 This function has no parameters.  
 </div>

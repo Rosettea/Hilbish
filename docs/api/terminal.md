@@ -26,7 +26,7 @@ terminal.restoreState()
 </a>
 </h4>
 
-Restores the last saved state of the terminal
+Restores the last saved state of the terminal  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -39,7 +39,7 @@ terminal.saveState()
 </a>
 </h4>
 
-Saves the current state of the terminal
+Saves the current state of the terminal  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -52,7 +52,7 @@ terminal.setRaw()
 </a>
 </h4>
 
-Puts the terminal in raw mode
+Puts the terminal in raw mode  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -65,8 +65,8 @@ terminal.size()
 </a>
 </h4>
 
-Gets the dimensions of the terminal. Returns a table with `width` and `height`
-Note: this is not the size in relation to the dimensions of the display
+Gets the dimensions of the terminal. Returns a table with `width` and `height`  
+Note: this is not the size in relation to the dimensions of the display  
 #### Parameters
 This function has no parameters.  
 </div>

@@ -31,7 +31,7 @@ hilbish.jobs.add(cmdstr, args, execPath)
 </a>
 </h4>
 
-Adds a new job to the job table. Note that this does not immediately run it.
+Adds a new job to the job table. Note that this does not immediately run it.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -44,7 +44,7 @@ hilbish.jobs.all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#jo
 </a>
 </h4>
 
-Returns a table of all job objects.
+Returns a table of all job objects.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -57,7 +57,7 @@ hilbish.jobs.disown(id)
 </a>
 </h4>
 
-Disowns a job. This deletes it from the job table.
+Disowns a job. This deletes it from the job table.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -70,7 +70,7 @@ hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" st
 </a>
 </h4>
 
-Get a job object via its ID.
+Get a job object via its ID.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -83,7 +83,7 @@ hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" sty
 </a>
 </h4>
 
-Returns the last added job from the table.
+Returns the last added job from the table.  
 #### Parameters
 This function has no parameters.  
 </div>

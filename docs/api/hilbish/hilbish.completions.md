@@ -26,10 +26,10 @@ hilbish.completions.call(name, query, ctx, fields) -> completionGroups (table), 
 </a>
 </h4>
 
-Calls a completer function. This is mainly used to call
-a command completer, which will have a `name` in the form
-of `command.name`, example: `command.git`.
-You can check `doc completions` for info on the `completionGroups` return value.
+Calls a completer function. This is mainly used to call  
+a command completer, which will have a `name` in the form  
+of `command.name`, example: `command.git`.  
+You can check `doc completions` for info on the `completionGroups` return value.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -42,8 +42,8 @@ hilbish.completions.handler(line, pos)
 </a>
 </h4>
 
-The handler function is the callback for tab completion in Hilbish.
-You can check the completions doc for more info.
+The handler function is the callback for tab completion in Hilbish.  
+You can check the completions doc for more info.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -56,7 +56,7 @@ hilbish.completions.bins(query, ctx, fields) -> entries (table), prefix (string)
 </a>
 </h4>
 
-Returns binary/executale completion candidates based on the provided query.
+Returns binary/executale completion candidates based on the provided query.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -69,7 +69,7 @@ hilbish.completions.files(query, ctx, fields) -> entries (table), prefix (string
 </a>
 </h4>
 
-Returns file completion candidates based on the provided query.
+Returns file completion candidates based on the provided query.  
 #### Parameters
 This function has no parameters.  
 </div>

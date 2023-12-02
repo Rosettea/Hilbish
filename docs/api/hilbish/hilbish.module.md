@@ -61,8 +61,8 @@ hilbish.module.load(path)
 </a>
 </h4>
 
-Loads a module at the designated `path`.
-It will throw if any error occurs.
+Loads a module at the designated `path`.  
+It will throw if any error occurs.  
 #### Parameters
 This function has no parameters.  
 </div>

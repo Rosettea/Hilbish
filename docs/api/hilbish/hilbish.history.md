@@ -29,7 +29,7 @@ hilbish.history.add(cmd)
 </a>
 </h4>
 
-Adds a command to the history.
+Adds a command to the history.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -42,7 +42,7 @@ hilbish.history.all() -> table
 </a>
 </h4>
 
-Retrieves all history.
+Retrieves all history.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -55,7 +55,7 @@ hilbish.history.clear()
 </a>
 </h4>
 
-Deletes all commands from the history.
+Deletes all commands from the history.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -68,7 +68,7 @@ hilbish.history.get(idx)
 </a>
 </h4>
 
-Retrieves a command from the history based on the `idx`.
+Retrieves a command from the history based on the `idx`.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -81,7 +81,7 @@ hilbish.history.size() -> number
 </a>
 </h4>
 
-Returns the amount of commands in the history.
+Returns the amount of commands in the history.  
 #### Parameters
 This function has no parameters.  
 </div>
