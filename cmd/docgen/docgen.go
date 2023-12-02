@@ -555,7 +555,7 @@ func main() {
 `, htmlSig, dps.FuncName))
 					for _, doc := range dps.Doc {
 						if !strings.HasPrefix(doc, "---") {
-							f.WriteString(doc + "\n")
+							f.WriteString(doc + "  \n")
 						}
 					}
 					f.WriteString("#### Parameters\n")
