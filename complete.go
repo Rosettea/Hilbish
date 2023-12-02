@@ -193,10 +193,10 @@ func escapeFilename(fname string) string {
 // The completions interface deals with tab completions.
 func completionLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
-		"bins": {luaBinaryComplete, 3, false},
-		"call": {callLuaCompleter, 4, false},
-		"files": {luaFileComplete, 3, false},
-		"handler": {completionHandler, 2, false},
+		"bins": {hcmpBins, 3, false},
+		"call": {hcmpCall, 4, false},
+		"files": {hcmpFiles, 3, false},
+		"handler": {hcmpHandler, 2, false},
 	}
 
 	mod := rt.NewTable()
@@ -231,7 +231,7 @@ hilbish.complete('command.sudo', function(query, ctx, fields)
 end)
 #example
 */
-func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func hcmpBins(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
@@ -257,7 +257,7 @@ func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #param query string
 // #param ctx string
 // #param fields table
-func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func hcmpCall(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(4); err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #param query string
 // #param ctx string
 // #param fields table
-func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func hcmpFiles(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
@@ -341,7 +341,7 @@ function hilbish.completion.handler(line, pos)
 end
 #example
 */
-func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func hcmpHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
