@@ -336,9 +336,19 @@ func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // alias(cmd, orig)
-// Sets an alias of `cmd` to `orig`
-// --- @param cmd string
-// --- @param orig string
+// Sets an alias, with a name of `cmd` to another command.
+// #param cmd string Name of the alias
+// #param orig string Command that will be aliased
+/*
+#example
+-- With this, "ga file" will turn into "git add file"
+hilbish.alias('ga', 'git add')
+
+-- Numbered substitutions are supported here!
+hilbish.alias('dircount', 'ls %1 | wc -l')
+-- "dircount ~" would count how many files are in ~ (home directory).
+#example
+*/
 func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -358,8 +368,20 @@ func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // appendPath(dir)
-// Appends `dir` to $PATH
-// --- @param dir string|table
+// Appends the provided dir to the command path (`$PATH`)
+// #param dir string|table Directory (or directories) to append to path
+/*
+#example
+hilbish.appendPath '~/go/bin'
+-- Will add ~/go/bin to the command path.
+
+-- Or do multiple:
+hilbush.appendPath {
+	'~/go/bin',
+	'~/.local/bin'
+}
+#example
+*/
 func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

@@ -14,8 +14,8 @@ interfaces and functions which directly relate to shell functionality.
 ## Functions
 |||
 |----|----|
-|<a href="#alias">alias(cmd, orig)</a>|Sets an alias of `cmd` to `orig`|
-|<a href="#appendPath">appendPath(dir)</a>|Appends `dir` to $PATH|
+|<a href="#alias">alias(cmd, orig)</a>|Sets an alias, with a name of `cmd` to another command.|
+|<a href="#appendPath">appendPath(dir)</a>|Appends the provided dir to the command path (`$PATH`)|
 |<a href="#complete">complete(scope, cb)</a>|Registers a completion handler for `scope`.|
 |<a href="#cwd">cwd() -> string</a>|Returns the current directory of the shell|
 |<a href="#exec">exec(cmd)</a>|Replaces running hilbish with `cmd`|
@@ -54,9 +54,25 @@ hilbish.alias(cmd, orig)
 </a>
 </h4>
 
-Sets an alias of `cmd` to `orig`  
+Sets an alias, with a name of `cmd` to another command.  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string` **`cmd`**  
+Name of the alias
+
+`string` **`orig`**  
+Command that will be aliased
+
+#### Example
+```lua
+-- With this, "ga file" will turn into "git add file"
+hilbish.alias('ga', 'git add')
+
+-- Numbered substitutions are supported here!
+hilbish.alias('dircount', 'ls %1 | wc -l')
+-- "dircount ~" would count how many files are in ~ (home directory).
+````
 </div>
 
 <hr><div id='appendPath'>
@@ -67,9 +83,24 @@ hilbish.appendPath(dir)
 </a>
 </h4>
 
-Appends `dir` to $PATH  
+Appends the provided dir to the command path (`$PATH`)  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string|table` **`dir`**  
+Directory (or directories) to append to path
+
+#### Example
+```lua
+hilbish.appendPath '~/go/bin'
+-- Will add ~/go/bin to the command path.
+
+-- Or do multiple:
+hilbush.appendPath {
+	'~/go/bin',
+	'~/.local/bin'
+}
+````
 </div>
 
 <hr><div id='complete'>

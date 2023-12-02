@@ -1,3 +1,12 @@
+---
+title: Completions
+description: Tab completion for commands.
+layout: doc
+menu: 
+  docs:
+    parent: "Features"
+---
+
 Hilbish has a pretty good completion system. It has a nice looking
 menu, with 2 types of menus: grid (like file completions) or
 list.

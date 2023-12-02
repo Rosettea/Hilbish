@@ -1,3 +1,12 @@
+---
+title: Jobs
+description: Controls for background commands in Hilbish.
+layout: doc
+menu: 
+  docs:
+    parent: "Features"
+---
+
 Hilbish has pretty standard job control. It's missing one or two things,
 but works well. One thing which is different from other shells
 (besides Hilbish) itself is the API for jobs, and of course it's in Lua.

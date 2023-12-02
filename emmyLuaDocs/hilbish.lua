@@ -49,13 +49,14 @@ function hilbish.editor.getChar() end
 --- @param text string
 function hilbish.editor.setVimRegister(register, text) end
 
---- Sets an alias of `cmd` to `orig`
---- @param cmd string
---- @param orig string
+--- Sets an alias, with a name of `cmd` to another command.
+--- 
+--- 
 function hilbish.alias(cmd, orig) end
 
---- Appends `dir` to $PATH
---- @param dir string|table
+--- Appends the provided dir to the command path (`$PATH`)
+--- 
+--- 
 function hilbish.appendPath(dir) end
 
 --- Registers a completion handler for `scope`.
