@@ -188,7 +188,7 @@ func escapeFilename(fname string) string {
 	return escapeReplaer.Replace(fname)
 }
 
-// #interface completions
+// #interface completion
 // tab completions
 // The completions interface deals with tab completions.
 func completionLoader(rtm *rt.Runtime) *rt.Table {
@@ -205,7 +205,7 @@ func completionLoader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
-// #interface completions
+// #interface completion
 // handler(line, pos)
 // The handler function is the callback for tab completion in Hilbish.
 // You can check the completions doc for more info.
@@ -215,7 +215,7 @@ func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// #interface completions
+// #interface completion
 // call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
 // Calls a completer function. This is mainly used to call
 // a command completer, which will have a `name` in the form
@@ -265,7 +265,7 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return cont, nil
 }
 
-// #interface completions
+// #interface completion
 // files(query, ctx, fields) -> entries (table), prefix (string)
 // Returns file completion candidates based on the provided query.
 // --- @param query string
@@ -287,7 +287,7 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-// #interface completions
+// #interface completion
 // bins(query, ctx, fields) -> entries (table), prefix (string)
 // Returns binary/executale completion candidates based on the provided query.
 // --- @param query string
