@@ -14,8 +14,8 @@ The terminal library is a simple and lower level library for certain terminal in
 |||
 |----|----|
 |<a href="#restoreState">restoreState()</a>|Restores the last saved state of the terminal|
-|<a href="#saveState">saveState()</a>|Saves the current state of the terminal|
-|<a href="#setRaw">setRaw()</a>|Puts the terminal in raw mode|
+|<a href="#saveState">saveState()</a>|Saves the current state of the terminal.|
+|<a href="#setRaw">setRaw()</a>|Puts the terminal into raw mode.|
 |<a href="#size">size()</a>|Gets the dimensions of the terminal. Returns a table with `width` and `height`|
 
 <hr><div id='restoreState'>
@@ -39,7 +39,7 @@ terminal.saveState()
 </a>
 </h4>
 
-Saves the current state of the terminal  
+Saves the current state of the terminal.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -52,7 +52,7 @@ terminal.setRaw()
 </a>
 </h4>
 
-Puts the terminal in raw mode  
+Puts the terminal into raw mode.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -66,7 +66,7 @@ terminal.size()
 </h4>
 
 Gets the dimensions of the terminal. Returns a table with `width` and `height`  
-Note: this is not the size in relation to the dimensions of the display  
+NOTE: The size refers to the amount of columns and rows of text that can fit in the terminal.  
 #### Parameters
 This function has no parameters.  
 </div>

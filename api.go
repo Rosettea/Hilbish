@@ -190,12 +190,10 @@ func unsetVimMode() {
 }
 
 // run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
-// Runs `cmd` in Hilbish's sh interpreter.
-// If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
-// 3rd values instead of being outputted to the terminal.
-// --- @param cmd string
-// --- @param returnOut boolean
-// --- @returns number, string, string
+// Runs `cmd` in Hilbish's shell script interpreter.
+// #param cmd string
+// #param returnOut boolean If this is true, the function will return the standard output and error of the command instead of printing it.
+// #returns number, string, string
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -238,7 +236,7 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // cwd() -> string
 // Returns the current directory of the shell
-// --- @returns string
+// #returns string
 func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
 
@@ -249,9 +247,9 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // read(prompt) -> input (string)
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
-// Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
-// --- @param prompt? string
-// --- @returns string|nil
+// Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen).
+// #param prompt? string
+// #returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaprompt := c.Arg(0)
 	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
@@ -279,14 +277,21 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 /*
 prompt(str, typ)
-Changes the shell prompt to `str`
+Changes the shell prompt to the provided string.
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory
 `%u` - Name of current user
 `%h` - Hostname of device
---- @param str string
---- @param typ? string Type of prompt, being left or right. Left by default.
+#param str string
+#param typ? string Type of prompt, being left or right. Left by default.
+#example
+-- the default hilbish prompt without color
+hilbish.prompt '%u %d ∆'
+-- or something of old:
+hilbish.prompt '%u@%h :%d $'
+-- prompt: user@hostname: ~/directory $
+#example
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()
@@ -320,8 +325,28 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // multiprompt(str)
-// Changes the continued line prompt to `str`
-// --- @param str string
+// Changes the text prompt when Hilbish asks for more input.
+// This will show up when text is incomplete, like a missing quote
+// #param str string
+/*
+#example
+--[[
+imagine this is your text input:
+user ~ ∆ echo "hey
+
+but there's a missing quote! hilbish will now prompt you so the terminal
+will look like:
+user ~ ∆ echo "hey
+--> ...!"
+
+so then you get 
+user ~ ∆ echo "hey
+--> ...!"
+hey ...!
+]]--
+hilbish.multiprompt '-->'
+#example
+*/
 func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -415,8 +440,9 @@ func appendPath(dir string) {
 }
 
 // exec(cmd)
-// Replaces running hilbish with `cmd`
-// --- @param cmd string
+// Replaces the currently running Hilbish instance with the supplied command.
+// This can be used to do an in-place restart.
+// #param cmd string
 func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -450,8 +476,10 @@ func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // goro(fn)
-// Puts `fn` in a goroutine
-// --- @param fn function
+// Puts `fn` in a Goroutine.
+// This can be used to run any function in another thread.
+// **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**
+// #param fn function
 func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -474,10 +502,10 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // timeout(cb, time) -> @Timer
 // Runs the `cb` function after `time` in milliseconds.
-// This creates a timer that starts immediately.
-// --- @param cb function
-// --- @param time number
-// --- @returns Timer
+// This creates a Timer that starts immediately.
+// #param cb function
+// #param time number
+// #returns Timer
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -501,9 +529,9 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // interval(cb, time) -> @Timer
 // Runs the `cb` function every `time` milliseconds.
 // This creates a timer that starts immediately.
-// --- @param cb function
-// --- @param time number
-// --- @return Timer
+// #param cb function
+// #param time number
+// #return Timer
 func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -525,13 +553,13 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // complete(scope, cb)
-// Registers a completion handler for `scope`.
+// Registers a completion handler for the specified scope.
 // A `scope` is currently only expected to be `command.<cmd>`,
 // replacing <cmd> with the name of the command (for example `command.git`).
-// `cb` must be a function that returns a table of "completion groups."
-// Check `doc completions` for more information.
-// --- @param scope string
-// --- @param cb function
+// The documentation for completions, under Features/Completions or `doc completions`
+// provides more details.
+// #param scope string
+// #param cb function
 func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	scope, cb, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -543,8 +571,8 @@ func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // prependPath(dir)
-// Prepends `dir` to $PATH
-// --- @param dir string
+// Prepends `dir` to $PATH.
+// #param dir string
 func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -567,8 +595,8 @@ func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // which(name) -> string
 // Checks if `name` is a valid command.
 // Will return the path of the binary, or a basename if it's a commander.
-// --- @param name string
-// --- @returns string
+// #param name string
+// #returns string
 func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -598,8 +626,10 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // inputMode(mode)
-// Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
-// --- @param mode string
+// Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.
+// `emacs` is the default. Setting it to `vim` changes behavior of input to be
+// Vim-like with modes and Vim keybinds.
+// #param mode string
 func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -629,7 +659,7 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
-// --- @param mode string|function
+// #param mode string|function
 func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -655,26 +685,33 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // line and cursor position. It is expected to return a string which is used
 // as the text for the hint. This is by default a shim. To set hints,
 // override this function with your custom handler.
-// --- @param line string
-// --- @param pos number
+// #param line string
+// #param pos number
+/*
+#example
+-- this will display "hi" after the cursor in a dimmed color.
+function hilbish.hinter(line, pos)
+	return 'hi'
+end
+#example
+*/
 func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
 // highlighter(line)
-// Line highlighter handler. This is mainly for syntax highlighting, but in
-// reality could set the input of the prompt to *display* anything. The
-// callback is passed the current line and is expected to return a line that
-// will be used as the input display.
+// Line highlighter handler.
+// This is mainly for syntax highlighting, but in reality could set the input
+// of the prompt to *display* anything. The callback is passed the current line
+// and is expected to return a line that will be used as the input display.
 // Note that to set a highlighter, one has to override this function.
-// Example:
-// ```
+// #example
+// --This code will highlight all double quoted strings in green.
 // function hilbish.highlighter(line)
 //    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
 // end
-// ```
-// This code will highlight all double quoted strings in green.
-// --- @param line string
+// #example
+// #param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }

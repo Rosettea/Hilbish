@@ -35,6 +35,7 @@ lineNumbersInTable = false
 noClasses = false
 codeFences = true
 guessSyntax = true
+tabWidth = 4
 
 [author]
 	[author.sammyette]

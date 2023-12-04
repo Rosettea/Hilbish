@@ -1,6 +1,6 @@
 ---
 title: Module hilbish.os
-description: OS Info
+description: operating system info
 layout: doc
 menu:
   docs:
@@ -8,9 +8,8 @@ menu:
 ---
 
 ## Introduction
-The `os` interface provides simple text information properties about
-the current OS on the systen. This mainly includes the name and
-version.
+Provides simple text information properties about the current operating system.
+This mainly includes the name and version.
 
 ## Static module fields
 |||

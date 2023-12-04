@@ -14,14 +14,10 @@ a few seconds, you don't have to rely on timing tricks, as Hilbish has a
 timer API to set intervals and timeouts.
 
 These are the simple functions `hilbish.interval` and `hilbish.timeout` (doc
-accessible with `doc hilbish`). But if you want slightly more control over
-them, there is the `hilbish.timers` interface. It allows you to get
-a timer via ID and control them.
-
-All functions documented with the `Timer` type refer to a Timer object.
+accessible with `doc hilbish`, or `Module hilbish` on the Website).
 
 An example of usage:
-```
+```lua
 local t = hilbish.timers.create(hilbish.timers.TIMEOUT, 5000, function()
 	print 'hello!'
 end)
@@ -33,7 +29,7 @@ print(t.running) // true
 ## Functions
 |||
 |----|----|
-|<a href="#timers.create">create(type, time, callback) -> @Timer</a>|Creates a timer that runs based on the specified `time` in milliseconds.|
+|<a href="#timers.create">create(type, time, callback) -> @Timer</a>|Creates a timer that runs based on the specified `time`.|
 |<a href="#timers.get">get(id) -> @Timer</a>|Retrieves a timer via its ID.|
 
 ## Static module fields
@@ -50,10 +46,17 @@ hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbis
 </a>
 </h4>
 
-Creates a timer that runs based on the specified `time` in milliseconds.  
-The `type` can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`  
+Creates a timer that runs based on the specified `time`.  
 #### Parameters
-This function has no parameters.  
+`number` **`type`**  
+What kind of timer to create, can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
+
+`number` **`time`**  
+The amount of time the function should run in milliseconds.
+
+`function` **`callback`**  
+The function to run for the timer.
+
 </div>
 
 <hr><div id='timers.get'>
@@ -66,7 +69,9 @@ hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#tim
 
 Retrieves a timer via its ID.  
 #### Parameters
-This function has no parameters.  
+`number` **`id`**  
+
+
 </div>
 
 ## Types

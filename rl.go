@@ -267,7 +267,7 @@ func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 // #interface history
 // add(cmd)
 // Adds a command to the history.
-// --- @param cmd string
+// #param cmd string
 func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -284,15 +284,15 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 // #interface history
 // size() -> number
 // Returns the amount of commands in the history.
-// --- @returns number
+// #eturns number
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.IntValue(int64(lr.fileHist.Len()))), nil
 }
 
 // #interface history
-// get(idx)
-// Retrieves a command from the history based on the `idx`.
-// --- @param idx number
+// get(index)
+// Retrieves a command from the history based on the `index`.
+// #param index number
 func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -309,8 +309,8 @@ func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 
 // #interface history
 // all() -> table
-// Retrieves all history.
-// --- @returns table
+// Retrieves all history as a table.
+// #returns table
 func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	tbl := rt.NewTable()
 	size := lr.fileHist.Len()

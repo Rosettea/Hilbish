@@ -16,9 +16,9 @@ method of saving history.
 |||
 |----|----|
 |<a href="#history.add">add(cmd)</a>|Adds a command to the history.|
-|<a href="#history.all">all() -> table</a>|Retrieves all history.|
+|<a href="#history.all">all() -> table</a>|Retrieves all history as a table.|
 |<a href="#history.clear">clear()</a>|Deletes all commands from the history.|
-|<a href="#history.get">get(idx)</a>|Retrieves a command from the history based on the `idx`.|
+|<a href="#history.get">get(index)</a>|Retrieves a command from the history based on the `index`.|
 |<a href="#history.size">size() -> number</a>|Returns the amount of commands in the history.|
 
 <hr><div id='history.add'>
@@ -31,7 +31,9 @@ hilbish.history.add(cmd)
 
 Adds a command to the history.  
 #### Parameters
-This function has no parameters.  
+`string` **`cmd`**  
+
+
 </div>
 
 <hr><div id='history.all'>
@@ -42,7 +44,7 @@ hilbish.history.all() -> table
 </a>
 </h4>
 
-Retrieves all history.  
+Retrieves all history as a table.  
 #### Parameters
 This function has no parameters.  
 </div>
@@ -62,15 +64,17 @@ This function has no parameters.
 
 <hr><div id='history.get'>
 <h4 class='heading'>
-hilbish.history.get(idx)
+hilbish.history.get(index)
 <a href="#history.get" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
-Retrieves a command from the history based on the `idx`.  
+Retrieves a command from the history based on the `index`.  
 #### Parameters
-This function has no parameters.  
+`number` **`index`**  
+
+
 </div>
 
 <hr><div id='history.size'>

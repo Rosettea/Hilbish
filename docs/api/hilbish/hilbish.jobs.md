@@ -17,11 +17,11 @@ interactive usage or with the functions defined below for use in external runner
 ## Functions
 |||
 |----|----|
-|<a href="#jobs.add">add(cmdstr, args, execPath)</a>|Adds a new job to the job table. Note that this does not immediately run it.|
-|<a href="#jobs.all">all() -> table<@Job></a>|Returns a table of all job objects.|
-|<a href="#jobs.disown">disown(id)</a>|Disowns a job. This deletes it from the job table.|
+|<a href="#jobs.add">add(cmdstr, args, execPath)</a>|Creates a new job. This function does not run the job. This function is intended to be|
+|<a href="#jobs.all">all() -> table[@Job]</a>|Returns a table of all job objects.|
+|<a href="#jobs.disown">disown(id)</a>|Disowns a job. This simply deletes it from the list of jobs without stopping it.|
 |<a href="#jobs.get">get(id) -> @Job</a>|Get a job object via its ID.|
-|<a href="#jobs.last">last() -> @Job</a>|Returns the last added job from the table.|
+|<a href="#jobs.last">last() -> @Job</a>|Returns the last added job to the table.|
 
 <hr><div id='jobs.add'>
 <h4 class='heading'>
@@ -31,14 +31,29 @@ hilbish.jobs.add(cmdstr, args, execPath)
 </a>
 </h4>
 
-Adds a new job to the job table. Note that this does not immediately run it.  
+Creates a new job. This function does not run the job. This function is intended to be  
+used by runners, but can also be used to create jobs via Lua. Commanders cannot be ran as jobs.  
+  
+  
 #### Parameters
-This function has no parameters.  
+`string` **`cmdstr`**  
+String that a user would write for the job
+
+`table` **`args`**  
+Arguments for the commands. Has to include the name of the command.
+
+`string` **`execPath`**  
+Binary to use to run the command. Does not
+
+#### Example
+```lua
+hilbish.jobs.add('go build', {'go', 'build'}, '/usr/bin/go')
+````
 </div>
 
 <hr><div id='jobs.all'>
 <h4 class='heading'>
-hilbish.jobs.all() -> table\<<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>>
+hilbish.jobs.all() -> table[<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>]
 <a href="#jobs.all" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
@@ -57,9 +72,11 @@ hilbish.jobs.disown(id)
 </a>
 </h4>
 
-Disowns a job. This deletes it from the job table.  
+Disowns a job. This simply deletes it from the list of jobs without stopping it.  
 #### Parameters
-This function has no parameters.  
+`number` **`id`**  
+
+
 </div>
 
 <hr><div id='jobs.get'>
@@ -83,7 +100,7 @@ hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" sty
 </a>
 </h4>
 
-Returns the last added job from the table.  
+Returns the last added job to the table.  
 #### Parameters
 This function has no parameters.  
 </div>
