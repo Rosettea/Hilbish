@@ -247,7 +247,6 @@ func hcmpBins(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-
 // #interface completion
 // call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
 // Calls a completer function. This is mainly used to call a command completer, which will have a `name`
