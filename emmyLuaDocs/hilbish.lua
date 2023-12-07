@@ -22,13 +22,13 @@ function hilbish.runner.setMode(cb) end
 --- @param query string
 --- @param ctx string
 --- @param fields table
-function hilbish.completions.call(name, query, ctx, fields) end
+function hilbish.completion.call(name, query, ctx, fields) end
 
 --- The handler function is the callback for tab completion in Hilbish.
 --- You can check the completions doc for more info.
 --- @param line string
 --- @param pos string
-function hilbish.completions.handler(line, pos) end
+function hilbish.completion.handler(line, pos) end
 
 --- Returns the current input line.
 function hilbish.editor.getLine() end
@@ -175,13 +175,13 @@ function hilbish.jobs:background() end
 --- @param query string
 --- @param ctx string
 --- @param fields table
-function hilbish.completions.bins(query, ctx, fields) end
+function hilbish.completion.bins(query, ctx, fields) end
 
 --- Returns file completion candidates based on the provided query.
 --- @param query string
 --- @param ctx string
 --- @param fields table
-function hilbish.completions.files(query, ctx, fields) end
+function hilbish.completion.files(query, ctx, fields) end
 
 --- Puts a job in the foreground. This will cause it to run like it was
 --- executed normally and wait for it to complete.
