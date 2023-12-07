@@ -175,6 +175,9 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	runnerRet := term.Get(0)
 	if runner, ok = runnerRet.TryTable(); !ok {
 		fmt.Fprintln(os.Stderr, "runner did not return a table")
+		exitCode = 125
+		input = userInput
+		return
 	}
 
 	if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
