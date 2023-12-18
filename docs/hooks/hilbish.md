@@ -4,7 +4,7 @@ description:
 layout: doc
 menu:
   docs:
-    parent: "Hooks"
+    parent: "Signals"
 ---
 
 + `hilbish.exit` > Sent when Hilbish is about to exit.

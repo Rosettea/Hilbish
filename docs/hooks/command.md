@@ -4,7 +4,7 @@ description:
 layout: doc
 menu:
   docs:
-    parent: "Hooks"
+    parent: "Signals"
 ---
 
 - `command.preexec` -> input, cmdStr > Thrown before a command

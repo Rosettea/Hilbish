@@ -4,7 +4,7 @@ description:
 layout: doc
 menu:
   docs:
-    parent: "Hooks"
+    parent: "Signals"
 ---
 
 + `signal.sigint` > Sent when Hilbish receives SIGINT (on Ctrl-C).
