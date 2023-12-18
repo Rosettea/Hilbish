@@ -86,6 +86,6 @@ commander.register('hello', function(args, sinks)
 
 	sinks.out:writeln('Hello ' .. name)
 end)
-````
+```
 </div>
 

@@ -122,7 +122,7 @@ Pattern to compare files with.
 local matches = fs.glob './*.lua'
 print(matches)
 -- -> {'init.lua', 'code.lua'}
-````
+```
 </div>
 
 <hr><div id='join'>
@@ -145,7 +145,7 @@ Paths to join together
 -- This prints the directory for Hilbish's config!
 print(fs.join(hilbish.userDir.config, 'hilbish'))
 -- -> '/home/user/.config/hilbish' on Linux
-````
+```
 </div>
 
 <hr><div id='mkdir'>
@@ -172,7 +172,7 @@ Whether to create parent directories for the provided name
 #### Example
 ```lua
 
-````
+```
 </div>
 
 <hr><div id='readdir'>
@@ -225,6 +225,6 @@ Would print the following:
   size = 12288
 }
 ]]--
-````
+```
 </div>
 

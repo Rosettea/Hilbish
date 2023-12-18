@@ -580,7 +580,7 @@ func main() {
 					}
 					if codeExample := dps.Tags["example"]; codeExample != nil {
 						f.WriteString("#### Example\n")
-						f.WriteString(fmt.Sprintf("```lua\n%s\n````\n", strings.Join(codeExample[0].fields, "\n")))
+						f.WriteString(fmt.Sprintf("```lua\n%s\n```\n", strings.Join(codeExample[0].fields, "\n")))
 					}
 					f.WriteString("</div>")
 					f.WriteString("\n\n")

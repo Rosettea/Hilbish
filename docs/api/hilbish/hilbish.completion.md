@@ -57,7 +57,7 @@ hilbish.complete('command.sudo', function(query, ctx, fields)
 
 	-- ... else suggest files or anything else ..
 end)
-````
+```
 </div>
 
 <hr><div id='completion.call'>
@@ -140,6 +140,6 @@ function hilbish.completion.handler(line, pos)
 		-- call command completer or files completer here
 	end
 end
-````
+```
 </div>
 

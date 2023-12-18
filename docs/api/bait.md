@@ -64,7 +64,7 @@ The function that will be called when the hook is thrown.
 bait.catch('hilbish.exit', function()
 	print 'Goodbye Hilbish!'
 end)
-````
+```
 </div>
 
 <hr><div id='catchOnce'>
@@ -129,7 +129,7 @@ bait.catch('event', hookCallback)
 -- a little while later....
 bait.release('event', hookCallback)
 -- and now hookCallback will no longer be ran for the event.
-````
+```
 </div>
 
 <hr><div id='throw'>
@@ -158,6 +158,6 @@ bait.throw('greeting', 'world')
 bait.catch('gretting', function(greetTo)
 	print('Hello ' .. greetTo)
 end)
-````
+```
 </div>
 

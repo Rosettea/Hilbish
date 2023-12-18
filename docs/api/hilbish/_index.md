@@ -72,7 +72,7 @@ hilbish.alias('ga', 'git add')
 -- Numbered substitutions are supported here!
 hilbish.alias('dircount', 'ls %1 | wc -l')
 -- "dircount ~" would count how many files are in ~ (home directory).
-````
+```
 </div>
 
 <hr><div id='appendPath'>
@@ -100,7 +100,7 @@ hilbush.appendPath {
 	'~/go/bin',
 	'~/.local/bin'
 }
-````
+```
 </div>
 
 <hr><div id='complete'>
@@ -195,7 +195,7 @@ Note that to set a highlighter, one has to override this function.
 function hilbish.highlighter(line)
    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
 end
-````
+```
 </div>
 
 <hr><div id='hinter'>
@@ -226,7 +226,7 @@ override this function with your custom handler.
 function hilbish.hinter(line, pos)
 	return 'hi'
 end
-````
+```
 </div>
 
 <hr><div id='inputMode'>
@@ -298,7 +298,7 @@ user ~ ∆ echo "hey
 hey ...!
 ]]--
 hilbish.multiprompt '-->'
-````
+```
 </div>
 
 <hr><div id='prependPath'>
@@ -345,7 +345,7 @@ hilbish.prompt '%u %d ∆'
 -- or something of old:
 hilbish.prompt '%u@%h :%d $'
 -- prompt: user@hostname: ~/directory $
-````
+```
 </div>
 
 <hr><div id='read'>

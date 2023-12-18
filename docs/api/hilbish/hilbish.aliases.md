@@ -65,7 +65,7 @@ hilbish.aliases.add('hi', 'echo hi')
 
 local aliases = hilbish.aliases.list()
 -- -> {hi = 'echo hi'}
-````
+```
 </div>
 
 <hr><div id='aliases.resolve'>

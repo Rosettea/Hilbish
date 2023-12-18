@@ -48,7 +48,7 @@ Binary to use to run the command. Does not
 #### Example
 ```lua
 hilbish.jobs.add('go build', {'go', 'build'}, '/usr/bin/go')
-````
+```
 </div>
 
 <hr><div id='jobs.all'>
