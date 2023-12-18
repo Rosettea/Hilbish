@@ -533,7 +533,7 @@ func main() {
 					if dps.IsMember {
 						continue
 					}
-					f.WriteString(fmt.Sprintf("<hr><div id='%s'>", dps.FuncName))
+					f.WriteString(fmt.Sprintf("<hr>\n<div id='%s'>", dps.FuncName))
 					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(modname + "." + dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]

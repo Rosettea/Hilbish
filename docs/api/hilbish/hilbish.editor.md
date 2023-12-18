@@ -20,7 +20,8 @@ directly interact with the line editor in use.
 |<a href="#editor.getChar">getChar() -> string</a>|Reads a keystroke from the user. This is in a format of something like Ctrl-L.|
 |<a href="#editor.setVimRegister">setVimRegister(register, text)</a>|Sets the vim register at `register` to hold the passed text.|
 
-<hr><div id='editor.getLine'>
+<hr>
+<div id='editor.getLine'>
 <h4 class='heading'>
 hilbish.editor.getLine() -> string
 <a href="#editor.getLine" class='heading-link'>
@@ -33,7 +34,8 @@ Returns the current input line.
 This function has no parameters.  
 </div>
 
-<hr><div id='editor.getVimRegister'>
+<hr>
+<div id='editor.getVimRegister'>
 <h4 class='heading'>
 hilbish.editor.getVimRegister(register) -> string
 <a href="#editor.getVimRegister" class='heading-link'>
@@ -48,7 +50,8 @@ Returns the text that is at the register.
 
 </div>
 
-<hr><div id='editor.insert'>
+<hr>
+<div id='editor.insert'>
 <h4 class='heading'>
 hilbish.editor.insert(text)
 <a href="#editor.insert" class='heading-link'>
@@ -63,7 +66,8 @@ Inserts text into the Hilbish command line.
 
 </div>
 
-<hr><div id='editor.getChar'>
+<hr>
+<div id='editor.getChar'>
 <h4 class='heading'>
 hilbish.editor.getChar() -> string
 <a href="#editor.getChar" class='heading-link'>
@@ -76,7 +80,8 @@ Reads a keystroke from the user. This is in a format of something like Ctrl-L.
 This function has no parameters.  
 </div>
 
-<hr><div id='editor.setVimRegister'>
+<hr>
+<div id='editor.setVimRegister'>
 <h4 class='heading'>
 hilbish.editor.setVimRegister(register, text)
 <a href="#editor.setVimRegister" class='heading-link'>

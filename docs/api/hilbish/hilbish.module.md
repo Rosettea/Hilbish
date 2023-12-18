@@ -53,7 +53,8 @@ If you attempt to require and print the result (`print(require 'plugin')`), it w
 |----|----|
 |paths|A list of paths to search when loading native modules. This is in the style of Lua search paths and will be used when requiring native modules. Example: `?.so;?/?.so`|
 
-<hr><div id='module.load'>
+<hr>
+<div id='module.load'>
 <h4 class='heading'>
 hilbish.module.load(path)
 <a href="#module.load" class='heading-link'>

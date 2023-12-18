@@ -6,6 +6,22 @@ local Greenhouse = require 'nature.greenhouse'
 local Page = require 'nature.greenhouse.page'
 local docfuncs = require 'nature.doc'
 
+local function strip(text, ...)
+	for _, pat in ipairs {...} do
+		text = text:gsub(pat, '\b')
+	end
+
+	return text
+end
+
+local function transformHTMLandMD(text)
+	return strip(text, '|||', '|%-%-%-%-|%-%-%-%-|')
+	:gsub('|(.-)|(.-)|', function(entry1, entry2)
+		return string.format('%s - %s', entry1, entry2)
+	end)
+	:gsub('<hr>', '{separator}')
+end
+
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
 	local stat = pcall(fs.stat, '.git/refs/heads/extended-job-api')
@@ -117,7 +133,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 	end
 	local backtickOccurence = 0
 	local function formatDocText(d)
-		return d:gsub('```(%w+)\n(.-)```', function(lang, text)
+		return transformHTMLandMD(d):gsub('```(%w+)\n(.-)```', function(lang, text)
 			return docfuncs.renderCodeBlock(text)
 		end)
 		--[[

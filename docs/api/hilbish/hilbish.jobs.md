@@ -23,7 +23,8 @@ interactive usage or with the functions defined below for use in external runner
 |<a href="#jobs.get">get(id) -> @Job</a>|Get a job object via its ID.|
 |<a href="#jobs.last">last() -> @Job</a>|Returns the last added job to the table.|
 
-<hr><div id='jobs.add'>
+<hr>
+<div id='jobs.add'>
 <h4 class='heading'>
 hilbish.jobs.add(cmdstr, args, execPath)
 <a href="#jobs.add" class='heading-link'>
@@ -51,7 +52,8 @@ hilbish.jobs.add('go build', {'go', 'build'}, '/usr/bin/go')
 ```
 </div>
 
-<hr><div id='jobs.all'>
+<hr>
+<div id='jobs.all'>
 <h4 class='heading'>
 hilbish.jobs.all() -> table[<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>]
 <a href="#jobs.all" class='heading-link'>
@@ -64,7 +66,8 @@ Returns a table of all job objects.
 This function has no parameters.  
 </div>
 
-<hr><div id='jobs.disown'>
+<hr>
+<div id='jobs.disown'>
 <h4 class='heading'>
 hilbish.jobs.disown(id)
 <a href="#jobs.disown" class='heading-link'>
@@ -79,7 +82,8 @@ Disowns a job. This simply deletes it from the list of jobs without stopping it.
 
 </div>
 
-<hr><div id='jobs.get'>
+<hr>
+<div id='jobs.get'>
 <h4 class='heading'>
 hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 <a href="#jobs.get" class='heading-link'>
@@ -92,7 +96,8 @@ Get a job object via its ID.
 This function has no parameters.  
 </div>
 
-<hr><div id='jobs.last'>
+<hr>
+<div id='jobs.last'>
 <h4 class='heading'>
 hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" style="text-decoration: none;" id="lol">Job</a>
 <a href="#jobs.last" class='heading-link'>

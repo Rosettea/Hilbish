@@ -38,7 +38,8 @@ print(t.running) // true
 |INTERVAL|Constant for an interval timer type|
 |TIMEOUT|Constant for a timeout timer type|
 
-<hr><div id='timers.create'>
+<hr>
+<div id='timers.create'>
 <h4 class='heading'>
 hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#timers.create" class='heading-link'>
@@ -59,7 +60,8 @@ The function to run for the timer.
 
 </div>
 
-<hr><div id='timers.get'>
+<hr>
+<div id='timers.get'>
 <h4 class='heading'>
 hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#timers.get" class='heading-link'>

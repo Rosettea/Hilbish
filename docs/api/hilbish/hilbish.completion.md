@@ -18,7 +18,8 @@ The completions interface deals with tab completions.
 |<a href="#completion.files">files(query, ctx, fields) -> entries (table), prefix (string)</a>|Returns file matches based on the provided parameters.|
 |<a href="#completion.handler">handler(line, pos)</a>|This function contains the general completion handler for Hilbish. This function handles|
 
-<hr><div id='completion.bins'>
+<hr>
+<div id='completion.bins'>
 <h4 class='heading'>
 hilbish.completion.bins(query, ctx, fields) -> entries (table), prefix (string)
 <a href="#completion.bins" class='heading-link'>
@@ -60,7 +61,8 @@ end)
 ```
 </div>
 
-<hr><div id='completion.call'>
+<hr>
+<div id='completion.call'>
 <h4 class='heading'>
 hilbish.completion.call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
 <a href="#completion.call" class='heading-link'>
@@ -86,7 +88,8 @@ You can check the Completions doc or `doc completions` for info on the `completi
 
 </div>
 
-<hr><div id='completion.files'>
+<hr>
+<div id='completion.files'>
 <h4 class='heading'>
 hilbish.completion.files(query, ctx, fields) -> entries (table), prefix (string)
 <a href="#completion.files" class='heading-link'>
@@ -108,7 +111,8 @@ This function is meant to be used as a helper in a command completion handler.
 
 </div>
 
-<hr><div id='completion.handler'>
+<hr>
+<div id='completion.handler'>
 <h4 class='heading'>
 hilbish.completion.handler(line, pos)
 <a href="#completion.handler" class='heading-link'>

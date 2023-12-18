@@ -31,7 +31,8 @@ library offers more functions and will work on any operating system Hilbish does
 |----|----|
 |pathSep|The operating system's path separator.|
 
-<hr><div id='abs'>
+<hr>
+<div id='abs'>
 <h4 class='heading'>
 fs.abs(path) -> string
 <a href="#abs" class='heading-link'>
@@ -47,7 +48,8 @@ This can be used to resolve short paths like `..` to `/home/user`.
 
 </div>
 
-<hr><div id='basename'>
+<hr>
+<div id='basename'>
 <h4 class='heading'>
 fs.basename(path) -> string
 <a href="#basename" class='heading-link'>
@@ -63,7 +65,8 @@ Path to get the base name of.
 
 </div>
 
-<hr><div id='cd'>
+<hr>
+<div id='cd'>
 <h4 class='heading'>
 fs.cd(dir)
 <a href="#cd" class='heading-link'>
@@ -78,7 +81,8 @@ Path to change directory to.
 
 </div>
 
-<hr><div id='dir'>
+<hr>
+<div id='dir'>
 <h4 class='heading'>
 fs.dir(path) -> string
 <a href="#dir" class='heading-link'>
@@ -94,7 +98,8 @@ Path to get the directory for.
 
 </div>
 
-<hr><div id='glob'>
+<hr>
+<div id='glob'>
 <h4 class='heading'>
 fs.glob(pattern) -> matches (table)
 <a href="#glob" class='heading-link'>
@@ -125,7 +130,8 @@ print(matches)
 ```
 </div>
 
-<hr><div id='join'>
+<hr>
+<div id='join'>
 <h4 class='heading'>
 fs.join(...path) -> string
 <a href="#join" class='heading-link'>
@@ -148,7 +154,8 @@ print(fs.join(hilbish.userDir.config, 'hilbish'))
 ```
 </div>
 
-<hr><div id='mkdir'>
+<hr>
+<div id='mkdir'>
 <h4 class='heading'>
 fs.mkdir(name, recursive)
 <a href="#mkdir" class='heading-link'>
@@ -175,7 +182,8 @@ Whether to create parent directories for the provided name
 ```
 </div>
 
-<hr><div id='readdir'>
+<hr>
+<div id='readdir'>
 <h4 class='heading'>
 fs.readdir(path) -> table[string]
 <a href="#readdir" class='heading-link'>
@@ -190,7 +198,8 @@ Returns a list of all files and directories in the provided path.
 
 </div>
 
-<hr><div id='stat'>
+<hr>
+<div id='stat'>
 <h4 class='heading'>
 fs.stat(path) -> {}
 <a href="#stat" class='heading-link'>

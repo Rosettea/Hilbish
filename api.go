@@ -403,7 +403,7 @@ hilbish.appendPath '~/go/bin'
 -- Will add ~/go/bin to the command path.
 
 -- Or do multiple:
-hilbush.appendPath {
+hilbish.appendPath {
 	'~/go/bin',
 	'~/.local/bin'
 }

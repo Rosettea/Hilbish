@@ -21,7 +21,8 @@ method of saving history.
 |<a href="#history.get">get(index)</a>|Retrieves a command from the history based on the `index`.|
 |<a href="#history.size">size() -> number</a>|Returns the amount of commands in the history.|
 
-<hr><div id='history.add'>
+<hr>
+<div id='history.add'>
 <h4 class='heading'>
 hilbish.history.add(cmd)
 <a href="#history.add" class='heading-link'>
@@ -36,7 +37,8 @@ Adds a command to the history.
 
 </div>
 
-<hr><div id='history.all'>
+<hr>
+<div id='history.all'>
 <h4 class='heading'>
 hilbish.history.all() -> table
 <a href="#history.all" class='heading-link'>
@@ -49,7 +51,8 @@ Retrieves all history as a table.
 This function has no parameters.  
 </div>
 
-<hr><div id='history.clear'>
+<hr>
+<div id='history.clear'>
 <h4 class='heading'>
 hilbish.history.clear()
 <a href="#history.clear" class='heading-link'>
@@ -62,7 +65,8 @@ Deletes all commands from the history.
 This function has no parameters.  
 </div>
 
-<hr><div id='history.get'>
+<hr>
+<div id='history.get'>
 <h4 class='heading'>
 hilbish.history.get(index)
 <a href="#history.get" class='heading-link'>
@@ -77,7 +81,8 @@ Retrieves a command from the history based on the `index`.
 
 </div>
 
-<hr><div id='history.size'>
+<hr>
+<div id='history.size'>
 <h4 class='heading'>
 hilbish.history.size() -> number
 <a href="#history.size" class='heading-link'>

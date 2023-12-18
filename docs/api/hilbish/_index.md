@@ -46,7 +46,8 @@ interfaces and functions which directly relate to shell functionality.
 |vimMode|Current Vim input mode of Hilbish (will be nil if not in Vim input mode)|
 |exitCode|Exit code of the last executed command|
 
-<hr><div id='alias'>
+<hr>
+<div id='alias'>
 <h4 class='heading'>
 hilbish.alias(cmd, orig)
 <a href="#alias" class='heading-link'>
@@ -75,7 +76,8 @@ hilbish.alias('dircount', 'ls %1 | wc -l')
 ```
 </div>
 
-<hr><div id='appendPath'>
+<hr>
+<div id='appendPath'>
 <h4 class='heading'>
 hilbish.appendPath(dir)
 <a href="#appendPath" class='heading-link'>
@@ -96,14 +98,15 @@ hilbish.appendPath '~/go/bin'
 -- Will add ~/go/bin to the command path.
 
 -- Or do multiple:
-hilbush.appendPath {
+hilbish.appendPath {
 	'~/go/bin',
 	'~/.local/bin'
 }
 ```
 </div>
 
-<hr><div id='complete'>
+<hr>
+<div id='complete'>
 <h4 class='heading'>
 hilbish.complete(scope, cb)
 <a href="#complete" class='heading-link'>
@@ -125,7 +128,8 @@ provides more details.
 
 </div>
 
-<hr><div id='cwd'>
+<hr>
+<div id='cwd'>
 <h4 class='heading'>
 hilbish.cwd() -> string
 <a href="#cwd" class='heading-link'>
@@ -138,7 +142,8 @@ Returns the current directory of the shell
 This function has no parameters.  
 </div>
 
-<hr><div id='exec'>
+<hr>
+<div id='exec'>
 <h4 class='heading'>
 hilbish.exec(cmd)
 <a href="#exec" class='heading-link'>
@@ -154,7 +159,8 @@ This can be used to do an in-place restart.
 
 </div>
 
-<hr><div id='goro'>
+<hr>
+<div id='goro'>
 <h4 class='heading'>
 hilbish.goro(fn)
 <a href="#goro" class='heading-link'>
@@ -171,7 +177,8 @@ This can be used to run any function in another thread.
 
 </div>
 
-<hr><div id='highlighter'>
+<hr>
+<div id='highlighter'>
 <h4 class='heading'>
 hilbish.highlighter(line)
 <a href="#highlighter" class='heading-link'>
@@ -198,7 +205,8 @@ end
 ```
 </div>
 
-<hr><div id='hinter'>
+<hr>
+<div id='hinter'>
 <h4 class='heading'>
 hilbish.hinter(line, pos)
 <a href="#hinter" class='heading-link'>
@@ -229,7 +237,8 @@ end
 ```
 </div>
 
-<hr><div id='inputMode'>
+<hr>
+<div id='inputMode'>
 <h4 class='heading'>
 hilbish.inputMode(mode)
 <a href="#inputMode" class='heading-link'>
@@ -246,7 +255,8 @@ Vim-like with modes and Vim keybinds.
 
 </div>
 
-<hr><div id='interval'>
+<hr>
+<div id='interval'>
 <h4 class='heading'>
 hilbish.interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#interval" class='heading-link'>
@@ -265,7 +275,8 @@ This creates a timer that starts immediately.
 
 </div>
 
-<hr><div id='multiprompt'>
+<hr>
+<div id='multiprompt'>
 <h4 class='heading'>
 hilbish.multiprompt(str)
 <a href="#multiprompt" class='heading-link'>
@@ -301,7 +312,8 @@ hilbish.multiprompt '-->'
 ```
 </div>
 
-<hr><div id='prependPath'>
+<hr>
+<div id='prependPath'>
 <h4 class='heading'>
 hilbish.prependPath(dir)
 <a href="#prependPath" class='heading-link'>
@@ -316,7 +328,8 @@ Prepends `dir` to $PATH.
 
 </div>
 
-<hr><div id='prompt'>
+<hr>
+<div id='prompt'>
 <h4 class='heading'>
 hilbish.prompt(str, typ)
 <a href="#prompt" class='heading-link'>
@@ -348,7 +361,8 @@ hilbish.prompt '%u@%h :%d $'
 ```
 </div>
 
-<hr><div id='read'>
+<hr>
+<div id='read'>
 <h4 class='heading'>
 hilbish.read(prompt) -> input (string)
 <a href="#read" class='heading-link'>
@@ -365,7 +379,8 @@ Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which s
 
 </div>
 
-<hr><div id='run'>
+<hr>
+<div id='run'>
 <h4 class='heading'>
 hilbish.run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
 <a href="#run" class='heading-link'>
@@ -383,7 +398,8 @@ If this is true, the function will return the standard output and error of the c
 
 </div>
 
-<hr><div id='runnerMode'>
+<hr>
+<div id='runnerMode'>
 <h4 class='heading'>
 hilbish.runnerMode(mode)
 <a href="#runnerMode" class='heading-link'>
@@ -402,7 +418,8 @@ will call it to execute user input instead.
 
 </div>
 
-<hr><div id='timeout'>
+<hr>
+<div id='timeout'>
 <h4 class='heading'>
 hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
 <a href="#timeout" class='heading-link'>
@@ -421,7 +438,8 @@ This creates a Timer that starts immediately.
 
 </div>
 
-<hr><div id='which'>
+<hr>
+<div id='which'>
 <h4 class='heading'>
 hilbish.which(name) -> string
 <a href="#which" class='heading-link'>

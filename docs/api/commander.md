@@ -42,7 +42,8 @@ This sink is for writing errors, as the name would suggest.
 |<a href="#deregister">deregister(name)</a>|Removes the named command. Note that this will only remove Commander-registered commands.|
 |<a href="#register">register(name, cb)</a>|Adds a new command with the given `name`. When Hilbish has to run a command with a name,|
 
-<hr><div id='deregister'>
+<hr>
+<div id='deregister'>
 <h4 class='heading'>
 commander.deregister(name)
 <a href="#deregister" class='heading-link'>
@@ -57,7 +58,8 @@ Name of the command to remove.
 
 </div>
 
-<hr><div id='register'>
+<hr>
+<div id='register'>
 <h4 class='heading'>
 commander.register(name, cb)
 <a href="#register" class='heading-link'>

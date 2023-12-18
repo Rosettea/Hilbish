@@ -21,6 +21,7 @@ function Greenhouse:new(sink)
 	self.sink = sink
 	self.pages = {}
 	self.curPage = 1
+	self.separator = '─'
 	self.keybinds = {
 		['Up'] = function(self) self:scroll 'up' end,
 		['Down'] = function(self) self:scroll 'down' end,
@@ -63,7 +64,8 @@ local function sub(str, limit)
      :gsub('\x1b%[%d+;%d+%w', addOverhead)
      :gsub('\x1b%[%d+%w', addOverhead)
 
-	return s:sub(0, limit + overhead)
+	return s:sub(0, utf8.offset(str, limit + overhead) or limit + overhead)
+	--return s:sub(0, limit + overhead)
 end
 
 function Greenhouse:draw()
@@ -88,7 +90,8 @@ function Greenhouse:draw()
 
 		if i == offset + self.region.height - 1 then writer = self.sink.write end
 
-		writer(self.sink, sub(lines[i]:gsub('\t', '        '), self.region.width))
+		local line = lines[i]:gsub('{separator}', function() return self.separator:rep(self.region.width - 1) end)
+		writer(self.sink, sub(line:gsub('\t', '        '), self.region.width))
 	end
 	writer(self.sink, '\27[0m')
 	self:render()

@@ -18,7 +18,8 @@ The alias interface deals with all command aliases in Hilbish.
 |<a href="#aliases.list">list() -> table[string, string]</a>|Get a table of all aliases, with string keys as the alias and the value as the command.|
 |<a href="#aliases.resolve">resolve(alias) -> string?</a>|Resolves an alias to its original command. Will thrown an error if the alias doesn't exist.|
 
-<hr><div id='aliases.add'>
+<hr>
+<div id='aliases.add'>
 <h4 class='heading'>
 hilbish.aliases.add(alias, cmd)
 <a href="#aliases.add" class='heading-link'>
@@ -31,7 +32,8 @@ This is an alias (ha) for the [hilbish.alias](../#alias) function.
 This function has no parameters.  
 </div>
 
-<hr><div id='aliases.delete'>
+<hr>
+<div id='aliases.delete'>
 <h4 class='heading'>
 hilbish.aliases.delete(name)
 <a href="#aliases.delete" class='heading-link'>
@@ -46,7 +48,8 @@ Removes an alias.
 
 </div>
 
-<hr><div id='aliases.list'>
+<hr>
+<div id='aliases.list'>
 <h4 class='heading'>
 hilbish.aliases.list() -> table[string, string]
 <a href="#aliases.list" class='heading-link'>
@@ -68,7 +71,8 @@ local aliases = hilbish.aliases.list()
 ```
 </div>
 
-<hr><div id='aliases.resolve'>
+<hr>
+<div id='aliases.resolve'>
 <h4 class='heading'>
 hilbish.aliases.resolve(alias) -> string?
 <a href="#aliases.resolve" class='heading-link'>

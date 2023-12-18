@@ -21,7 +21,8 @@ write command in Fennel.
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
 
-<hr><div id='runner.setMode'>
+<hr>
+<div id='runner.setMode'>
 <h4 class='heading'>
 hilbish.runner.setMode(cb)
 <a href="#runner.setMode" class='heading-link'>
@@ -39,7 +40,8 @@ as the higher level functions listed below this will handle it.
 
 </div>
 
-<hr><div id='runner.lua'>
+<hr>
+<div id='runner.lua'>
 <h4 class='heading'>
 hilbish.runner.lua(cmd)
 <a href="#runner.lua" class='heading-link'>
@@ -55,7 +57,8 @@ or `load`, but is appropriated for the runner interface.
 
 </div>
 
-<hr><div id='runner.sh'>
+<hr>
+<div id='runner.sh'>
 <h4 class='heading'>
 hilbish.runner.sh(cmd)
 <a href="#runner.sh" class='heading-link'>
