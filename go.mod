@@ -7,6 +7,7 @@ require (
 	github.com/blackfireio/osinfo v1.0.3
 	github.com/maxlandon/readline v0.1.0-beta.0.20211027085530-2b76cabb8036
 	github.com/pborman/getopt v1.1.0
+	github.com/rjeczalik/notify v0.9.3
 	github.com/sahilm/fuzzy v0.1.0
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171

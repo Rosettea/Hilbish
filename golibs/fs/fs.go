@@ -17,12 +17,39 @@ import (
 	"github.com/arnodel/golua/lib/packagelib"
 )
 
+var rtmm *rt.Runtime
+var watcherMetaKey = rt.StringValue("hshwatcher")
 var Loader = packagelib.Loader{
 	Load: loaderFunc,
 	Name: "fs",
 }
 
 func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
+	rtmm = rtm
+	watcherMethods := rt.NewTable()
+	watcherFuncs := map[string]util.LuaExport{
+		"start": {watcherStart, 1, false},
+		"stop": {watcherStop, 1, false},
+	}
+	util.SetExports(rtm, watcherMethods, watcherFuncs)
+
+	watcherMeta := rt.NewTable()
+	watcherIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+		//ti, _ := watcherArg(c, 0)
+
+		arg := c.Arg(1)
+		val := watcherMethods.Get(arg)
+
+		if val != rt.NilValue {
+			return c.PushingNext1(t.Runtime, val), nil
+		}
+
+		return c.PushingNext1(t.Runtime, val), nil
+	}
+
+	watcherMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(watcherIndex, "__index", 2, false)))
+	rtm.SetRegistry(watcherMetaKey, rt.TableValue(watcherMeta))
+
 	exports := map[string]util.LuaExport{
 		"cd": util.LuaExport{fcd, 1, false},
 		"mkdir": util.LuaExport{fmkdir, 2, false},
@@ -33,6 +60,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"dir": util.LuaExport{fdir, 1, false},
 		"glob": util.LuaExport{fglob, 1, false},
 		"join": util.LuaExport{fjoin, 0, true},
+		"watch": util.LuaExport{fwatch, 2, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -249,4 +277,24 @@ func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	res := filepath.Join(strs...)
 
 	return c.PushingNext(t.Runtime, rt.StringValue(res)), nil
+}
+
+func fwatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+
+	dir, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	watcher, err := c.ClosureArg(1)
+	if err != nil {
+		return nil, err
+	}
+
+	dw := newWatcher(dir, watcher)
+
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(dw.ud)), nil
 }
