@@ -82,14 +82,15 @@ function Greenhouse:draw()
 	self.sink:write(ansikit.getCSI(self.start .. ';1', 'H'))
 	self.sink:write(ansikit.getCSI(2, 'J'))
 
+	local writer = self.sink.writeln
 	for i = offset, offset + self.region.height - 1 do
 		if i > #lines then break end
 
-		local writer = self.sink.writeln
 		if i == offset + self.region.height - 1 then writer = self.sink.write end
 
 		writer(self.sink, sub(lines[i]:gsub('\t', '        '), self.region.width))
 	end
+	writer(self.sink, '\27[0m')
 	self:render()
 end
 
