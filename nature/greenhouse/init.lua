@@ -18,13 +18,20 @@ function Greenhouse:new(sink)
 	self.contents = nil -- or can be a table
 	self.start = 1 -- where to start drawing from (should replace with self.region.y)
 	self.offset = 1 -- vertical text offset
+	self.horizOffset = 1
 	self.sink = sink
 	self.pages = {}
 	self.curPage = 1
+	self.step = {
+		horizontal = 5,
+		vertical = 1
+	}
 	self.separator = '─'
 	self.keybinds = {
 		['Up'] = function(self) self:scroll 'up' end,
 		['Down'] = function(self) self:scroll 'down' end,
+		['Left'] = function(self) self:scroll 'left' end,
+		['Right'] = function(self) self:scroll 'right' end,
 		['Ctrl-Left'] = self.previous,
 		['Ctrl-Right'] = self.next,
 		['Ctrl-N'] = function(self) self:toc(true) end,
@@ -52,7 +59,7 @@ function Greenhouse:updateCurrentPage(text)
 	page:setText(text)
 end
 
-local function sub(str, limit)
+local function sub(str, offset, limit)
 	local overhead = 0
 	local function addOverhead(s)
 		overhead = overhead + string.len(s)
@@ -64,8 +71,8 @@ local function sub(str, limit)
      :gsub('\x1b%[%d+;%d+%w', addOverhead)
      :gsub('\x1b%[%d+%w', addOverhead)
 
-	return s:sub(0, utf8.offset(str, limit + overhead) or limit + overhead)
-	--return s:sub(0, limit + overhead)
+	return s:sub(offset, utf8.offset(str, limit + overhead) or limit + overhead)
+	--return s:sub(offset, limit + overhead)
 end
 
 function Greenhouse:draw()
@@ -91,7 +98,7 @@ function Greenhouse:draw()
 		if i == offset + self.region.height - 1 then writer = self.sink.write end
 
 		local line = lines[i]:gsub('{separator}', function() return self.separator:rep(self.region.width - 1) end)
-		writer(self.sink, sub(line:gsub('\t', '        '), self.region.width))
+		writer(self.sink, sub(line:gsub('\t', '        '), self.horizOffset, self.region.width))
 	end
 	writer(self.sink, '\27[0m')
 	self:render()
@@ -113,13 +120,23 @@ function Greenhouse:scroll(direction)
 	local lines = self.pages[self.curPage].lines
 
 	local oldOffset = self.offset
+	local oldHorizOffset = self.horizOffset
 	if direction == 'down' then
-		self.offset = math.min(self.offset + 1, math.max(1, #lines - self.region.height))
+		self.offset = math.min(self.offset + self.step.vertical, math.max(1, #lines - self.region.height))
 	elseif direction == 'up' then
-		self.offset = math.max(self.offset - 1, 1)
+		self.offset = math.max(self.offset - self.step.vertical, 1)
 	end
 
+--[[
+	if direction == 'left' then
+		self.horizOffset = math.max(self.horizOffset - self.step.horizontal, 1)
+	elseif direction == 'right' then
+		self.horizOffset = self.horizOffset + self.step.horizontal
+	end
+]]--
+
 	if self.offset ~= oldOffset then self:draw() end
+	if self.horizOffset ~= oldHorizOffset then self:draw() end
 end
 
 function Greenhouse:update()
