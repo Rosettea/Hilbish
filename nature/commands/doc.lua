@@ -4,6 +4,7 @@ local fs = require 'fs'
 local lunacolors = require 'lunacolors'
 local Greenhouse = require 'nature.greenhouse'
 local Page = require 'nature.greenhouse.page'
+local docfuncs = require 'nature.doc'
 
 commander.register('doc', function(args, sinks)
 	local moddocPath = hilbish.dataDir .. '/docs/'
@@ -89,7 +90,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local size = terminal.size()
 		self.region = {
 			width = size.width,
-			height = size.height - 2
+			height = size.height - 1
 		}
 	end
 	gh:resize()
@@ -101,12 +102,13 @@ Available sections: ]] .. table.concat(modules, ', ')
 			offset = self.specialOffset
 			workingPage = self.specialPage
 		end
+		local size = terminal.size()
 
-		self.sink:write(ansikit.getCSI(self.region.height + 1 .. ';1', 'H'))
+		self.sink:write(ansikit.getCSI(size.height - 1 .. ';1', 'H'))
 		self.sink:write(ansikit.getCSI(0, 'J'))
 		if not self.isSpecial then
 			if args[1] == 'api' then
-				self.sink:writeln(lunacolors.reset(string.format('%s', workingPage.title)))
+				self.sink:writeln(workingPage.title)
 				self.sink:write(lunacolors.format(string.format('{grayBg} ↳ {white}{italic}%s {reset}', workingPage.description or 'No description.')))
 			else
 				self.sink:write(lunacolors.reset(string.format('Viewing doc page %s', moddocPath)))
@@ -115,17 +117,17 @@ Available sections: ]] .. table.concat(modules, ', ')
 	end
 	local backtickOccurence = 0
 	local function formatDocText(d)
-		return lunacolors.format(d:gsub('`', function()
-			backtickOccurence = backtickOccurence + 1
-			if backtickOccurence % 2 == 0 then
-				return '{reset}'
-			else
-				return '{underline}{green}'
-			end
+		return d:gsub('```(%w+)\n(.-)```', function(lang, text)
+			return docfuncs.renderCodeBlock(text)
+		end)
+		--[[
+		return lunacolors.format(d:gsub('`(.-)`', function(t)
+			return docfuncs.renderCodeBlock(t)
 		end):gsub('\n#+.-\n', function(t)
 			local signature = t:gsub('<.->(.-)</.->', '{underline}%1'):gsub('\\', '<')
 			return '{bold}{yellow}' .. signature .. '{reset}'
 		end))
+		]]--
 	end
 
 
