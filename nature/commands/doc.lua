@@ -8,7 +8,7 @@ local docfuncs = require 'nature.doc'
 
 local function strip(text, ...)
 	for _, pat in ipairs {...} do
-		text = text:gsub(pat, '\b')
+		text = text:gsub(pat, '\n')
 	end
 
 	return text
@@ -19,7 +19,16 @@ local function transformHTMLandMD(text)
 	:gsub('|(.-)|(.-)|', function(entry1, entry2)
 		return string.format('%s - %s', entry1, entry2)
 	end)
+	:gsub('^\n\n', '\n')
 	:gsub('<hr>', '{separator}')
+	:gsub('<.->', '')
+	:gsub('\n%s+\n', '\n\n')
+	:gsub('#+ (.-\n)', function(heading) return lunacolors.blue(lunacolors.bold('→ ' .. heading)) end)
+	:gsub('```(%w+)\n(.-)```', function(lang, text)
+		return docfuncs.renderCodeBlock(text)
+	end)
+	:gsub('`(.-)`', lunacolors.cyan)
+	:gsub('%*%*(.-)%*%*', lunacolors.bold)
 end
 
 commander.register('doc', function(args, sinks)
@@ -133,9 +142,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 	end
 	local backtickOccurence = 0
 	local function formatDocText(d)
-		return transformHTMLandMD(d):gsub('```(%w+)\n(.-)```', function(lang, text)
-			return docfuncs.renderCodeBlock(text)
-		end)
+		return transformHTMLandMD(d)
 		--[[
 		return lunacolors.format(d:gsub('`(.-)`', function(t)
 			return docfuncs.renderCodeBlock(t)
