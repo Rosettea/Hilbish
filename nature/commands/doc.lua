@@ -20,15 +20,22 @@ local function transformHTMLandMD(text)
 		return string.format('%s - %s', entry1, entry2)
 	end)
 	:gsub('^\n\n', '\n')
-	:gsub('<hr>', '{separator}')
-	:gsub('<.->', '')
 	:gsub('\n%s+\n', '\n\n')
-	:gsub('#+ (.-\n)', function(heading) return lunacolors.blue(lunacolors.bold('→ ' .. heading)) end)
+	:gsub('  \n', '\n\n')
+	:gsub('{{< (%w+) `(.-)` >}}', function(shortcode, text)
+		return docfuncs.renderInfoBlock(shortcode, text)
+	end)
 	:gsub('```(%w+)\n(.-)```', function(lang, text)
 		return docfuncs.renderCodeBlock(text)
 	end)
-	:gsub('`(.-)`', lunacolors.cyan)
+	:gsub('```\n(.-)\n```', function(text)
+		return docfuncs.renderCodeBlock(text)
+	end)
+	:gsub('`[^\n].-`', lunacolors.cyan)
+	:gsub('#+ (.-\n)', function(heading) return lunacolors.blue(lunacolors.bold('→ ' .. heading)) end)
 	:gsub('%*%*(.-)%*%*', lunacolors.bold)
+	:gsub('<hr>', '{separator}')
+	:gsub('<.->', '')
 end
 
 commander.register('doc', function(args, sinks)
@@ -54,10 +61,9 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local vals = {}
 		local docs = d
 
-		local valsStr = docs:match '%-%-%-\n([^%-%-%-]+)\n'
-		print(valsStr)
+		local valsStr = docs:match '^%-%-%-\n.-\n%-%-%-'
 		if valsStr then
-			docs = docs:sub(valsStr:len() + 10, #docs)
+			docs = docs:sub(valsStr:len() + 2, #docs)
 
 			-- parse vals
 			local lines = string.split(valsStr, '\n')
@@ -154,7 +160,7 @@ Available sections: ]] .. table.concat(modules, ', ')
 	end
 
 
-	local doc, vals = handleYamlInfo(#args == 0 and doc or formatDocText(f:read '*a':gsub('-([%d]+)', '%1')))
+	local doc, vals = handleYamlInfo(#args == 0 and doc or formatDocText(f:read '*a'))
 	if #moddocs ~= 0 and f then
 		doc = doc .. '\nSubdocs: ' .. table.concat(subdocs, ', ') .. '\n\n'
 	end
@@ -172,8 +178,8 @@ Available sections: ]] .. table.concat(modules, ', ')
 		end
 
 		local f = io.open(moddocPath .. sdFile, 'rb')
-		local doc, vals = handleYamlInfo(f:read '*a':gsub('-([%d]+)', '%1'))
-		local page = Page(vals.title, formatDocText(doc))
+		local doc, vals = handleYamlInfo(formatDocText(f:read '*a'))
+		local page = Page(vals.title or sdName, doc)
 		page.description = vals.description
 		gh:addPage(page)
 	end
