@@ -59,7 +59,7 @@ function Greenhouse:updateCurrentPage(text)
 	page:setText(text)
 end
 
-local function sub(str, offset, limit)
+function Greenhouse:sub(str, offset, limit)
 	local overhead = 0
 	local function addOverhead(s)
 		overhead = overhead + string.len(s)
@@ -97,8 +97,9 @@ function Greenhouse:draw()
 
 		if i == offset + self.region.height - 1 then writer = self.sink.write end
 
+		self.sink:write(ansikit.getCSI(self.start + i - offset .. ';1', 'H'))
 		local line = lines[i]:gsub('{separator}', function() return self.separator:rep(self.region.width - 1) end)
-		writer(self.sink, sub(line:gsub('\t', '        '), self.horizOffset, self.region.width))
+		writer(self.sink, self:sub(line:gsub('\t', '        '), self.horizOffset, self.region.width))
 	end
 	writer(self.sink, '\27[0m')
 	self:render()
