@@ -1,3 +1,4 @@
+-- @module dirs
 local fs = require 'fs'
 
 local dirs = {}
@@ -11,8 +12,8 @@ dirs.recentDirs = {}
 dirs.recentSize = 10
 
 --- Get (and remove) a `num` of entries from recent directories.
---- @param num number
---- @param remove boolean Whether to remove items
+-- @param num number
+-- @param remove boolean Whether to remove items
 function dirRecents(num, remove)
 	num = num or 1
 	local entries = {}
@@ -34,7 +35,7 @@ function dirRecents(num, remove)
 end
 
 --- Look at `num` amount of recent directories, starting from the latest.
---- @param num? number
+-- @param num? number
 function dirs.peak(num)
 	return dirRecents(num)
 end
@@ -51,19 +52,19 @@ function dirs.push(d)
 end
 
 --- Remove `num` amount of dirs from the recent directories.
---- @param num number
+-- @param num number
 function dirs.pop(num)
 	return dirRecents(num, true)
 end
 
 --- Get entry from recent directories.
---- @param idx number
+-- @param idx number
 function dirs.recent(idx)
 	return dirs.recentDirs[idx]
 end
 
 --- Sets the old directory.
---- @param d string
+-- @param d string
 function dirs.setOld(d)
 	ok, d = pcall(fs.abs, d)
 	assert(ok, 'could not turn "' .. d .. '"into an absolute path')
