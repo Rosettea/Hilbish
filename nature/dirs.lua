@@ -40,7 +40,7 @@ function dirs.peak(num)
 	return dirRecents(num)
 end
 
---- Add `d` to the recent directories.
+--- Add `d` to the recent directories list.
 function dirs.push(d)
 	dirs.recentDirs[dirs.recentSize + 1] = nil
 	if dirs.recentDirs[#dirs.recentDirs - 1] ~= d then
@@ -51,19 +51,19 @@ function dirs.push(d)
 	end
 end
 
---- Remove `num` amount of dirs from the recent directories.
+--- Remove the specified amount of dirs from the recent directories list.
 -- @param num number
 function dirs.pop(num)
 	return dirRecents(num, true)
 end
 
---- Get entry from recent directories.
+--- Get entry from recent directories list based on index.
 -- @param idx number
 function dirs.recent(idx)
 	return dirs.recentDirs[idx]
 end
 
---- Sets the old directory.
+--- Sets the old directory string.
 -- @param d string
 function dirs.setOld(d)
 	ok, d = pcall(fs.abs, d)
