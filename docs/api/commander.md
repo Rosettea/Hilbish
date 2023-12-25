@@ -52,6 +52,7 @@ commander.deregister(name)
 </h4>
 
 Removes the named command. Note that this will only remove Commander-registered commands.  
+
 #### Parameters
 `string` **`name`**  
 Name of the command to remove.
@@ -69,8 +70,7 @@ commander.register(name, cb)
 
 Adds a new command with the given `name`. When Hilbish has to run a command with a name,  
 it will run the function providing the arguments and sinks.  
-  
-  
+
 #### Parameters
 `string` **`name`**  
 Name of the command

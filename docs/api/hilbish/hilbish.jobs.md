@@ -34,8 +34,7 @@ hilbish.jobs.add(cmdstr, args, execPath)
 
 Creates a new job. This function does not run the job. This function is intended to be  
 used by runners, but can also be used to create jobs via Lua. Commanders cannot be ran as jobs.  
-  
-  
+
 #### Parameters
 `string` **`cmdstr`**  
 String that a user would write for the job
@@ -62,6 +61,7 @@ hilbish.jobs.all() -> table[<a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job
 </h4>
 
 Returns a table of all job objects.  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -76,6 +76,7 @@ hilbish.jobs.disown(id)
 </h4>
 
 Disowns a job. This simply deletes it from the list of jobs without stopping it.  
+
 #### Parameters
 `number` **`id`**  
 
@@ -92,6 +93,7 @@ hilbish.jobs.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" st
 </h4>
 
 Get a job object via its ID.  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -106,6 +108,7 @@ hilbish.jobs.last() -> <a href="/Hilbish/docs/api/hilbish/hilbish.jobs/#job" sty
 </h4>
 
 Returns the last added job to the table.  
+
 #### Parameters
 This function has no parameters.  
 </div>

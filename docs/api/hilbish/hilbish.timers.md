@@ -48,6 +48,7 @@ hilbish.timers.create(type, time, callback) -> <a href="/Hilbish/docs/api/hilbis
 </h4>
 
 Creates a timer that runs based on the specified `time`.  
+
 #### Parameters
 `number` **`type`**  
 What kind of timer to create, can either be `hilbish.timers.INTERVAL` or `hilbish.timers.TIMEOUT`
@@ -70,6 +71,7 @@ hilbish.timers.get(id) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#tim
 </h4>
 
 Retrieves a timer via its ID.  
+
 #### Parameters
 `number` **`id`**  
 

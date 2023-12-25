@@ -29,8 +29,7 @@ hilbish.completion.bins(query, ctx, fields) -> entries (table), prefix (string)
 
 Return binaries/executables based on the provided parameters.  
 This function is meant to be used as a helper in a command completion handler.  
-  
-  
+
 #### Parameters
 `string` **`query`**  
 
@@ -73,6 +72,7 @@ hilbish.completion.call(name, query, ctx, fields) -> completionGroups (table), p
 Calls a completer function. This is mainly used to call a command completer, which will have a `name`  
 in the form of `command.name`, example: `command.git`.  
 You can check the Completions doc or `doc completions` for info on the `completionGroups` return value.  
+
 #### Parameters
 `string` **`name`**  
 
@@ -99,6 +99,7 @@ hilbish.completion.files(query, ctx, fields) -> entries (table), prefix (string)
 
 Returns file matches based on the provided parameters.  
 This function is meant to be used as a helper in a command completion handler.  
+
 #### Parameters
 `string` **`query`**  
 
@@ -123,8 +124,7 @@ hilbish.completion.handler(line, pos)
 This function contains the general completion handler for Hilbish. This function handles  
 completion of everything, which includes calling other command handlers, binaries, and files.  
 This function can be overriden to supply a custom handler. Note that alias resolution is required to be done in this function.  
-  
-  
+
 #### Parameters
 `string` **`line`**  
 The current Hilbish command line

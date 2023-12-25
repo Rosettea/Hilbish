@@ -56,8 +56,7 @@ hilbish.alias(cmd, orig)
 </h4>
 
 Sets an alias, with a name of `cmd` to another command.  
-  
-  
+
 #### Parameters
 `string` **`cmd`**  
 Name of the alias
@@ -86,8 +85,7 @@ hilbish.appendPath(dir)
 </h4>
 
 Appends the provided dir to the command path (`$PATH`)  
-  
-  
+
 #### Parameters
 `string|table` **`dir`**  
 Directory (or directories) to append to path
@@ -119,6 +117,7 @@ A `scope` is currently only expected to be `command.<cmd>`,
 replacing <cmd> with the name of the command (for example `command.git`).  
 The documentation for completions, under Features/Completions or `doc completions`  
 provides more details.  
+
 #### Parameters
 `string` **`scope`**  
 
@@ -138,6 +137,7 @@ hilbish.cwd() -> string
 </h4>
 
 Returns the current directory of the shell  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -153,6 +153,7 @@ hilbish.exec(cmd)
 
 Replaces the currently running Hilbish instance with the supplied command.  
 This can be used to do an in-place restart.  
+
 #### Parameters
 `string` **`cmd`**  
 
@@ -171,6 +172,7 @@ hilbish.goro(fn)
 Puts `fn` in a Goroutine.  
 This can be used to run any function in another thread.  
 **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**  
+
 #### Parameters
 `function` **`fn`**  
 
@@ -191,7 +193,7 @@ This is mainly for syntax highlighting, but in reality could set the input
 of the prompt to *display* anything. The callback is passed the current line  
 and is expected to return a line that will be used as the input display.  
 Note that to set a highlighter, one has to override this function.  
-  
+
 #### Parameters
 `string` **`line`**  
 
@@ -219,8 +221,7 @@ determine what text to use as an inline hint. It is passed the current
 line and cursor position. It is expected to return a string which is used  
 as the text for the hint. This is by default a shim. To set hints,  
 override this function with your custom handler.  
-  
-  
+
 #### Parameters
 `string` **`line`**  
 
@@ -249,6 +250,7 @@ hilbish.inputMode(mode)
 Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.  
 `emacs` is the default. Setting it to `vim` changes behavior of input to be  
 Vim-like with modes and Vim keybinds.  
+
 #### Parameters
 `string` **`mode`**  
 
@@ -266,6 +268,7 @@ hilbish.interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/
 
 Runs the `cb` function every `time` milliseconds.  
 This creates a timer that starts immediately.  
+
 #### Parameters
 `function` **`cb`**  
 
@@ -286,8 +289,7 @@ hilbish.multiprompt(str)
 
 Changes the text prompt when Hilbish asks for more input.  
 This will show up when text is incomplete, like a missing quote  
-  
-  
+
 #### Parameters
 `string` **`str`**  
 
@@ -322,6 +324,7 @@ hilbish.prependPath(dir)
 </h4>
 
 Prepends `dir` to $PATH.  
+
 #### Parameters
 `string` **`dir`**  
 
@@ -343,7 +346,7 @@ These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory  
 `%u` - Name of current user  
 `%h` - Hostname of device  
-  
+
 #### Parameters
 `string` **`str`**  
 
@@ -373,6 +376,7 @@ hilbish.read(prompt) -> input (string)
 Read input from the user, using Hilbish's line editor/input reader.  
 This is a separate instance from the one Hilbish actually uses.  
 Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen).  
+
 #### Parameters
 `string` **`prompt?`**  
 
@@ -389,6 +393,7 @@ hilbish.run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (strin
 </h4>
 
 Runs `cmd` in Hilbish's shell script interpreter.  
+
 #### Parameters
 `string` **`cmd`**  
 
@@ -412,6 +417,7 @@ Hilbish wll try to run input as Lua and/or sh or only do one of either.
 Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),  
 sh, and lua. It also accepts a function, to which if it is passed one  
 will call it to execute user input instead.  
+
 #### Parameters
 `string|function` **`mode`**  
 
@@ -429,6 +435,7 @@ hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#
 
 Runs the `cb` function after `time` in milliseconds.  
 This creates a Timer that starts immediately.  
+
 #### Parameters
 `function` **`cb`**  
 
@@ -449,6 +456,7 @@ hilbish.which(name) -> string
 
 Checks if `name` is a valid command.  
 Will return the path of the binary, or a basename if it's a commander.  
+
 #### Parameters
 `string` **`name`**  
 

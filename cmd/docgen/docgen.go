@@ -554,11 +554,11 @@ func main() {
 
 `, htmlSig, dps.FuncName))
 					for _, doc := range dps.Doc {
-						if !strings.HasPrefix(doc, "---") {
+						if !strings.HasPrefix(doc, "---") && doc != "" {
 							f.WriteString(doc + "  \n")
 						}
 					}
-					f.WriteString("#### Parameters\n")
+					f.WriteString("\n#### Parameters\n")
 					if len(dps.Params) == 0 {
 						f.WriteString("This function has no parameters.  \n")
 					}

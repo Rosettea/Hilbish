@@ -30,6 +30,7 @@ hilbish.editor.getLine() -> string
 </h4>
 
 Returns the current input line.  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -44,6 +45,7 @@ hilbish.editor.getVimRegister(register) -> string
 </h4>
 
 Returns the text that is at the register.  
+
 #### Parameters
 `string` **`register`**  
 
@@ -60,6 +62,7 @@ hilbish.editor.insert(text)
 </h4>
 
 Inserts text into the Hilbish command line.  
+
 #### Parameters
 `string` **`text`**  
 
@@ -76,6 +79,7 @@ hilbish.editor.getChar() -> string
 </h4>
 
 Reads a keystroke from the user. This is in a format of something like Ctrl-L.  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -90,6 +94,7 @@ hilbish.editor.setVimRegister(register, text)
 </h4>
 
 Sets the vim register at `register` to hold the passed text.  
+
 #### Parameters
 `string` **`text`**  
 

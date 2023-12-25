@@ -34,6 +34,7 @@ This is the same as the `hilbish.runnerMode` function.
 It takes a callback, which will be used to execute all interactive input.  
 In normal cases, neither callbacks should be overrided by the user,  
 as the higher level functions listed below this will handle it.  
+
 #### Parameters
 `function` **`cb`**  
 
@@ -51,6 +52,7 @@ hilbish.runner.lua(cmd)
 
 Evaluates `cmd` as Lua input. This is the same as using `dofile`  
 or `load`, but is appropriated for the runner interface.  
+
 #### Parameters
 `string` **`cmd`**  
 
@@ -68,6 +70,7 @@ hilbish.runner.sh(cmd)
 
 Runs a command in Hilbish's shell script interpreter.  
 This is the equivalent of using `source`.  
+
 #### Parameters
 `string` **`cmd`**  
 

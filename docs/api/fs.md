@@ -42,6 +42,7 @@ fs.abs(path) -> string
 
 Returns an absolute version of the `path`.  
 This can be used to resolve short paths like `..` to `/home/user`.  
+
 #### Parameters
 `string` **`path`**  
 
@@ -59,6 +60,7 @@ fs.basename(path) -> string
 
 Returns the "basename," or the last part of the provided `path`. If path is empty,  
 `.` will be returned.  
+
 #### Parameters
 `string` **`path`**  
 Path to get the base name of.
@@ -75,6 +77,7 @@ fs.cd(dir)
 </h4>
 
 Changes Hilbish's directory to `dir`.  
+
 #### Parameters
 `string` **`dir`**  
 Path to change directory to.
@@ -92,6 +95,7 @@ fs.dir(path) -> string
 
 Returns the directory part of `path`. If a file path like  
 `~/Documents/doc.txt` then this function will return `~/Documents`.  
+
 #### Parameters
 `string` **`path`**  
 Path to get the directory for.
@@ -109,8 +113,7 @@ fs.glob(pattern) -> matches (table)
 
 Match all files based on the provided `pattern`.  
 For the syntax' refer to Go's filepath.Match function: https://pkg.go.dev/path/filepath#Match  
-  
-  
+
 #### Parameters
 `string` **`pattern`**  
 Pattern to compare files with.
@@ -140,8 +143,7 @@ fs.join(...path) -> string
 </h4>
 
 Takes any list of paths and joins them based on the operating system's path separator.  
-  
-  
+
 #### Parameters
 `string` **`path`** (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 Paths to join together
@@ -165,10 +167,10 @@ fs.mkdir(name, recursive)
 
 Creates a new directory with the provided `name`.  
 With `recursive`, mkdir will create parent directories.  
-  
 -- This will create the directory foo, then create the directory bar in the  
 -- foo directory. If recursive is false in this case, it will fail.  
 fs.mkdir('./foo/bar', true)  
+
 #### Parameters
 `string` **`name`**  
 Name of the directory
@@ -192,6 +194,7 @@ fs.readdir(path) -> table[string]
 </h4>
 
 Returns a list of all files and directories in the provided path.  
+
 #### Parameters
 `string` **`dir`**  
 
@@ -213,8 +216,7 @@ name (string) - Name of the path
 size (number) - Size of the path in bytes  
 mode (string) - Unix permission mode in an octal format string (with leading 0)  
 isDir (boolean) - If the path is a directory  
-  
-  
+
 #### Parameters
 `string` **`path`**  
 

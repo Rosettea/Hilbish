@@ -51,8 +51,7 @@ bait.catch(name, cb)
 </h4>
 
 Catches an event. This function can be used to act on events.  
-  
-  
+
 #### Parameters
 `string` **`name`**  
 The name of the hook.
@@ -78,6 +77,7 @@ bait.catchOnce(name, cb)
 </h4>
 
 Catches an event, but only once. This will remove the hook immediately after it runs for the first time.  
+
 #### Parameters
 `string` **`name`**  
 The name of the event
@@ -97,6 +97,7 @@ bait.hooks(name) -> table
 </h4>
 
 Returns a list of callbacks that are hooked on an event with the corresponding `name`.  
+
 #### Parameters
 `string` **`name`**  
 The name of the function
@@ -115,8 +116,7 @@ bait.release(name, catcher)
 Removes the `catcher` for the event with `name`.  
 For this to work, `catcher` has to be the same function used to catch  
 an event, like one saved to a variable.  
-  
-  
+
 #### Parameters
 `string` **`name`**  
 Name of the event the hook is on
@@ -146,8 +146,7 @@ bait.throw(name, ...args)
 </h4>
 
 Throws a hook with `name` with the provided `args`.  
-  
-  
+
 #### Parameters
 `string` **`name`**  
 The name of the hook.

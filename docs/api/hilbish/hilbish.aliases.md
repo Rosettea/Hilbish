@@ -28,6 +28,7 @@ hilbish.aliases.add(alias, cmd)
 </h4>
 
 This is an alias (ha) for the [hilbish.alias](../#alias) function.  
+
 #### Parameters
 This function has no parameters.  
 </div>
@@ -42,6 +43,7 @@ hilbish.aliases.delete(name)
 </h4>
 
 Removes an alias.  
+
 #### Parameters
 `string` **`name`**  
 
@@ -58,8 +60,7 @@ hilbish.aliases.list() -> table[string, string]
 </h4>
 
 Get a table of all aliases, with string keys as the alias and the value as the command.  
-  
-  
+
 #### Parameters
 This function has no parameters.  
 #### Example
@@ -81,6 +82,7 @@ hilbish.aliases.resolve(alias) -> string?
 </h4>
 
 Resolves an alias to its original command. Will thrown an error if the alias doesn't exist.  
+
 #### Parameters
 `string` **`alias`**  
 

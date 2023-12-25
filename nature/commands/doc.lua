@@ -19,9 +19,11 @@ local function transformHTMLandMD(text)
 	:gsub('|(.-)|(.-)|', function(entry1, entry2)
 		return string.format('%s - %s', entry1, entry2)
 	end)
-	:gsub('^\n\n', '\n')
+	:gsub('<hr>', '{separator}')
+	:gsub('<.->', '')
+	--:gsub('^\n\n', '\n')
 	:gsub('\n%s+\n', '\n\n')
-	:gsub('  \n', '\n\n')
+	--:gsub('  \n', '\n\n')
 	:gsub('{{< (%w+) `(.-)` >}}', function(shortcode, text)
 		return docfuncs.renderInfoBlock(shortcode, text)
 	end)
@@ -34,8 +36,6 @@ local function transformHTMLandMD(text)
 	:gsub('`[^\n].-`', lunacolors.cyan)
 	:gsub('#+ (.-\n)', function(heading) return lunacolors.blue(lunacolors.bold('→ ' .. heading)) end)
 	:gsub('%*%*(.-)%*%*', lunacolors.bold)
-	:gsub('<hr>', '{separator}')
-	:gsub('<.->', '')
 end
 
 commander.register('doc', function(args, sinks)
@@ -64,6 +64,10 @@ Available sections: ]] .. table.concat(modules, ', ')
 		local valsStr = docs:match '^%-%-%-\n.-\n%-%-%-'
 		if valsStr then
 			docs = docs:sub(valsStr:len() + 2, #docs)
+			local pre = docs:sub(1, 1)
+			if pre == '\n' then
+				docs = docs:sub(2)
+			end
 
 			-- parse vals
 			local lines = string.split(valsStr, '\n')

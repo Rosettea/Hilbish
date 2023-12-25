@@ -64,6 +64,7 @@ hilbish.module.load(path)
 
 Loads a module at the designated `path`.  
 It will throw if any error occurs.  
+
 #### Parameters
 `string` **`path`**  
 
