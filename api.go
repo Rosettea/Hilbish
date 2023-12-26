@@ -494,6 +494,12 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	// call fn
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				// do something here?
+			}
+		}()
+
 		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(fn), c.Etc()...)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
