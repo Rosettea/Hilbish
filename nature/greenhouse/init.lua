@@ -284,25 +284,22 @@ function Greenhouse:initUi()
 	ansikit.clear(true)
 	self:draw()
 
-	hilbish.goro(function()
-		while not done do
-			local c = read()
-			self:keybind('Ctrl-D', function()
-				done = true
-			end)
-
-			if self.keybinds[c] then
-				self.keybinds[c](self)
-			else
-				self:input(c)
-			end
-
-			::continue::
-		end
-	end)
-
 	while not done do
-		--
+		local c = read()
+		self:keybind('Ctrl-Q', function()
+			done = true
+		end)
+		self:keybind('Ctrl-D', function()
+			done = true
+		end)
+
+		if self.keybinds[c] then
+			self.keybinds[c](self)
+		else
+			self:input(c)
+		end
+
+		::continue::
 	end
 	ansikit.showCursor()
 	ansikit.screenMain()
