@@ -297,36 +297,6 @@ function Greenhouse:initUi()
 				self:input(c)
 			end
 
-	--[[
-			if c == 27 then
-				local c1 = read()
-				if c1 == 91 then
-					local c2 = read()
-					if c2 == 66 then -- arrow down
-						self:scroll 'down'
-					elseif c2 == 65 then -- arrow up
-						self:scroll 'up'
-					end
-
-					if c2 == 49 then
-						local c3 = read()
-						if c3 == 59 then
-							local c4 = read()
-							if c4 == 53 then
-								local c5 = read()
-								if c5 == 67 then
-									self:next()
-								elseif c5 == 68 then
-									self:previous()
-								end
-							end
-						end
-					end
-				end
-				goto continue
-			end
-			]]--
-
 			::continue::
 		end
 	end)
