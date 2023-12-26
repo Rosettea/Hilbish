@@ -1,5 +1,5 @@
 ---
-title: Interface hilbish.module
+title: Module hilbish.module
 description: native module loading
 layout: doc
 menu:
@@ -43,11 +43,31 @@ func Loader(rtm *rt.Runtime) rt.Value {
 This can be compiled with `go build -buildmode=plugin plugin.go`.
 If you attempt to require and print the result (`print(require 'plugin')`), it will show "hello world!"
 
-## Interface fields
-- `paths`: A list of paths to search when loading native modules. This is in the style of Lua search paths and will be used when requiring native modules. Example: `?.so;?/?.so`
-
 ## Functions
-### load(path)
-Loads a module at the designated `path`.
-It will throw if any error occurs.
+|||
+|----|----|
+|<a href="#module.load">load(path)</a>|Loads a module at the designated `path`.|
+
+## Static module fields
+|||
+|----|----|
+|paths|A list of paths to search when loading native modules. This is in the style of Lua search paths and will be used when requiring native modules. Example: `?.so;?/?.so`|
+
+<hr>
+<div id='module.load'>
+<h4 class='heading'>
+hilbish.module.load(path)
+<a href="#module.load" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Loads a module at the designated `path`.  
+It will throw if any error occurs.  
+
+#### Parameters
+`string` **`path`**  
+
+
+</div>
 

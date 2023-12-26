@@ -21,6 +21,16 @@ completed.
   - Using this also brings enhancements to the `doc` command like easy
   navigation of neighboring doc files.
 
+### Changed
+- Documentation for EVERYTHING has been improved, with more
+information added, code example, parameter details, etc.
+You can see the improvements!
+- Documentation has gotten an uplift in the `doc` command.
+This includes:
+  - Proper highlighting of code
+  - Paging (via Greenhouse)
+  - Highlighting more markdown things
+
 ### Fixed
 - Fix infinite loop when navigating history without any history. [#252](https://github.com/Rosettea/Hilbish/issues/252)
 - Return the prefix when calling `hilbish.completions.call`. [#219](https://github.com/Rosettea/Hilbish/issues/219)
