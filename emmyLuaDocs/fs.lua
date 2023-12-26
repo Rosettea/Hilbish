@@ -31,9 +31,7 @@ function fs.join(...path) end
 --- Creates a new directory with the provided `name`.
 --- With `recursive`, mkdir will create parent directories.
 --- 
---- -- This will create the directory foo, then create the directory bar in the
---- -- foo directory. If recursive is false in this case, it will fail.
---- fs.mkdir('./foo/bar', true)
+--- 
 function fs.mkdir(name, recursive) end
 
 --- Returns a list of all files and directories in the provided path.

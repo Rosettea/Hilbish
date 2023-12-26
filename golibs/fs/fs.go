@@ -198,6 +198,7 @@ func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 -- This will create the directory foo, then create the directory bar in the
 -- foo directory. If recursive is false in this case, it will fail.
 fs.mkdir('./foo/bar', true)
+#example
 */
 func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {

@@ -167,9 +167,6 @@ fs.mkdir(name, recursive)
 
 Creates a new directory with the provided `name`.  
 With `recursive`, mkdir will create parent directories.  
--- This will create the directory foo, then create the directory bar in the  
--- foo directory. If recursive is false in this case, it will fail.  
-fs.mkdir('./foo/bar', true)  
 
 #### Parameters
 `string` **`name`**  
@@ -180,7 +177,9 @@ Whether to create parent directories for the provided name
 
 #### Example
 ```lua
-
+-- This will create the directory foo, then create the directory bar in the
+-- foo directory. If recursive is false in this case, it will fail.
+fs.mkdir('./foo/bar', true)
 ```
 </div>
 
