@@ -2,56 +2,49 @@
 
 local fs = {}
 
---- Gives an absolute version of `path`.
---- @param path string
---- @returns string
+--- Returns an absolute version of the `path`.
+--- This can be used to resolve short paths like `..` to `/home/user`.
 function fs.abs(path) end
 
---- Gives the basename of `path`. For the rules,
---- see Go's filepath.Base
---- @returns string
+--- Returns the "basename," or the last part of the provided `path`. If path is empty,
+--- `.` will be returned.
 function fs.basename(path) end
 
---- Changes directory to `dir`
---- @param dir string
+--- Changes Hilbish's directory to `dir`.
 function fs.cd(dir) end
 
---- Returns the directory part of `path`. For the rules, see Go's
---- filepath.Dir
---- @param path string
---- @returns string
+--- Returns the directory part of `path`. If a file path like
+--- `~/Documents/doc.txt` then this function will return `~/Documents`.
 function fs.dir(path) end
 
---- Glob all files and directories that match the pattern.
---- For the rules, see Go's filepath.Glob
---- @param pattern string
---- @returns table
+--- Match all files based on the provided `pattern`.
+--- For the syntax' refer to Go's filepath.Match function: https://pkg.go.dev/path/filepath#Match
+--- 
+--- 
 function fs.glob(pattern) end
 
---- Takes paths and joins them together with the OS's
---- directory separator (forward or backward slash).
---- @vararg string
---- @returns string
-function fs.join(...) end
+--- Takes any list of paths and joins them based on the operating system's path separator.
+--- 
+--- 
+function fs.join(...path) end
 
---- Makes a directory called `name`. If `recursive` is true, it will create its parent directories.
---- @param name string
---- @param recursive boolean
+--- Creates a new directory with the provided `name`.
+--- With `recursive`, mkdir will create parent directories.
+--- 
+--- 
 function fs.mkdir(name, recursive) end
 
---- Returns a table of files in `dir`.
---- @param dir string
---- @return table
-function fs.readdir(dir) end
+--- Returns a list of all files and directories in the provided path.
+function fs.readdir(path) end
 
---- Returns a table of info about the `path`.
---- It contains the following keys:
+--- Returns the information about a given `path`.
+--- The returned table contains the following values:
 --- name (string) - Name of the path
---- size (number) - Size of the path
---- mode (string) - Permission mode in an octal format string (with leading 0)
+--- size (number) - Size of the path in bytes
+--- mode (string) - Unix permission mode in an octal format string (with leading 0)
 --- isDir (boolean) - If the path is a directory
---- @param path string
---- @returns table
+--- 
+--- 
 function fs.stat(path) end
 
 return fs

@@ -8,6 +8,8 @@ github.com/arnodel/edit v0.0.0-20220202110212-dfc8d7a13890/go.mod h1:AcpttpuZBaL
 github.com/arnodel/strftime v0.1.6 h1:0hc0pUvk8KhEMXE+htyaOUV42zNcf/csIbjzEFCJqsw=
 github.com/arnodel/strftime v0.1.6/go.mod h1:5NbK5XqYK8QpRZpqKNt4OlxLtIB8cotkLk4KTKzJfWs=
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
+github.com/atsushinee/go-markdown-generator v0.0.0-20191121114853-83f9e1f68504 h1:R1/AOzdMbopSliUTTEHvHbyNmnZ3YxY5GvdhTkpPsSY=
+github.com/atsushinee/go-markdown-generator v0.0.0-20191121114853-83f9e1f68504/go.mod h1:kHBCvAXJIatTX1pw6tLiOspjGc3MhUDRlog9yrCUS+k=
 github.com/blackfireio/osinfo v1.0.3 h1:Yk2t2GTPjBcESv6nDSWZKO87bGMQgO+Hi9OoXPpxX8c=
 github.com/blackfireio/osinfo v1.0.3/go.mod h1:Pd987poVNmd5Wsx6PRPw4+w7kLlf9iJxoRKPtPAjOrA=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
