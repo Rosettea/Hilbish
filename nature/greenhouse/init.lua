@@ -298,9 +298,8 @@ function Greenhouse:initUi()
 		else
 			self:input(c)
 		end
-
-		::continue::
 	end
+
 	ansikit.showCursor()
 	ansikit.screenMain()
 end
