@@ -8,11 +8,46 @@ menu:
 ---
 
 ## Introduction
-The runner interface contains functions that allow the user to change
+ The runner interface contains functions that allow the user to change
 how Hilbish interprets interactive input.
 Users can add and change the default runner for interactive input to any
 language or script of their choosing. A good example is using it to
 write command in Fennel.
+
+Runners are functions that evaluate user input. The default runners in
+Hilbish can run shell script and Lua code.
+
+A runner is passed the input and has to return a table with these values.
+All are not required, only the useful ones the runner needs to return.
+(So if there isn't an error, just omit `err`.)
+
+- `exitCode` (number): A numerical code to indicate the exit result.
+- `input` (string): The user input. This will be used to add
+to the history.
+- `err` (string): A string to indicate an interal error for the runner.
+It can be set to a few special values for Hilbish to throw the right hooks and have a better looking message:
+
+`[command]: not-found` will throw a command.not-found hook based on what `[command]` is.
+
+`[command]: not-executable` will throw a command.not-executable hook.
+- `continue` (boolean): Whether to prompt the user for more input.
+
+Here is a simple example of a fennel runner. It falls back to
+shell script if fennel eval has an error.
+```lua
+local fennel = require 'fennel'
+
+hilbish.runnerMode(function(input)
+	local ok = pcall(fennel.eval, input)
+	if ok then
+		return {
+			input = input
+		}
+	end
+
+	return hilbish.runner.sh(input)
+end)
+```
 
 ## Functions
 |||

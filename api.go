@@ -556,12 +556,39 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // complete(scope, cb)
 // Registers a completion handler for the specified scope.
-// A `scope` is currently only expected to be `command.<cmd>`,
+// A `scope` is expected to be `command.<cmd>`,
 // replacing <cmd> with the name of the command (for example `command.git`).
 // The documentation for completions, under Features/Completions or `doc completions`
 // provides more details.
 // #param scope string
 // #param cb function
+/*
+#example
+-- This is a very simple example. Read the full doc for completions for details.
+hilbish.complete('command.sudo', function(query, ctx, fields)
+	if #fields == 0 then
+		-- complete for commands
+		local comps, pfx = hilbish.completion.bins(query, ctx, fields)
+		local compGroup = {
+			items = comps, -- our list of items to complete
+			type = 'grid' -- what our completions will look like.
+		}
+
+		return {compGroup}, pfx
+	end
+
+	-- otherwise just be boring and return files
+
+	local comps, pfx = hilbish.completion.files(query, ctx, fields)
+	local compGroup = {
+		items = comps,
+		type = 'grid'
+	}
+
+	return {compGroup}, pfx
+end)
+#example
+*/
 func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	scope, cb, err := util.HandleStrCallback(t, c)
 	if err != nil {

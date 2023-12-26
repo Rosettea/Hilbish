@@ -37,7 +37,7 @@ this function will set the user prompt.
 |----|----|
 |<a href="#catch">catch(name, cb)</a>|Catches an event. This function can be used to act on events.|
 |<a href="#catchOnce">catchOnce(name, cb)</a>|Catches an event, but only once. This will remove the hook immediately after it runs for the first time.|
-|<a href="#hooks">hooks(name) -> table</a>|Returns a list of callbacks that are hooked on an event with the corresponding `name`.|
+|<a href="#hooks">hooks(name) -> table</a>|Returns a table of functions that are hooked on an event with the corresponding `name`.|
 |<a href="#release">release(name, catcher)</a>|Removes the `catcher` for the event with `name`.|
 |<a href="#throw">throw(name, ...args)</a>|Throws a hook with `name` with the provided `args`.|
 
@@ -96,11 +96,11 @@ bait.hooks(name) -> table
 </a>
 </h4>
 
-Returns a list of callbacks that are hooked on an event with the corresponding `name`.  
+Returns a table of functions that are hooked on an event with the corresponding `name`.  
 
 #### Parameters
 `string` **`name`**  
-The name of the function
+The name of the hook
 
 </div>
 

@@ -10,7 +10,7 @@ function bait.catch(name, cb) end
 --- Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
 function bait.catchOnce(name, cb) end
 
---- Returns a list of callbacks that are hooked on an event with the corresponding `name`.
+--- Returns a table of functions that are hooked on an event with the corresponding `name`.
 function bait.hooks(name) end
 
 --- Removes the `catcher` for the event with `name`.

@@ -1,11 +1,4 @@
----
-title: Jobs
-description: Controls for background commands in Hilbish.
-layout: doc
-menu: 
-  docs:
-    parent: "Features"
----
+(This has mainly been replaced by [hilbish.jobs](../api/hilbish.jobs)).
 
 Hilbish has pretty standard job control. It's missing one or two things,
 but works well. One thing which is different from other shells

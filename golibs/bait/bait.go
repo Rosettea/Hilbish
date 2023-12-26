@@ -285,8 +285,8 @@ func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // hooks(name) -> table
-// Returns a list of callbacks that are hooked on an event with the corresponding `name`.
-// #param name string The name of the function
+// Returns a table of functions that are hooked on an event with the corresponding `name`.
+// #param name string The name of the hook
 // #returns table<function>
 func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {

@@ -61,10 +61,12 @@ function hilbish.alias(cmd, orig) end
 function hilbish.appendPath(dir) end
 
 --- Registers a completion handler for the specified scope.
---- A `scope` is currently only expected to be `command.<cmd>`,
+--- A `scope` is expected to be `command.<cmd>`,
 --- replacing <cmd> with the name of the command (for example `command.git`).
 --- The documentation for completions, under Features/Completions or `doc completions`
 --- provides more details.
+--- 
+--- 
 function hilbish.complete(scope, cb) end
 
 --- Returns the current directory of the shell
