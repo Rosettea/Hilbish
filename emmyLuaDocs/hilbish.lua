@@ -69,7 +69,7 @@ function hilbish.appendPath(dir) end
 --- 
 function hilbish.complete(scope, cb) end
 
---- Returns the current directory of the shell
+--- Returns the current directory of the shell.
 function hilbish.cwd() end
 
 --- Replaces the currently running Hilbish instance with the supplied command.
@@ -77,8 +77,9 @@ function hilbish.cwd() end
 function hilbish.exec(cmd) end
 
 --- Puts `fn` in a Goroutine.
---- This can be used to run any function in another thread.
+--- This can be used to run any function in another thread at the same time as other Lua code.
 --- **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**
+--- **This is a limitation of the Lua runtime.**
 function hilbish.goro(fn) end
 
 --- Line highlighter handler.
@@ -98,13 +99,13 @@ function hilbish.highlighter(line) end
 --- 
 function hilbish.hinter(line, pos) end
 
---- Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.
+--- Sets the input mode for Hilbish's line reader.
 --- `emacs` is the default. Setting it to `vim` changes behavior of input to be
 --- Vim-like with modes and Vim keybinds.
 function hilbish.inputMode(mode) end
 
---- Runs the `cb` function every `time` milliseconds.
---- This creates a timer that starts immediately.
+--- Runs the `cb` function every specified amount of `time`.
+--- This creates a timer that ticking immediately.
 function hilbish.interval(cb, time) end
 
 --- Changes the text prompt when Hilbish asks for more input.
@@ -127,21 +128,23 @@ function hilbish.prompt(str, typ) end
 
 --- Read input from the user, using Hilbish's line editor/input reader.
 --- This is a separate instance from the one Hilbish actually uses.
---- Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen).
+--- Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
 function hilbish.read(prompt) end
 
 --- Runs `cmd` in Hilbish's shell script interpreter.
 function hilbish.run(cmd, returnOut) end
 
---- Sets the execution/runner mode for interactive Hilbish. This determines whether
---- Hilbish wll try to run input as Lua and/or sh or only do one of either.
+--- Sets the execution/runner mode for interactive Hilbish.
+--- This determines whether Hilbish wll try to run input as Lua
+--- and/or sh or only do one of either.
 --- Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 --- sh, and lua. It also accepts a function, to which if it is passed one
 --- will call it to execute user input instead.
+--- Read [about runner mode](../features/runner-mode) for more information.
 function hilbish.runnerMode(mode) end
 
---- Runs the `cb` function after `time` in milliseconds.
---- This creates a Timer that starts immediately.
+--- Executed the `cb` function after a period of `time`.
+--- This creates a Timer that starts ticking immediately.
 function hilbish.timeout(cb, time) end
 
 --- Checks if `name` is a valid command.

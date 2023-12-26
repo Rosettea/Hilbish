@@ -43,7 +43,7 @@ String that a user would write for the job
 Arguments for the commands. Has to include the name of the command.
 
 `string` **`execPath`**  
-Binary to use to run the command. Does not
+Binary to use to run the command. Needs to be an absolute path.
 
 #### Example
 ```lua

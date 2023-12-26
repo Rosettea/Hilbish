@@ -237,7 +237,7 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // cwd() -> string
-// Returns the current directory of the shell
+// Returns the current directory of the shell.
 // #returns string
 func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
@@ -249,8 +249,8 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // read(prompt) -> input (string)
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
-// Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen).
-// #param prompt? string
+// Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
+// #param prompt? string Text to print before input, can be empty.
 // #returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaprompt := c.Arg(0)
@@ -479,8 +479,9 @@ func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // goro(fn)
 // Puts `fn` in a Goroutine.
-// This can be used to run any function in another thread.
+// This can be used to run any function in another thread at the same time as other Lua code.
 // **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**
+// **This is a limitation of the Lua runtime.**
 // #param fn function
 func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
@@ -503,10 +504,10 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // timeout(cb, time) -> @Timer
-// Runs the `cb` function after `time` in milliseconds.
-// This creates a Timer that starts immediately.
+// Executed the `cb` function after a period of `time`.
+// This creates a Timer that starts ticking immediately.
 // #param cb function
-// #param time number
+// #param time number Time to run in milliseconds.
 // #returns Timer
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
@@ -529,10 +530,10 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // interval(cb, time) -> @Timer
-// Runs the `cb` function every `time` milliseconds.
-// This creates a timer that starts immediately.
+// Runs the `cb` function every specified amount of `time`.
+// This creates a timer that ticking immediately.
 // #param cb function
-// #param time number
+// #param time number Time in milliseconds.
 // #return Timer
 func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
@@ -655,10 +656,10 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // inputMode(mode)
-// Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.
+// Sets the input mode for Hilbish's line reader.
 // `emacs` is the default. Setting it to `vim` changes behavior of input to be
 // Vim-like with modes and Vim keybinds.
-// #param mode string
+// #param mode string Can be set to either `emacs` or `vim`
 func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -683,11 +684,13 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // runnerMode(mode)
-// Sets the execution/runner mode for interactive Hilbish. This determines whether
-// Hilbish wll try to run input as Lua and/or sh or only do one of either.
+// Sets the execution/runner mode for interactive Hilbish.
+// This determines whether Hilbish wll try to run input as Lua
+// and/or sh or only do one of either.
 // Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
+// Read [about runner mode](../features/runner-mode) for more information.
 // #param mode string|function
 func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
@@ -715,7 +718,7 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // as the text for the hint. This is by default a shim. To set hints,
 // override this function with your custom handler.
 // #param line string
-// #param pos number
+// #param pos number Position of cursor in line. Usually equals string.len(line)
 /*
 #example
 -- this will display "hi" after the cursor in a dimmed color.

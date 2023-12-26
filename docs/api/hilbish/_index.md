@@ -17,20 +17,20 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#alias">alias(cmd, orig)</a>|Sets an alias, with a name of `cmd` to another command.|
 |<a href="#appendPath">appendPath(dir)</a>|Appends the provided dir to the command path (`$PATH`)|
 |<a href="#complete">complete(scope, cb)</a>|Registers a completion handler for the specified scope.|
-|<a href="#cwd">cwd() -> string</a>|Returns the current directory of the shell|
+|<a href="#cwd">cwd() -> string</a>|Returns the current directory of the shell.|
 |<a href="#exec">exec(cmd)</a>|Replaces the currently running Hilbish instance with the supplied command.|
 |<a href="#goro">goro(fn)</a>|Puts `fn` in a Goroutine.|
 |<a href="#highlighter">highlighter(line)</a>|Line highlighter handler.|
 |<a href="#hinter">hinter(line, pos)</a>|The command line hint handler. It gets called on every key insert to|
-|<a href="#inputMode">inputMode(mode)</a>|Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.|
-|<a href="#interval">interval(cb, time) -> @Timer</a>|Runs the `cb` function every `time` milliseconds.|
+|<a href="#inputMode">inputMode(mode)</a>|Sets the input mode for Hilbish's line reader.|
+|<a href="#interval">interval(cb, time) -> @Timer</a>|Runs the `cb` function every specified amount of `time`.|
 |<a href="#multiprompt">multiprompt(str)</a>|Changes the text prompt when Hilbish asks for more input.|
 |<a href="#prependPath">prependPath(dir)</a>|Prepends `dir` to $PATH.|
 |<a href="#prompt">prompt(str, typ)</a>|Changes the shell prompt to the provided string.|
 |<a href="#read">read(prompt) -> input (string)</a>|Read input from the user, using Hilbish's line editor/input reader.|
 |<a href="#run">run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)</a>|Runs `cmd` in Hilbish's shell script interpreter.|
-|<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish. This determines whether|
-|<a href="#timeout">timeout(cb, time) -> @Timer</a>|Runs the `cb` function after `time` in milliseconds.|
+|<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish.|
+|<a href="#timeout">timeout(cb, time) -> @Timer</a>|Executed the `cb` function after a period of `time`.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
 
 ## Static module fields
@@ -162,7 +162,7 @@ hilbish.cwd() -> string
 </a>
 </h4>
 
-Returns the current directory of the shell  
+Returns the current directory of the shell.  
 
 #### Parameters
 This function has no parameters.  
@@ -196,8 +196,9 @@ hilbish.goro(fn)
 </h4>
 
 Puts `fn` in a Goroutine.  
-This can be used to run any function in another thread.  
+This can be used to run any function in another thread at the same time as other Lua code.  
 **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**  
+**This is a limitation of the Lua runtime.**  
 
 #### Parameters
 `function` **`fn`**  
@@ -253,7 +254,7 @@ override this function with your custom handler.
 
 
 `number` **`pos`**  
-
+Position of cursor in line. Usually equals string.len(line)
 
 #### Example
 ```lua
@@ -273,13 +274,13 @@ hilbish.inputMode(mode)
 </a>
 </h4>
 
-Sets the input mode for Hilbish's line reader. Accepts either emacs or vim.  
+Sets the input mode for Hilbish's line reader.  
 `emacs` is the default. Setting it to `vim` changes behavior of input to be  
 Vim-like with modes and Vim keybinds.  
 
 #### Parameters
 `string` **`mode`**  
-
+Can be set to either `emacs` or `vim`
 
 </div>
 
@@ -292,15 +293,15 @@ hilbish.interval(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/
 </a>
 </h4>
 
-Runs the `cb` function every `time` milliseconds.  
-This creates a timer that starts immediately.  
+Runs the `cb` function every specified amount of `time`.  
+This creates a timer that ticking immediately.  
 
 #### Parameters
 `function` **`cb`**  
 
 
 `number` **`time`**  
-
+Time in milliseconds.
 
 </div>
 
@@ -401,11 +402,11 @@ hilbish.read(prompt) -> input (string)
 
 Read input from the user, using Hilbish's line editor/input reader.  
 This is a separate instance from the one Hilbish actually uses.  
-Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen).  
+Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.  
 
 #### Parameters
 `string` **`prompt?`**  
-
+Text to print before input, can be empty.
 
 </div>
 
@@ -438,11 +439,13 @@ hilbish.runnerMode(mode)
 </a>
 </h4>
 
-Sets the execution/runner mode for interactive Hilbish. This determines whether  
-Hilbish wll try to run input as Lua and/or sh or only do one of either.  
+Sets the execution/runner mode for interactive Hilbish.  
+This determines whether Hilbish wll try to run input as Lua  
+and/or sh or only do one of either.  
 Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),  
 sh, and lua. It also accepts a function, to which if it is passed one  
 will call it to execute user input instead.  
+Read [about runner mode](../features/runner-mode) for more information.  
 
 #### Parameters
 `string|function` **`mode`**  
@@ -459,15 +462,15 @@ hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#
 </a>
 </h4>
 
-Runs the `cb` function after `time` in milliseconds.  
-This creates a Timer that starts immediately.  
+Executed the `cb` function after a period of `time`.  
+This creates a Timer that starts ticking immediately.  
 
 #### Parameters
 `function` **`cb`**  
 
 
 `number` **`time`**  
-
+Time to run in milliseconds.
 
 </div>
 

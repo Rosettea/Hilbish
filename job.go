@@ -418,7 +418,7 @@ func (j *jobHandler) luaGetJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // used by runners, but can also be used to create jobs via Lua. Commanders cannot be ran as jobs.
 // #param cmdstr string String that a user would write for the job
 // #param args table Arguments for the commands. Has to include the name of the command.
-// #param execPath string Binary to use to run the command. Does not 
+// #param execPath string Binary to use to run the command. Needs to be an absolute path.
 /*
 #example
 hilbish.jobs.add('go build', {'go', 'build'}, '/usr/bin/go')
