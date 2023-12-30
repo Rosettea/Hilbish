@@ -60,6 +60,8 @@ var (
 	seqAltF         = string([]byte{27, 102})
 	seqAltR         = string([]byte{27, 114}) // Used for alternative history
 	seqAltBackspace = string([]byte{27, 127})
+	seqPageUp       = string([]byte{27, 91, 53, 126})
+	seqPageDown       = string([]byte{27, 91, 54, 126})
 )
 
 const (
@@ -185,6 +187,8 @@ func (rl *Instance) ReadChar() string {
 				case seqHome, seqHomeSc: return "Home"
 				case seqEnd, seqEndSc: return "End"
 				case seqDelete, seqDelete2: return "Delete"
+				case seqPageUp: return "Page-Up"
+				case seqPageDown: return "Page-Down"
 			}
 	}
 

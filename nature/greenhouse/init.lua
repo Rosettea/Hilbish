@@ -40,7 +40,9 @@ function Greenhouse:new(sink)
 				self:jump(self.specialPageIdx)
 				self:special(false)
 			end
-		end
+		end,
+		['Page-Down'] = function(self) self:scroll('down', {page = true}) end,
+		['Page-Up'] = function(self) self:scroll('up', {page = true}) end
 	}
 	self.isSpecial = false
 	self.specialPage = nil
@@ -108,7 +110,9 @@ end
 function Greenhouse:render()
 end
 
-function Greenhouse:scroll(direction)
+function Greenhouse:scroll(direction, opts)
+	opts = opts or {}
+
 	if self.isSpecial then
 		if direction == 'down' then
 			self:next(true)
@@ -122,10 +126,15 @@ function Greenhouse:scroll(direction)
 
 	local oldOffset = self.offset
 	local oldHorizOffset = self.horizOffset
+	local amount = self.step.vertical
+	if opts.page then
+		amount = self.region.height
+	end
+
 	if direction == 'down' then
-		self.offset = math.min(self.offset + self.step.vertical, math.max(1, #lines - self.region.height))
+		self.offset = math.min(self.offset + amount, math.max(1, #lines - self.region.height))
 	elseif direction == 'up' then
-		self.offset = math.max(self.offset - self.step.vertical, 1)
+		self.offset = math.max(self.offset - amount, 1)
 	end
 
 --[[

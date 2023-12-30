@@ -1,5 +1,12 @@
 # 🎀 Changelog
 
+## Unreleased
+## Added
+- Page Up/Down keybinds for Greenhouse will now scroll up and down the size of the region (a page)
+
+## Changed
+- Remove usage of `hilbish.goro` in Greenhouse.
+
 ## [2.2.1] - 2023-12-26
 ## Fixed
 - Removed a left over debug print
@@ -693,6 +700,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/Rosettea/Hilbish/compare/v2.1.0...v2.2.0
 [2.1.2]: https://github.com/Rosettea/Hilbish/compare/v2.1.1...v2.1.2
