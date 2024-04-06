@@ -195,8 +195,9 @@ input:
 					// what are we even doing here?
 					panic("not a tty")
 				}
+				<-make(chan struct{})
 			}
-			<-make(chan struct{})
+			continue
 		}
 		var priv bool
 		if strings.HasPrefix(input, " ") {
