@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
@@ -88,7 +90,7 @@ func main() {
 		interactive = true
 	}
 
-	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
 		interactive = false
 	}
 
@@ -189,9 +191,12 @@ input:
 			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
+				if errors.Is(err, syscall.ENOTTY) {
+					// what are we even doing here?
+					panic("not a tty")
+				}
 			}
-			// TODO: Halt if any other error occurs
-			continue
+			<-make(chan struct{})
 		}
 		var priv bool
 		if strings.HasPrefix(input, " ") {

@@ -1,14 +1,19 @@
 # 🎀 Changelog
 
 ## Unreleased
-## Added
+### Fixed
+- Do more checks for a TTY
+  - Panic if ENOTTY is thrown from readline
+  - use `x/term` function to check if a terminal
+
+### Added
 - Page Up/Down keybinds for Greenhouse will now scroll up and down the size of the region (a page)
 
-## Changed
+### Changed
 - Remove usage of `hilbish.goro` in Greenhouse.
 
 ## [2.2.1] - 2023-12-26
-## Fixed
+### Fixed
 - Removed a left over debug print
 - Recover panic in `hilbish.goro`
 
