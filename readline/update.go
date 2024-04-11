@@ -10,7 +10,7 @@ import (
 // it should coordinate reprinting the input line, any Infos and completions
 // and manage to get back to the current (computed) cursor coordinates
 func (rl *Instance) updateHelpers() {
-
+	print(seqHideCursor)
 	// Load all Infos & completions before anything.
 	// Thus overwrites anything having been dirtily added/forced/modified, like rl.SetInfoText()
 	rl.getInfoText()
@@ -27,6 +27,7 @@ func (rl *Instance) updateHelpers() {
 	// We are at the prompt line (with the latter
 	// not printed yet), then reprint everything
 	rl.renderHelpers()
+	print(seqUnhideCursor)
 }
 
 const tabWidth = 4
