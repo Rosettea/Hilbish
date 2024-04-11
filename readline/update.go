@@ -1,6 +1,7 @@
 package readline
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/text/width"
@@ -120,7 +121,7 @@ func (rl *Instance) clearHelpers() {
 	moveCursorForwards(rl.fullX)
 
 	// Clear everything below
-	print(seqClearScreenBelow)
+	//print(seqClearScreenBelow)
 
 	// Go back to current cursor position
 	moveCursorBackwards(GetTermWidth())
@@ -194,4 +195,16 @@ func (rl *Instance) renderHelpers() {
 	// Go back to current cursor position
 	moveCursorUp(rl.fullY - rl.posY)
 	moveCursorForwards(rl.posX)
+}
+
+func (rl *Instance) bufprintF(format string, a ...any) {
+	fmt.Fprintf(rl.bufferedOut, format, a...)
+}
+
+func (rl *Instance) bufprint(text string) {
+	fmt.Fprint(rl.bufferedOut, text)
+}
+
+func (rl *Instance) bufflush() {
+	rl.bufferedOut.Flush()
 }

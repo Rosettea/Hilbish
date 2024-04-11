@@ -1,6 +1,6 @@
 module hilbish
 
-go 1.17
+go 1.18
 
 require (
 	github.com/arnodel/golua v0.0.0-20220221163911-dfcf252b6f86
