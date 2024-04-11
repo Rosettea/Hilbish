@@ -11,6 +11,8 @@
 
 ### Changed
 - Remove usage of `hilbish.goro` in Greenhouse.
+- Values in `hilbish` table are no longer protected. This means
+they can be overridden. (#287)
 
 ## [2.2.1] - 2023-12-26
 ### Fixed
