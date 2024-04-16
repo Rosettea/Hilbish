@@ -2,6 +2,7 @@
 
 ## [2.2.2] - 2024-04-16
 ### Fixed
+- Line refresh fixes (less flicker)
 - Do more checks for a TTY
   - Panic if ENOTTY is thrown from readline
   - use `x/term` function to check if a terminal
