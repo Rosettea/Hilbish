@@ -33,19 +33,20 @@ func (rl *Instance) GetLine() []rune {
 func (rl *Instance) echo() {
 
 	// Then we print the prompt, and the line,
+	hideCursor()
 	switch {
 	case rl.PasswordMask != 0:
 	case rl.PasswordMask > 0:
-		print(strings.Repeat(string(rl.PasswordMask), len(rl.line)) + " ")
+		rl.bufprint(strings.Repeat(string(rl.PasswordMask), len(rl.line)) + " ")
 
 	default:
+
 		// Go back to prompt position, and clear everything below
 		moveCursorBackwards(GetTermWidth())
 		moveCursorUp(rl.posY)
-		print(seqClearScreenBelow)
 
 		// Print the prompt
-		print(string(rl.realPrompt))
+		rl.bufprint(string(rl.realPrompt))
 
 		// Assemble the line, taking virtual completions into account
 		var line []rune
@@ -57,11 +58,14 @@ func (rl *Instance) echo() {
 
 		// Print the input line with optional syntax highlighting
 		if rl.SyntaxHighlighter != nil {
-			print(rl.SyntaxHighlighter(line))
+			rl.bufprint(rl.SyntaxHighlighter(line))
 		} else {
-			print(string(line))
+			rl.bufprint(string(line))
 		}
+		rl.bufprint(seqClearScreenBelow)
+
 	}
+	rl.bufflush()
 
 	// Update references with new coordinates only now, because
 	// the new line may be longer/shorter than the previous one.
@@ -72,6 +76,7 @@ func (rl *Instance) echo() {
 	moveCursorUp(rl.fullY)
 	moveCursorDown(rl.posY)
 	moveCursorForwards(rl.posX)
+	unhideCursor()
 }
 
 func (rl *Instance) insert(r []rune) {
@@ -159,7 +164,7 @@ func (rl *Instance) clearLine() {
 	moveCursorForwards(rl.promptLen)
 
 	// Clear everything after & below the cursor
-	print(seqClearScreenBelow)
+	//print(seqClearScreenBelow)
 
 	// Real input line
 	rl.line = []rune{}

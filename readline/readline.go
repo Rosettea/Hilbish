@@ -868,7 +868,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			if err != nil {
 				return
 			}
-			if !rl.mainHist {
+			if !rl.mainHist && rl.altHistory != nil {
 				line, err = rl.altHistory.GetLine(rl.altHistory.Len() - 1)
 				if err != nil {
 					return

@@ -1,3 +1,12 @@
+---
+title: Actions
+layout: doc
+weight: -80
+menu: 
+  docs:
+    parent: "Vim Mode"
+---
+
 Vim actions are essentially just when a user uses a Vim keybind.
 Things like yanking and pasting are Vim actions.
 This is not an "offical Vim thing," just a Hilbish thing.

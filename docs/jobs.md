@@ -1,3 +1,5 @@
+(This has mainly been replaced by [hilbish.jobs](../api/hilbish.jobs)).
+
 Hilbish has pretty standard job control. It's missing one or two things,
 but works well. One thing which is different from other shells
 (besides Hilbish) itself is the API for jobs, and of course it's in Lua.

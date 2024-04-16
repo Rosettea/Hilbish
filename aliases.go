@@ -1,6 +1,8 @@
 package main
 
 import (
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -46,9 +48,32 @@ func (a *aliasModule) Resolve(cmdstr string) string {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
-	args := strings.Split(cmdstr, " ")
+	arg, _ := regexp.Compile(`[\\]?%\d+`)
+
+	args, _ := splitInput(cmdstr)
+	if len(args) == 0 {
+		// this shouldnt reach but...????
+		return cmdstr
+	}
+
 	for a.aliases[args[0]] != "" {
 		alias := a.aliases[args[0]]
+		alias = arg.ReplaceAllStringFunc(alias, func(a string) string {
+			idx, _ := strconv.Atoi(a[1:])
+			if strings.HasPrefix(a, "\\") || idx == 0 {
+				return strings.TrimPrefix(a, "\\")
+			}
+
+			if idx + 1 > len(args) {
+				return a
+			}
+			val := args[idx]
+			args = cut(args, idx)
+			cmdstr = strings.Join(args, " ")
+
+			return val
+		})
+		
 		cmdstr = alias + strings.TrimPrefix(cmdstr, args[0])
 		cmdArgs, _ := splitInput(cmdstr)
 		args = cmdArgs
@@ -86,15 +111,23 @@ func (a *aliasModule) Loader(rtm *rt.Runtime) *rt.Table {
 
 // #interface aliases
 // add(alias, cmd)
-// This is an alias (ha) for the `hilbish.alias` function.
+// This is an alias (ha) for the [hilbish.alias](../#alias) function.
 // --- @param alias string
 // --- @param cmd string
 func _hlalias() {}
 
 // #interface aliases
-// list() -> table<string, string>
+// list() -> table[string, string]
 // Get a table of all aliases, with string keys as the alias and the value as the command.
-// --- @returns table<string, string>
+// #returns table[string, string]
+/*
+#example
+hilbish.aliases.add('hi', 'echo hi')
+
+local aliases = hilbish.aliases.list()
+-- -> {hi = 'echo hi'}
+#example
+*/
 func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	aliasesList := rt.NewTable()
 	for k, v := range a.All() {
@@ -107,7 +140,7 @@ func (a *aliasModule) luaList(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface aliases
 // delete(name)
 // Removes an alias.
-// --- @param name string
+// #param name string
 func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -122,10 +155,10 @@ func (a *aliasModule) luaDelete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface aliases
-// resolve(alias) -> command (string)
-// Tries to resolve an alias to its command.
-// --- @param alias string
-// --- @returns string
+// resolve(alias) -> string?
+// Resolves an alias to its original command. Will thrown an error if the alias doesn't exist.
+// #param alias string
+// #returns string
 func (a *aliasModule) luaResolve(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err

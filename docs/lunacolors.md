@@ -1,3 +1,10 @@
+---
+title: Lunacolors
+layout: doc
+weight: -60
+menu: docs
+---
+
 Lunacolors is an ANSI color/styling library for Lua. It is included
 by default in standard Hilbish distributions to provide easy styling
 for things like prompts and text.

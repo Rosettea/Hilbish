@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
@@ -88,7 +90,7 @@ func main() {
 		interactive = true
 	}
 
-	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
 		interactive = false
 	}
 
@@ -189,8 +191,12 @@ input:
 			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
+				if errors.Is(err, syscall.ENOTTY) {
+					// what are we even doing here?
+					panic("not a tty")
+				}
+				<-make(chan struct{})
 			}
-			// TODO: Halt if any other error occurs
 			continue
 		}
 		var priv bool
@@ -289,7 +295,7 @@ func removeDupes(slice []string) []string {
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.ToLower(a) == strings.ToLower(e) {
 			return true
 		}
 	}
@@ -323,4 +329,8 @@ func getVersion() string {
 	v.WriteString(" (" + releaseName + ")")
 
 	return v.String()
+}
+
+func cut(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx + 1:]...)
 }
