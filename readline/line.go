@@ -44,7 +44,6 @@ func (rl *Instance) echo() {
 		// Go back to prompt position, and clear everything below
 		moveCursorBackwards(GetTermWidth())
 		moveCursorUp(rl.posY)
-		rl.bufprint(seqClearScreenBelow)
 
 		// Print the prompt
 		rl.bufprint(string(rl.realPrompt))
@@ -63,6 +62,7 @@ func (rl *Instance) echo() {
 		} else {
 			rl.bufprint(string(line))
 		}
+		rl.bufprint(seqClearScreenBelow)
 
 	}
 	rl.bufflush()
