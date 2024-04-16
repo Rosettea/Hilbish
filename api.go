@@ -59,46 +59,7 @@ var hilbishLoader = packagelib.Loader{
 }
 
 func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
-	fakeMod := rt.NewTable()
-	modmt := rt.NewTable()
 	mod := rt.NewTable()
-
-	modIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		arg := c.Arg(1)
-		val := mod.Get(arg)
-
-		return c.PushingNext1(t.Runtime, val), nil
-	}
-	modNewIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		k, err := c.StringArg(1)
-		if err != nil {
-			return nil, err
-		}
-
-		v := c.Arg(2)
-		if k == "highlighter" {
-			var err error
-			// fine to assign, since itll be either nil or a closure
-			highlighter, err = c.ClosureArg(2)
-			if err != nil {
-				return nil, errors.New("hilbish.highlighter has to be a function")
-			}
-		} else if k == "hinter" {
-			var err error
-			hinter, err = c.ClosureArg(2)
-			if err != nil {
-				return nil, errors.New("hilbish.hinter has to be a function")
-			}
-		} else if modVal := mod.Get(rt.StringValue(k)); modVal != rt.NilValue {
-			return nil, errors.New("not allowed to override in hilbish table")
-		}
-		mod.Set(rt.StringValue(k), v)
-
-		return c.Next(), nil
-	}
-	modmt.Set(rt.StringValue("__newindex"), rt.FunctionValue(rt.NewGoFunction(modNewIndex, "__newindex", 3, false)))
-	modmt.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(modIndex, "__index", 2, false)))
-	fakeMod.SetMetatable(modmt)
 
 	util.SetExports(rtm, mod, exports)
 	hshMod = mod
@@ -110,16 +71,16 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()))
-	util.SetFieldProtected(fakeMod, mod, "goVersion", rt.StringValue(runtime.Version()))
-	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username))
-	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host))
-	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir))
-	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir))
-	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive))
-	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login))
-	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue)
-	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0))
+	util.SetField(rtm, mod, "ver", rt.StringValue(getVersion()))
+	util.SetField(rtm, mod, "goVersion", rt.StringValue(runtime.Version()))
+	util.SetField(rtm, mod, "user", rt.StringValue(username))
+	util.SetField(rtm, mod, "host", rt.StringValue(host))
+	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir))
+	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir))
+	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive))
+	util.SetField(rtm, mod, "login", rt.BoolValue(login))
+	util.SetField(rtm, mod, "vimMode", rt.NilValue)
+	util.SetField(rtm, mod, "exitCode", rt.IntValue(0))
 
 	// hilbish.userDir table
 	hshuser := userDirLoader(rtm)
@@ -171,7 +132,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	pluginModule := moduleLoader(rtm)
 	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
 
-	return rt.TableValue(fakeMod), nil
+	return rt.TableValue(mod), nil
 }
 
 func getenv(key, fallback string) string {
