@@ -48,7 +48,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 	rl.stillOnRefresh = true
 	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
-	print("\r\n" + seqClearScreenBelow)
+	//print("\r\n" + seqClearScreenBelow)
 
 	// Print the log
 	fmt.Printf(log)
@@ -97,7 +97,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 	print(seqClearLine)
 	moveCursorUp(rl.infoY + rl.tcUsedY)
 	moveCursorBackwards(GetTermWidth())
-	print("\r\n" + seqClearScreenBelow)
+	//print("\r\n" + seqClearScreenBelow)
 
 	// Add a new line if needed
 	if rl.Multiline {
@@ -137,7 +137,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 	moveCursorUp(offset)
 
 	// Then clear everything below our new position
-	print(seqClearScreenBelow)
+	//print(seqClearScreenBelow)
 
 	// Update the prompt if a special has been passed.
 	if prompt != "" {
