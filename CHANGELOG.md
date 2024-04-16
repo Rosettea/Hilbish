@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.2.2] - 2024-04-16
 ### Fixed
 - Do more checks for a TTY
   - Panic if ENOTTY is thrown from readline
