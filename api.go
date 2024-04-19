@@ -712,5 +712,14 @@ func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #example
 // #param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.Next(), nil
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	line, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(line)), nil
 }
