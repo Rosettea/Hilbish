@@ -1,5 +1,9 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- `cat` command now reads files in chunks, allowing for reading large files
+
 ## [2.2.2] - 2024-04-16
 ### Fixed
 - Line refresh fixes (less flicker)
