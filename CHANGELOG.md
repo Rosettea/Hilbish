@@ -1,6 +1,9 @@
 # 🎀 Changelog
 
 ## Unreleased
+### Fixed
+- `cat` command no longer prints extra newline at end of each file
+
 ### Added
 - `cat` command now reads files in chunks, allowing for reading large files
 
