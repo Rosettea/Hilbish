@@ -1,7 +1,8 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.2.3] - 2024-04-27
 ### Fixed
+- Highligher and hinter work now, since it was regressed from the previous minor release.
 - `cat` command no longer prints extra newline at end of each file
 
 ### Added
