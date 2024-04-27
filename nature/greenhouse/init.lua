@@ -271,6 +271,15 @@ end
 function Greenhouse:input(char)
 end
 
+local function read()
+	terminal.saveState()
+	terminal.setRaw()
+	local c = hilbish.editor.readChar()
+
+	terminal.restoreState()
+	return c
+end
+
 function Greenhouse:initUi()
 	local ansikit = require 'ansikit'
 	local bait = require 'bait'
@@ -280,14 +289,17 @@ function Greenhouse:initUi()
 	local Page = require 'nature.greenhouse.page'
 	local done = false
 
-	bait.catch('signal.sigint', function()
+	local function sigint()
 		ansikit.clear()
 		done = true
-	end)
+	end
 
-	bait.catch('signal.resize', function()
+	local function resize()
 		self:update()
-	end)
+	end
+	bait.catch('signal.sigint', sigint)
+
+	bait.catch('signal.resize', resize)
 
 	ansikit.screenAlt()
 	ansikit.clear(true)
@@ -311,15 +323,10 @@ function Greenhouse:initUi()
 
 	ansikit.showCursor()
 	ansikit.screenMain()
-end
 
-function read()
-	terminal.saveState()
-	terminal.setRaw()
-	local c = hilbish.editor.readChar()
-
-	terminal.restoreState()
-	return c
+	self = nil
+	bait.release('signal.sigint', sigint)
+	bait.release('signal.resize', resize)
 end
 
 return Greenhouse
