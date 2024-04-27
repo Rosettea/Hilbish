@@ -27,6 +27,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/arnodel/golua/lib/iolib"
 	"github.com/maxlandon/readline"
 	"mvdan.cc/sh/v3/interp"
 )
@@ -152,12 +153,13 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
-// run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
+// run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's shell script interpreter.
 // #param cmd string
 // #param returnOut boolean If this is true, the function will return the standard output and error of the command instead of printing it.
 // #returns number, string, string
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	// TODO: ON BREAKING RELEASE, DO NOT ACCEPT `streams` AS A BOOLEAN.
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -166,20 +168,57 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
+	var strms *streams
 	var terminalOut bool
 	if len(c.Etc()) != 0 {
 		tout := c.Etc()[0]
-		termOut, ok := tout.TryBool()
-		terminalOut = termOut
+
+		var ok bool
+		terminalOut, ok = tout.TryBool()
 		if !ok {
-			return nil, errors.New("bad argument to run (expected boolean, got " + tout.TypeName() + ")")
+			luastreams, ok := tout.TryTable()
+			if !ok {
+				return nil, errors.New("bad argument to run (expected boolean or table, got " + tout.TypeName() + ")")
+			}
+
+			var stdoutStream, stderrStream *iolib.File
+
+			stdoutstrm := luastreams.Get(rt.StringValue("stdout"))
+			if !stdoutstrm.IsNil() {
+				f, ok := iolib.ValueToFile(stdoutstrm)
+				if !ok {
+					return nil, errors.New("bad argument to run streams table (expected file, got " + stdoutstrm.TypeName() + ")")
+				}
+
+				stdoutStream = f
+			}
+
+			stderrstrm := luastreams.Get(rt.StringValue("stderr"))
+			if !stderrstrm.IsNil() {
+				f, ok := iolib.ValueToFile(stderrstrm)
+				if !ok {
+					return nil, errors.New("bad argument to run streams table (expected file, got " + stderrstrm.TypeName() + ")")
+				}
+
+				stderrStream = f
+			}
+
+			strms = &streams{
+				stdout: stdoutStream.Handle(),
+				stderr: stderrStream.Handle(),
+			}
+		} else {
+			if !terminalOut {
+				strms = &streams{
+					stdout: new(bytes.Buffer),
+					stderr: new(bytes.Buffer),
+				}
+			}
 		}
-	} else {
-		terminalOut = true
 	}
 
 	var exitcode uint8
-	stdout, stderr, err := execCommand(cmd, terminalOut)
+	stdout, stderr, err := execCommand(cmd, strms)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -187,11 +226,12 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		exitcode = 1
 	}
 
-	stdoutStr := ""
-	stderrStr := ""
-	if !terminalOut {
-		stdoutStr = stdout.(*bytes.Buffer).String()
-		stderrStr = stderr.(*bytes.Buffer).String()
+	var stdoutStr, stderrStr string
+	if stdoutBuf, ok := stdout.(*bytes.Buffer); ok {
+		stdoutStr = stdoutBuf.String()
+	}
+	if stderrBuf, ok := stderr.(*bytes.Buffer); ok {
+		stderrStr = stderrBuf.String()
 	}
 
 	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil

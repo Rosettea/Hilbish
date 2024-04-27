@@ -28,6 +28,12 @@ var errNotExec = errors.New("not executable")
 var errNotFound = errors.New("not found")
 var runnerMode rt.Value = rt.StringValue("hybrid")
 
+type streams struct {
+	stdout io.Writer
+	stderr io.Writer
+	stdin io.Reader
+}
+
 type execError struct{
 	typ string
 	cmd string
@@ -236,7 +242,7 @@ func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr
 }
 
 func execSh(cmdString string) (string, uint8, bool, error) {
-	_, _, err := execCommand(cmdString, true)
+	_, _, err := execCommand(cmdString, nil)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -257,7 +263,7 @@ func execSh(cmdString string) (string, uint8, bool, error) {
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
+func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return nil, nil, err
@@ -265,15 +271,14 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 
 	runner, _ := interp.New()
 
-	var stdout io.Writer
-	var stderr io.Writer
-	if terminalOut {
-		interp.StdIO(os.Stdin, os.Stdout, os.Stderr)(runner)
-	} else {
-		stdout = new(bytes.Buffer)
-		stderr = new(bytes.Buffer)
-		interp.StdIO(os.Stdin, stdout, stderr)(runner)
+	if strms == nil {
+		strms = &streams{
+			stdout: os.Stdout,
+			stderr: os.Stderr,
+		}
 	}
+	interp.StdIO(os.Stdin, strms.stdout, strms.stderr)(runner)
+
 	buf := new(bytes.Buffer)
 	printer := syntax.NewPrinter()
 
@@ -292,11 +297,11 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		interp.ExecHandler(execHandle(bg))(runner)
 		err = runner.Run(context.TODO(), stmt)
 		if err != nil {
-			return stdout, stderr, err
+			return strms.stdout, strms.stderr, err
 		}
 	}
 
-	return stdout, stderr, nil
+	return strms.stdout, strms.stderr, nil
 }
 
 func execHandle(bg bool) interp.ExecHandlerFunc {
