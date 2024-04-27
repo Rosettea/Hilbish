@@ -31,4 +31,4 @@ replace github.com/maxlandon/readline => ./readline
 
 replace layeh.com/gopher-luar => github.com/layeh/gopher-luar v1.0.10
 
-replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20240427155307-035ec93c7eec
+replace github.com/arnodel/golua => github.com/Rosettea/golua v0.0.0-20240427174124-d239074c1749
