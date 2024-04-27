@@ -18,6 +18,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/arnodel/golua/lib/iolib"
 )
 
 var Loader = packagelib.Loader{
@@ -36,6 +37,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"dir": util.LuaExport{fdir, 1, false},
 		"glob": util.LuaExport{fglob, 1, false},
 		"join": util.LuaExport{fjoin, 0, true},
+		"pipe": util.LuaExport{fpipe, 0, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -226,6 +228,17 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), err
 }
 
+func fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	rf, wf, err := os.Pipe()
+	if err != nil {
+		return nil, err
+	}
+
+	rfLua := iolib.NewFile(rf, 0)
+	wfLua := iolib.NewFile(wf, 0)
+
+	return c.PushingNext(t.Runtime, rfLua.Value(t.Runtime), wfLua.Value(t.Runtime)), nil
+}
 // readdir(path) -> table[string]
 // Returns a list of all files and directories in the provided path.
 // #param dir string
