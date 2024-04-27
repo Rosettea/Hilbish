@@ -203,9 +203,13 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 				stderrStream = f
 			}
 
-			strms = &streams{
-				stdout: stdoutStream.Handle(),
-				stderr: stderrStream.Handle(),
+			strms = &streams{}
+			if stdoutStream != nil {
+				strms.stdout = stdoutStream.Handle()
+			}
+
+			if stderrStream != nil {
+				strms.stderr = stderrStream.Handle()
 			}
 		} else {
 			if !terminalOut {

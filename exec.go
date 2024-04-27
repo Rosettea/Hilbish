@@ -272,11 +272,17 @@ func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 	runner, _ := interp.New()
 
 	if strms == nil {
-		strms = &streams{
-			stdout: os.Stdout,
-			stderr: os.Stderr,
-		}
+		strms = &streams{}
 	}
+
+	if strms.stdout == nil {
+		strms.stdout = os.Stdout
+	}
+
+	if strms.stderr == nil {
+		strms.stderr = os.Stderr
+	}
+
 	interp.StdIO(os.Stdin, strms.stdout, strms.stderr)(runner)
 
 	buf := new(bytes.Buffer)
