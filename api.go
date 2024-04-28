@@ -211,10 +211,10 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 				return nil, errors.New("bad argument to run (expected boolean or table, got " + tout.TypeName() + ")")
 			}
 
-			handleStream(luastreams.Get(rt.StringValue("stdout")), strms, false)
-			handleStream(luastreams.Get(rt.StringValue("stderr")), strms, true)
+			handleStream(luastreams.Get(rt.StringValue("out")), strms, false)
+			handleStream(luastreams.Get(rt.StringValue("err")), strms, true)
 
-			stdinstrm := luastreams.Get(rt.StringValue("stdin"))
+			stdinstrm := luastreams.Get(rt.StringValue("input"))
 			if !stdinstrm.IsNil() {
 				ud, ok := stdinstrm.TryUserData()
 				if !ok {
