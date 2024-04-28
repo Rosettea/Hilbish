@@ -1,5 +1,32 @@
 # 🎀 Changelog
 
+## Unreleased
+### Added
+- `fs.pipe` function to get a pair of connected files (a pipe).
+- Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
+`streams` is a table of input and output streams to run the command with.
+It uses these 3 keys:
+  - `input` as standard input for the command
+  - `out` as standard output
+  - `err` as standard error
+Here is a minimal example of the new usage which allows users to now pipe commands
+directly via Lua functions:
+  
+```lua
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+```
+
 ## [2.2.3] - 2024-04-27
 ### Fixed
 - Highligher and hinter work now, since it was regressed from the previous minor release.
@@ -716,6 +743,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/Rosettea/Hilbish/compare/v2.1.0...v2.2.0
