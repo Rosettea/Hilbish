@@ -420,7 +420,7 @@ hilbish.run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 </h4>
 
 Runs `cmd` in Hilbish's shell script interpreter.  
-Specifies the output and input streams the command should use.  
+The `streams` parameter specifies the output and input streams the command should use.  
 For example, to write command output to a sink.  
 As a table, the caller can directly specify the standard output, error, and input  
 streams of the command with the table keys `out`, `err`, and `input` respectively.  
@@ -433,6 +433,24 @@ As a boolean, it specifies whether the command should use standard output or ret
 `table|boolean` **`streams`**  
 
 
+#### Example
+```lua
+
+// This code is the same as `ls -l | wc -l`
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+
+```
 </div>
 
 <hr>
