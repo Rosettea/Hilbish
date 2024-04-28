@@ -349,6 +349,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 
 			sinks := rt.NewTable()
 			sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("input"), rt.UserDataValue(stdin.ud))
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
