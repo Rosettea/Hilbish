@@ -9,6 +9,7 @@ It uses these 3 keys:
   - `input` as standard input for the command
   - `out` as standard output
   - `err` as standard error
+
 Here is a minimal example of the new usage which allows users to now pipe commands
 directly via Lua functions:
   
