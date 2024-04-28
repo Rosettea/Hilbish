@@ -185,14 +185,31 @@ func handleStream(v rt.Value, strms *streams, errStream bool) error {
 
 // run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's shell script interpreter.
-// #param cmd string
-// #param streams table|boolean
-// Specifies the output and input streams the command should use.
+// The `streams` parameter specifies the output and input streams the command should use.
 // For example, to write command output to a sink.
 // As a table, the caller can directly specify the standard output, error, and input
 // streams of the command with the table keys `out`, `err`, and `input` respectively.
 // As a boolean, it specifies whether the command should use standard output or return its output streams.
+// #param cmd string
+// #param streams table|boolean
 // #returns number, string, string
+// #example
+/*
+// This code is the same as `ls -l | wc -l`
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+*/
+// #example
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	// TODO: ON BREAKING RELEASE, DO NOT ACCEPT `streams` AS A BOOLEAN.
 	if err := c.Check1Arg(); err != nil {
