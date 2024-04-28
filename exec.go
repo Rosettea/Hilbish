@@ -342,7 +342,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		}
 
 		hc := interp.HandlerCtx(ctx)
-		if commands[args[0]] != nil {
+		if cmd := cmds.Commands[args[0]]; cmd != nil {
 			stdin := newSinkInput(hc.Stdin)
 			stdout := newSinkOutput(hc.Stdout)
 			stderr := newSinkOutput(hc.Stderr)
@@ -353,7 +353,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -365,7 +365,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 				exitcode = uint8(code)
 			} else if luaexitcode != rt.NilValue {
 				// deregister commander
-				delete(commands, args[0])
+				delete(cmds.Commands, args[0])
 				fmt.Fprintf(os.Stderr, "Commander did not return number for exit code. %s, you're fired.\n", args[0])
 			}
 

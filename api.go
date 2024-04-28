@@ -701,7 +701,7 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cmd := strings.Split(alias, " ")[0]
 
 	// check for commander
-	if commands[cmd] != nil {
+	if cmds.Commands[cmd] != nil {
 		// they dont resolve to a path, so just send the cmd
 		return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 	}

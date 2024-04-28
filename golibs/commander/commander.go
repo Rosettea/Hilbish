@@ -43,11 +43,13 @@ import (
 type Commander struct{
 	Events *bait.Bait
 	Loader packagelib.Loader
+	Commands map[string]*rt.Closure
 }
 
-func New(rtm *rt.Runtime) Commander {
-	c := Commander{
+func New(rtm *rt.Runtime) *Commander {
+	c := &Commander{
 		Events: bait.New(rtm),
+		Commands: make(map[string]*rt.Closure),
 	}
 	c.Loader = packagelib.Loader{
 		Load: c.loaderFunc,
@@ -61,6 +63,7 @@ func (c *Commander) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	exports := map[string]util.LuaExport{
 		"register": util.LuaExport{c.cregister, 2, false},
 		"deregister": util.LuaExport{c.cderegister, 1, false},
+		"registry": util.LuaExport{c.cregistry, 0, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
@@ -91,7 +94,7 @@ func (c *Commander) cregister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	c.Events.Emit("commandRegister", cmdName, cmd)
+	c.Commands[cmdName] = cmd
 
 	return ct.Next(), err
 }
@@ -108,7 +111,23 @@ func (c *Commander) cderegister(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	c.Events.Emit("commandDeregister", cmdName)
+	delete(c.Commands, cmdName)
 
 	return ct.Next(), err
+}
+
+// registry() -> table
+// Returns all registered commanders. Returns a list of tables with the following keys:
+// - `exec`: The function used to run the commander. Commanders require args and sinks to be passed.
+// #returns table
+func (c *Commander) cregistry(t *rt.Thread, ct *rt.GoCont) (rt.Cont, error) {
+	registryLua := rt.NewTable()
+	for cmdName, cmd := range c.Commands {
+		cmdTbl := rt.NewTable()
+		cmdTbl.Set(rt.StringValue("exec"), rt.FunctionValue(cmd))
+
+		registryLua.Set(rt.StringValue(cmdName), rt.TableValue(cmdTbl))
+	}
+
+	return ct.PushingNext1(t.Runtime, rt.TableValue(registryLua)), nil
 }

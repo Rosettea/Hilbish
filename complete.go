@@ -128,7 +128,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	}
 
 	// add lua registered commands to completions
-	for cmdName := range commands {
+	for cmdName := range cmds.Commands {
 		if strings.HasPrefix(cmdName, query) {
 			completions = append(completions, cmdName)
 		}

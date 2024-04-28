@@ -14,6 +14,7 @@ import (
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
+	"hilbish/golibs/commander"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
@@ -25,7 +26,6 @@ var (
 	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*rt.Closure{}
 	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
@@ -33,6 +33,7 @@ var (
 	curuser *user.User
 
 	hooks *bait.Bait
+	cmds *commander.Commander
 	defaultConfPath string
 	defaultHistPath string
 )
