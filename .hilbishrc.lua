@@ -47,3 +47,12 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
+
+hilbish.timeout(function()
+	hilbish.messages.send {
+		icon = '⚠',
+		title = 'Warning',
+		text = 'Do NOT use Hilbish at 3AM!',
+		channel = 'your-walls'
+	}
+end, 5000)

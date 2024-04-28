@@ -305,13 +305,17 @@ function Greenhouse:initUi()
 	ansikit.clear(true)
 	self:draw()
 
+	function self:quit()
+		done = true
+	end
+
 	while not done do
 		local c = read()
 		self:keybind('Ctrl-Q', function()
-			done = true
+			self:quit()
 		end)
 		self:keybind('Ctrl-D', function()
-			done = true
+			self:quit()
 		end)
 
 		if self.keybinds[c] then

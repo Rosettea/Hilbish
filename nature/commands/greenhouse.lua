@@ -7,11 +7,30 @@ local terminal = require 'terminal'
 local Greenhouse = require 'nature.greenhouse'
 local Page = require 'nature.greenhouse.page'
 
+local display = ''
+local gh
+local ticker
+bait.catch('hilbish.notification', function(message)
+	if not gh then return end
+
+	local inverted = false
+	local msgDisplay = string.format('(%s #%s) %s: %s', message.icon, message.channel, message.title, message.summary or message.text)
+	ticker = hilbish.interval(function()
+		inverted = not inverted
+		display = inverted and msgDisplay or lunacolors.invert(msgDisplay)
+		gh:render()
+	end, 500)
+	display = msgDisplay
+
+	hilbish.timeout(function()
+		ticker:stop()
+	end, 20000)
+end)
+
 commander.register('greenhouse', function(args, sinks)
-	local gh = Greenhouse(sinks.out)
+	gh = Greenhouse(sinks.out)
 
 	local buffer = ''
-	local display = ''
 	local command = false
 	local commands = {
 		q = function()
@@ -45,7 +64,7 @@ commander.register('greenhouse', function(args, sinks)
 		if not self.isSpecial then
 			self.sink:writeln(lunacolors.format(string.format('{grayBg} ↳ Page %d%s{reset}', self.curPage, workingPage.title and ' — ' .. workingPage.title .. ' ' or '')))
 		end
-		self.sink:write(buffer == '' and display or buffer)
+		self.sink:write(self:sub(buffer == '' and display or buffer, self.horizOffset, self.region.width))
 	end
 	function gh:input(c)
 		-- command handling
@@ -121,4 +140,9 @@ example: greenhouse hello.md]]
 
 	ansikit.hideCursor()
 	gh:initUi()
+	local oldQuit = gh.quit
+	function gh:quit()
+		ticker:stop()
+		--oldQuit(gh)
+	end
 end)
