@@ -34,6 +34,10 @@ function fs.join(...path) end
 --- 
 function fs.mkdir(name, recursive) end
 
+--- Returns a pair of connected files, also known as a pipe.
+--- The type returned is a Lua file, same as returned from `io` functions.
+function fs.fpipe() end
+
 --- Returns a list of all files and directories in the provided path.
 function fs.readdir(path) end
 

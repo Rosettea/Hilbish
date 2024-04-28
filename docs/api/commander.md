@@ -26,8 +26,11 @@ In this example, a command with the name of `hello` is created
 that will print `Hello world!` to output. One question you may
 have is: What is the `sinks` parameter?
 
-The `sinks` parameter is a table with 3 keys: `in`, `out`,
-and `err`. All of them are a <a href="/Hilbish/docs/api/hilbish/#sink" style="text-decoration: none;">Sink</a>.
+The `sinks` parameter is a table with 3 keys: `input`, `out`, and `err`.
+There is an `in` alias to `input`, but it requires using the string accessor syntax (`sinks['in']`)
+as `in` is also a Lua keyword, so `input` is preferred for use.
+All of them are a <a href="/Hilbish/docs/api/hilbish/#sink" style="text-decoration: none;">Sink</a>.
+In the future, `sinks.in` will be removed.
 
 - `in` is the standard input.
 You may use the read functions on this sink to get input from the user.

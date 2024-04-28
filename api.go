@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -27,6 +28,7 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/arnodel/golua/lib/iolib"
 	"github.com/maxlandon/readline"
 	"mvdan.cc/sh/v3/interp"
 )
@@ -152,12 +154,64 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
-// run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
+func handleStream(v rt.Value, strms *streams, errStream bool) error {
+	ud, ok := v.TryUserData()
+	if !ok {
+		return errors.New("expected metatable argument")
+	}
+
+	val := ud.Value()
+	var varstrm io.Writer
+	if f, ok := val.(*iolib.File); ok {
+		varstrm = f.Handle()
+	}
+
+	if f, ok := val.(*sink); ok {
+		varstrm = f.writer
+	}
+
+	if varstrm == nil {
+		return errors.New("expected either a sink or file")
+	}
+
+	if errStream {
+		strms.stderr = varstrm
+	} else {
+		strms.stdout = varstrm
+	}
+
+	return nil
+}
+
+// run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's shell script interpreter.
+// The `streams` parameter specifies the output and input streams the command should use.
+// For example, to write command output to a sink.
+// As a table, the caller can directly specify the standard output, error, and input
+// streams of the command with the table keys `out`, `err`, and `input` respectively.
+// As a boolean, it specifies whether the command should use standard output or return its output streams.
 // #param cmd string
-// #param returnOut boolean If this is true, the function will return the standard output and error of the command instead of printing it.
+// #param streams table|boolean
 // #returns number, string, string
+// #example
+/*
+// This code is the same as `ls -l | wc -l`
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+*/
+// #example
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	// TODO: ON BREAKING RELEASE, DO NOT ACCEPT `streams` AS A BOOLEAN.
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -166,20 +220,57 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
+	strms := &streams{}
 	var terminalOut bool
 	if len(c.Etc()) != 0 {
 		tout := c.Etc()[0]
-		termOut, ok := tout.TryBool()
-		terminalOut = termOut
+
+		var ok bool
+		terminalOut, ok = tout.TryBool()
 		if !ok {
-			return nil, errors.New("bad argument to run (expected boolean, got " + tout.TypeName() + ")")
+			luastreams, ok := tout.TryTable()
+			if !ok {
+				return nil, errors.New("bad argument to run (expected boolean or table, got " + tout.TypeName() + ")")
+			}
+
+			handleStream(luastreams.Get(rt.StringValue("out")), strms, false)
+			handleStream(luastreams.Get(rt.StringValue("err")), strms, true)
+
+			stdinstrm := luastreams.Get(rt.StringValue("input"))
+			if !stdinstrm.IsNil() {
+				ud, ok := stdinstrm.TryUserData()
+				if !ok {
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file, got " + stdinstrm.TypeName() + ")")
+				}
+
+				val := ud.Value()
+				var varstrm io.Reader
+				if f, ok := val.(*iolib.File); ok {
+					varstrm = f.Handle()
+				}
+
+				if f, ok := val.(*sink); ok {
+					varstrm = f.reader
+				}
+
+				if varstrm == nil {
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file)")
+				}
+
+				strms.stdin = varstrm
+			}
+		} else {
+			if !terminalOut {
+				strms = &streams{
+					stdout: new(bytes.Buffer),
+					stderr: new(bytes.Buffer),
+				}
+			}
 		}
-	} else {
-		terminalOut = true
 	}
 
 	var exitcode uint8
-	stdout, stderr, err := execCommand(cmd, terminalOut)
+	stdout, stderr, err := execCommand(cmd, strms)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -187,11 +278,12 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		exitcode = 1
 	}
 
-	stdoutStr := ""
-	stderrStr := ""
-	if !terminalOut {
-		stdoutStr = stdout.(*bytes.Buffer).String()
-		stderrStr = stderr.(*bytes.Buffer).String()
+	var stdoutStr, stderrStr string
+	if stdoutBuf, ok := stdout.(*bytes.Buffer); ok {
+		stdoutStr = stdoutBuf.String()
+	}
+	if stderrBuf, ok := stderr.(*bytes.Buffer); ok {
+		stderrStr = stderrBuf.String()
 	}
 
 	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
