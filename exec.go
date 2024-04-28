@@ -207,7 +207,7 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 func handleLua(input string) (string, uint8, error) {
 	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
-	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
+	chunk, err := l.CompileAndLoadLuaChunkOrExp("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
 		fmt.Println(err)
 	/*	if lerr, ok := err.(*lua.ApiError); ok {
@@ -221,7 +221,12 @@ func handleLua(input string) (string, uint8, error) {
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
 		if chunk != nil {
-			_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+			var ret rt.Value
+			ret, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+			retStr, good := ret.ToString()
+			if good {
+				fmt.Println(retStr)
+			}
 		}
 	}
 	if err == nil {

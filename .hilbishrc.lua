@@ -47,3 +47,9 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
+
+local ops = require 'nature.oxalis.operators'
+getmetatable('').__bor = function(l, r)
+	return ops.pipe(l, r)
+end
+hilbish.runner.setCurrent 'lua'
