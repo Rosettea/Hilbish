@@ -11,4 +11,8 @@ function commander.deregister(name) end
 --- 
 function commander.register(name, cb) end
 
+--- Returns all registered commanders. Returns a list of tables with the following keys:
+--- - `exec`: The function used to run the commander. Commanders require args and sinks to be passed.
+function commander.registry() end
+
 return commander
