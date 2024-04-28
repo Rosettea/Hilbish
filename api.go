@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -153,6 +154,35 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
+func handleStream(v rt.Value, strms *streams, errStream bool) error {
+	ud, ok := v.TryUserData()
+	if !ok {
+		return errors.New("expected metatable argument")
+	}
+
+	val := ud.Value()
+	var varstrm io.Writer
+	if f, ok := val.(*iolib.File); ok {
+		varstrm = f.Handle()
+	}
+
+	if f, ok := val.(*sink); ok {
+		varstrm = f.writer
+	}
+
+	if varstrm == nil {
+		return errors.New("expected either a sink or file")
+	}
+
+	if errStream {
+		strms.stderr = varstrm
+	} else {
+		strms.stdout = varstrm
+	}
+
+	return nil
+}
+
 // run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's shell script interpreter.
 // #param cmd string
@@ -168,7 +198,7 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	var strms *streams
+	strms := &streams{}
 	var terminalOut bool
 	if len(c.Etc()) != 0 {
 		tout := c.Etc()[0]
@@ -181,35 +211,31 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 				return nil, errors.New("bad argument to run (expected boolean or table, got " + tout.TypeName() + ")")
 			}
 
-			var stdoutStream, stderrStream *iolib.File
+			handleStream(luastreams.Get(rt.StringValue("stdout")), strms, false)
+			handleStream(luastreams.Get(rt.StringValue("stderr")), strms, true)
 
-			stdoutstrm := luastreams.Get(rt.StringValue("stdout"))
-			if !stdoutstrm.IsNil() {
-				f, ok := iolib.ValueToFile(stdoutstrm)
+			stdinstrm := luastreams.Get(rt.StringValue("stdin"))
+			if !stdinstrm.IsNil() {
+				ud, ok := stdinstrm.TryUserData()
 				if !ok {
-					return nil, errors.New("bad argument to run streams table (expected file, got " + stdoutstrm.TypeName() + ")")
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file, got " + stdinstrm.TypeName() + ")")
 				}
 
-				stdoutStream = f
-			}
-
-			stderrstrm := luastreams.Get(rt.StringValue("stderr"))
-			if !stderrstrm.IsNil() {
-				f, ok := iolib.ValueToFile(stderrstrm)
-				if !ok {
-					return nil, errors.New("bad argument to run streams table (expected file, got " + stderrstrm.TypeName() + ")")
+				val := ud.Value()
+				var varstrm io.Reader
+				if f, ok := val.(*iolib.File); ok {
+					varstrm = f.Handle()
 				}
 
-				stderrStream = f
-			}
+				if f, ok := val.(*sink); ok {
+					varstrm = f.reader
+				}
 
-			strms = &streams{}
-			if stdoutStream != nil {
-				strms.stdout = stdoutStream.Handle()
-			}
+				if varstrm == nil {
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file)")
+				}
 
-			if stderrStream != nil {
-				strms.stderr = stderrStream.Handle()
+				strms.stdin = varstrm
 			}
 		} else {
 			if !terminalOut {
