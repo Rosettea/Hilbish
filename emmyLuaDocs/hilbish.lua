@@ -132,7 +132,12 @@ function hilbish.prompt(str, typ) end
 function hilbish.read(prompt) end
 
 --- Runs `cmd` in Hilbish's shell script interpreter.
-function hilbish.run(cmd, returnOut) end
+--- Specifies the output and input streams the command should use.
+--- For example, to write command output to a sink.
+--- As a table, the caller can directly specify the standard output, error, and input
+--- streams of the command with the table keys `out`, `err`, and `input` respectively.
+--- As a boolean, it specifies whether the command should use standard output or return its output streams.
+function hilbish.run(cmd, streams) end
 
 --- Sets the execution/runner mode for interactive Hilbish.
 --- This determines whether Hilbish wll try to run input as Lua

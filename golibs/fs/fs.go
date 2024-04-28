@@ -228,6 +228,11 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), err
 }
 
+// fpipe() -> File, File
+// Returns a pair of connected files, also known as a pipe.
+// The type returned is a Lua file, same as returned from `io` functions.
+// #returns File
+// #returns File
 func fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	rf, wf, err := os.Pipe()
 	if err != nil {

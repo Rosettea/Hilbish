@@ -23,6 +23,7 @@ library offers more functions and will work on any operating system Hilbish does
 |<a href="#glob">glob(pattern) -> matches (table)</a>|Match all files based on the provided `pattern`.|
 |<a href="#join">join(...path) -> string</a>|Takes any list of paths and joins them based on the operating system's path separator.|
 |<a href="#mkdir">mkdir(name, recursive)</a>|Creates a new directory with the provided `name`.|
+|<a href="#pipe">fpipe() -> File, File</a>|Returns a pair of connected files, also known as a pipe.|
 |<a href="#readdir">readdir(path) -> table[string]</a>|Returns a list of all files and directories in the provided path.|
 |<a href="#stat">stat(path) -> {}</a>|Returns the information about a given `path`.|
 
@@ -181,6 +182,22 @@ Whether to create parent directories for the provided name
 -- foo directory. If recursive is false in this case, it will fail.
 fs.mkdir('./foo/bar', true)
 ```
+</div>
+
+<hr>
+<div id='pipe'>
+<h4 class='heading'>
+fs.fpipe() -> File, File
+<a href="#pipe" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Returns a pair of connected files, also known as a pipe.  
+The type returned is a Lua file, same as returned from `io` functions.  
+
+#### Parameters
+This function has no parameters.  
 </div>
 
 <hr>

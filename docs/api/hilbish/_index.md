@@ -28,7 +28,7 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#prependPath">prependPath(dir)</a>|Prepends `dir` to $PATH.|
 |<a href="#prompt">prompt(str, typ)</a>|Changes the shell prompt to the provided string.|
 |<a href="#read">read(prompt) -> input (string)</a>|Read input from the user, using Hilbish's line editor/input reader.|
-|<a href="#run">run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)</a>|Runs `cmd` in Hilbish's shell script interpreter.|
+|<a href="#run">run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)</a>|Runs `cmd` in Hilbish's shell script interpreter.|
 |<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish.|
 |<a href="#timeout">timeout(cb, time) -> @Timer</a>|Executed the `cb` function after a period of `time`.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
@@ -413,20 +413,25 @@ Text to print before input, can be empty.
 <hr>
 <div id='run'>
 <h4 class='heading'>
-hilbish.run(cmd, returnOut) -> exitCode (number), stdout (string), stderr (string)
+hilbish.run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 <a href="#run" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
 Runs `cmd` in Hilbish's shell script interpreter.  
+Specifies the output and input streams the command should use.  
+For example, to write command output to a sink.  
+As a table, the caller can directly specify the standard output, error, and input  
+streams of the command with the table keys `out`, `err`, and `input` respectively.  
+As a boolean, it specifies whether the command should use standard output or return its output streams.  
 
 #### Parameters
 `string` **`cmd`**  
 
 
-`boolean` **`returnOut`**  
-If this is true, the function will return the standard output and error of the command instead of printing it.
+`table|boolean` **`streams`**  
+
 
 </div>
 
