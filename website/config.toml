@@ -1,5 +1,5 @@
 languageCode = 'en-us'
-baseURL = 'https://rosettea.github.io/Hilbish/'
+baseURL = 'https://rosettea.github.io/Hilbish'
 title = 'Hilbish'
 theme = 'hsh'
 enableGitInfo = true
