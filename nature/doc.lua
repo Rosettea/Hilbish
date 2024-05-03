@@ -17,8 +17,8 @@ function M.renderCodeBlock(text)
 	end
 
 	for i, line in ipairs(lines) do
-		lines[i] = ' ' .. M.highlight(line:sub(0, longest))
-		.. string.rep(' ', longest - line:len()) .. ' '
+		lines[i] = lunacolors.format('{greyBg}' .. ' ' .. M.highlight(line:sub(0, longest))
+		.. string.rep(' ', longest - line:len()) .. ' ')
 	end
 
 	return '\n' .. lunacolors.format('{greyBg}' .. table.concat(lines, '\n')) .. '\n'

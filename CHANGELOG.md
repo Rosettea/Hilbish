@@ -28,6 +28,9 @@ hilbish.run('wc -l', {
 })
 ```
 
+### Fixed
+- Fix ansi attributes causing issues with text when cut off in greenhouse
+
 ## [2.2.3] - 2024-04-27
 ### Fixed
 - Highligher and hinter work now, since it was regressed from the previous minor release.
