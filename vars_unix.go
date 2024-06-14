@@ -1,4 +1,4 @@
-// +build linux
+// +build linux freebsd
 
 package main
 
@@ -6,8 +6,8 @@ package main
 var (
 	requirePaths = commonRequirePaths + `.. ';'
 	.. hilbish.dataDir .. '/libs/?/init.lua;'
-	.. hilbish.dataDir .. '/libs/?/?.lua;'` + linuxUserPaths
-	linuxUserPaths = `
+	.. hilbish.dataDir .. '/libs/?/?.lua;'` + unixUserPaths
+	unixUserPaths = `
 	.. hilbish.userDir.data     .. '/hilbish/libs/?/init.lua;'
 	.. hilbish.userDir.data	    .. '/hilbish/libs/?/?.lua;'
 	.. hilbish.userDir.data	    .. '/hilbish/libs/?.lua;'

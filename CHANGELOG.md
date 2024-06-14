@@ -30,6 +30,7 @@ hilbish.run('wc -l', {
 
 ### Fixed
 - Fix ansi attributes causing issues with text when cut off in greenhouse
+- Fix not compiling on freebsd
 
 ## [2.2.3] - 2024-04-27
 ### Fixed
