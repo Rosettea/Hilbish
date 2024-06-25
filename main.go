@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
@@ -115,7 +116,13 @@ func main() {
 
 	// Set $SHELL if the user wants to
 	if *setshflag {
-		os.Setenv("SHELL", os.Args[0])
+		os.Setenv("SHELL", "hilbish")
+
+		path, err := exec.LookPath("hilbish")
+		if err == nil {
+			os.Setenv("SHELL", path)
+		}
+
 	}
 
 	lr = newLineReader("", false)
