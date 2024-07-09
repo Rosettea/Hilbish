@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added a new `alias` shell command.
 - `fs.pipe` function to get a pair of connected files (a pipe).
 - Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
 `streams` is a table of input and output streams to run the command with.
