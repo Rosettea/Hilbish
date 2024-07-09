@@ -397,7 +397,8 @@ user ~ ∆ echo "hey
 so then you get 
 user ~ ∆ echo "hey
 --> ...!"
-hey ...!
+hey
+...!
 ]]--
 hilbish.multiprompt '-->'
 #example

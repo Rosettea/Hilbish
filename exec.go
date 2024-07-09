@@ -136,7 +136,7 @@ func runInput(input string, priv bool) {
 	}
 
 	if cont {
-		input, err = reprompt(input)
+		input, err = reprompt(input + "\n")
 		if err == nil {
 			goto rerun
 		} else if err == io.EOF {
