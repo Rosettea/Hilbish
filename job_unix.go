@@ -1,4 +1,5 @@
-// +build darwin unix
+//go:build unix
+
 package main
 
 import (

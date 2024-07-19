@@ -1,4 +1,4 @@
-// +build unix
+//go:build unix
 
 package main
 
