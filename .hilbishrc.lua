@@ -47,3 +47,10 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
+
+local commander = require 'commander'
+commander.register('loop', function()
+	while true do
+		-- nothing
+	end
+end)
