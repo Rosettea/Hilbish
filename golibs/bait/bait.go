@@ -1,6 +1,33 @@
+// the event emitter
+/*
+Bait is the event emitter for Hilbish. Much like Node.js and
+its `events` system, many actions in Hilbish emit events.
+Unlike Node.js, Hilbish events are global. So make sure to
+pick a unique name!
+
+Usage of the Bait module consists of userstanding
+event-driven architecture, but it's pretty simple:
+If you want to act on a certain event, you can `catch` it.
+You can act on events via callback functions.
+
+Examples of this are in the Hilbish default config!
+Consider this part of it:
+```lua
+bait.catch('command.exit', function(code)
+	running = false
+	doPrompt(code ~= 0)
+	doNotifyPrompt()
+end)
+```
+
+What this does is, whenever the `command.exit` event is thrown,
+this function will set the user prompt.
+*/
 package bait
 
 import (
+	"errors"
+
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -72,8 +99,12 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 			}
 			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
 			if err != nil {
-				// panicking here won't actually cause hilbish to panic and instead will
-				// print the error and remove the hook. reference the recoverer function in lua.go
+				if event != "error" {
+					b.Emit("error", event, handle.luaCaller, err.Error())
+					return
+				}
+				// if there is an error in an error event handler, panic instead
+				// (calls the go recoverer function)
 				panic(err)
 			}
 		} else {
@@ -187,18 +218,10 @@ func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
 		"release": util.LuaExport{b.brelease, 2, false},
+		"hooks": util.LuaExport{b.bhooks, 1, false},
 	}
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
-
-	util.Document(mod,
-`Bait is the event emitter for Hilbish. Why name it bait?
-Because it throws hooks that you can catch (emits events
-that you can listen to) and because why not, fun naming
-is fun. This is what you will use if you want to listen
-in on hooks to know when certain things have happened,
-like when you've changed directory, a command has
-failed, etc. To find all available hooks, see doc hooks.`)
 
 	return rt.TableValue(mod), nil
 }
@@ -224,10 +247,117 @@ func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, ar
 	}
 }
 
+// catch(name, cb)
+// Catches an event. This function can be used to act on events.
+// #param name string The name of the hook.
+// #param cb function The function that will be called when the hook is thrown.
+/*
+#example
+bait.catch('hilbish.exit', function()
+	print 'Goodbye Hilbish!'
+end)
+#example
+*/
+func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	b.OnLua(name, catcher)
+
+	return c.Next(), nil
+}
+
+// catchOnce(name, cb)
+// Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
+// #param name string The name of the event
+// #param cb function The function that will be called when the event is thrown.
+func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	b.OnceLua(name, catcher)
+
+	return c.Next(), nil
+}
+
+// hooks(name) -> table
+// Returns a table of functions that are hooked on an event with the corresponding `name`.
+// #param name string The name of the hook
+// #returns table<function>
+func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+	evName, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+	noHooks := errors.New("no hooks for event " + evName)
+
+	handlers := b.handlers[evName]
+	if handlers == nil {
+		return nil, noHooks
+	}
+
+	luaHandlers := rt.NewTable()
+	for _, handler := range handlers {
+		if handler.typ != luaListener { continue }
+		luaHandlers.Set(rt.IntValue(luaHandlers.Len() + 1), rt.FunctionValue(handler.luaCaller))
+	}
+
+	if luaHandlers.Len() == 0 {
+		return nil, noHooks
+	}
+
+	return c.PushingNext1(t.Runtime, rt.TableValue(luaHandlers)), nil
+}
+
+// release(name, catcher)
+// Removes the `catcher` for the event with `name`.
+// For this to work, `catcher` has to be the same function used to catch
+// an event, like one saved to a variable.
+// #param name string Name of the event the hook is on
+// #param catcher function Hook function to remove
+/*
+#example
+local hookCallback = function() print 'hi' end
+
+bait.catch('event', hookCallback)
+
+-- a little while later....
+bait.release('event', hookCallback)
+-- and now hookCallback will no longer be ran for the event.
+#example
+*/
+func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	b.OffLua(name, catcher)
+
+	return c.Next(), nil
+}
+
 // throw(name, ...args)
-// Throws a hook with `name` with the provided `args`
-// --- @param name string
-// --- @vararg any
+// #param name string The name of the hook.
+// #param args ...any The arguments to pass to the hook.
+// Throws a hook with `name` with the provided `args`.
+/*
+#example
+bait.throw('greeting', 'world')
+
+-- This can then be listened to via
+bait.catch('gretting', function(greetTo)
+	print('Hello ' .. greetTo)
+end)
+#example
+*/
 func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -241,51 +371,6 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		ifaceSlice[i] = v
 	}
 	b.Emit(name, ifaceSlice...)
-
-	return c.Next(), nil
-}
-
-// catch(name, cb)
-// Catches a hook with `name`. Runs the `cb` when it is thrown
-// --- @param name string
-// --- @param cb function
-func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	b.OnLua(name, catcher)
-
-	return c.Next(), nil
-}
-
-// catchOnce(name, cb)
-// Same as catch, but only runs the `cb` once and then removes the hook
-// --- @param name string
-// --- @param cb function
-func (b *Bait) bcatchOnce(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	b.OnceLua(name, catcher)
-
-	return c.Next(), nil
-}
-
-// release(name, catcher)
-// Removes the `catcher` for the event with `name`
-// For this to work, `catcher` has to be the same function used to catch
-// an event, like one saved to a variable.
-func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(t, c)
-	if err != nil {
-		return nil, err
-	}
-
-	b.OffLua(name, catcher)
 
 	return c.Next(), nil
 }

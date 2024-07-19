@@ -1,12 +1,17 @@
 package readline
 
-import "golang.org/x/text/width"
+import (
+	"fmt"
+	"strings"
+
+	"golang.org/x/text/width"
+)
 
 // updateHelpers is a key part of the whole refresh process:
 // it should coordinate reprinting the input line, any Infos and completions
 // and manage to get back to the current (computed) cursor coordinates
 func (rl *Instance) updateHelpers() {
-
+	print(seqHideCursor)
 	// Load all Infos & completions before anything.
 	// Thus overwrites anything having been dirtily added/forced/modified, like rl.SetInfoText()
 	rl.getInfoText()
@@ -23,6 +28,7 @@ func (rl *Instance) updateHelpers() {
 	// We are at the prompt line (with the latter
 	// not printed yet), then reprint everything
 	rl.renderHelpers()
+	print(seqUnhideCursor)
 }
 
 const tabWidth = 4
@@ -52,19 +58,19 @@ func (rl *Instance) updateReferences() {
 	rl.posY = 0
 	rl.fullY = 0
 
-	var fullLine, cPosLine int
+	var curLine []rune
 	if len(rl.currentComp) > 0 {
-		fullLine = getWidth(rl.lineComp)
-		cPosLine = getWidth(rl.lineComp[:rl.pos])
+		curLine = rl.lineComp
 	} else {
-		fullLine = getWidth(rl.line)
-		cPosLine = getWidth(rl.line[:rl.pos])
+		curLine = rl.line
 	}
+	fullLine := getWidth(curLine)
+	cPosLine := getWidth(curLine[:rl.pos])
 
 	// We need the X offset of the whole line
 	toEndLine := rl.promptLen + fullLine
 	fullOffset := toEndLine / GetTermWidth()
-	rl.fullY = fullOffset
+	rl.fullY = fullOffset + strings.Count(string(curLine), "\n")
 	fullRest := toEndLine % GetTermWidth()
 	rl.fullX = fullRest
 
@@ -189,4 +195,16 @@ func (rl *Instance) renderHelpers() {
 	// Go back to current cursor position
 	moveCursorUp(rl.fullY - rl.posY)
 	moveCursorForwards(rl.posX)
+}
+
+func (rl *Instance) bufprintF(format string, a ...any) {
+	fmt.Fprintf(rl.bufferedOut, format, a...)
+}
+
+func (rl *Instance) bufprint(text string) {
+	fmt.Fprint(rl.bufferedOut, text)
+}
+
+func (rl *Instance) bufflush() {
+	rl.bufferedOut.Flush()
 }

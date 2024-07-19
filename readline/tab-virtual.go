@@ -2,6 +2,7 @@ package readline
 
 import (
 	"strings"
+	"github.com/rivo/uniseg"
 )
 
 // insertCandidateVirtual - When a completion candidate is selected, we insert it virtually in the input line:
@@ -249,10 +250,10 @@ func (rl *Instance) viJumpEVirtual(tokeniser func([]rune, int) ([]string, int, i
 		return
 	case pos >= len(word)-1:
 		word = rTrimWhiteSpace(split[index+1])
-		adjust = len(split[index]) - pos
-		adjust += len(word) - 1
+		adjust = uniseg.GraphemeClusterCount(split[index]) - pos
+		adjust += uniseg.GraphemeClusterCount(word) - 1
 	default:
-		adjust = len(word) - pos - 1
+		adjust = uniseg.GraphemeClusterCount(word) - pos - 1
 	}
 	return
 }

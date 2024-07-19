@@ -11,14 +11,48 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 )
 
-func splitQuote(str string) []string {
+var charEscapeMap = []string{
+	"\"", "\\\"",
+	"'", "\\'",
+	"`", "\\`",
+	" ", "\\ ",
+	"(", "\\(",
+	")", "\\)",
+	"[", "\\[",
+	"]", "\\]",
+	"$", "\\$",
+	"&", "\\&",
+	"*", "\\*",
+	">", "\\>",
+	"<", "\\<",
+	"|", "\\|",
+}
+var charEscapeMapInvert = invert(charEscapeMap)
+var escapeReplaer = strings.NewReplacer(charEscapeMap...)
+var escapeInvertReplaer = strings.NewReplacer(charEscapeMapInvert...)
+
+func invert(m []string) []string {
+	newM := make([]string, len(charEscapeMap))
+	for i := range m {
+		if (i + 1) % 2 == 0 {
+			newM[i] = m[i - 1]
+			newM[i - 1] = m[i]
+		}
+	}
+
+	return newM
+}
+
+func splitForFile(str string) []string {
 	split := []string{}
 	sb := &strings.Builder{}
 	quoted := false
 
-	for _, r := range str {
+	for i, r := range str {
 		if r == '"' {
 			quoted = !quoted
+			sb.WriteRune(r)
+		} else if r == ' ' && str[i - 1] == '\\' {
 			sb.WriteRune(r)
 		} else if !quoted && r == ' ' {
 			split = append(split, sb.String())
@@ -39,12 +73,22 @@ func splitQuote(str string) []string {
 }
 
 func fileComplete(query, ctx string, fields []string) ([]string, string) {
-	q := splitQuote(ctx)
+	q := splitForFile(ctx)
+	path := ""
+	if len(q) != 0 {
+		path = q[len(q) - 1]
+	}
 
-	return matchPath(q[len(q) - 1])
+	return matchPath(path)
 }
 
 func binaryComplete(query, ctx string, fields []string) ([]string, string) {
+	q := splitForFile(ctx)
+	query = ""
+	if len(q) != 0 {
+		query = q[len(q) - 1]
+	}
+
 	var completions []string
 
 	prefixes := []string{"./", "../", "/", "~/"}
@@ -54,7 +98,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
-					if err := findExecutable(fullPath, false, true); err != nil {
+					if err := findExecutable(escapeInvertReplaer.Replace(fullPath), false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
@@ -66,7 +110,6 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 
 	// filter out executables, but in path
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
-		// print dir to stderr for debugging
 		// search for an executable which matches our query string
 		if matches, err := filepath.Glob(filepath.Join(dir, query + "*")); err == nil {
 			// get basename from matches
@@ -85,7 +128,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	}
 
 	// add lua registered commands to completions
-	for cmdName := range commands {
+	for cmdName := range cmds.Commands {
 		if strings.HasPrefix(cmdName, query) {
 			completions = append(completions, cmdName)
 		}
@@ -102,6 +145,7 @@ func matchPath(query string) ([]string, string) {
 	var entries []string
 	var baseName string
 
+	query = escapeInvertReplaer.Replace(query)
 	path, _ := filepath.Abs(util.ExpandHome(filepath.Dir(query)))
 	if string(query) == "" {
 		// filepath base below would give us "."
@@ -112,7 +156,16 @@ func matchPath(query string) ([]string, string) {
 	}
 
 	files, _ := os.ReadDir(path)
-	for _, file := range files {
+	for _, entry := range files {
+		// should we handle errors here?
+		file, err := entry.Info()
+		if err == nil && file.Mode() & os.ModeSymlink != 0 {
+			path, err := filepath.EvalSymlinks(filepath.Join(path, file.Name()))
+			if err == nil {
+				file, err = os.Lstat(path)
+			}
+		}
+
 		if strings.HasPrefix(file.Name(), baseName) {
 			entry := file.Name()
 			if file.IsDir() {
@@ -124,38 +177,26 @@ func matchPath(query string) ([]string, string) {
 			entries = append(entries, entry)
 		}
 	}
+	if !strings.HasPrefix(oldQuery, "\"") {
+		baseName = escapeFilename(baseName)
+	}
 
 	return entries, baseName
 }
 
 func escapeFilename(fname string) string {
-	args := []string{
-		"\"", "\\\"",
-		"'", "\\'",
-		"`", "\\`",
-		" ", "\\ ",
-		"(", "\\(",
-		")", "\\)",
-		"[", "\\[",
-		"]", "\\]",
-		"$", "\\$",
-		"&", "\\&",
-		"*", "\\*",
-		">", "\\>",
-		"<", "\\<",
-		"|", "\\|",
-	}
-
-	r := strings.NewReplacer(args...)
-	return r.Replace(fname)
+	return escapeReplaer.Replace(fname)
 }
 
+// #interface completion
+// tab completions
+// The completions interface deals with tab completions.
 func completionLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
-		"files": {luaFileComplete, 3, false},
-		"bins": {luaBinaryComplete, 3, false},
-		"call": {callLuaCompleter, 4, false},
-		"handler": {completionHandler, 2, false},
+		"bins": {hcmpBins, 3, false},
+		"call": {hcmpCall, 4, false},
+		"files": {hcmpFiles, 3, false},
+		"handler": {hcmpHandler, 2, false},
 	}
 
 	mod := rt.NewTable()
@@ -164,12 +205,58 @@ func completionLoader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
-// left as a shim, might doc in the same way as hilbish functions
-func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.Next(), nil
+// #interface completion
+// bins(query, ctx, fields) -> entries (table), prefix (string)
+// Return binaries/executables based on the provided parameters.
+// This function is meant to be used as a helper in a command completion handler.
+// #param query string
+// #param ctx string
+// #param fields table
+/*
+#example
+-- an extremely simple completer for sudo.
+hilbish.complete('command.sudo', function(query, ctx, fields)
+	table.remove(fields, 1)
+	if #fields[1] then
+		-- return commands because sudo runs a command as root..!
+
+		local entries, pfx = hilbish.completion.bins(query, ctx, fields)
+		return {
+			type = 'grid',
+			items = entries
+		}, pfx
+	end
+
+	-- ... else suggest files or anything else ..
+end)
+#example
+*/
+func hcmpBins(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, pfx := binaryComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface completion
+// call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
+// Calls a completer function. This is mainly used to call a command completer, which will have a `name`
+// in the form of `command.name`, example: `command.git`.
+// You can check the Completions doc or `doc completions` for info on the `completionGroups` return value.
+// #param name string
+// #param query string
+// #param ctx string
+// #param fields table
+func hcmpCall(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(4); err != nil {
 		return nil, err
 	}
@@ -197,18 +284,26 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	// we must keep the holy 80 cols
-	completerReturn, err := rt.Call1(l.MainThread(),
-	rt.FunctionValue(completecb), rt.StringValue(query),
-	rt.StringValue(ctx), rt.TableValue(fields))
+	cont := c.Next()
+	err = rt.Call(l.MainThread(), rt.FunctionValue(completecb),
+	[]rt.Value{rt.StringValue(query), rt.StringValue(ctx), rt.TableValue(fields)},
+	cont)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return c.PushingNext1(t.Runtime, completerReturn), nil
+	return cont, nil
 }
 
-func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #interface completion
+// files(query, ctx, fields) -> entries (table), prefix (string)
+// Returns file matches based on the provided parameters.
+// This function is meant to be used as a helper in a command completion handler.
+// #param query string
+// #param ctx string
+// #param fields table
+func hcmpFiles(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
@@ -224,21 +319,31 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
-	if err != nil {
-		return nil, err
-	}
+// #interface completion
+// handler(line, pos)
+// This function contains the general completion handler for Hilbish. This function handles
+// completion of everything, which includes calling other command handlers, binaries, and files.
+// This function can be overriden to supply a custom handler. Note that alias resolution is required to be done in this function.
+// #param line string The current Hilbish command line
+// #param pos number Numerical position of the cursor
+/*
+#example
+-- stripped down version of the default implementation
+function hilbish.completion.handler(line, pos)
+	local query = fields[#fields]
 
-	completions, pfx := binaryComplete(query, ctx, fds)
-	luaComps := rt.NewTable()
-
-	for i, comp := range completions {
-		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
-	}
-
-	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+	if #fields == 1 then
+		-- call bins handler here
+	else
+		-- call command completer or files completer here
+	end
+end
+#example
+*/
+func hcmpHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	return c.Next(), nil
 }
+
 
 func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
 	if err := c.CheckNArgs(3); err != nil {

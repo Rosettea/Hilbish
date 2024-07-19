@@ -1,9 +1,5 @@
 package readline
 
-import (
-	"regexp"
-)
-
 // FindMode defines how the autocomplete suggestions display
 type FindMode int
 
@@ -30,15 +26,10 @@ func (rl *Instance) updateTabFind(r []rune) {
 	rl.tfLine = append(rl.tfLine, r...)
 
 	// The search regex is common to all search modes
-	var err error
-	rl.regexSearch, err = regexp.Compile("(?i)" + string(rl.tfLine))
-	if err != nil {
-		rl.RefreshPromptLog(err.Error())
-		rl.infoText = []rune(Red("Failed to match search regexp"))
-	}
+	rl.search = string(rl.tfLine)
 
 	// We update and print
-	rl.clearHelpers()
+	//rl.clearHelpers()
 	rl.getTabCompletion()
 	rl.renderHelpers()
 }

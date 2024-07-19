@@ -23,6 +23,7 @@ func luaInit() {
 		MessageHandler: debuglib.Traceback,
 	})
 	lib.LoadAll(l)
+	setupSinkType(l)
 
 	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
@@ -32,24 +33,12 @@ func luaInit() {
 	lib.LoadLibs(l, fs.Loader)
 	lib.LoadLibs(l, terminal.Loader)
 
-	cmds := commander.New(l)
-	// When a command from Lua is added, register it for use
-	cmds.Events.On("commandRegister", func(args ...interface{}) {
-		cmdName := args[0].(string)
-		cmd := args[1].(*rt.Closure)
-
-		commands[cmdName] = cmd
-	})
-	cmds.Events.On("commandDeregister", func(args ...interface{}) {
-		cmdName := args[0].(string)
-
-		delete(commands, cmdName)
-	})
+	cmds = commander.New(l)
 	lib.LoadLibs(l, cmds.Loader)
 
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
-		fmt.Println("Error in", event, "event:", err)
+		fmt.Println("Error in `error` hook handler:", err)
 		hooks.Off(event, handler)
 	})
 
@@ -67,7 +56,7 @@ func luaInit() {
 	}
 
 	// Add more paths that Lua can require from
-	err := util.DoString(l, "package.path = package.path .. " + requirePaths)
+	_, err := util.DoString(l, "package.path = package.path .. " + requirePaths)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Could not add Hilbish require paths! Libraries will be missing. This shouldn't happen.")
 	}

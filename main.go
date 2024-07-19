@@ -2,16 +2,20 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
+	"hilbish/golibs/commander"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
@@ -23,7 +27,6 @@ var (
 	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*rt.Closure{}
 	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
@@ -31,6 +34,7 @@ var (
 	curuser *user.User
 
 	hooks *bait.Bait
+	cmds *commander.Commander
 	defaultConfPath string
 	defaultHistPath string
 )
@@ -88,7 +92,7 @@ func main() {
 		interactive = true
 	}
 
-	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
 		interactive = false
 	}
 
@@ -106,18 +110,26 @@ func main() {
 	}
 
 	if *verflag {
-		fmt.Printf("Hilbish %s\n", getVersion())
+		fmt.Printf("Hilbish %s\nCompiled with %s\n", getVersion(), runtime.Version())
 		os.Exit(0)
 	}
 
 	// Set $SHELL if the user wants to
 	if *setshflag {
-		os.Setenv("SHELL", os.Args[0])
+		os.Setenv("SHELL", "hilbish")
+
+		path, err := exec.LookPath("hilbish")
+		if err == nil {
+			os.Setenv("SHELL", path)
+		}
+
 	}
 
-	go handleSignals()
 	lr = newLineReader("", false)
 	luaInit()
+
+	go handleSignals()
+
 	// If user's config doesn't exixt,
 	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
 		// Read default from current directory
@@ -181,11 +193,18 @@ input:
 			break
 		}
 		if err != nil {
-			if err != readline.CtrlC {
+			if err == readline.CtrlC {
+				fmt.Println("^C")
+				hooks.Emit("hilbish.cancel")
+			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
+				if errors.Is(err, syscall.ENOTTY) {
+					// what are we even doing here?
+					panic("not a tty")
+				}
+				<-make(chan struct{})
 			}
-			fmt.Println("^C")
 			continue
 		}
 		var priv bool
@@ -284,7 +303,7 @@ func removeDupes(slice []string) []string {
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
-		if a == e {
+		if strings.ToLower(a) == strings.ToLower(e) {
 			return true
 		}
 	}
@@ -318,4 +337,8 @@ func getVersion() string {
 	v.WriteString(" (" + releaseName + ")")
 
 	return v.String()
+}
+
+func cut(slice []string, idx int) []string {
+	return append(slice[:idx], slice[idx + 1:]...)
 }

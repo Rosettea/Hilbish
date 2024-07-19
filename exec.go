@@ -29,6 +29,12 @@ var errNotExec = errors.New("not executable")
 var errNotFound = errors.New("not found")
 var runnerMode rt.Value = rt.StringValue("hybrid")
 
+type streams struct {
+	stdout io.Writer
+	stderr io.Writer
+	stdin io.Reader
+}
+
 type execError struct{
 	typ string
 	cmd string
@@ -97,23 +103,23 @@ func runInput(input string, priv bool) {
 	if currentRunner.Type() == rt.StringType {
 		switch currentRunner.AsString() {
 			case "hybrid":
-				_, _, err = handleLua(cmdString)
+				_, _, err = handleLua(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 			case "hybridRev":
 				_, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "lua":
-				input, exitCode, err = handleLua(cmdString)
+				input, exitCode, err = handleLua(input)
 			case "sh":
-				input, exitCode, cont, err = handleSh(cmdString)
+				input, exitCode, cont, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
@@ -142,9 +148,9 @@ func runInput(input string, priv bool) {
 	if err != nil {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Emit("command." + exErr.typ, exErr.cmd)
-			err = exErr.sprint()
+		} else {
+			fmt.Fprintln(os.Stderr, err)
 		}
-		fmt.Fprintln(os.Stderr, err)
 	}
 	cmdFinish(exitCode, input, priv)
 }
@@ -176,6 +182,9 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	runnerRet := term.Get(0)
 	if runner, ok = runnerRet.TryTable(); !ok {
 		fmt.Fprintln(os.Stderr, "runner did not return a table")
+		exitCode = 125
+		input = userInput
+		return
 	}
 
 	if code, ok := runner.Get(rt.StringValue("exitCode")).TryInt(); ok {
@@ -196,7 +205,8 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 	return
 }
 
-func handleLua(cmdString string) (string, uint8, error) {
+func handleLua(input string) (string, uint8, error) {
+	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
 	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
 	if err != nil && noexecute {
@@ -233,7 +243,7 @@ func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr
 }
 
 func execSh(cmdString string) (string, uint8, bool, error) {
-	_, _, err := execCommand(cmdString, true)
+	_, _, err := execCommand(cmdString, nil)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
@@ -254,7 +264,7 @@ func execSh(cmdString string) (string, uint8, bool, error) {
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
+func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return nil, nil, err
@@ -262,15 +272,24 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 
 	runner, _ := interp.New()
 
-	var stdout io.Writer
-	var stderr io.Writer
-	if terminalOut {
-		interp.StdIO(os.Stdin, os.Stdout, os.Stderr)(runner)
-	} else {
-		stdout = new(bytes.Buffer)
-		stderr = new(bytes.Buffer)
-		interp.StdIO(os.Stdin, stdout, stderr)(runner)
+	if strms == nil {
+		strms = &streams{}
 	}
+
+	if strms.stdout == nil {
+		strms.stdout = os.Stdout
+	}
+
+	if strms.stderr == nil {
+		strms.stderr = os.Stderr
+	}
+
+	if strms.stdin == nil {
+		strms.stdin = os.Stdin
+	}
+
+	interp.StdIO(strms.stdin, strms.stdout, strms.stderr)(runner)
+
 	buf := new(bytes.Buffer)
 	printer := syntax.NewPrinter()
 
@@ -289,11 +308,11 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		interp.ExecHandler(execHandle(bg))(runner)
 		err = runner.Run(context.TODO(), stmt)
 		if err != nil {
-			return stdout, stderr, err
+			return strms.stdout, strms.stderr, err
 		}
 	}
 
-	return stdout, stderr, nil
+	return strms.stdout, strms.stderr, nil
 }
 
 func execHandle(bg bool) interp.ExecHandlerFunc {
@@ -323,30 +342,19 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			luacmdArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(str))
 		}
 
-		if commands[args[0]] != nil {
-			t := rt.NewThread(l)
-			sig := make(chan os.Signal)
-			exit := make(chan bool)
+		hc := interp.HandlerCtx(ctx)
+		if cmd := cmds.Commands[args[0]]; cmd != nil {
+			stdin := newSinkInput(hc.Stdin)
+			stdout := newSinkOutput(hc.Stdout)
+			stderr := newSinkOutput(hc.Stderr)
 
-			go func() {
-				defer func() {
-					if r := recover(); r != nil {
-						fmt.Println(r)
-					}
-				}()
+			sinks := rt.NewTable()
+			sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("input"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
+			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-				signal.Notify(sig, os.Interrupt)
-				select {
-					case <-sig:
-						t.KillContext()
-						return
-					case <-exit:
-						return
-				}
-			}()
-
-			luaexitcode, err := rt.Call1(t, rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs))
-			exit <- true
+			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -358,7 +366,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 				exitcode = uint8(code)
 			} else if luaexitcode != rt.NilValue {
 				// deregister commander
-				delete(commands, args[0])
+				delete(cmds.Commands, args[0])
 				fmt.Fprintf(os.Stderr, "Commander did not return number for exit code. %s, you're fired.\n", args[0])
 			}
 
@@ -386,7 +394,6 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		killTimeout := 2 * time.Second
 		// from here is basically copy-paste of the default exec handler from
 		// sh/interp but with our job handling
-		hc := interp.HandlerCtx(ctx)
 		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
 		if err != nil {
 			fmt.Fprintln(hc.Stderr, err)
@@ -574,7 +581,7 @@ func splitInput(input string) ([]string, string) {
 }
 
 func cmdFinish(code uint8, cmdstr string, private bool) {
-	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)), "Exit code of last exected command")
+	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)))
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values

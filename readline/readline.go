@@ -49,7 +49,7 @@ func (rl *Instance) Readline() (string, error) {
 
 	// History Init
 	// We need this set to the last command, so that we can access it quickly
-	rl.histPos = 0
+	rl.histOffset = 0
 	rl.viUndoHistory = []undoItem{{line: "", pos: 0}}
 
 	// Multisplit
@@ -238,7 +238,9 @@ func (rl *Instance) Readline() (string, error) {
 
 			// Normal completion search does only refresh the search pattern and the comps
 			if rl.modeTabFind || rl.modeAutoFind {
+				rl.resetVirtualComp(false)
 				rl.backspaceTabFind()
+				rl.renderHelpers()
 				rl.viUndoSkipAppend = true
 			} else {
 				// Always cancel any virtual completion
@@ -331,6 +333,8 @@ func (rl *Instance) Readline() (string, error) {
 
 			rl.modeTabFind = true
 			rl.updateTabFind([]rune{})
+			rl.updateVirtualComp()
+			rl.renderHelpers()
 			rl.viUndoSkipAppend = true
 
 		// Tab Completion & Completion Search ---------------------------------------------------------------
@@ -484,7 +488,10 @@ func (rl *Instance) Readline() (string, error) {
 				if string(r[:i]) != seqShiftTab &&
 					string(r[:i]) != seqForwards && string(r[:i]) != seqBackwards &&
 					string(r[:i]) != seqUp && string(r[:i]) != seqDown {
-					rl.resetVirtualComp(false)
+					// basically only applies except on 1st ctrl r open
+					// so if we have not explicitly selected something
+					// (tabCompletionSelect is false) drop virtual completion
+					rl.resetVirtualComp(!rl.tabCompletionSelect)
 				}
 			}
 
@@ -517,7 +524,9 @@ func (rl *Instance) Readline() (string, error) {
 			if rl.modeAutoFind || rl.modeTabFind {
 				rl.resetVirtualComp(false)
 				rl.updateTabFind(r[:i])
+				rl.renderHelpers()
 				rl.viUndoSkipAppend = true
+				continue
 			} else {
 				rl.resetVirtualComp(false)
 				rl.editorInput(r[:i])
@@ -537,6 +546,10 @@ func (rl *Instance) Readline() (string, error) {
 // entry readline is currently configured for and then update the line entries
 // accordingly.
 func (rl *Instance) editorInput(r []rune) {
+	if len(r) == 0 {
+		return
+	}
+
 	switch rl.modeViMode {
 	case VimKeys:
 		rl.vi(r[0])
@@ -604,6 +617,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 	case string(charEscape):
 		switch {
 		case rl.modeAutoFind:
+			rl.resetVirtualComp(true)
 			rl.resetTabFind()
 			rl.clearHelpers()
 			rl.resetTabCompletion()
@@ -611,6 +625,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			rl.renderHelpers()
 
 		case rl.modeTabFind:
+			rl.resetVirtualComp(true)
 			rl.resetTabFind()
 			rl.resetTabCompletion()
 
@@ -853,7 +868,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 			if err != nil {
 				return
 			}
-			if !rl.mainHist {
+			if !rl.mainHist && rl.altHistory != nil {
 				line, err = rl.altHistory.GetLine(rl.altHistory.Len() - 1)
 				if err != nil {
 					return

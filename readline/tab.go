@@ -94,7 +94,7 @@ func (rl *Instance) getTabSearchCompletion() {
 	rl.getCurrentGroup()
 
 	// Set the info for this completion mode
-	rl.infoText = append([]rune("Completion search: "), rl.tfLine...)
+	rl.infoText = append([]rune("Completion search: " + UNDERLINE + BOLD), rl.tfLine...)
 
 	for _, g := range rl.tcGroups {
 		g.updateTabFind(rl)
@@ -102,7 +102,7 @@ func (rl *Instance) getTabSearchCompletion() {
 
 	// If total number of matches is zero, we directly change the info, and return
 	if comps, _, _ := rl.getCompletionCount(); comps == 0 {
-		rl.infoText = append(rl.infoText, []rune(DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
+		rl.infoText = append(rl.infoText, []rune(RESET+DIM+RED+" ! no matches (Ctrl-G/Esc to cancel)"+RESET)...)
 	}
 }
 
@@ -276,13 +276,14 @@ func (rl *Instance) writeTabCompletion() {
 	// than what their MaxLength allows them to, cycling sometimes occur,
 	// but does not fully clears itself: some descriptions are messed up with.
 	// We always clear the screen as a result, between writings.
-	print(seqClearScreenBelow)
+	//rl.bufprint(seqClearScreenBelow)
 
 	// Crop the completions so that it fits within our MaxTabCompleterRows
 	completions, rl.tcUsedY = rl.cropCompletions(completions)
 
 	// Then we print all of them.
-	fmt.Printf(completions)
+	rl.bufprintF(completions)
+	rl.bufflush()
 }
 
 // cropCompletions - When the user cycles through a completion list longer

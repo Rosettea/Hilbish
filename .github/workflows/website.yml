@@ -1,0 +1,51 @@
+name: Build website
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.111.3'
+          extended: true
+
+      - name: Set branch name
+        id: branch
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> "$GITHUB_ENV"
+
+      - name: Fix base URL
+        if: env.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'      
+        run: sed -i "s%baseURL = 'https://rosettea.github.io/Hilbish/'%baseURL = 'https://rosettea.github.io/Hilbish/versions/${{ env.BRANCH_NAME }}'%" website/config.toml
+
+      - name: Build
+        run: 'cd website && hugo --minify'
+
+      - name: Deploy
+        if: env.BRANCH_NAME == 'master' && github.repository_owner == 'Rosettea'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/public
+          keep_files: true
+      - name: Deploy
+        if: env.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/public
+          destination_dir: versions/${{ env.BRANCH_NAME }}
+          keep_files: true

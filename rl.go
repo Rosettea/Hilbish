@@ -7,8 +7,9 @@ import (
 
 	"hilbish/util"
 
-	"github.com/maxlandon/readline"
 	rt "github.com/arnodel/golua/runtime"
+	"github.com/maxlandon/readline"
+	"github.com/sahilm/fuzzy"
 )
 
 type lineReader struct {
@@ -22,6 +23,24 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	rl := readline.NewInstance()
 	lr := &lineReader{
 		rl: rl,
+	}
+
+	regexSearcher := rl.Searcher
+	rl.Searcher = func(needle string, haystack []string) []string {
+		fz, _ := util.DoString(l, "return hilbish.opts.fuzzy")
+		fuzz, ok := fz.TryBool()
+		if !fuzz || !ok {
+			return regexSearcher(needle, haystack)
+		}
+
+		matches := fuzzy.Find(needle, haystack)
+		suggs := make([]string, 0)
+
+		for _, match := range matches {
+			suggs = append(suggs, match.Str)
+		}
+
+		return suggs
 	}
 
 	// we don't mind hilbish.read rl instances having completion,
@@ -51,11 +70,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
-		if hinter == nil {
-			return []rune{}
-		}
-
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(hinter),
+		hinter := hshMod.Get(rt.StringValue("hinter"))
+		retVal, err := rt.Call1(l.MainThread(), hinter,
 		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
@@ -70,10 +86,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return []rune(hintText)
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
-		if highlighter == nil {
-			return string(line)
-		}
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		highlighter := hshMod.Get(rt.StringValue("highlighter"))
+		retVal, err := rt.Call1(l.MainThread(), highlighter,
 		rt.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
@@ -225,7 +239,11 @@ func (lr *lineReader) Resize() {
 	return
 }
 
-// lua module
+// #interface history
+// command history
+// The history interface deals with command history. 
+// This includes the ability to override functions to change the main
+// method of saving history.
 func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	lrLua := map[string]util.LuaExport{
 		"add": {lr.luaAddHistory, 1, false},
@@ -241,6 +259,10 @@ func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
+// #interface history
+// add(cmd)
+// Adds a command to the history.
+// #param cmd string
 func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -254,10 +276,18 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.Next(), nil
 }
 
+// #interface history
+// size() -> number
+// Returns the amount of commands in the history.
+// #eturns number
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.IntValue(int64(lr.fileHist.Len()))), nil
 }
 
+// #interface history
+// get(index)
+// Retrieves a command from the history based on the `index`.
+// #param index number
 func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -272,6 +302,10 @@ func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 }
 
+// #interface history
+// all() -> table
+// Retrieves all history as a table.
+// #returns table
 func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	tbl := rt.NewTable()
 	size := lr.fileHist.Len()
@@ -284,6 +318,9 @@ func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 	return c.PushingNext1(t.Runtime, rt.TableValue(tbl)), nil
 }
 
+// #interface history
+// clear()
+// Deletes all commands from the history.
 func (lr *lineReader) luaClearHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	lr.fileHist.clear()
 	return c.Next(), nil

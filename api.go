@@ -1,12 +1,22 @@
-// Here is the core api for the hilbi shell itself
-// Basically, stuff about the shell itself and other functions
-// go here.
+// the core Hilbish API
+// The Hilbish module includes the core API, containing
+// interfaces and functions which directly relate to shell functionality.
+// #field ver The version of Hilbish
+// #field goVersion The version of Go that Hilbish was compiled with
+// #field user Username of the user
+// #field host Hostname of the machine
+// #field dataDir Directory for Hilbish data files, including the docs and default modules
+// #field interactive Is Hilbish in an interactive shell?
+// #field login Is Hilbish the login shell?
+// #field vimMode Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
+// #field exitCode Exit code of the last executed command
 package main
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -18,8 +28,8 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/arnodel/golua/lib/iolib"
 	"github.com/maxlandon/readline"
-	"github.com/blackfireio/osinfo"
 	"mvdan.cc/sh/v3/interp"
 )
 
@@ -51,46 +61,7 @@ var hilbishLoader = packagelib.Loader{
 }
 
 func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
-	fakeMod := rt.NewTable()
-	modmt := rt.NewTable()
 	mod := rt.NewTable()
-
-	modIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		arg := c.Arg(1)
-		val := mod.Get(arg)
-
-		return c.PushingNext1(t.Runtime, val), nil
-	}
-	modNewIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		k, err := c.StringArg(1)
-		if err != nil {
-			return nil, err
-		}
-
-		v := c.Arg(2)
-		if k == "highlighter" {
-			var err error
-			// fine to assign, since itll be either nil or a closure
-			highlighter, err = c.ClosureArg(2)
-			if err != nil {
-				return nil, errors.New("hilbish.highlighter has to be a function")
-			}
-		} else if k == "hinter" {
-			var err error
-			hinter, err = c.ClosureArg(2)
-			if err != nil {
-				return nil, errors.New("hilbish.hinter has to be a function")
-			}
-		} else if modVal := mod.Get(rt.StringValue(k)); modVal != rt.NilValue {
-			return nil, errors.New("not allowed to override in hilbish table")
-		}
-		mod.Set(rt.StringValue(k), v)
-
-		return c.Next(), nil
-	}
-	modmt.Set(rt.StringValue("__newindex"), rt.FunctionValue(rt.NewGoFunction(modNewIndex, "__newindex", 3, false)))
-	modmt.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(modIndex, "__index", 2, false)))
-	fakeMod.SetMetatable(modmt)
 
 	util.SetExports(rtm, mod, exports)
 	hshMod = mod
@@ -102,81 +73,68 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	util.SetFieldProtected(fakeMod, mod, "ver", rt.StringValue(getVersion()), "Hilbish version")
-	util.SetFieldProtected(fakeMod, mod, "user", rt.StringValue(username), "Username of user")
-	util.SetFieldProtected(fakeMod, mod, "host", rt.StringValue(host), "Host name of the machine")
-	util.SetFieldProtected(fakeMod, mod, "home", rt.StringValue(curuser.HomeDir), "Home directory of the user")
-	util.SetFieldProtected(fakeMod, mod, "dataDir", rt.StringValue(dataDir), "Directory for Hilbish's data files")
-	util.SetFieldProtected(fakeMod, mod, "interactive", rt.BoolValue(interactive), "If this is an interactive shell")
-	util.SetFieldProtected(fakeMod, mod, "login", rt.BoolValue(login), "Whether this is a login shell")
-	util.SetFieldProtected(fakeMod, mod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
-	util.SetFieldProtected(fakeMod, mod, "exitCode", rt.IntValue(0), "Exit code of last exected command")
-	util.Document(fakeMod, "Hilbish's core API, containing submodules and functions which relate to the shell itself.")
+	util.SetField(rtm, mod, "ver", rt.StringValue(getVersion()))
+	util.SetField(rtm, mod, "goVersion", rt.StringValue(runtime.Version()))
+	util.SetField(rtm, mod, "user", rt.StringValue(username))
+	util.SetField(rtm, mod, "host", rt.StringValue(host))
+	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir))
+	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir))
+	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive))
+	util.SetField(rtm, mod, "login", rt.BoolValue(login))
+	util.SetField(rtm, mod, "vimMode", rt.NilValue)
+	util.SetField(rtm, mod, "exitCode", rt.IntValue(0))
 
 	// hilbish.userDir table
-	hshuser := rt.NewTable()
-
-	util.SetField(rtm, hshuser, "config", rt.StringValue(confDir), "User's config directory")
-	util.SetField(rtm, hshuser, "data", rt.StringValue(userDataDir), "XDG data directory")
-	util.Document(hshuser, "User directories to store configs and/or modules.")
+	hshuser := userDirLoader(rtm)
 	mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
 
 	// hilbish.os table
-	hshos := rt.NewTable()
-	info, _ := osinfo.GetOSInfo()
-
-	util.SetField(rtm, hshos, "family", rt.StringValue(info.Family), "Family name of the current OS")
-	util.SetField(rtm, hshos, "name", rt.StringValue(info.Name), "Pretty name of the current OS")
-	util.SetField(rtm, hshos, "version", rt.StringValue(info.Version), "Version of the current OS")
-	util.Document(hshos, "OS info interface")
+	hshos := hshosLoader(rtm)
 	mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
 	// hilbish.aliases table
 	aliases = newAliases()
 	aliasesModule := aliases.Loader(rtm)
-	util.Document(aliasesModule, "Alias inferface for Hilbish.")
 	mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
 	// hilbish.history table
 	historyModule := lr.Loader(rtm)
 	mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
-	util.Document(historyModule, "History interface for Hilbish.")
 
 	// hilbish.completion table
 	hshcomp := completionLoader(rtm)
-	util.Document(hshcomp, "Completions interface for Hilbish.")
+	// TODO: REMOVE "completion" AND ONLY USE "completions" WITH AN S
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
+	mod.Set(rt.StringValue("completions"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
 	runnerModule := runnerModeLoader(rtm)
-	util.Document(runnerModule, "Runner/exec interface for Hilbish.")
 	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
 	jobModule := jobs.loader(rtm)
-	util.Document(jobModule, "(Background) job interface.")
 	mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	// hilbish.timers table
-	timers = newTimerHandler()
-	timerModule := timers.loader(rtm)
-	util.Document(timerModule, "Timer interface, for control of all intervals and timeouts.")
-	mod.Set(rt.StringValue("timers"), rt.TableValue(timerModule))
+	timers = newTimersModule()
+	timersModule := timers.loader(rtm)
+	mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
 	editorModule := editorLoader(rtm)
-	util.Document(editorModule, "")
 	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
 
 	versionModule := rt.NewTable()
-	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch), "Git branch Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()), "Full version info, including release name")
-	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit), "Git commit Hilbish was compiled from")
-	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName), "Release name")
-	util.Document(versionModule, "Version info interface.")
+	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch))
+	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()))
+	util.SetField(rtm, versionModule, "commit", rt.StringValue(gitCommit))
+	util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName))
 	mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
-	return rt.TableValue(fakeMod), nil
+	pluginModule := moduleLoader(rtm)
+	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
+
+	return rt.TableValue(mod), nil
 }
 
 func getenv(key, fallback string) string {
@@ -188,20 +146,72 @@ func getenv(key, fallback string) string {
 }
 
 func setVimMode(mode string) {
-	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode), "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "vimMode", rt.StringValue(mode))
 	hooks.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
-	util.SetField(l, hshMod, "vimMode", rt.NilValue, "Current Vim mode of Hilbish (nil if not in Vim mode)")
+	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
-// run(cmd, returnOut) -> exitCode, stdout, stderr
-// Runs `cmd` in Hilbish's sh interpreter.
-// If returnOut is true, the outputs of `cmd` will be returned as the 2nd and
-// 3rd values instead of being outputted to the terminal.
-// --- @param cmd string
+func handleStream(v rt.Value, strms *streams, errStream bool) error {
+	ud, ok := v.TryUserData()
+	if !ok {
+		return errors.New("expected metatable argument")
+	}
+
+	val := ud.Value()
+	var varstrm io.Writer
+	if f, ok := val.(*iolib.File); ok {
+		varstrm = f.Handle()
+	}
+
+	if f, ok := val.(*sink); ok {
+		varstrm = f.writer
+	}
+
+	if varstrm == nil {
+		return errors.New("expected either a sink or file")
+	}
+
+	if errStream {
+		strms.stderr = varstrm
+	} else {
+		strms.stdout = varstrm
+	}
+
+	return nil
+}
+
+// run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
+// Runs `cmd` in Hilbish's shell script interpreter.
+// The `streams` parameter specifies the output and input streams the command should use.
+// For example, to write command output to a sink.
+// As a table, the caller can directly specify the standard output, error, and input
+// streams of the command with the table keys `out`, `err`, and `input` respectively.
+// As a boolean, it specifies whether the command should use standard output or return its output streams.
+// #param cmd string
+// #param streams table|boolean
+// #returns number, string, string
+// #example
+/*
+// This code is the same as `ls -l | wc -l`
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+*/
+// #example
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	// TODO: ON BREAKING RELEASE, DO NOT ACCEPT `streams` AS A BOOLEAN.
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -210,20 +220,57 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
+	strms := &streams{}
 	var terminalOut bool
 	if len(c.Etc()) != 0 {
 		tout := c.Etc()[0]
-		termOut, ok := tout.TryBool()
-		terminalOut = termOut
+
+		var ok bool
+		terminalOut, ok = tout.TryBool()
 		if !ok {
-			return nil, errors.New("bad argument to run (expected boolean, got " + tout.TypeName() + ")")
+			luastreams, ok := tout.TryTable()
+			if !ok {
+				return nil, errors.New("bad argument to run (expected boolean or table, got " + tout.TypeName() + ")")
+			}
+
+			handleStream(luastreams.Get(rt.StringValue("out")), strms, false)
+			handleStream(luastreams.Get(rt.StringValue("err")), strms, true)
+
+			stdinstrm := luastreams.Get(rt.StringValue("input"))
+			if !stdinstrm.IsNil() {
+				ud, ok := stdinstrm.TryUserData()
+				if !ok {
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file, got " + stdinstrm.TypeName() + ")")
+				}
+
+				val := ud.Value()
+				var varstrm io.Reader
+				if f, ok := val.(*iolib.File); ok {
+					varstrm = f.Handle()
+				}
+
+				if f, ok := val.(*sink); ok {
+					varstrm = f.reader
+				}
+
+				if varstrm == nil {
+					return nil, errors.New("bad type as run stdin stream (expected userdata as either sink or file)")
+				}
+
+				strms.stdin = varstrm
+			}
+		} else {
+			if !terminalOut {
+				strms = &streams{
+					stdout: new(bytes.Buffer),
+					stderr: new(bytes.Buffer),
+				}
+			}
 		}
-	} else {
-		terminalOut = true
 	}
 
 	var exitcode uint8
-	stdout, stderr, err := execCommand(cmd, terminalOut)
+	stdout, stderr, err := execCommand(cmd, strms)
 
 	if code, ok := interp.IsExitStatus(err); ok {
 		exitcode = code
@@ -231,18 +278,20 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		exitcode = 1
 	}
 
-	stdoutStr := ""
-	stderrStr := ""
-	if !terminalOut {
-		stdoutStr = stdout.(*bytes.Buffer).String()
-		stderrStr = stderr.(*bytes.Buffer).String()
+	var stdoutStr, stderrStr string
+	if stdoutBuf, ok := stdout.(*bytes.Buffer); ok {
+		stdoutStr = stdoutBuf.String()
+	}
+	if stderrBuf, ok := stderr.(*bytes.Buffer); ok {
+		stderrStr = stderrBuf.String()
 	}
 
 	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
 }
 
-// cwd()
-// Returns the current directory of the shell
+// cwd() -> string
+// Returns the current directory of the shell.
+// #returns string
 func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
 
@@ -250,21 +299,28 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 
-// read(prompt) -> input?
+// read(prompt) -> input (string)
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
-// Returns `input`, will be nil if ctrl + d is pressed, or an error occurs (which shouldn't happen)
-// --- @param prompt string
+// Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
+// #param prompt? string Text to print before input, can be empty.
+// #returns string|nil
 func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
+	luaprompt := c.Arg(0)
+	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
+		return nil, errors.New("expected #1 to be a string")
 	}
-	luaprompt, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
+	prompt, ok := luaprompt.TryString()
+	if !ok {
+		// if we are here and `luaprompt` is not a string, it's nil
+		// substitute with an empty string
+		prompt = ""
 	}
-	lualr := newLineReader("", true)
-	lualr.SetPrompt(luaprompt)
+	
+	lualr := &lineReader{
+		rl: readline.NewInstance(),
+	}
+	lualr.SetPrompt(prompt)
 
 	input, err := lualr.Read()
 	if err != nil {
@@ -275,15 +331,22 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 /*
-prompt(str, typ?)
-Changes the shell prompt to `str`
+prompt(str, typ)
+Changes the shell prompt to the provided string.
 There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.
 `%d` - Current working directory
 `%u` - Name of current user
 `%h` - Hostname of device
---- @param str string
---- @param typ string Type of prompt, being left or right. Left by default.
+#param str string
+#param typ? string Type of prompt, being left or right. Left by default.
+#example
+-- the default hilbish prompt without color
+hilbish.prompt '%u %d ∆'
+-- or something of old:
+hilbish.prompt '%u@%h :%d $'
+-- prompt: user@hostname: ~/directory $
+#example
 */
 func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	err := c.Check1Arg()
@@ -317,8 +380,28 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // multiprompt(str)
-// Changes the continued line prompt to `str`
-// --- @param str string
+// Changes the text prompt when Hilbish asks for more input.
+// This will show up when text is incomplete, like a missing quote
+// #param str string
+/*
+#example
+--[[
+imagine this is your text input:
+user ~ ∆ echo "hey
+
+but there's a missing quote! hilbish will now prompt you so the terminal
+will look like:
+user ~ ∆ echo "hey
+--> ...!"
+
+so then you get 
+user ~ ∆ echo "hey
+--> ...!"
+hey ...!
+]]--
+hilbish.multiprompt '-->'
+#example
+*/
 func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -333,9 +416,19 @@ func hlmultiprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // alias(cmd, orig)
-// Sets an alias of `cmd` to `orig`
-// --- @param cmd string
-// --- @param orig string
+// Sets an alias, with a name of `cmd` to another command.
+// #param cmd string Name of the alias
+// #param orig string Command that will be aliased
+/*
+#example
+-- With this, "ga file" will turn into "git add file"
+hilbish.alias('ga', 'git add')
+
+-- Numbered substitutions are supported here!
+hilbish.alias('dircount', 'ls %1 | wc -l')
+-- "dircount ~" would count how many files are in ~ (home directory).
+#example
+*/
 func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -355,8 +448,20 @@ func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // appendPath(dir)
-// Appends `dir` to $PATH
-// --- @param dir string|table
+// Appends the provided dir to the command path (`$PATH`)
+// #param dir string|table Directory (or directories) to append to path
+/*
+#example
+hilbish.appendPath '~/go/bin'
+-- Will add ~/go/bin to the command path.
+
+-- Or do multiple:
+hilbish.appendPath {
+	'~/go/bin',
+	'~/.local/bin'
+}
+#example
+*/
 func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -390,8 +495,9 @@ func appendPath(dir string) {
 }
 
 // exec(cmd)
-// Replaces running hilbish with `cmd`
-// --- @param cmd string
+// Replaces the currently running Hilbish instance with the supplied command.
+// This can be used to do an in-place restart.
+// #param cmd string
 func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -425,8 +531,11 @@ func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // goro(fn)
-// Puts `fn` in a goroutine
-// --- @param fn function
+// Puts `fn` in a Goroutine.
+// This can be used to run any function in another thread at the same time as other Lua code.
+// **NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.**
+// **This is a limitation of the Lua runtime.**
+// #param fn function
 func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -438,6 +547,12 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	// call fn
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				// do something here?
+			}
+		}()
+
 		_, err := rt.Call1(l.MainThread(), rt.FunctionValue(fn), c.Etc()...)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error in goro function:\n\n", err)
@@ -447,12 +562,12 @@ func hlgoro(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// timeout(cb, time)
-// Runs the `cb` function after `time` in milliseconds
-// Returns a `timer` object (see `doc timers`).
-// --- @param cb function
-// --- @param time number
-// --- @return table
+// timeout(cb, time) -> @Timer
+// Executed the `cb` function after a period of `time`.
+// This creates a Timer that starts ticking immediately.
+// #param cb function
+// #param time number Time to run in milliseconds.
+// #returns Timer
 func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -473,12 +588,12 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(timer.ud)), nil
 }
 
-// interval(cb, time)
-// Runs the `cb` function every `time` milliseconds.
-// Returns a `timer` object (see `doc timers`).
-// --- @param cb function
-// --- @param time number
-// --- @return table
+// interval(cb, time) -> @Timer
+// Runs the `cb` function every specified amount of `time`.
+// This creates a timer that ticking immediately.
+// #param cb function
+// #param time number Time in milliseconds.
+// #return Timer
 func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -500,13 +615,40 @@ func hlinterval(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // complete(scope, cb)
-// Registers a completion handler for `scope`.
-// A `scope` is currently only expected to be `command.<cmd>`,
+// Registers a completion handler for the specified scope.
+// A `scope` is expected to be `command.<cmd>`,
 // replacing <cmd> with the name of the command (for example `command.git`).
-// `cb` must be a function that returns a table of "completion groups."
-// Check `doc completions` for more information.
-// --- @param scope string
-// --- @param cb function
+// The documentation for completions, under Features/Completions or `doc completions`
+// provides more details.
+// #param scope string
+// #param cb function
+/*
+#example
+-- This is a very simple example. Read the full doc for completions for details.
+hilbish.complete('command.sudo', function(query, ctx, fields)
+	if #fields == 0 then
+		-- complete for commands
+		local comps, pfx = hilbish.completion.bins(query, ctx, fields)
+		local compGroup = {
+			items = comps, -- our list of items to complete
+			type = 'grid' -- what our completions will look like.
+		}
+
+		return {compGroup}, pfx
+	end
+
+	-- otherwise just be boring and return files
+
+	local comps, pfx = hilbish.completion.files(query, ctx, fields)
+	local compGroup = {
+		items = comps,
+		type = 'grid'
+	}
+
+	return {compGroup}, pfx
+end)
+#example
+*/
 func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	scope, cb, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -518,8 +660,8 @@ func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // prependPath(dir)
-// Prepends `dir` to $PATH
-// --- @param dir string
+// Prepends `dir` to $PATH.
+// #param dir string
 func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -539,9 +681,11 @@ func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// which(name)
-// Checks if `name` is a valid command
-// --- @param binName string
+// which(name) -> string
+// Checks if `name` is a valid command.
+// Will return the path of the binary, or a basename if it's a commander.
+// #param name string
+// #returns string
 func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -551,10 +695,13 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	cmd := aliases.Resolve(name)
+	// itll return either the original command or what was passed
+	// if name isnt empty its not an issue
+	alias := aliases.Resolve(name)
+	cmd := strings.Split(alias, " ")[0]
 
 	// check for commander
-	if commands[cmd] != nil {
+	if cmds.Commands[cmd] != nil {
 		// they dont resolve to a path, so just send the cmd
 		return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 	}
@@ -568,8 +715,10 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // inputMode(mode)
-// Sets the input mode for Hilbish's line reader. Accepts either emacs or vim
-// --- @param mode string
+// Sets the input mode for Hilbish's line reader.
+// `emacs` is the default. Setting it to `vim` changes behavior of input to be
+// Vim-like with modes and Vim keybinds.
+// #param mode string Can be set to either `emacs` or `vim`
 func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -594,12 +743,14 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // runnerMode(mode)
-// Sets the execution/runner mode for interactive Hilbish. This determines whether
-// Hilbish wll try to run input as Lua and/or sh or only do one of either.
+// Sets the execution/runner mode for interactive Hilbish.
+// This determines whether Hilbish wll try to run input as Lua
+// and/or sh or only do one of either.
 // Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
 // sh, and lua. It also accepts a function, to which if it is passed one
 // will call it to execute user input instead.
-// --- @param mode string|function
+// Read [about runner mode](../features/runner-mode) for more information.
+// #param mode string|function
 func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -625,18 +776,42 @@ func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // line and cursor position. It is expected to return a string which is used
 // as the text for the hint. This is by default a shim. To set hints,
 // override this function with your custom handler.
-// --- @param line string
-// --- @param pos int
+// #param line string
+// #param pos number Position of cursor in line. Usually equals string.len(line)
+/*
+#example
+-- this will display "hi" after the cursor in a dimmed color.
+function hilbish.hinter(line, pos)
+	return 'hi'
+end
+#example
+*/
 func hlhinter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
 // highlighter(line)
-// Line highlighter handler. This is mainly for syntax highlighting, but in
-// reality could set the input of the prompt to *display* anything. The
-// callback is passed the current line and is expected to return a line that
-// will be used as the input display.
-// --- @param line string
+// Line highlighter handler.
+// This is mainly for syntax highlighting, but in reality could set the input
+// of the prompt to *display* anything. The callback is passed the current line
+// and is expected to return a line that will be used as the input display.
+// Note that to set a highlighter, one has to override this function.
+// #example
+// --This code will highlight all double quoted strings in green.
+// function hilbish.highlighter(line)
+//    return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+// end
+// #example
+// #param line string
 func hlhighlighter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.Next(), nil
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	line, err := c.StringArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.PushingNext1(t.Runtime, rt.StringValue(line)), nil
 }
