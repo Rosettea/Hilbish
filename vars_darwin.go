@@ -1,4 +1,4 @@
-//go:build !unix,darwin
+//go:build darwin && !unix
 
 package main
 
