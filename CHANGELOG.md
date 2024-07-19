@@ -30,6 +30,7 @@ hilbish.run('wc -l', {
 
 ### Fixed
 - Fix ansi attributes causing issues with text when cut off in greenhouse
+- `exec` command should return if no arg presented
 
 ## [2.2.3] - 2024-04-27
 ### Fixed
