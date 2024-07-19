@@ -1,5 +1,4 @@
-// +build darwin linux
-
+// +build darwin unix
 package main
 
 import (
