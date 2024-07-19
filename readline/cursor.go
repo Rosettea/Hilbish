@@ -1,6 +1,7 @@
 package readline
 
 import (
+//	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -68,6 +69,40 @@ func (rl *Instance) getCursorPos() (x int, y int) {
 // This means that they are not used to keep any reference point when
 // when we internally move around clearning and printing things
 
+/*
+func moveCursorUpBuffered(i int) {
+	if i < 1 {
+		return
+	}
+
+	fmt.Fprintf(rl.bufferedOut, "\x1b[%dA", i)
+}
+
+func moveCursorDownBuffered(i int) {
+	if i < 1 {
+		return
+	}
+
+	fmt.Fprintf(rl.bufferedOut, "\x1b[%dB", i)
+}
+
+func moveCursorForwardsBuffered(i int) {
+	if i < 1 {
+		return
+	}
+
+	fmt.Fprintf(rl.bufferedOut, "\x1b[%dC", i)
+}
+
+func moveCursorUpBuffered(i int) {
+	if i < 1 {
+		return
+	}
+
+	fmt.Fprintf(rl.bufferedOut, "\x1b[%dD", i)
+}
+*/
+
 func moveCursorUp(i int) {
 	if i < 1 {
 		return
@@ -98,6 +133,14 @@ func moveCursorBackwards(i int) {
 	}
 
 	printf("\x1b[%dD", i)
+}
+
+func hideCursor() {
+	print(seqHideCursor)
+}
+
+func unhideCursor() {
+	print(seqUnhideCursor)
 }
 
 func (rl *Instance) backspace(forward bool) {

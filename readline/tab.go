@@ -276,13 +276,14 @@ func (rl *Instance) writeTabCompletion() {
 	// than what their MaxLength allows them to, cycling sometimes occur,
 	// but does not fully clears itself: some descriptions are messed up with.
 	// We always clear the screen as a result, between writings.
-	print(seqClearScreenBelow)
+	//rl.bufprint(seqClearScreenBelow)
 
 	// Crop the completions so that it fits within our MaxTabCompleterRows
 	completions, rl.tcUsedY = rl.cropCompletions(completions)
 
 	// Then we print all of them.
-	fmt.Printf(completions)
+	rl.bufprintF(completions)
+	rl.bufflush()
 }
 
 // cropCompletions - When the user cycles through a completion list longer

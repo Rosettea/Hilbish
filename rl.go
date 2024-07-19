@@ -70,11 +70,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
-		if hinter == nil {
-			return []rune{}
-		}
-
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(hinter),
+		hinter := hshMod.Get(rt.StringValue("hinter"))
+		retVal, err := rt.Call1(l.MainThread(), hinter,
 		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
@@ -89,10 +86,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return []rune(hintText)
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
-		if highlighter == nil {
-			return string(line)
-		}
-		retVal, err := rt.Call1(l.MainThread(), rt.FunctionValue(highlighter),
+		highlighter := hshMod.Get(rt.StringValue("highlighter"))
+		retVal, err := rt.Call1(l.MainThread(), highlighter,
 		rt.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
@@ -267,7 +262,7 @@ func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 // #interface history
 // add(cmd)
 // Adds a command to the history.
-// --- @param cmd string
+// #param cmd string
 func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -284,15 +279,15 @@ func (lr *lineReader) luaAddHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 // #interface history
 // size() -> number
 // Returns the amount of commands in the history.
-// --- @returns number
+// #eturns number
 func (lr *lineReader) luaSize(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.IntValue(int64(lr.fileHist.Len()))), nil
 }
 
 // #interface history
-// get(idx)
-// Retrieves a command from the history based on the `idx`.
-// --- @param idx number
+// get(index)
+// Retrieves a command from the history based on the `index`.
+// #param index number
 func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -309,8 +304,8 @@ func (lr *lineReader) luaGetHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error)
 
 // #interface history
 // all() -> table
-// Retrieves all history.
-// --- @returns table
+// Retrieves all history as a table.
+// #returns table
 func (lr *lineReader) luaAllHistory(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	tbl := rt.NewTable()
 	size := lr.fileHist.Len()

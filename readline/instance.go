@@ -1,6 +1,7 @@
 package readline
 
 import (
+	"bufio"
 	"os"
 	"regexp"
 	"sync"
@@ -203,6 +204,8 @@ type Instance struct {
 	ViActionCallback func(ViAction, []string)
 
 	RawInputCallback func([]rune) // called on all input
+
+	bufferedOut *bufio.Writer
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
@@ -250,6 +253,8 @@ func NewInstance() *Instance {
 
 		return suggs
 	}
+
+	rl.bufferedOut = bufio.NewWriter(os.Stdout)
 
 	// Registers
 	rl.initRegisters()

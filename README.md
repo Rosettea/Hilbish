@@ -36,7 +36,7 @@ on the website for distributed binaries from GitHub or other package repositorie
 Otherwise, continue reading for steps on compiling.
 
 ## Prerequisites
-- [Go 1.17+](https://go.dev)
+- [Go 1.22+](https://go.dev)
 - [Task](https://taskfile.dev/installation/) (**Go on the hyperlink here to see Task's install method for your OS.**)
 
 ## Build

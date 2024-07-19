@@ -2,22 +2,105 @@
 
 ## Unreleased
 ### Added
+- `fs.pipe` function to get a pair of connected files (a pipe).
+- Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
+`streams` is a table of input and output streams to run the command with.
+It uses these 3 keys:
+  - `input` as standard input for the command
+  - `out` as standard output
+  - `err` as standard error
+
+Here is a minimal example of the new usage which allows users to now pipe commands
+directly via Lua functions:
+  
+```lua
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+```
+
+### Fixed
+- Fix ansi attributes causing issues with text when cut off in greenhouse
+- `exec` command should return if no arg presented
+
+## [2.2.3] - 2024-04-27
+### Fixed
+- Highligher and hinter work now, since it was regressed from the previous minor release.
+- `cat` command no longer prints extra newline at end of each file
+
+### Added
+- `cat` command now reads files in chunks, allowing for reading large files
+
+## [2.2.2] - 2024-04-16
+### Fixed
+- Line refresh fixes (less flicker)
+- Do more checks for a TTY
+  - Panic if ENOTTY is thrown from readline
+  - use `x/term` function to check if a terminal
+
+### Added
+- Page Up/Down keybinds for Greenhouse will now scroll up and down the size of the region (a page)
+
+### Changed
+- Remove usage of `hilbish.goro` in Greenhouse.
+- Values in `hilbish` table are no longer protected. This means
+they can be overridden. (#287)
+
+## [2.2.1] - 2023-12-26
+### Fixed
+- Removed a left over debug print
+- Recover panic in `hilbish.goro`
+
+## [2.2.0] - 2023-12-25
+### Added
+- [Native Modules](https://rosettea.github.io/Hilbish/docs/api/hilbish/hilbish.module/)
 - Made a few additions to the sink type:
   - `read()` method for retrieving input (so now the `in` sink of commanders is useful)
   - `flush()` and `autoFlush()` related to flushing outputs
   - `pipe` property to check if a sink with input is a pipe (like stdin)
 - Add fuzzy search to history search (enable via `hilbish.opts.fuzzy = true`)
-- Show indexes on cdr list
+- Show indexes on cdr list and use ~ for home directory.
+- Fix doc command not displaying correct subdocs when using shorthand api doc access (`doc api hilbish.jobs` as an example)
 - `hilbish.messages` interface (details in [#219])
 - `hilbish.notification` signal when a message/notification is sent
 - `notifyJobFinish` opt to send a notification when background jobs are
+- `hilbish.goVersion` for the version of Go used to compile Hilbish.
 completed.
 - Allow numbered arg substitutions in aliases.
   - Example: `hilbish.alias('hello', 'echo %1 says hello')` allows the user to run `hello hilbish`
   which will output `hilbish says hello`.
+- Greenhouse
+  - Greenhouse is a pager library and program. Basic usage is `greenhouse <file>`
+  - Using this also brings enhancements to the `doc` command like easy
+  navigation of neighboring doc files.
+  Ctrl-N can be used for the table of contents, which views adjacent documentation.
 
-[#219]: https://github.com/Rosettea/Hilbish/issues/219
+### Changed
+- Documentation for EVERYTHING has been improved, with more
+information added, code example, parameter details, etc.
+You can see the improvements!
+- Documentation has gotten an uplift in the `doc` command.
+This includes:
+  - Proper highlighting of code
+  - Paging (via Greenhouse)
+  - Highlighting more markdown things
+
 ### Fixed
+- Fix panic when runner doesn't return a table
+- Fix edge case of crash on empty alias resolve
+- File completion on Windows
+- Job management commands work now
+- Fix infinite loop when navigating history without any history. [#252](https://github.com/Rosettea/Hilbish/issues/252)
+- Return the prefix when calling `hilbish.completions.call`. [#219](https://github.com/Rosettea/Hilbish/issues/219)
 - Replaced `sed` in-place editing with `grep` and `mv` for compatibility with BSD utils
 
 ## [2.1.2] - 2022-04-10
@@ -665,6 +748,12 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/Rosettea/Hilbish/compare/v2.1.0...v2.2.0
+[2.1.2]: https://github.com/Rosettea/Hilbish/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/Rosettea/Hilbish/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/Rosettea/Hilbish/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Rosettea/Hilbish/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Rosettea/Hilbish/compare/v1.2.0...v2.0.0

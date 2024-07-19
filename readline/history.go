@@ -128,15 +128,19 @@ func (rl *Instance) walkHistory(i int) {
 	}
 
 	rl.histOffset += i
+	historyLen := history.Len()
 	if rl.histOffset == 0 {
 		rl.line = []rune(rl.lineBuf)
 		rl.pos = len(rl.lineBuf)
 	} else if rl.histOffset <= -1 {
 		rl.histOffset = 0
+	} else if rl.histOffset > historyLen {
+		// TODO: should this wrap around?s
+		rl.histOffset = 0
 	} else {
 		dedup = true
 		old = string(rl.line)
-		new, err = history.GetLine(history.Len() - rl.histOffset)
+		new, err = history.GetLine(historyLen - rl.histOffset)
 		if err != nil {
 			rl.resetHelpers()
 			print("\r\n" + err.Error() + "\r\n")
@@ -156,8 +160,8 @@ func (rl *Instance) walkHistory(i int) {
 	rl.updateHelpers()
 
 	// In order to avoid having to type j/k twice each time for history navigation,
-	// we walk once again. This only ever happens when we aren't out of bounds.
-	if dedup && old == new {
+	// we walk once again. This only ever happens when we aren't out of bounds and the last history item was not a empty string.
+	if new != "" && dedup && old == new {
 		rl.walkHistory(i)
 	}
 }

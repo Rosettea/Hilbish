@@ -128,7 +128,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	}
 
 	// add lua registered commands to completions
-	for cmdName := range commands {
+	for cmdName := range cmds.Commands {
 		if strings.HasPrefix(cmdName, query) {
 			completions = append(completions, cmdName)
 		}
@@ -188,15 +188,15 @@ func escapeFilename(fname string) string {
 	return escapeReplaer.Replace(fname)
 }
 
-// #interface completions
+// #interface completion
 // tab completions
 // The completions interface deals with tab completions.
 func completionLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
-		"files": {luaFileComplete, 3, false},
-		"bins": {luaBinaryComplete, 3, false},
-		"call": {callLuaCompleter, 4, false},
-		"handler": {completionHandler, 2, false},
+		"bins": {hcmpBins, 3, false},
+		"call": {hcmpCall, 4, false},
+		"files": {hcmpFiles, 3, false},
+		"handler": {hcmpHandler, 2, false},
 	}
 
 	mod := rt.NewTable()
@@ -205,27 +205,58 @@ func completionLoader(rtm *rt.Runtime) *rt.Table {
 	return mod
 }
 
-// #interface completions
-// handler(line, pos)
-// The handler function is the callback for tab completion in Hilbish.
-// You can check the completions doc for more info.
-// --- @param line string
-// --- @param pos string
-func completionHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.Next(), nil
+// #interface completion
+// bins(query, ctx, fields) -> entries (table), prefix (string)
+// Return binaries/executables based on the provided parameters.
+// This function is meant to be used as a helper in a command completion handler.
+// #param query string
+// #param ctx string
+// #param fields table
+/*
+#example
+-- an extremely simple completer for sudo.
+hilbish.complete('command.sudo', function(query, ctx, fields)
+	table.remove(fields, 1)
+	if #fields[1] then
+		-- return commands because sudo runs a command as root..!
+
+		local entries, pfx = hilbish.completion.bins(query, ctx, fields)
+		return {
+			type = 'grid',
+			items = entries
+		}, pfx
+	end
+
+	-- ... else suggest files or anything else ..
+end)
+#example
+*/
+func hcmpBins(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	query, ctx, fds, err := getCompleteParams(t, c)
+	if err != nil {
+		return nil, err
+	}
+
+	completions, pfx := binaryComplete(query, ctx, fds)
+	luaComps := rt.NewTable()
+
+	for i, comp := range completions {
+		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+	}
+
+	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-// #interface completions
+// #interface completion
 // call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
-// Calls a completer function. This is mainly used to call
-// a command completer, which will have a `name` in the form
-// of `command.name`, example: `command.git`.
-// You can check `doc completions` for info on the `completionGroups` return value.
-// --- @param name string
-// --- @param query string
-// --- @param ctx string
-// --- @param fields table
-func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// Calls a completer function. This is mainly used to call a command completer, which will have a `name`
+// in the form of `command.name`, example: `command.git`.
+// You can check the Completions doc or `doc completions` for info on the `completionGroups` return value.
+// #param name string
+// #param query string
+// #param ctx string
+// #param fields table
+func hcmpCall(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(4); err != nil {
 		return nil, err
 	}
@@ -253,24 +284,26 @@ func callLuaCompleter(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	// we must keep the holy 80 cols
-	completerReturn, err := rt.Call1(l.MainThread(),
-	rt.FunctionValue(completecb), rt.StringValue(query),
-	rt.StringValue(ctx), rt.TableValue(fields))
+	cont := c.Next()
+	err = rt.Call(l.MainThread(), rt.FunctionValue(completecb),
+	[]rt.Value{rt.StringValue(query), rt.StringValue(ctx), rt.TableValue(fields)},
+	cont)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return c.PushingNext1(t.Runtime, completerReturn), nil
+	return cont, nil
 }
 
-// #interface completions
+// #interface completion
 // files(query, ctx, fields) -> entries (table), prefix (string)
-// Returns file completion candidates based on the provided query.
-// --- @param query string
-// --- @param ctx string
-// --- @param fields table
-func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// Returns file matches based on the provided parameters.
+// This function is meant to be used as a helper in a command completion handler.
+// #param query string
+// #param ctx string
+// #param fields table
+func hcmpFiles(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	query, ctx, fds, err := getCompleteParams(t, c)
 	if err != nil {
 		return nil, err
@@ -286,27 +319,31 @@ func luaFileComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
 }
 
-// #interface completions
-// bins(query, ctx, fields) -> entries (table), prefix (string)
-// Returns binary/executale completion candidates based on the provided query.
-// --- @param query string
-// --- @param ctx string
-// --- @param fields table
-func luaBinaryComplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
-	if err != nil {
-		return nil, err
-	}
+// #interface completion
+// handler(line, pos)
+// This function contains the general completion handler for Hilbish. This function handles
+// completion of everything, which includes calling other command handlers, binaries, and files.
+// This function can be overriden to supply a custom handler. Note that alias resolution is required to be done in this function.
+// #param line string The current Hilbish command line
+// #param pos number Numerical position of the cursor
+/*
+#example
+-- stripped down version of the default implementation
+function hilbish.completion.handler(line, pos)
+	local query = fields[#fields]
 
-	completions, pfx := binaryComplete(query, ctx, fds)
-	luaComps := rt.NewTable()
-
-	for i, comp := range completions {
-		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
-	}
-
-	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+	if #fields == 1 then
+		-- call bins handler here
+	else
+		-- call command completer or files completer here
+	end
+end
+#example
+*/
+func hcmpHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	return c.Next(), nil
 }
+
 
 func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
 	if err := c.CheckNArgs(3); err != nil {

@@ -2,16 +2,20 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
+	"hilbish/golibs/commander"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
@@ -24,7 +28,6 @@ var (
 	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*rt.Closure{}
 	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
@@ -32,6 +35,7 @@ var (
 	curuser *user.User
 
 	hooks *bait.Bait
+	cmds *commander.Commander
 	defaultConfPath string
 	defaultHistPath string
 	runner *interp.Runner
@@ -91,7 +95,7 @@ func main() {
 		interactive = true
 	}
 
-	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
 		interactive = false
 	}
 
@@ -115,7 +119,13 @@ func main() {
 
 	// Set $SHELL if the user wants to
 	if *setshflag {
-		os.Setenv("SHELL", os.Args[0])
+		os.Setenv("SHELL", "hilbish")
+
+		path, err := exec.LookPath("hilbish")
+		if err == nil {
+			os.Setenv("SHELL", path)
+		}
+
 	}
 
 	lr = newLineReader("", false)
@@ -192,8 +202,12 @@ input:
 			} else {
 				// If we get a completely random error, print
 				fmt.Fprintln(os.Stderr, err)
+				if errors.Is(err, syscall.ENOTTY) {
+					// what are we even doing here?
+					panic("not a tty")
+				}
+				<-make(chan struct{})
 			}
-			// TODO: Halt if any other error occurs
 			continue
 		}
 		var priv bool

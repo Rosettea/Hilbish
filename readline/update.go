@@ -1,6 +1,7 @@
 package readline
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/text/width"
@@ -10,7 +11,7 @@ import (
 // it should coordinate reprinting the input line, any Infos and completions
 // and manage to get back to the current (computed) cursor coordinates
 func (rl *Instance) updateHelpers() {
-
+	print(seqHideCursor)
 	// Load all Infos & completions before anything.
 	// Thus overwrites anything having been dirtily added/forced/modified, like rl.SetInfoText()
 	rl.getInfoText()
@@ -27,6 +28,7 @@ func (rl *Instance) updateHelpers() {
 	// We are at the prompt line (with the latter
 	// not printed yet), then reprint everything
 	rl.renderHelpers()
+	print(seqUnhideCursor)
 }
 
 const tabWidth = 4
@@ -193,4 +195,16 @@ func (rl *Instance) renderHelpers() {
 	// Go back to current cursor position
 	moveCursorUp(rl.fullY - rl.posY)
 	moveCursorForwards(rl.posX)
+}
+
+func (rl *Instance) bufprintF(format string, a ...any) {
+	fmt.Fprintf(rl.bufferedOut, format, a...)
+}
+
+func (rl *Instance) bufprint(text string) {
+	fmt.Fprint(rl.bufferedOut, text)
+}
+
+func (rl *Instance) bufflush() {
+	rl.bufferedOut.Flush()
 }

@@ -1,5 +1,5 @@
-baseURL = 'https://rosettea.github.io/Hilbish/'
 languageCode = 'en-us'
+baseURL = 'https://rosettea.github.io/Hilbish/'
 title = 'Hilbish'
 theme = 'hsh'
 enableGitInfo = true
@@ -28,6 +28,14 @@ enableGitInfo = true
 
 [markup.goldmark.renderer]
 unsafe = true
+
+[markup.highlight]
+lineNos = true
+lineNumbersInTable = false
+noClasses = false
+codeFences = true
+guessSyntax = true
+tabWidth = 4
 
 [author]
 	[author.sammyette]
