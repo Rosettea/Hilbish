@@ -1,7 +1,8 @@
 package main
 
 import (
-	"hilbish/util"
+	"hilbish/moonlight"
+	//"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/blackfireio/osinfo"
@@ -14,13 +15,13 @@ import (
 // #field family Family name of the current OS
 // #field name Pretty name of the current OS
 // #field version Version of the current OS
-func hshosLoader(rtm *rt.Runtime) *rt.Table {
+func hshosLoader() *moonlight.Table {
 	info, _ := osinfo.GetOSInfo()
-	mod := rt.NewTable()
+	mod := moonlight.NewTable()
 
-	util.SetField(rtm, mod, "family", rt.StringValue(info.Family))
-	util.SetField(rtm, mod, "name", rt.StringValue(info.Name))
-	util.SetField(rtm, mod, "version", rt.StringValue(info.Version))
+	mod.SetField("family", rt.StringValue(info.Family))
+	mod.SetField("name", rt.StringValue(info.Name))
+	mod.SetField("version", rt.StringValue(info.Version))
 
 	return mod
 }

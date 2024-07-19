@@ -51,9 +51,11 @@ end)
 */
 func runnerModeLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
+		/*
 		"sh": {shRunner, 1, false},
 		"lua": {luaRunner, 1, false},
 		"setMode": {hlrunnerMode, 1, false},
+		*/
 	}
 
 	mod := rt.NewTable()

@@ -14,7 +14,7 @@ type luaHistory struct {}
 
 func (h *luaHistory) Write(line string) (int, error) {
 	histWrite := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("add"))
-	ln, err := rt.Call1(l.MainThread(), histWrite, rt.StringValue(line))
+	ln, err := l.Call1(histWrite, rt.StringValue(line))
 
 	var num int64
 	if ln.Type() == rt.IntType {
@@ -26,7 +26,7 @@ func (h *luaHistory) Write(line string) (int, error) {
 
 func (h *luaHistory) GetLine(idx int) (string, error) {
 	histGet := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("get"))
-	lcmd, err := rt.Call1(l.MainThread(), histGet, rt.IntValue(int64(idx)))
+	lcmd, err := l.Call1(histGet, rt.IntValue(int64(idx)))
 
 	var cmd string
 	if lcmd.Type() == rt.StringType {
@@ -38,7 +38,7 @@ func (h *luaHistory) GetLine(idx int) (string, error) {
 
 func (h *luaHistory) Len() int {
 	histSize := hshMod.Get(rt.StringValue("history")).AsTable().Get(rt.StringValue("size"))
-	ln, _ := rt.Call1(l.MainThread(), histSize)
+	ln, _ := l.Call1(histSize)
 
 	var num int64
 	if ln.Type() == rt.IntType {

@@ -47,7 +47,7 @@ func (t *timer) start() error {
 		for {
 			select {
 			case <-t.ticker.C:
-				_, err := rt.Call1(l.MainThread(), rt.FunctionValue(t.fun))
+				_, err := l.Call1(rt.FunctionValue(t.fun))
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Error in function:\n", err)
 					t.stop()

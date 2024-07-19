@@ -1,12 +1,14 @@
 package util
 
 import (
+	"hilbish/moonlight"
+
 	rt "github.com/arnodel/golua/runtime"
 )
 
 // LuaExport represents a Go function which can be exported to Lua.
 type LuaExport struct {
-	Function rt.GoFunctionFunc
+	Function moonlight.GoFunctionFunc
 	ArgNum int
 	Variadic bool
 }

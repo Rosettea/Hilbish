@@ -10,6 +10,7 @@ import (
 	"sync"
 	"syscall"
 
+	"hilbish/moonlight"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -310,7 +311,8 @@ Manage interactive jobs in Hilbish via Lua.
 
 Jobs are the name of background tasks/commands. A job can be started via
 interactive usage or with the functions defined below for use in external runners. */
-func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
+func (j *jobHandler) loader() *moonlight.Table {
+	/*
 	jobMethods := rt.NewTable()
 	jFuncs := map[string]util.LuaExport{
 		"stop": {luaStopJob, 1, false},
@@ -319,7 +321,9 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 		"background": {luaBackgroundJob, 1, false},
 	}
 	util.SetExports(l, jobMethods, jFuncs)
+	*/
 
+/*
 	jobMeta := rt.NewTable()
 	jobIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		j, _ := jobArg(c, 0)
@@ -348,17 +352,20 @@ func (j *jobHandler) loader(rtm *rt.Runtime) *rt.Table {
 
 	jobMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(jobIndex, "__index", 2, false)))
 	l.SetRegistry(jobMetaKey, rt.TableValue(jobMeta))
+*/
 
-	jobFuncs := map[string]util.LuaExport{
+	jobFuncs := map[string]moonlight.Export{
+		/*
 		"all": {j.luaAllJobs, 0, false},
 		"last": {j.luaLastJob, 0, false},
 		"get": {j.luaGetJob, 1, false},
 		"add": {j.luaAddJob, 3, false},
 		"disown": {j.luaDisownJob, 1, false},
+		*/
 	}
 
-	luaJob := rt.NewTable()
-	util.SetExports(rtm, luaJob, jobFuncs)
+	luaJob := moonlight.NewTable()
+	l.SetExports(luaJob, jobFuncs)
 
 	return luaJob
 }
@@ -383,7 +390,7 @@ func valueToJob(val rt.Value) (*job, bool) {
 }
 
 func jobUserData(j *job) *rt.UserData {
-	jobMeta := l.Registry(jobMetaKey)
+	jobMeta := l.UnderlyingRuntime().Registry(jobMetaKey)
 	return rt.NewUserData(j, jobMeta.AsTable())
 }
 

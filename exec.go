@@ -14,7 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"hilbish/util"
+	"hilbish/moonlight"
+	//"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 	"mvdan.cc/sh/v3/shell"
@@ -170,15 +171,13 @@ func reprompt(input string) (string, error) {
 }
 
 func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, runnerErr, err error) {
-	term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
-	err = rt.Call(l.MainThread(), runr, []rt.Value{rt.StringValue(userInput)}, term)
+	runnerRet, err := l.Call1(runr, moonlight.StringValue(userInput))
 	if err != nil {
 		return "", 124, false, nil, err
 	}
 
 	var runner *rt.Table
 	var ok bool
-	runnerRet := term.Get(0)
 	if runner, ok = runnerRet.TryTable(); !ok {
 		fmt.Fprintln(os.Stderr, "runner did not return a table")
 		exitCode = 125
@@ -207,7 +206,8 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 func handleLua(input string) (string, uint8, error) {
 	cmdString := aliases.Resolve(input)
 	// First try to load input, essentially compiling to bytecode
-	chunk, err := l.CompileAndLoadLuaChunk("", []byte(cmdString), rt.TableValue(l.GlobalEnv()))
+	rtm := l.UnderlyingRuntime()
+	chunk, err := rtm.CompileAndLoadLuaChunk("", []byte(cmdString), moonlight.TableValue(l.GlobalTable()))
 	if err != nil && noexecute {
 		fmt.Println(err)
 	/*	if lerr, ok := err.(*lua.ApiError); ok {
@@ -221,7 +221,7 @@ func handleLua(input string) (string, uint8, error) {
 	// And if there's no syntax errors and -n isnt provided, run
 	if !noexecute {
 		if chunk != nil {
-			_, err = rt.Call1(l.MainThread(), rt.FunctionValue(chunk))
+			_, err = l.Call1(rt.FunctionValue(chunk))
 		}
 	}
 	if err == nil {
@@ -353,7 +353,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+			luaexitcode, err := l.Call1(rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -580,7 +580,7 @@ func splitInput(input string) ([]string, string) {
 }
 
 func cmdFinish(code uint8, cmdstr string, private bool) {
-	util.SetField(l, hshMod, "exitCode", rt.IntValue(int64(code)))
+	hshMod.SetField("exitCode", rt.IntValue(int64(code)))
 	// using AsValue (to convert to lua type) on an interface which is an int
 	// results in it being unknown in lua .... ????
 	// so we allow the hook handler to take lua runtime Values

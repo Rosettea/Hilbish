@@ -16,6 +16,7 @@ import (
 	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
+	"hilbish/moonlight"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
@@ -24,7 +25,7 @@ import (
 )
 
 var (
-	l *rt.Runtime
+	l *moonlight.Runtime
 	lr *lineReader
 
 	luaCompletions = map[string]*rt.Closure{}
@@ -171,8 +172,8 @@ func main() {
 			luaArgs.Set(rt.IntValue(int64(i)), rt.StringValue(arg))
 		}
 
-		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
-		err := util.DoFile(l, getopt.Arg(0))
+		l.GlobalTable().SetField("args", rt.TableValue(luaArgs))
+		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			exit(1)

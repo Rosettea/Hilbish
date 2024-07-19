@@ -27,7 +27,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 
 	regexSearcher := rl.Searcher
 	rl.Searcher = func(needle string, haystack []string) []string {
-		fz, _ := util.DoString(l, "return hilbish.opts.fuzzy")
+		fz, _ := l.DoString("return hilbish.opts.fuzzy")
 		fuzz, ok := fz.TryBool()
 		if !fuzz || !ok {
 			return regexSearcher(needle, haystack)
@@ -71,8 +71,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
 		hinter := hshMod.Get(rt.StringValue("hinter"))
-		retVal, err := rt.Call1(l.MainThread(), hinter,
-		rt.StringValue(string(line)), rt.IntValue(int64(pos)))
+		retVal, err := l.Call1(hinter, rt.StringValue(string(line)), rt.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
 			return []rune{}
@@ -87,8 +86,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
 		highlighter := hshMod.Get(rt.StringValue("highlighter"))
-		retVal, err := rt.Call1(l.MainThread(), highlighter,
-		rt.StringValue(string(line)))
+		retVal, err := l.Call1(highlighter, rt.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
 			return string(line)
@@ -102,9 +100,9 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return highlighted
 	}
 	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
-		term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 2, false)
+		term := rt.NewTerminationWith(l.UnderlyingRuntime().MainThread().CurrentCont(), 2, false)
 		compHandle := hshMod.Get(rt.StringValue("completion")).AsTable().Get(rt.StringValue("handler"))
-		err := rt.Call(l.MainThread(), compHandle, []rt.Value{rt.StringValue(string(line)),
+		err := rt.Call(l.UnderlyingRuntime().MainThread(), compHandle, []rt.Value{rt.StringValue(string(line)),
 		rt.IntValue(int64(pos))}, term)
 
 		var compGroups []*readline.CompletionGroup
