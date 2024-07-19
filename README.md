@@ -9,7 +9,7 @@
 <a href="https://discord.gg/3PDdcQz"><img alt="Discord" src="https://img.shields.io/discord/732357621503229962?color=blue&style=flat-square"></a>
 <br>
 
-# Midnight Edition 
+# Midnight Edition
 
 > [!CAUTION]
 > This is a **HEAVILY** WORK IN PROGRESS branch which makes a lot of internal changes.
@@ -25,7 +25,7 @@ most performance with their Lua code.
 **The standard edition, which is all native Go,
 will always be more supported than Midnight Edition.**
 
-# Back to the original README 
+# Back the original README
 
 Hilbish is an extensible shell designed to be highly customizable.
 It is configured in Lua and provides a good range of features.
