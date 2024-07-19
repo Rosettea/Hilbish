@@ -16,6 +16,8 @@
 Functionality **will** be missing if you use this branch,
 and you may see crashes too. Tread lightly.
 
+Progress on Midnight Edition is tracked in this PR: [#314](https://github.com/Rosettea/Hilbish/pull/314)
+
 Hilbish: Midinight Edition is a version of Hilbish meant to be compatible with
 the original C implementation of Lua by using a Go library binding. The end goal
 is to offer Midnight Edition as a separate, "not as supported" build for users
