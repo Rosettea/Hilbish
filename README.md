@@ -1,4 +1,4 @@
-<img src="./assets/hilbish-logo-and-text.png" width=512><br>
+<img src="./assets/hilbish-logo-and-text-midnight-edition.png" width=512><br>
 <blockquote>
 🌓 The Moon-powered shell! A comfy and extensible shell for Lua fans! 🌺 ✨
 </blockquote>
@@ -9,6 +9,19 @@
 <a href="https://discord.gg/3PDdcQz"><img alt="Discord" src="https://img.shields.io/discord/732357621503229962?color=blue&style=flat-square"></a>
 <br>
 
+# Midnight Edition
+> [!CAUTION]
+> This is a **HEAVILY** WORK IN PROGRESS branch which makes a lot of internal changes.
+Functionality **will** be missing if you use this branch, and you may see crashes too.
+Tread lightly.
+
+Hilbish: Midinight Edition is a version of Hilbish meant to be compatible with
+the original C implementation of Lua by using a Go library binding. The end goal
+is to offer Midnight Edition as a separate, "not as supported" build for users
+that *really* want to access a certain library made for C Lua. The standard edition,
+which is all native Go, will always be more supported than Midnight Edition.
+
+# Back to the original README
 Hilbish is an extensible shell designed to be highly customizable.
 It is configured in Lua and provides a good range of features.
 It aims to be easy to use for anyone but powerful enough for
