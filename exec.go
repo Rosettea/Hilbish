@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -353,7 +354,34 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+			t := rt.NewThread(l)
+			sig := make(chan os.Signal)
+			exit := make(chan bool)
+
+			luaexitcode := rt.IntValue(63)
+			var err error
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						exit <- true
+					}
+				}()
+
+				signal.Notify(sig, os.Interrupt)
+				select {
+					case <-sig:
+						t.KillContext()
+						return
+				}
+
+			}()
+
+			go func() {
+				luaexitcode, err = rt.Call1(t, rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+				exit <- true
+			}()
+
+			<-exit
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
