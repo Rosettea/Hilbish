@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.3.0] - 2024-07-20
 ### Added
 - `fs.pipe` function to get a pair of connected files (a pipe).
 - Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
@@ -751,6 +751,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
