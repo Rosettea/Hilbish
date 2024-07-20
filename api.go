@@ -52,7 +52,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		"hinter": {hlhinter, 1, false},
 		"multiprompt": {hlmultiprompt, 1, false},
 		"prependPath": {hlprependPath, 1, false},
+		*/
 		"prompt": {hlprompt, 1, true},
+		/*
 		"inputMode": {hlinputMode, 1, false},
 		"interval": {hlinterval, 2, false},
 		"read": {hlread, 1, false},
@@ -347,17 +349,18 @@ hilbish.prompt '%u@%h :%d $'
 -- prompt: user@hostname: ~/directory $
 #example
 */
-func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	err := c.Check1Arg()
+func hlprompt(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+	err := mlr.Check1Arg(c)
 	if err != nil {
 		return nil, err
 	}
-	p, err := c.StringArg(0)
+	p, err := mlr.StringArg(c, 0)
 	if err != nil {
 		return nil, err
 	}
 	typ := "left"
 	// optional 2nd arg
+	/*
 	if len(c.Etc()) != 0 {
 		ltyp := c.Etc()[0]
 		var ok bool
@@ -366,6 +369,7 @@ func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			return nil, errors.New("bad argument to run (expected string, got " + ltyp.TypeName() + ")")
 		}
 	}
+	*/
 
 	switch typ {
 		case "left":
