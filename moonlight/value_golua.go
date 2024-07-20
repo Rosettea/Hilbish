@@ -9,6 +9,7 @@ type ValueType = rt.ValueType
 const (
 	StringType = rt.StringType
 	FunctionType = rt.FunctionType
+	TableType = rt.TableType
 )
 
 func StringValue(str string) Value {
@@ -29,4 +30,12 @@ func TableValue(t *Table) Value {
 
 func Type(v Value) ValueType {
 	return ValueType(v.Type())
+}
+
+func ToString(v Value) string {
+	return v.AsString()
+}
+
+func ToTable(v Value) *Table {
+	return convertToMoonlightTable(v.AsTable())
 }

@@ -39,8 +39,8 @@ var hshMod *moonlight.Table
 func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	var exports = map[string]moonlight.Export{
 		"alias": {hlalias, 2, false},
-		/*
 		"appendPath": {hlappendPath, 1, false},
+		/*
 		"complete": {hlcomplete, 2, false},
 		*/
 		"cwd": {hlcwd, 0, false},
@@ -468,20 +468,21 @@ hilbish.appendPath {
 	'~/.local/bin'
 }
 #example
-func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
+*/
+func hlappendPath(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+	if err := mlr.Check1Arg(c); err != nil {
 		return nil, err
 	}
-	arg := c.Arg(0)
+	arg := mlr.Arg(c, 0)
 
 	// check if dir is a table or a string
-	if arg.Type() == rt.TableType {
-		util.ForEach(arg.AsTable(), func(k rt.Value, v rt.Value) {
-			if v.Type() == rt.StringType {
-				appendPath(v.AsString())
+	if moonlight.Type(arg) == moonlight.TableType {
+		moonlight.ForEach(moonlight.ToTable(arg), func(_ moonlight.Value, v moonlight.Value) {
+			if moonlight.Type(v) == moonlight.StringType {
+				appendPath(moonlight.ToString(v))
 			}
 		})
-	} else if arg.Type() == rt.StringType {
+	} else if moonlight.Type(arg) == moonlight.StringType {
 		appendPath(arg.AsString())
 	} else {
 		return nil, errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
@@ -500,6 +501,7 @@ func appendPath(dir string) {
 	}
 }
 
+/*
 // exec(cmd)
 // Replaces the currently running Hilbish instance with the supplied command.
 // This can be used to do an in-place restart.

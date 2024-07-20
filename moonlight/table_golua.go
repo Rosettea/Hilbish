@@ -26,8 +26,27 @@ func (t *Table) Set(key Value, value Value) {
 	t.lt.Set(key, value)
 }
 
+func ForEach(tbl *Table, cb func(key Value, val Value)) {
+	nextVal := rt.NilValue
+	for {
+		key, val, _ := tbl.lt.Next(nextVal)
+		if key == rt.NilValue {
+			break
+		}
+		nextVal = key
+
+		cb(Value(key), Value(val))
+	}
+}
+
 func (mlr *Runtime) GlobalTable() *Table {
 	return &Table{
 		lt: mlr.rt.GlobalEnv(),
+	}
+}
+
+func convertToMoonlightTable(t *rt.Table) *Table {
+	return &Table{
+		lt: t,
 	}
 }
