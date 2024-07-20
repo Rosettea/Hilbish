@@ -53,6 +53,7 @@ func luaInit() {
 	// Add more paths that Lua can require from
 	_, err := l.DoString("package.path = package.path .. " + requirePaths)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		fmt.Fprintln(os.Stderr, "Could not add Hilbish require paths! Libraries will be missing. This shouldn't happen.")
 	}
 

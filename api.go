@@ -81,8 +81,8 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//util.SetField(rtm, mod, "vimMode", rt.NilValue)
 
 	// hilbish.userDir table
-	//hshuser := userDirLoader(rtm)
-	//mod.Set(rt.StringValue("userDir"), rt.TableValue(hshuser))
+	hshuser := userDirLoader()
+	hshMod.SetField("userDir", moonlight.TableValue(hshuser))
 
 	// hilbish.os table
 	//hshos := hshosLoader(rtm)
