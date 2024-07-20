@@ -28,10 +28,10 @@ package bait
 import (
 	"errors"
 
+	"hilbish/moonlight"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
-	"github.com/arnodel/golua/lib/packagelib"
 )
 
 type listenerType int
@@ -48,25 +48,20 @@ type Listener struct{
 	typ listenerType
 	once bool
 	caller func(...interface{})
-	luaCaller *rt.Closure
+	luaCaller *moonlight.Closure
 }
 
 type Bait struct{
-	Loader packagelib.Loader
 	recoverer Recoverer
 	handlers map[string][]*Listener
-	rtm *rt.Runtime
+	rtm *moonlight.Runtime
 }
 
 // New creates a new Bait instance.
-func New(rtm *rt.Runtime) *Bait {
+func New(rtm *moonlight.Runtime) *Bait {
 	b := &Bait{
 		handlers: make(map[string][]*Listener),
 		rtm: rtm,
-	}
-	b.Loader = packagelib.Loader{
-		Load: b.loaderFunc,
-		Name: "bait",
 	}
 
 	return b
@@ -88,16 +83,16 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 
 		if handle.typ == luaListener {
 			funcVal := rt.FunctionValue(handle.luaCaller)
-			var luaArgs []rt.Value
+			var luaArgs []moonlight.Value
 			for _, arg := range args {
-				var luarg rt.Value
+				var luarg moonlight.Value
 				switch arg.(type) {
 					case rt.Value: luarg = arg.(rt.Value)
 					default: luarg = rt.AsValue(arg)
 				}
 				luaArgs = append(luaArgs, luarg)
 			}
-			_, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
+			_, err := b.rtm.Call1(funcVal, luaArgs...)
 			if err != nil {
 				if event != "error" {
 					b.Emit("error", event, handle.luaCaller, err.Error())
@@ -212,18 +207,20 @@ func (b *Bait) callRecoverer(event string, handler *Listener, err interface{}) {
 	b.recoverer(event, handler, err)
 }
 
-func (b *Bait) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
-	exports := map[string]util.LuaExport{
+func (b *Bait) Loader(rtm *moonlight.Runtime) moonlight.Value {
+	exports := map[string]moonlight.Export{
+		/*
 		"catch": util.LuaExport{b.bcatch, 2, false},
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
 		"release": util.LuaExport{b.brelease, 2, false},
 		"hooks": util.LuaExport{b.bhooks, 1, false},
+		*/
 	}
-	mod := rt.NewTable()
-	util.SetExports(rtm, mod, exports)
+	mod := moonlight.NewTable()
+	rtm.SetExports(mod, exports)
 
-	return rt.TableValue(mod), nil
+	return moonlight.TableValue(mod)
 }
 
 func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, args ...interface{}) {

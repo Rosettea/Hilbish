@@ -5,7 +5,7 @@ import (
 	"os"
 
 	//"hilbish/util"
-	//"hilbish/golibs/bait"
+	"hilbish/golibs/bait"
 	//"hilbish/golibs/commander"
 	//"hilbish/golibs/fs"
 	//"hilbish/golibs/terminal"
@@ -30,15 +30,14 @@ func luaInit() {
 
 	cmds = commander.New(l)
 	lib.LoadLibs(l, cmds.Loader)
-
+*/
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
 		fmt.Println("Error in `error` hook handler:", err)
 		hooks.Off(event, handler)
 	})
-
-	lib.LoadLibs(l, hooks.Loader)
-
+	l.LoadLibrary(hooks.Loader, "bait")
+/*
 	// Add Ctrl-C handler
 	hooks.On("signal.sigint", func(...interface{}) {
 		if !interactive {

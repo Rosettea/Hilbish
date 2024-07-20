@@ -8,6 +8,7 @@ type GoFunctionFunc = rt.GoFunctionFunc
 
 type GoCont = rt.GoCont
 type Cont = rt.Cont
+type Closure = rt.Closure
 
 func (mlr *Runtime) CheckNArgs(c *GoCont, num int) error {
 	return c.CheckNArgs(num)

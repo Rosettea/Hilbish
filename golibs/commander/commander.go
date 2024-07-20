@@ -33,6 +33,7 @@ This sink is for writing errors, as the name would suggest.
 package commander
 
 import (
+	"hilbish/moonlight"
 	"hilbish/util"
 	"hilbish/golibs/bait"
 
@@ -46,7 +47,7 @@ type Commander struct{
 	Commands map[string]*rt.Closure
 }
 
-func New(rtm *rt.Runtime) *Commander {
+func New(rtm *moonlight.Runtime) *Commander {
 	c := &Commander{
 		Events: bait.New(rtm),
 		Commands: make(map[string]*rt.Closure),
