@@ -4,6 +4,8 @@ import (
 	"strings"
 	"os/user"
 
+	"hilbish/moonlight"
+
 	rt "github.com/arnodel/golua/runtime"
 )
 
@@ -15,15 +17,15 @@ func SetField(module *rt.Table, field string, value rt.Value) {
 
 // HandleStrCallback handles function parameters for Go functions which take
 // a string and a closure.
-func HandleStrCallback(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) {
-	if err := c.CheckNArgs(2); err != nil {
+func HandleStrCallback(mlr *moonlight.Runtime, c *moonlight.GoCont) (string, *moonlight.Closure, error) {
+	if err := mlr.CheckNArgs(c, 2); err != nil {
 		return "", nil, err
 	}
-	name, err := c.StringArg(0)
+	name, err := mlr.StringArg(c, 0)
 	if err != nil {
 		return "", nil, err
 	}
-	cb, err := c.ClosureArg(1)
+	cb, err := mlr.ClosureArg(c, 1)
 	if err != nil {
 		return "", nil, err
 	}

@@ -6,7 +6,7 @@ import (
 
 	//"hilbish/util"
 	"hilbish/golibs/bait"
-	//"hilbish/golibs/commander"
+	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
 	//"hilbish/golibs/terminal"
 
@@ -28,10 +28,10 @@ func luaInit() {
 	l.LoadLibrary(f.Loader, "fs")
 	/*
 	lib.LoadLibs(l, terminal.Loader)
-
-	cmds = commander.New(l)
-	lib.LoadLibs(l, cmds.Loader)
 */
+	cmds = commander.New(l)
+	l.LoadLibrary(cmds.Loader, "commander")
+
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
 		fmt.Println("Error in `error` hook handler:", err)

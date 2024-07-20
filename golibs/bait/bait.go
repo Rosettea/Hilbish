@@ -26,10 +26,10 @@ this function will set the user prompt.
 package bait
 
 import (
-	"errors"
+	//"errors"
 
 	"hilbish/moonlight"
-	"hilbish/util"
+	//"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -255,6 +255,7 @@ bait.catch('hilbish.exit', function()
 end)
 #example
 */
+/*
 func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -312,6 +313,7 @@ func (b *Bait) bhooks(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.PushingNext1(t.Runtime, rt.TableValue(luaHandlers)), nil
 }
+*/
 
 // release(name, catcher)
 // Removes the `catcher` for the event with `name`.
@@ -330,6 +332,7 @@ bait.release('event', hookCallback)
 -- and now hookCallback will no longer be ran for the event.
 #example
 */
+/*
 func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	name, catcher, err := util.HandleStrCallback(t, c)
 	if err != nil {
@@ -340,6 +343,7 @@ func (b *Bait) brelease(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.Next(), nil
 }
+*/
 
 // throw(name, ...args)
 // #param name string The name of the hook.
@@ -355,6 +359,7 @@ bait.catch('gretting', function(greetTo)
 end)
 #example
 */
+/*
 func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
@@ -371,3 +376,4 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.Next(), nil
 }
+*/

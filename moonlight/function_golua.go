@@ -18,6 +18,10 @@ func (mlr *Runtime) StringArg(c *GoCont, num int) (string, error) {
 	return c.cont.StringArg(num)
 }
 
+func (mlr *Runtime) ClosureArg(c *GoCont, num int) (*Closure, error) {
+	return c.cont.ClosureArg(num)
+}
+
 func (mlr *Runtime) GoFunction(fun GoToLuaFunc) rt.GoFunctionFunc {
 	return func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		gocont := GoCont{
