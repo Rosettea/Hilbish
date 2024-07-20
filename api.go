@@ -93,7 +93,7 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("os"), rt.TableValue(hshos))
 
 	// hilbish.aliases table
-	//aliases = newAliases()
+	aliases = newAliases()
 	//aliasesModule := aliases.Loader(rtm)
 	//mod.Set(rt.StringValue("aliases"), rt.TableValue(aliasesModule))
 
@@ -112,12 +112,12 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
 
 	// hilbish.jobs table
-	//jobs = newJobHandler()
+	jobs = newJobHandler()
 	//jobModule := jobs.loader(rtm)
 	//mod.Set(rt.StringValue("jobs"), rt.TableValue(jobModule))
 
 	// hilbish.timers table
-	//timers = newTimersModule()
+	timers = newTimersModule()
 	//timersModule := timers.loader(rtm)
 	//mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
