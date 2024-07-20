@@ -5,6 +5,11 @@ import (
 )
 
 type Value = rt.Value
+type ValueType = rt.ValueType
+const (
+	StringType = rt.StringType
+	FunctionType = rt.FunctionType
+)
 
 func StringValue(str string) Value {
 	return rt.StringValue(str)
@@ -20,4 +25,8 @@ func BoolValue(b bool) Value {
 
 func TableValue(t *Table) Value {
 	return rt.TableValue(t.lt)
+}
+
+func Type(v Value) ValueType {
+	return ValueType(v.Type())
 }

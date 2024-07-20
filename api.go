@@ -46,7 +46,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		"cwd": {hlcwd, 0, false},
 		/*
 		"exec": {hlexec, 1, false},
+		*/
 		"runnerMode": {hlrunnerMode, 1, false},
+		/*
 		"goro": {hlgoro, 1, true},
 		"highlighter": {hlhighlighter, 1, false},
 		"hinter": {hlhinter, 1, false},
@@ -108,8 +110,8 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("completions"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
-	//runnerModule := runnerModeLoader(rtm)
-	//mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
+	runnerModule := runnerModeLoader(mlr)
+	hshMod.SetField("runner", moonlight.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
@@ -749,6 +751,7 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.Next(), nil
 }
+*/
 
 // runnerMode(mode)
 // Sets the execution/runner mode for interactive Hilbish.
@@ -759,25 +762,24 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // will call it to execute user input instead.
 // Read [about runner mode](../features/runner-mode) for more information.
 // #param mode string|function
-func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
+func hlrunnerMode(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+	if err := mlr.Check1Arg(c); err != nil {
 		return nil, err
 	}
-	mode := c.Arg(0)
+	mode := mlr.Arg(c, 0)
 
-	switch mode.Type() {
-		case rt.StringType:
+	switch moonlight.Type(mode) {
+		case moonlight.StringType:
 			switch mode.AsString() {
 				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
 				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 			}
-		case rt.FunctionType: runnerMode = mode
+		case moonlight.FunctionType: runnerMode = mode
 		default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
 	return c.Next(), nil
 }
-*/
 
 // hinter(line, pos)
 // The command line hint handler. It gets called on every key insert to

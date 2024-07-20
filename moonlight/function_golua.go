@@ -22,6 +22,10 @@ func (mlr *Runtime) ClosureArg(c *GoCont, num int) (*Closure, error) {
 	return c.cont.ClosureArg(num)
 }
 
+func (mlr *Runtime) Arg(c *GoCont, num int) Value {
+	return c.cont.Arg(num)
+}
+
 func (mlr *Runtime) GoFunction(fun GoToLuaFunc) rt.GoFunctionFunc {
 	return func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		gocont := GoCont{
