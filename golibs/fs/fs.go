@@ -20,7 +20,6 @@ import (
 	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/arnodel/golua/lib/iolib"
 	"mvdan.cc/sh/v3/interp"
-	"mvdan.cc/sh/v3/expand"
 )
 
 type fs struct{
@@ -115,7 +114,7 @@ func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err != nil {
 		return nil, err
 	}
-	interp.Dir("")(f.runner)
+	interp.Dir(path)(f.runner)
 
 	return c.Next(), err
 }
