@@ -33,6 +33,7 @@ hilbish.run('wc -l', {
 - `exec` command should return if no arg presented
 - Commanders can now be cancelled by Ctrl-C and wont hang the shell anymore.
 See [issue 198](https://github.com/Rosettea/Hilbish/issues/198).
+- Shell interpreter can now preserve its environment and set PWD properly.
 
 ## [2.2.3] - 2024-04-27
 ### Fixed

@@ -270,8 +270,6 @@ func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 		return nil, nil, err
 	}
 
-	runner, _ := interp.New()
-
 	if strms == nil {
 		strms = &streams{}
 	}
