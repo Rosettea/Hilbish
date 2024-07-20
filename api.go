@@ -42,7 +42,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		/*
 		"appendPath": {hlappendPath, 1, false},
 		"complete": {hlcomplete, 2, false},
+		*/
 		"cwd": {hlcwd, 0, false},
+		/*
 		"exec": {hlexec, 1, false},
 		"runnerMode": {hlrunnerMode, 1, false},
 		"goro": {hlgoro, 1, true},
@@ -289,10 +291,10 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // cwd() -> string
 // Returns the current directory of the shell.
 // #returns string
-func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func hlcwd(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
 	cwd, _ := os.Getwd()
 
-	return c.PushingNext1(t.Runtime, rt.StringValue(cwd)), nil
+	return mlr.PushNext1(c, moonlight.StringValue(cwd)), nil
 }
 
 
