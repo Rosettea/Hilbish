@@ -14,7 +14,8 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	motd = true,
 	fuzzy = false,
 	notifyJobFinish = true,
-	crimmas = true
+	crimmas = true,
+	tips = true
 }
 
 for optsName, default in pairs(defaultOpts) do

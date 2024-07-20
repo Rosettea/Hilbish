@@ -2,6 +2,9 @@
 
 ## [2.3.0] - 2024-07-20
 ### Added
+- `nature.opts.tips` was added to randomly generate tips on start up.
+Follows the pattern of motd and greeting. Displays after greeting on start up.
+### Added
 - `commander.registry` function to get all registered commanders.
 - `fs.pipe` function to get a pair of connected files (a pipe).
 - Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
