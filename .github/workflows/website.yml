@@ -4,9 +4,12 @@ on:
   push:
     branches:
     - master
+    tags:
+      - v[0-9]+.*
   pull_request:
     branches:
     - master
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -25,7 +28,7 @@ jobs:
 
       - name: Set branch name
         id: branch
-        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> "$GITHUB_ENV"
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/*/}}" >> "$GITHUB_ENV"
 
       - name: Fix base URL
         if: env.BRANCH_NAME != 'master' && github.repository_owner == 'Rosettea'      

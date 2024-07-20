@@ -25,7 +25,8 @@ func luaInit() {
 
 	// Add fs and terminal module module to Lua
 	/*
-	lib.LoadLibs(l, fs.Loader)
+	f := fs.New(runner)
+	lib.LoadLibs(l, f.Loader)
 	lib.LoadLibs(l, terminal.Loader)
 
 	cmds = commander.New(l)

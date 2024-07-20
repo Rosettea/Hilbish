@@ -1,7 +1,8 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.3.0] - 2024-07-20
 ### Added
+- `commander.registry` function to get all registered commanders.
 - `fs.pipe` function to get a pair of connected files (a pipe).
 - Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
 `streams` is a table of input and output streams to run the command with.
@@ -28,9 +29,18 @@ hilbish.run('wc -l', {
 })
 ```
 
+### Changed
+- The `-S` flag will be set to Hilbish's absolute path
+- Hilbish now builds on any Unix (if any dependencies also work, which should.)
+
 ### Fixed
 - Fix ansi attributes causing issues with text when cut off in greenhouse
+- Fix greenhouse appearing on terminal resize
+- Fix crashes when history goes out of bounds when using history navigation
 - `exec` command should return if no arg presented
+- Commanders can now be cancelled by Ctrl-C and wont hang the shell anymore.
+See [issue 198](https://github.com/Rosettea/Hilbish/issues/198).
+- Shell interpreter can now preserve its environment and set PWD properly.
 
 ## [2.2.3] - 2024-04-27
 ### Fixed
@@ -748,6 +758,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
