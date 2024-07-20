@@ -29,7 +29,7 @@ import (
 	//"errors"
 
 	"hilbish/moonlight"
-	//"hilbish/util"
+	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -87,7 +87,7 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 			for _, arg := range args {
 				var luarg moonlight.Value
 				switch arg.(type) {
-					case rt.Value: luarg = arg.(rt.Value)
+					case moonlight.Value: luarg = arg.(moonlight.Value)
 					default: luarg = rt.AsValue(arg)
 				}
 				luaArgs = append(luaArgs, luarg)
@@ -124,8 +124,8 @@ func (b *Bait) On(event string, handler func(...interface{})) *Listener {
 }
 
 // OnLua adds a Lua function handler for an event.
-func (b *Bait) OnLua(event string, handler *rt.Closure) *Listener {
-	listener :=&Listener{
+func (b *Bait) OnLua(event string, handler *moonlight.Closure) *Listener {
+	listener := &Listener{
 		typ: luaListener,
 		luaCaller: handler,
 	}
@@ -209,8 +209,8 @@ func (b *Bait) callRecoverer(event string, handler *Listener, err interface{}) {
 
 func (b *Bait) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
+		"catch": {b.bcatch, 2, false},
 		/*
-		"catch": util.LuaExport{b.bcatch, 2, false},
 		"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 		"throw": util.LuaExport{b.bthrow, 1, true},
 		"release": util.LuaExport{b.brelease, 2, false},
@@ -255,9 +255,8 @@ bait.catch('hilbish.exit', function()
 end)
 #example
 */
-/*
-func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(t, c)
+func (b *Bait) bcatch(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+	name, catcher, err := util.HandleStrCallback(mlr, c)
 	if err != nil {
 		return nil, err
 	}
@@ -267,6 +266,7 @@ func (b *Bait) bcatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+/*
 // catchOnce(name, cb)
 // Catches an event, but only once. This will remove the hook immediately after it runs for the first time.
 // #param name string The name of the event
