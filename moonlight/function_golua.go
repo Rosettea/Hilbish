@@ -6,21 +6,24 @@ import (
 
 type GoFunctionFunc = rt.GoFunctionFunc
 
-type GoCont = rt.GoCont
-type Cont = rt.Cont
-type Closure = rt.Closure
-
 func (mlr *Runtime) CheckNArgs(c *GoCont, num int) error {
-	return c.CheckNArgs(num)
+	return c.cont.CheckNArgs(num)
+}
+
+func (mlr *Runtime) Check1Arg(c *GoCont) error {
+	return c.cont.CheckNArgs(1)
 }
 
 func (mlr *Runtime) StringArg(c *GoCont, num int) (string, error) {
-	return c.StringArg(num)
+	return c.cont.StringArg(num)
 }
 
 func (mlr *Runtime) GoFunction(fun GoToLuaFunc) rt.GoFunctionFunc {
 	return func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		gocont := GoCont(*c)
+		gocont := GoCont{
+			cont: c,
+			thread: t,
+		}
 		return fun(mlr, &gocont)
 	}
 }

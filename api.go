@@ -127,8 +127,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//util.SetField(rtm, versionModule, "release", rt.StringValue(releaseName))
 	//mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
-	//pluginModule := moduleLoader(rtm)
-	//mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
+	// very meta
+	moduleModule := moduleLoader(mlr)
+	hshMod.SetField("module", moonlight.TableValue(moduleModule))
 
 	return moonlight.TableValue(hshMod)
 }

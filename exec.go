@@ -352,7 +352,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-			t := rt.NewThread(l)
+			//t := rt.NewThread(l)
 			sig := make(chan os.Signal)
 			exit := make(chan bool)
 
@@ -368,7 +368,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 				signal.Notify(sig, os.Interrupt)
 				select {
 					case <-sig:
-						t.KillContext()
+						//t.KillContext()
 						return
 				}
 

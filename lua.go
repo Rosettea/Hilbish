@@ -7,7 +7,7 @@ import (
 	//"hilbish/util"
 	"hilbish/golibs/bait"
 	//"hilbish/golibs/commander"
-	//"hilbish/golibs/fs"
+	"hilbish/golibs/fs"
 	//"hilbish/golibs/terminal"
 
 	"hilbish/moonlight"
@@ -24,9 +24,9 @@ func luaInit() {
 	l.DoString("hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
-	/*
 	f := fs.New(runner)
-	lib.LoadLibs(l, f.Loader)
+	l.LoadLibrary(f.Loader, "fs")
+	/*
 	lib.LoadLibs(l, terminal.Loader)
 
 	cmds = commander.New(l)
