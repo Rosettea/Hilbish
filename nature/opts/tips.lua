@@ -1,11 +1,7 @@
 local bait = require 'bait'
 local lunacolors = require 'lunacolors'
 
-PREAMBLE = [[
-Getting Started: https://rosettea.github.io/Hilbish/docs/getting-started/
-Documentation: https://rosettea.github.io/Hilbish/
-Github: https://github.com/Rosettea/Hilbish
-]]
+PREAMBLE = "Getting Started: https://rosettea.github.io/Hilbish/docs/getting-started/\n"
 
 hilbish.tips = {
 	"Join the discord and say hi! -> https://discord.gg/3PDdcQz",
