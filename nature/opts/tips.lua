@@ -3,7 +3,7 @@ local lunacolors = require 'lunacolors'
 
 PREAMBLE = [[
 Getting Started: https://rosettea.github.io/Hilbish/docs/getting-started/
-🛈 These tips can be disabled with hilbish.opts.tips = false
+{yellow}🛈 These tips can be disabled with hilbish.opts.tips = false{reset}
 ]]
 
 hilbish.tips = {
