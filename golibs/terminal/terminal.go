@@ -7,7 +7,6 @@ import (
 
 	"hilbish/moonlight"
 
-	rt "github.com/arnodel/golua/runtime"
 	"golang.org/x/term"
 )
 
@@ -37,8 +36,8 @@ func termsize(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, erro
 	}
 
 	dimensions := moonlight.NewTable()
-	dimensions.Set(rt.StringValue("width"), rt.IntValue(int64(w)))
-	dimensions.Set(rt.StringValue("height"), rt.IntValue(int64(h)))
+	dimensions.SetField("width", moonlight.IntValue(int64(w)))
+	dimensions.SetField("height", moonlight.IntValue(int64(h)))
 
 	return mlr.PushNext1(c, moonlight.TableValue(dimensions)), nil
 }

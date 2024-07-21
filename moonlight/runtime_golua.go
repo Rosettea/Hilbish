@@ -1,3 +1,4 @@
+//go:build !midnight
 package moonlight
 
 import (
@@ -41,4 +42,8 @@ func (mlr *Runtime) Push(c *GoCont, v Value) {
 
 func (mlr *Runtime) PushNext1(c *GoCont, v Value) Cont {
 	return c.cont.PushingNext1(c.thread.Runtime, v)
+}
+
+func (mlr *Runtime) Call1(val Value, args ...Value) (Value, error) {
+	return rt.Call1(mlr.rt.MainThread(), val, args...)
 }

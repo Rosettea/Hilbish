@@ -1,3 +1,4 @@
+//go:build !midnight
 package moonlight
 
 import (
@@ -49,4 +50,10 @@ func convertToMoonlightTable(t *rt.Table) *Table {
 	return &Table{
 		lt: t,
 	}
+}
+
+func TryTable(v Value) (*Table, bool) {
+	t, ok := v.TryTable()
+
+	return convertToMoonlightTable(t), ok
 }

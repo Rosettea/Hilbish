@@ -1,3 +1,4 @@
+//go:build !midnight
 package moonlight
 
 import (

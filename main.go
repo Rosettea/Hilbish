@@ -170,12 +170,12 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		luaArgs := rt.NewTable()
+		luaArgs := moonlight.NewTable()
 		for i, arg := range getopt.Args() {
-			luaArgs.Set(rt.IntValue(int64(i)), rt.StringValue(arg))
+			luaArgs.Set(moonlight.IntValue(int64(i)), moonlight.StringValue(arg))
 		}
 
-		l.GlobalTable().SetField("args", rt.TableValue(luaArgs))
+		l.GlobalTable().SetField("args", moonlight.TableValue(luaArgs))
 		err := l.DoFile(getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)

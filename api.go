@@ -149,12 +149,12 @@ func getenv(key, fallback string) string {
 }
 
 func setVimMode(mode string) {
-	hshMod.SetField("vimMode", rt.StringValue(mode))
+	hshMod.SetField("vimMode", moonlight.StringValue(mode))
 	hooks.Emit("hilbish.vimMode", mode)
 }
 
 func unsetVimMode() {
-	hshMod.SetField("vimMode", rt.NilValue)
+	hshMod.SetField("vimMode", moonlight.NilValue)
 }
 
 func handleStream(v rt.Value, strms *streams, errStream bool) error {

@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"hilbish/moonlight"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -70,8 +71,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		hooks.Emit("hilbish.vimAction", actionStr, args)
 	}
 	rl.HintText = func(line []rune, pos int) []rune {
-		hinter := hshMod.Get(rt.StringValue("hinter"))
-		retVal, err := l.Call1(hinter, rt.StringValue(string(line)), rt.IntValue(int64(pos)))
+		hinter := hshMod.Get(moonlight.StringValue("hinter"))
+		retVal, err := l.Call1(hinter, moonlight.StringValue(string(line)), moonlight.IntValue(int64(pos)))
 		if err != nil {
 			fmt.Println(err)
 			return []rune{}
@@ -85,8 +86,8 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		return []rune(hintText)
 	}
 	rl.SyntaxHighlighter = func(line []rune) string {
-		highlighter := hshMod.Get(rt.StringValue("highlighter"))
-		retVal, err := l.Call1(highlighter, rt.StringValue(string(line)))
+		highlighter := hshMod.Get(moonlight.StringValue("highlighter"))
+		retVal, err := l.Call1(highlighter, moonlight.StringValue(string(line)))
 		if err != nil {
 			fmt.Println(err)
 			return string(line)
@@ -99,93 +100,7 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 		
 		return highlighted
 	}
-	rl.TabCompleter = func(line []rune, pos int, _ readline.DelayedTabContext) (string, []*readline.CompletionGroup) {
-		term := rt.NewTerminationWith(l.UnderlyingRuntime().MainThread().CurrentCont(), 2, false)
-		compHandle := hshMod.Get(rt.StringValue("completion")).AsTable().Get(rt.StringValue("handler"))
-		err := rt.Call(l.UnderlyingRuntime().MainThread(), compHandle, []rt.Value{rt.StringValue(string(line)),
-		rt.IntValue(int64(pos))}, term)
-
-		var compGroups []*readline.CompletionGroup
-		if err != nil {
-			return "", compGroups
-		}
-
-		luaCompGroups := term.Get(0)
-		luaPrefix := term.Get(1)
-
-		if luaCompGroups.Type() != rt.TableType {
-			return "", compGroups
-		}
-
-		groups := luaCompGroups.AsTable()
-		// prefix is optional
-		pfx, _ := luaPrefix.TryString()
-
-		util.ForEach(groups, func(key rt.Value, val rt.Value) {
-			if key.Type() != rt.IntType || val.Type() != rt.TableType {
-				return
-			}
-
-			valTbl := val.AsTable()
-			luaCompType := valTbl.Get(rt.StringValue("type"))
-			luaCompItems := valTbl.Get(rt.StringValue("items"))
-
-			if luaCompType.Type() != rt.StringType || luaCompItems.Type() != rt.TableType {
-				return
-			}
-
-			items := []string{}
-			itemDescriptions := make(map[string]string)
-
-			util.ForEach(luaCompItems.AsTable(), func(lkey rt.Value, lval rt.Value) {
-				if keytyp := lkey.Type(); keytyp == rt.StringType {
-					// ['--flag'] = {'description', '--flag-alias'}
-					itemName, ok := lkey.TryString()
-					vlTbl, okk := lval.TryTable()
-					if !ok && !okk {
-						// TODO: error
-						return
-					}
-
-					items = append(items, itemName)
-					itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
-					if !ok {
-						// TODO: error
-						return
-					}
-					itemDescriptions[itemName] = itemDescription
-				} else if keytyp == rt.IntType {
-					vlStr, ok := lval.TryString()
-						if !ok {
-							// TODO: error
-							return
-						}
-						items = append(items, vlStr)
-				} else {
-					// TODO: error
-					return
-				}
-			})
-
-			var dispType readline.TabDisplayType
-			switch luaCompType.AsString() {
-				case "grid": dispType = readline.TabDisplayGrid
-				case "list": dispType = readline.TabDisplayList
-				// need special cases, will implement later
-				//case "map": dispType = readline.TabDisplayMap
-			}
-
-			compGroups = append(compGroups, &readline.CompletionGroup{
-				DisplayType: dispType,
-				Descriptions: itemDescriptions,
-				Suggestions: items,
-				TrimSlash: false,
-				NoSpace: true,
-			})
-		})
-
-		return pfx, compGroups
-	}
+	setupTabCompleter(rl)
 
 	return lr
 }
@@ -244,11 +159,13 @@ func (lr *lineReader) Resize() {
 // method of saving history.
 func (lr *lineReader) Loader(rtm *rt.Runtime) *rt.Table {
 	lrLua := map[string]util.LuaExport{
+		/*
 		"add": {lr.luaAddHistory, 1, false},
 		"all": {lr.luaAllHistory, 0, false},
 		"clear": {lr.luaClearHistory, 0, false},
 		"get": {lr.luaGetHistory, 1, false},
 		"size": {lr.luaSize, 0, false},
+		*/
 	}
 
 	mod := rt.NewTable()

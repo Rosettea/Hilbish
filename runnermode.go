@@ -2,8 +2,6 @@ package main
 
 import (
 	"hilbish/moonlight"
-
-	rt "github.com/arnodel/golua/runtime"
 )
 
 // #interface runner
@@ -86,13 +84,13 @@ func shRunner(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, erro
 	}
 
 	_, exitCode, cont, err := execSh(aliases.Resolve(cmd))
-	var luaErr moonlight.Value = rt.NilValue
+	var luaErr moonlight.Value = moonlight.NilValue
 	if err != nil {
 		luaErr = moonlight.StringValue(err.Error())
 	}
 	runnerRet := moonlight.NewTable()
 	runnerRet.SetField("input", moonlight.StringValue(cmd))
-	runnerRet.SetField("exitCode", moonlight.IntValue(int(exitCode)))
+	runnerRet.SetField("exitCode", moonlight.IntValue(int64(exitCode)))
 	runnerRet.SetField("continue", moonlight.BoolValue(cont))
 	runnerRet.SetField("err", luaErr)
 
@@ -114,13 +112,13 @@ func luaRunner(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, err
 	}
 
 	input, exitCode, err := handleLua(cmd)
-	var luaErr moonlight.Value = rt.NilValue
+	var luaErr moonlight.Value = moonlight.NilValue
 	if err != nil {
 		luaErr = moonlight.StringValue(err.Error())
 	}
 	runnerRet := moonlight.NewTable()
 	runnerRet.SetField("input", moonlight.StringValue(input))
-	runnerRet.SetField("exitCode", moonlight.IntValue(int(exitCode)))
+	runnerRet.SetField("exitCode", moonlight.IntValue(int64(exitCode)))
 	runnerRet.SetField("err", luaErr)
 
 

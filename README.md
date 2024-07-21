@@ -16,7 +16,8 @@
 Functionality **will** be missing if you use this branch,
 and you may see crashes too. Tread lightly.
 
-Progress on Midnight Edition is tracked in this PR: [#314](https://github.com/Rosettea/Hilbish/pull/314)
+Build instructions and progress on Midnight Edition is tracked in this PR:
+[#314](https://github.com/Rosettea/Hilbish/pull/314)
 
 Hilbish: Midinight Edition is a version of Hilbish meant to be compatible with
 the original C implementation of Lua by using a Go library binding. The end goal
@@ -70,13 +71,13 @@ go get -d ./...
 
 To build, run:
 ```
-task
+go-task
 ```  
 
 Or, if you want a stable branch, run these commands:
 ```
 git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-task build
+go-task build
 ```  
 
 After you did all that, run `sudo task install` to install Hilbish globally.

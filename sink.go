@@ -220,7 +220,7 @@ func newSinkInput(r io.Reader) *sink {
 	s := &sink{
 		reader: bufio.NewReader(r),
 	}
-	s.ud = sinkUserData(s)
+	//s.ud = sinkUserData(s)
 
 	if f, ok := r.(*os.File); ok {
 		s.file = f
@@ -234,7 +234,7 @@ func newSinkOutput(w io.Writer) *sink {
 		writer: bufio.NewWriter(w),
 		autoFlush: true,
 	}
-	s.ud = sinkUserData(s)
+	//s.ud = sinkUserData(s)
 
 	return s
 }
@@ -258,7 +258,9 @@ func valueToSink(val rt.Value) (*sink, bool) {
 	return s, ok
 }
 
+/*
 func sinkUserData(s *sink) *rt.UserData {
 	sinkMeta := l.UnderlyingRuntime().Registry(sinkMetaKey)
 	return rt.NewUserData(s, sinkMeta.AsTable())
 }
+*/

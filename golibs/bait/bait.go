@@ -82,16 +82,17 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 		}()
 
 		if handle.typ == luaListener {
-			funcVal := rt.FunctionValue(handle.luaCaller)
+			//funcVal := moonlight.FunctionValue(handle.luaCaller)
 			var luaArgs []moonlight.Value
 			for _, arg := range args {
 				var luarg moonlight.Value
 				switch arg.(type) {
 					case moonlight.Value: luarg = arg.(moonlight.Value)
-					default: luarg = rt.AsValue(arg)
+					default: luarg = moonlight.AsValue(arg)
 				}
 				luaArgs = append(luaArgs, luarg)
 			}
+			/*
 			_, err := b.rtm.Call1(funcVal, luaArgs...)
 			if err != nil {
 				if event != "error" {
@@ -102,6 +103,7 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 				// (calls the go recoverer function)
 				panic(err)
 			}
+			*/
 		} else {
 			handle.caller(args...)
 		}
@@ -146,7 +148,7 @@ func (b *Bait) Off(event string, listener *Listener) {
 }
 
 // OffLua removes a Lua function handler for an event.
-func (b *Bait) OffLua(event string, handler *rt.Closure) {
+func (b *Bait) OffLua(event string, handler *moonlight.Closure) {
 	handles := b.handlers[event]
 
 	for i, handle := range handles {
@@ -169,7 +171,7 @@ func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
 }
 
 // OnceLua adds a Lua function listener for an event that only runs once.
-func (b *Bait) OnceLua(event string, handler *rt.Closure) *Listener {
+func (b *Bait) OnceLua(event string, handler *moonlight.Closure) *Listener {
 	listener := &Listener{
 		typ: luaListener,
 		once: true,

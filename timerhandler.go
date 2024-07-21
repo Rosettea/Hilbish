@@ -48,7 +48,7 @@ func (th *timersModule) create(typ timerType, dur time.Duration, fun *rt.Closure
 		th: th,
 		id: th.latestID,
 	}
-	t.ud = timerUserData(t)
+	//t.ud = timerUserData(t)
 
 	th.timers[th.latestID] = t
 	
@@ -144,6 +144,7 @@ func (th *timersModule) loader() *moonlight.Table {
 	}
 	l.SetExports(timerMethods, timerFuncs)
 
+/*
 	timerMeta := rt.NewTable()
 	timerIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		ti, _ := timerArg(c, 0)
@@ -168,6 +169,7 @@ func (th *timersModule) loader() *moonlight.Table {
 
 	timerMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(timerIndex, "__index", 2, false)))
 	l.UnderlyingRuntime().SetRegistry(timerMetaKey, rt.TableValue(timerMeta))
+*/
 
 	thExports := map[string]moonlight.Export{
 		/*
@@ -179,8 +181,8 @@ func (th *timersModule) loader() *moonlight.Table {
 	luaTh := moonlight.NewTable()
 	l.SetExports(luaTh, thExports)
 
-	luaTh.SetField("INTERVAL", rt.IntValue(0))
-	luaTh.SetField("TIMEOUT", rt.IntValue(1))
+	luaTh.SetField("INTERVAL", moonlight.IntValue(0))
+	luaTh.SetField("TIMEOUT", moonlight.IntValue(1))
 
 	return luaTh
 }
@@ -204,7 +206,9 @@ func valueToTimer(val rt.Value) (*timer, bool) {
 	return j, ok
 }
 
+/*
 func timerUserData(j *timer) *rt.UserData {
 	timerMeta := l.UnderlyingRuntime().Registry(timerMetaKey)
 	return rt.NewUserData(j, timerMeta.AsTable())
 }
+*/

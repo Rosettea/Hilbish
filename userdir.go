@@ -2,9 +2,6 @@ package main
 
 import (
 	"hilbish/moonlight"
-	//"hilbish/util"
-
-	rt "github.com/arnodel/golua/runtime"
 )
 
 // #interface userDir
@@ -17,8 +14,8 @@ import (
 func userDirLoader() *moonlight.Table {
 	mod := moonlight.NewTable()
 
-	mod.SetField("config", rt.StringValue(confDir))
-	mod.SetField("data", rt.StringValue(userDataDir))
+	mod.SetField("config", moonlight.StringValue(confDir))
+	mod.SetField("data", moonlight.StringValue(userDataDir))
 
 	return mod
 }

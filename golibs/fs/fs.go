@@ -55,8 +55,8 @@ func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	mod := moonlight.NewTable()
 	rtm.SetExports(mod, exports)
 
-	mod.SetField("pathSep", rt.StringValue(string(os.PathSeparator)))
-	mod.SetField("pathListSep", rt.StringValue(string(os.PathListSeparator)))
+	mod.SetField("pathSep", moonlight.StringValue(string(os.PathSeparator)))
+	mod.SetField("pathListSep", moonlight.StringValue(string(os.PathListSeparator)))
 
 	return moonlight.TableValue(mod)
 }
@@ -280,7 +280,7 @@ func (f *fs) freaddir(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Co
 		return nil, err
 	}
 	for i, entry := range dirEntries {
-		names.Set(rt.IntValue(int64(i + 1)), rt.StringValue(entry.Name()))
+		names.Set(moonlight.IntValue(int64(i + 1)), moonlight.StringValue(entry.Name()))
 	}
 
 	return mlr.PushNext1(c, moonlight.TableValue(names)), nil

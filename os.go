@@ -4,7 +4,6 @@ import (
 	"hilbish/moonlight"
 	//"hilbish/util"
 
-	rt "github.com/arnodel/golua/runtime"
 	"github.com/blackfireio/osinfo"
 )
 
@@ -19,9 +18,9 @@ func hshosLoader() *moonlight.Table {
 	info, _ := osinfo.GetOSInfo()
 	mod := moonlight.NewTable()
 
-	mod.SetField("family", rt.StringValue(info.Family))
-	mod.SetField("name", rt.StringValue(info.Name))
-	mod.SetField("version", rt.StringValue(info.Version))
+	mod.SetField("family", moonlight.StringValue(info.Family))
+	mod.SetField("name", moonlight.StringValue(info.Name))
+	mod.SetField("version", moonlight.StringValue(info.Version))
 
 	return mod
 }

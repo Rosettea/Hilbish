@@ -36,19 +36,17 @@ import (
 	"hilbish/moonlight"
 	"hilbish/util"
 	"hilbish/golibs/bait"
-
-	rt "github.com/arnodel/golua/runtime"
 )
 
 type Commander struct{
 	Events *bait.Bait
-	Commands map[string]*rt.Closure
+	Commands map[string]*moonlight.Closure
 }
 
 func New(rtm *moonlight.Runtime) *Commander {
 	c := &Commander{
 		Events: bait.New(rtm),
-		Commands: make(map[string]*rt.Closure),
+		Commands: make(map[string]*moonlight.Closure),
 	}
 
 	return c
@@ -119,7 +117,9 @@ func (c *Commander) cregistry(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moo
 	registryLua := moonlight.NewTable()
 	for cmdName, cmd := range c.Commands {
 		cmdTbl := moonlight.NewTable()
-		cmdTbl.SetField("exec", rt.FunctionValue(cmd))
+		//cmdTbl.SetField("exec", moonlight.FunctionValue(cmd))
+		print(cmd)
+		cmdTbl.SetField("exec", moonlight.StringValue("placeholder"))
 
 		registryLua.SetField(cmdName, moonlight.TableValue(cmdTbl))
 	}

@@ -261,7 +261,7 @@ func (j *jobHandler) add(cmd string, args []string, path string) *job {
 		stdout: &bytes.Buffer{},
 		stderr: &bytes.Buffer{},
 	}
-	jb.ud = jobUserData(jb)
+	//jb.ud = jobUserData(jb)
 
 	j.jobs[j.latestID] = jb
 	hooks.Emit("job.add", rt.UserDataValue(jb.ud))
@@ -389,10 +389,12 @@ func valueToJob(val rt.Value) (*job, bool) {
 	return j, ok
 }
 
+/*
 func jobUserData(j *job) *rt.UserData {
 	jobMeta := l.UnderlyingRuntime().Registry(jobMetaKey)
 	return rt.NewUserData(j, jobMeta.AsTable())
 }
+*/
 
 // #interface jobs
 // get(id) -> @Job

@@ -1,3 +1,4 @@
+//go:build !midnight
 package moonlight
 
 import (
@@ -8,6 +9,7 @@ type GoCont struct{
 	cont *rt.GoCont
 	thread *rt.Thread
 }
+
 type Cont = rt.Cont
 type Closure = rt.Closure
 

@@ -1,3 +1,4 @@
+//go:build !midnight
 package moonlight
 
 import (
@@ -9,7 +10,7 @@ import (
 )
 
 // DoString runs the code string in the Lua runtime.
-func (mlr *Runtime) DoString(code string) (rt.Value, error) {
+func (mlr *Runtime) DoString(code string) (Value, error) {
 	chunk, err := mlr.rt.CompileAndLoadLuaChunk("<string>", []byte(code), rt.TableValue(mlr.rt.GlobalEnv()))
 	var ret rt.Value
 	if chunk != nil {
