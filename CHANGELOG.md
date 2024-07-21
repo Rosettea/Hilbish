@@ -1,9 +1,11 @@
 # 🎀 Changelog
 
-## [2.3.0] - 2024-07-20
+## Unreleased
 ### Added
 - `nature.opts.tips` was added to randomly generate tips on start up.
 Follows the pattern of motd and greeting. Displays after greeting on start up.
+
+## [2.3.0] - 2024-07-20
 ### Added
 - `commander.registry` function to get all registered commanders.
 - `fs.pipe` function to get a pair of connected files (a pipe).
