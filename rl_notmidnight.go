@@ -2,6 +2,8 @@
 package main
 
 import (
+	"hilbish/util"
+
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/maxlandon/readline"
 )

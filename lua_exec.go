@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"hilbish/moonlight"
+	rt "github.com/arnodel/golua/runtime"
 )
 
 func handleLua(input string) (string, uint8, error) {
