@@ -33,12 +33,12 @@ jobs:
           go-version: '1.22.2'
       - name: Download Task
         run: 'sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d'
-      - name: Build
+      - name: Build ${{ matrix.midnight == 'true' && ' (Midnight Edition)' || ''}}
         run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} ./bin/task ${{ matrix.midnight == 'true' && 'midnight' || ''}}
       - uses: actions/upload-artifact@v4
         if: matrix.goos == 'windows'
         with:
-          name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: hilbish${{ matrix.midnight == 'true' && '-midnight-edition' || ''}}-${{ matrix.goos }}-${{ matrix.goarch }}
           path: |
             hilbish.exe
             LICENSE
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.goos != 'windows'
         with:
-          name: hilbish-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: hilbish${{ matrix.midnight == 'true' && '-midnight-edition' || ''}}-${{ matrix.goos }}-${{ matrix.goarch }}
           path: |
             hilbish
             LICENSE
