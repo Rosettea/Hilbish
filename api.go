@@ -37,6 +37,7 @@ import (
 var hshMod *moonlight.Table
 
 func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
+	println("hilbish loader called")
 	var exports = map[string]moonlight.Export{
 		"alias": {hlalias, 2, false},
 		"appendPath": {hlappendPath, 1, false},

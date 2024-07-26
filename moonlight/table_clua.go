@@ -41,3 +41,7 @@ func ToTable(v Value) *Table {
 func TryTable(v Value) (*Table, bool) {
 	return nil, false
 }
+
+func (t *Table) setRefIdx(mlr *Runtime, i idx) {
+	t.refIdx = mlr.state.Ref(i)
+}
