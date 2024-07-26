@@ -27,7 +27,7 @@ hilbish.tips = {
 }
 
 bait.catch('hilbish.init', function()
-	if hilbish.interactive and hilbish.opts.tip then
+	if hilbish.interactive and hilbish.opts.tips then
 		local idx = math.random(1, #hilbish.tips)
 		print(lunacolors.format(PREAMBLE .. "\nTip: " .. hilbish.tips[idx]))
 	end
