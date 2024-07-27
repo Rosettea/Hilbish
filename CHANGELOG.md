@@ -1,9 +1,15 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.3.1] - 2024-07-27
+[hehe when you see it release](https://youtu.be/AaAF51Gwbxo?si=rhj2iYuQRkqDa693&t=64)
+
 ### Added
-- `nature.opts.tips` was added to randomly generate tips on start up.
-Follows the pattern of motd and greeting. Displays after greeting on start up.
+- `nature.opts.tips` was added to display random tips on start up.
+Displayed tips can be modified via the `hilbish.tips` table.
+
+### Fixed
+- Fix a minor regression related to the cd command not working with relative paths
+- Updated the motd for 2.3
 
 ## [2.3.0] - 2024-07-20
 ### Added
@@ -763,6 +769,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
