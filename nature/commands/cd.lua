@@ -19,7 +19,7 @@ commander.register('cd', function (args, sinks)
 	dirs.setOld(hilbish.cwd())
 	dirs.push(path)
 
-	local ok, err = pcall(function() fs.cd(fs.abs(path)) end)
+	local ok, err = pcall(function() fs.cd(path) end)
 	if not ok then
 		sinks.out:writeln(err)
 		return 1
