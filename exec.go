@@ -287,6 +287,7 @@ func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 	}
 
 	interp.StdIO(strms.stdin, strms.stdout, strms.stderr)(runner)
+	interp.Env(nil)(runner)
 
 	buf := new(bytes.Buffer)
 	printer := syntax.NewPrinter()
@@ -398,7 +399,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			return interp.NewExitStatus(exitcode)
 		}
 
-		err := lookpath(args[0])
+		path, err := lookpath(args[0])
 		if err == errNotExec {
 			return execError{
 				typ: "not-executable",
@@ -419,15 +420,16 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		killTimeout := 2 * time.Second
 		// from here is basically copy-paste of the default exec handler from
 		// sh/interp but with our job handling
-		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
-		if err != nil {
-			fmt.Fprintln(hc.Stderr, err)
-			return interp.NewExitStatus(127)
-		}
 
 		env := hc.Env
 		envList := make([]string, 0, 64)
 		env.Each(func(name string, vr expand.Variable) bool {
+			if name == "PATH" {
+				pathEnv := os.Getenv("PATH")
+				envList = append(envList, "PATH="+pathEnv)
+				return true
+			}
+
 			if !vr.IsSet() {
 				// If a variable is set globally but unset in the
 				// runner, we need to ensure it's not part of the final
@@ -445,6 +447,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			}
 			return true
 		})
+
 		cmd := exec.Cmd{
 			Path: path,
 			Args: args,
@@ -527,7 +530,7 @@ func handleExecErr(err error) (exit uint8) {
 
 	return
 }
-func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
+func lookpath(file string) (string, error) { // custom lookpath function so we know if a command is found *and* is executable
 	var skip []string
 	if runtime.GOOS == "windows" {
 		skip = []string{"./", "../", "~/", "C:"}
@@ -536,20 +539,20 @@ func lookpath(file string) error { // custom lookpath function so we know if a c
 	}
 	for _, s := range skip {
 		if strings.HasPrefix(file, s) {
-			return findExecutable(file, false, false)
+			return file, findExecutable(file, false, false)
 		}
 	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
 		err := findExecutable(path, true, false)
 		if err == errNotExec {
-			return err
+			return "", err
 		} else if err == nil {
-			return nil
+			return path, nil
 		}
 	}
 
-	return os.ErrNotExist
+	return "", os.ErrNotExist
 }
 
 func splitInput(input string) ([]string, string) {
