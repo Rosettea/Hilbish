@@ -1,10 +1,14 @@
 # 🎀 Changelog
 
+## [2.3.2] - 2024-07-30
+### Fixed
+- Command path searching due to 2.3 changes to the shell interpreter
+
 ## [2.3.1] - 2024-07-27
 [hehe when you see it release](https://youtu.be/AaAF51Gwbxo?si=rhj2iYuQRkqDa693&t=64)
 
 ### Added
-- `nature.opts.tips` was added to display random tips on start up.
+- `hilbish.opts.tips` was added to display random tips on start up.
 Displayed tips can be modified via the `hilbish.tips` table.
 
 ### Fixed
@@ -769,6 +773,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3

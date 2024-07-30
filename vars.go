@@ -11,7 +11,7 @@ var (
 
 // Version info
 var (
-	ver = "v2.3.1"
+	ver = "v2.3.2"
 	releaseName = "Alyssum"
 
 	gitCommit string
