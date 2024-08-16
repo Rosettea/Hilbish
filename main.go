@@ -223,8 +223,9 @@ input:
 		}
 
 		if strings.HasSuffix(input, "\\") {
+			print("\n")
 			for {
-				input, err = continuePrompt(input)
+				input, err = continuePrompt(strings.TrimSuffix(input, "\\") + "\n", false)
 				if err != nil {
 					running = true
 					lr.SetPrompt(fmtPrompt(prompt))
@@ -248,16 +249,21 @@ input:
 	exit(0)
 }
 
-func continuePrompt(prev string) (string, error) {
+func continuePrompt(prev string, newline bool) (string, error) {
 	hooks.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
+
 	cont, err := lr.Read()
 	if err != nil {
 		return "", err
 	}
-	cont = strings.TrimSpace(cont)
 
-	return prev + strings.TrimSuffix(cont, "\n"), nil
+	if newline || strings.HasSuffix(cont, "\\") {
+		// a newline will get trimmed when this input is passed on, so we add 2
+		cont = cont + "\n\n"
+	}
+
+	return prev + cont, nil
 }
 
 // This semi cursed function formats our prompt (obviously)
