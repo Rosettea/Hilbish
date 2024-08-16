@@ -21,16 +21,18 @@ A runner is passed the input and has to return a table with these values.
 All are not required, only the useful ones the runner needs to return.
 (So if there isn't an error, just omit `err`.)
 
-- `exitCode` (number): A numerical code to indicate the exit result.
-- `input` (string): The user input. This will be used to add
-to the history.
-- `err` (string): A string to indicate an interal error for the runner.
-It can be set to a few special values for Hilbish to throw the right hooks and have a better looking message:
-
-`[command]: not-found` will throw a command.not-found hook based on what `[command]` is.  
-
-`[command]: not-executable` will throw a command.not-executable hook.
-- `continue` (boolean): Whether to prompt the user for more input.
+- `exitCode` (number): Exit code of the command
+- `input` (string): The text input of the user. This is used by Hilbish to append extra input, in case
+more is requested.
+- `err` (string): A string that represents an error from the runner.
+This should only be set when, for example, there is a syntax error.
+It can be set to a few special values for Hilbish to throw the right
+hooks and have a better looking message.
+	- `<command>: not-found` will throw a `command.not-found` hook
+	based on what `<command>` is.
+	- `<command>: not-executable` will throw a `command.not-executable` hook.
+- `continue` (boolean): Whether Hilbish should prompt the user for no input
+- `newline` (boolean): Whether a newline should be added at the end of `input`.
 
 Here is a simple example of a fennel runner. It falls back to
 shell script if fennel eval has an error.
@@ -85,7 +87,7 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	_, exitCode, cont, err := execSh(aliases.Resolve(cmd))
+	_, exitCode, cont, newline, err := execSh(aliases.Resolve(cmd))
 	var luaErr rt.Value = rt.NilValue
 	if err != nil {
 		luaErr = rt.StringValue(err.Error())
@@ -94,6 +96,7 @@ func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	runnerRet.Set(rt.StringValue("input"), rt.StringValue(cmd))
 	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
 	runnerRet.Set(rt.StringValue("continue"), rt.BoolValue(cont))
+	runnerRet.Set(rt.StringValue("newline"), rt.BoolValue(newline))
 	runnerRet.Set(rt.StringValue("err"), luaErr)
 
 	return c.PushingNext(t.Runtime, rt.TableValue(runnerRet)), nil
