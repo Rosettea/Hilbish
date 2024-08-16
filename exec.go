@@ -138,15 +138,15 @@ func runInput(input string, priv bool) {
 	}
 
 	if cont {
-		input, err = reprompt(input, newline)
+		input, err = continuePrompt(input, newline)
 		if err == nil {
 			goto rerun
 		} else if err == io.EOF {
-			return
+			lr.SetPrompt(fmtPrompt(prompt))
 		}
 	}
 
-	if err != nil {
+	if err != nil && err != io.EOF {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Emit("command." + exErr.typ, exErr.cmd)
 		} else {

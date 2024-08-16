@@ -258,9 +258,12 @@ func continuePrompt(prev string, newline bool) (string, error) {
 		return "", err
 	}
 
-	if newline || strings.HasSuffix(cont, "\\") {
-		// a newline will get trimmed when this input is passed on, so we add 2
-		cont = cont + "\n\n"
+	if newline {
+		cont = "\n" + cont
+	}
+
+	if strings.HasSuffix(cont, "\\") {
+		cont = strings.TrimSuffix(cont, "\\") + "\n"
 	}
 
 	return prev + cont, nil
