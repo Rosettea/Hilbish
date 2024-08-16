@@ -15,12 +15,7 @@ first then going to shell script. If you want the reverse order, you can
 set it to <code>hybridRev</code> and for isolated modes there is <code>sh</code> and <code>lua</code>
 respectively.</p><p>You can also set it to a function, which will be called everytime Hilbish
 needs to run interactive input. For more detail, see the <a href=../../api/hilbish/hilbish.runner>API documentation</a></p><p>The <code>hilbish.runner</code> interface is an alternative to using <code>hilbish.runnerMode</code>
-and also provides the shell script and Lua runner functions that Hilbish itself uses.</p><p>A runner function is expected to return a table with the following values:</p><ul><li><code>exitCode</code> (number): Exit code of the command</li><li><code>input</code> (string): The text input of the user. This is used by Hilbish to append extra input, in case
-more is requested.</li><li><code>err</code> (string): A string that represents an error from the runner.
-This should only be set when, for example, there is a syntax error.
-It can be set to a few special values for Hilbish to throw the right
-hooks and have a better looking message.<ul><li><code>&lt;command>: not-found</code> will throw a <code>command.not-found</code> hook
-based on what <code>&lt;command></code> is.</li><li><code>&lt;command>: not-executable</code> will throw a <code>command.not-executable</code> hook.</li></ul></li><li><code>continue</code> (boolean): Whether Hilbish should prompt the user for no input</li></ul><h3 id=functions class=heading>Functions
+and also provides the shell script and Lua runner functions that Hilbish itself uses.</p><h3 id=functions class=heading>Functions
 <a href=#functions class=heading-link><i class="fas fa-paperclip"></i></a></h3><p>These are the &ldquo;low level&rdquo; functions for the <code>hilbish.runner</code> interface.</p><ul><li>setMode(mode) > The same as <code>hilbish.runnerMode</code></li><li>sh(input) -> table > Runs <code>input</code> in Hilbish&rsquo;s sh interpreter</li><li>lua(input) -> table > Evals <code>input</code> as Lua code</li></ul><p>These functions should be preferred over the previous ones.</p><ul><li>setCurrent(mode) > The same as <code>setMode</code>, but works with runners managed
 via the functions below.</li><li>add(name, runner) > Adds a runner to a table of available runners. The <code>runner</code>
 argument is either a function or a table with a run callback.</li><li>set(name, runner) > The same as <code>add</code> but requires passing a table and
