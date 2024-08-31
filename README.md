@@ -25,7 +25,6 @@ and aims to be infinitely configurable. If something isn't, open an issue!
 # Screenshots
 <div align="center">
 <img src="gallery/tab.png">
-<img src="gallery/pillprompt.png">
 </div>
 
 # Getting Hilbish
