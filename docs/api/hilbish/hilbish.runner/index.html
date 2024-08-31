@@ -9,9 +9,12 @@ language or script of their choosing. A good example is using it to
 write command in Fennel.</p><p>Runners are functions that evaluate user input. The default runners in
 Hilbish can run shell script and Lua code.</p><p>A runner is passed the input and has to return a table with these values.
 All are not required, only the useful ones the runner needs to return.
-(So if there isn&rsquo;t an error, just omit <code>err</code>.)</p><ul><li><code>exitCode</code> (number): A numerical code to indicate the exit result.</li><li><code>input</code> (string): The user input. This will be used to add
-to the history.</li><li><code>err</code> (string): A string to indicate an interal error for the runner.
-It can be set to a few special values for Hilbish to throw the right hooks and have a better looking message:</li></ul><p><code>[command]: not-found</code> will throw a command.not-found hook based on what <code>[command]</code> is.</p><p><code>[command]: not-executable</code> will throw a command.not-executable hook.</p><ul><li><code>continue</code> (boolean): Whether to prompt the user for more input.</li></ul><p>Here is a simple example of a fennel runner. It falls back to
+(So if there isn&rsquo;t an error, just omit <code>err</code>.)</p><ul><li><code>exitCode</code> (number): Exit code of the command</li><li><code>input</code> (string): The text input of the user. This is used by Hilbish to append extra input, in case
+more is requested.</li><li><code>err</code> (string): A string that represents an error from the runner.
+This should only be set when, for example, there is a syntax error.
+It can be set to a few special values for Hilbish to throw the right
+hooks and have a better looking message.<ul><li><code>\&lt;command>: not-found</code> will throw a <code>command.not-found</code> hook
+based on what <code>\&lt;command></code> is.</li><li><code>\&lt;command>: not-executable</code> will throw a <code>command.not-executable</code> hook.</li></ul></li><li><code>continue</code> (boolean): Whether Hilbish should prompt the user for no input</li><li><code>newline</code> (boolean): Whether a newline should be added at the end of <code>input</code>.</li></ul><p>Here is a simple example of a fennel runner. It falls back to
 shell script if fennel eval has an error.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=ln> 1</span><span class=cl><span class=kd>local</span> <span class=n>fennel</span> <span class=o>=</span> <span class=n>require</span> <span class=s1>&#39;fennel&#39;</span>
 </span></span><span class=line><span class=ln> 2</span><span class=cl>
 </span></span><span class=line><span class=ln> 3</span><span class=cl><span class=n>hilbish.runnerMode</span><span class=p>(</span><span class=kr>function</span><span class=p>(</span><span class=n>input</span><span class=p>)</span>
