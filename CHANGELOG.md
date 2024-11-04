@@ -1,6 +1,6 @@
 # 🎀 Changelog
 
-## Unreleased
+## [2.3.3] - 2024-11-04
 ### Fixed
 - Heredocs having issues
 
@@ -780,7 +780,8 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
-[2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
+[2.3.3]: https://github.com/Rosettea/Hilbish/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
