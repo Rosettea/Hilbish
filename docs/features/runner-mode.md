@@ -33,19 +33,6 @@ needs to run interactive input. For more detail, see the [API documentation](../
 The `hilbish.runner` interface is an alternative to using `hilbish.runnerMode`
 and also provides the shell script and Lua runner functions that Hilbish itself uses.
 
-A runner function is expected to return a table with the following values:
-- `exitCode` (number): Exit code of the command
-- `input` (string): The text input of the user. This is used by Hilbish to append extra input, in case
-more is requested.
-- `err` (string): A string that represents an error from the runner.
-This should only be set when, for example, there is a syntax error.
-It can be set to a few special values for Hilbish to throw the right
-hooks and have a better looking message.
-	- `<command>: not-found` will throw a `command.not-found` hook
-	based on what `<command>` is.
-	- `<command>: not-executable` will throw a `command.not-executable` hook.
-- `continue` (boolean): Whether Hilbish should prompt the user for no input
-
 ## Functions
 These are the "low level" functions for the `hilbish.runner` interface.
 

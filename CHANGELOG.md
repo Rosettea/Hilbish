@@ -1,5 +1,12 @@
 # 🎀 Changelog
 
+## Unreleased
+### Fixed
+- Heredocs having issues
+
+### Added
+- Adding `\` at the end of input will add a newline and prompt for more input.
+
 ## [2.3.2] - 2024-07-30
 ### Fixed
 - Command path searching due to 2.3 changes to the shell interpreter
