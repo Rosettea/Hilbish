@@ -1,5 +1,9 @@
 # 🎀 Changelog
 
+## Unreleased
+### Fixed
+- Handle an error in completions
+
 ## [2.3.3] - 2024-11-04
 ### Fixed
 - Heredocs having issues
