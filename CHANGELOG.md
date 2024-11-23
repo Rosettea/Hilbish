@@ -1,5 +1,9 @@
 # 🎀 Changelog
 
+## Unreleased
+### Fixed
+- Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
+
 ## [2.3.3] - 2024-11-04
 ### Fixed
 - Heredocs having issues
