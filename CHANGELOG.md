@@ -3,6 +3,8 @@
 ## Unreleased
 ### Fixed
 - Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
+### Changed
+- Documentation for Lunacolors has been improved, with more information added.
 
 ## [2.3.3] - 2024-11-04
 ### Fixed
