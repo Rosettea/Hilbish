@@ -42,6 +42,6 @@ func TryTable(v Value) (*Table, bool) {
 	return nil, false
 }
 
-func (t *Table) setRefIdx(mlr *Runtime, i idx) {
+func (t *Table) setRefIdx(mlr *Runtime, i int) {
 	t.refIdx = mlr.state.Ref(i)
 }
