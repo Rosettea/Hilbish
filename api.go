@@ -51,7 +51,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		"hinter": {hlhinter, 1, false},
 		"multiprompt": {hlmultiprompt, 1, false},
 		"prependPath": {hlprependPath, 1, false},
+		*/
 		"prompt": {hlprompt, 1, true},
+		/*
 		"inputMode": {hlinputMode, 1, false},
 		"interval": {hlinterval, 2, false},
 		"read": {hlread, 1, false},
@@ -80,6 +82,7 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	hshMod.SetField("interactive", moonlight.BoolValue(interactive))
 	hshMod.SetField("login", moonlight.BoolValue(login))
 	hshMod.SetField("exitCode", moonlight.IntValue(0))
+	hshMod.SetField("midnightEdition", moonlight.BoolValue(moonlight.IsMidnight()))
 	//util.SetField(rtm, mod, "vimMode", rt.NilValue)
 
 	// hilbish.userDir table
@@ -130,8 +133,10 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
 	// very meta
-	//moduleModule := moduleLoader(mlr)
-	//hshMod.SetField("module", moonlight.TableValue(moduleModule))
+	if moonlight.IsMidnight() {
+		moduleModule := moduleLoader(mlr)
+		hshMod.SetField("module", moonlight.TableValue(moduleModule))
+	}
 
 	return moonlight.TableValue(hshMod)
 }

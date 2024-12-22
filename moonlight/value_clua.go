@@ -41,7 +41,7 @@ func TableValue(t *Table) Value {
 }
 
 func FunctionValue(f Callable) Value {
-	return NilValue
+	return Value{iface: f}
 }
 
 func AsValue(i interface{}) Value {
