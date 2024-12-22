@@ -1,5 +1,16 @@
 # 🎀 Changelog
 
+## Unreleased
+### Fixed
+- Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
+
+## [2.3.3] - 2024-11-04
+### Fixed
+- Heredocs having issues
+
+### Added
+- Adding `\` at the end of input will add a newline and prompt for more input.
+
 ## [2.3.2] - 2024-07-30
 ### Fixed
 - Command path searching due to 2.3 changes to the shell interpreter
@@ -773,7 +784,8 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
-[2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
+[2.3.3]: https://github.com/Rosettea/Hilbish/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
