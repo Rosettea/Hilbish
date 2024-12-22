@@ -15,6 +15,8 @@ func NewTable() *Table {
 	}
 }
 
+func (t *Table) SetRuntime(mlr *Runtime) {}
+
 func (t *Table) Get(val Value) Value {
 	return t.lt.Get(val)
 }
