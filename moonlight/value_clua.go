@@ -67,7 +67,7 @@ func (v Value) Type() ValueType {
 
 	switch v.iface.(type) {
 		case bool: return BoolType
-		case int: return IntType
+		case int64: return IntType
 		case string: return StringType
 		case *Table: return TableType
 		case *Closure: return FunctionType
@@ -88,7 +88,7 @@ func (v Value) AsString() string {
 }
 
 func (v Value) AsTable() *Table {
-	panic("Value.AsTable unimplemented in midnight")
+	return v.iface.(*Table)
 }
 
 func ToString(v Value) string {
@@ -98,9 +98,10 @@ func ToString(v Value) string {
 func (v Value) TypeName() string {
 	switch v.iface.(type) {
 		case bool: return "bool"
-		case int: return "number"
+		case int64: return "number"
 		case string: return "string"
 		case *Table: return "table"
+		case *Closure: return "function"
 		default: return "<unknown type>"
 	}
 }

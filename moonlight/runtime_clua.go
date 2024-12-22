@@ -45,5 +45,10 @@ func (mlr *Runtime) pushToState(v Value) {
 	switch v.Type() {
 		case NilType: mlr.state.PushNil()
 		case StringType: mlr.state.PushString(v.AsString())
+		case TableType:
+			tbl := v.AsTable()
+			tbl.SetRuntime(mlr)
+			mlr.state.RawGeti(lua.LUA_REGISTRYINDEX, tbl.refIdx)
+		default: mlr.state.PushNil()
 	}
 }

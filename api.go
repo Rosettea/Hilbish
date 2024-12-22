@@ -39,25 +39,19 @@ var hshMod *moonlight.Table
 func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	println("hilbish loader called")
 	var exports = map[string]moonlight.Export{
+		/*
 		"alias": {hlalias, 2, false},
 		"appendPath": {hlappendPath, 1, false},
-		/*
 		"complete": {hlcomplete, 2, false},
-		*/
 		"cwd": {hlcwd, 0, false},
-		/*
 		"exec": {hlexec, 1, false},
-		*/
 		"runnerMode": {hlrunnerMode, 1, false},
-		/*
 		"goro": {hlgoro, 1, true},
 		"highlighter": {hlhighlighter, 1, false},
 		"hinter": {hlhinter, 1, false},
 		"multiprompt": {hlmultiprompt, 1, false},
 		"prependPath": {hlprependPath, 1, false},
-		*/
 		"prompt": {hlprompt, 1, true},
-		/*
 		"inputMode": {hlinputMode, 1, false},
 		"interval": {hlinterval, 2, false},
 		"read": {hlread, 1, false},
@@ -76,7 +70,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
+	println("setting ver field")
 	hshMod.SetField("ver", moonlight.StringValue(getVersion()))
+	println("setting goversion field")
 	hshMod.SetField("goVersion", moonlight.StringValue(runtime.Version()))
 	hshMod.SetField("user", moonlight.StringValue(username))
 	hshMod.SetField("host", moonlight.StringValue(host))
@@ -111,8 +107,8 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("completions"), rt.TableValue(hshcomp))
 
 	// hilbish.runner table
-	runnerModule := runnerModeLoader(mlr)
-	hshMod.SetField("runner", moonlight.TableValue(runnerModule))
+	//runnerModule := runnerModeLoader(mlr)
+	//hshMod.SetField("runner", moonlight.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
@@ -135,8 +131,8 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
 	// very meta
-	moduleModule := moduleLoader(mlr)
-	hshMod.SetField("module", moonlight.TableValue(moduleModule))
+	//moduleModule := moduleLoader(mlr)
+	//hshMod.SetField("module", moonlight.TableValue(moduleModule))
 
 	return moonlight.TableValue(hshMod)
 }

@@ -33,6 +33,7 @@ func New(runner *interp.Runner) *fs {
 }
 
 func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
+	println("fs loader called")
 	exports := map[string]moonlight.Export{
 		/*
 		"cd": util.LuaExport{f.fcd, 1, false},

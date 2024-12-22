@@ -15,7 +15,8 @@ func (mlr *Runtime) LoadLibrary(ldr Loader, name string) {
 	}
 
 	mlr.state.GetGlobal("package")
-	mlr.state.GetField(-1, "loaded")
-	mlr.state.PushGoFunction(cluaLoader)
+	mlr.state.GetField(-1, "preload")
+	mlr.state.PushGoClosure(cluaLoader)
 	mlr.state.SetField(-2, name)
+	mlr.state.Pop(1)
 }
