@@ -4,9 +4,11 @@ on:
   push:
     branches:
     - master
+    - midnight-edition
   pull_request:
     branches:
     - master
+    - midnight-editon
 
 jobs:
   build:
