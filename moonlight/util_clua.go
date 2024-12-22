@@ -8,6 +8,6 @@ func (mlr *Runtime) DoString(code string) (Value, error) {
 }
 
 func (mlr *Runtime) DoFile(filename string) error {
-	//return mlr.state.DoFile(filename)
+	return mlr.state.DoFile(filename)
 	return nil
 }
