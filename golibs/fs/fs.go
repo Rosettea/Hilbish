@@ -329,6 +329,12 @@ func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.TableValue(statTbl)), nil
 }
 
+// watch(path, callback)
+// Watches a path for changes made to it. For example, to monitor
+// new files created in a folder.
+// The callback passed 2 string arguments, the `event` and the absolute `path`
+// #param path string
+// #param callback function
 func fwatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
