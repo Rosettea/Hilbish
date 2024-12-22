@@ -56,3 +56,10 @@ func (rl *Instance) resetHintText() {
 	//rl.hintY = 0
 	rl.hintText = []rune{}
 }
+
+func (rl *Instance) insertHintText() {
+	if len(rl.hintText) != 0 {
+		// fill in hint text
+		rl.insert(rl.hintText)
+	}
+}
