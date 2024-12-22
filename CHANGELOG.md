@@ -1,6 +1,9 @@
 # 🎀 Changelog
 
 ## Unreleased
+### Added
+- Forward/Right arrow key will fill in hint text (#327)
+
 ### Fixed
 - Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
 
