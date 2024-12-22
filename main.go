@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
@@ -14,18 +15,19 @@ import (
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
+	"hilbish/golibs/commander"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
+	"mvdan.cc/sh/v3/interp"
 )
 
 var (
 	l *rt.Runtime
 	lr *lineReader
 
-	commands = map[string]*rt.Closure{}
 	luaCompletions = map[string]*rt.Closure{}
 
 	confDir string
@@ -33,11 +35,14 @@ var (
 	curuser *user.User
 
 	hooks *bait.Bait
+	cmds *commander.Commander
 	defaultConfPath string
 	defaultHistPath string
+	runner *interp.Runner
 )
 
 func main() {
+	runner, _ = interp.New()
 	curuser, _ = user.Current()
 	homedir := curuser.HomeDir
 	confDir, _ = os.UserConfigDir()
@@ -114,7 +119,13 @@ func main() {
 
 	// Set $SHELL if the user wants to
 	if *setshflag {
-		os.Setenv("SHELL", os.Args[0])
+		os.Setenv("SHELL", "hilbish")
+
+		path, err := exec.LookPath("hilbish")
+		if err == nil {
+			os.Setenv("SHELL", path)
+		}
+
 	}
 
 	lr = newLineReader("", false)
@@ -212,8 +223,9 @@ input:
 		}
 
 		if strings.HasSuffix(input, "\\") {
+			print("\n")
 			for {
-				input, err = continuePrompt(input)
+				input, err = continuePrompt(strings.TrimSuffix(input, "\\") + "\n", false)
 				if err != nil {
 					running = true
 					lr.SetPrompt(fmtPrompt(prompt))
@@ -237,16 +249,24 @@ input:
 	exit(0)
 }
 
-func continuePrompt(prev string) (string, error) {
+func continuePrompt(prev string, newline bool) (string, error) {
 	hooks.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
+
 	cont, err := lr.Read()
 	if err != nil {
 		return "", err
 	}
-	cont = strings.TrimSpace(cont)
 
-	return prev + strings.TrimSuffix(cont, "\n"), nil
+	if newline {
+		cont = "\n" + cont
+	}
+
+	if strings.HasSuffix(cont, "\\") {
+		cont = strings.TrimSuffix(cont, "\\") + "\n"
+	}
+
+	return prev + cont, nil
 }
 
 // This semi cursed function formats our prompt (obviously)

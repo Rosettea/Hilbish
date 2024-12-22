@@ -488,7 +488,11 @@ func main() {
 					}
 
 					mdTable.SetContent(i - diff, 0, fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig))
-					mdTable.SetContent(i - diff, 1, dps.Doc[0])
+					if len(dps.Doc) == 0 {
+						fmt.Printf("WARNING! Function %s on module %s has no documentation!\n", dps.FuncName, modname)
+					} else {
+						mdTable.SetContent(i - diff, 1, dps.Doc[0])
+					}
 				}
 				f.WriteString(mdTable.String())
 				f.WriteString("\n")

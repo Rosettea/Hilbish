@@ -1,6 +1,85 @@
 # 🎀 Changelog
 
 ## Unreleased
+### Added
+- Forward/Right arrow key will fill in hint text (#327)
+
+### Fixed
+- Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
+
+## [2.3.3] - 2024-11-04
+### Fixed
+- Heredocs having issues
+
+### Added
+- Adding `\` at the end of input will add a newline and prompt for more input.
+
+## [2.3.2] - 2024-07-30
+### Fixed
+- Command path searching due to 2.3 changes to the shell interpreter
+
+## [2.3.1] - 2024-07-27
+[hehe when you see it release](https://youtu.be/AaAF51Gwbxo?si=rhj2iYuQRkqDa693&t=64)
+
+### Added
+- `hilbish.opts.tips` was added to display random tips on start up.
+Displayed tips can be modified via the `hilbish.tips` table.
+
+### Fixed
+- Fix a minor regression related to the cd command not working with relative paths
+- Updated the motd for 2.3
+
+## [2.3.0] - 2024-07-20
+### Added
+- `commander.registry` function to get all registered commanders.
+- `fs.pipe` function to get a pair of connected files (a pipe).
+- Added an alternative 2nd parameter to `hilbish.run`, which is `streams`.
+`streams` is a table of input and output streams to run the command with.
+It uses these 3 keys:
+  - `input` as standard input for the command
+  - `out` as standard output
+  - `err` as standard error
+
+Here is a minimal example of the new usage which allows users to now pipe commands
+directly via Lua functions:
+  
+```lua
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+
+pw:close()
+
+hilbish.run('wc -l', {
+	stdin = pr
+})
+```
+
+### Changed
+- The `-S` flag will be set to Hilbish's absolute path
+- Hilbish now builds on any Unix (if any dependencies also work, which should.)
+
+### Fixed
+- Fix ansi attributes causing issues with text when cut off in greenhouse
+- Fix greenhouse appearing on terminal resize
+- Fix crashes when history goes out of bounds when using history navigation
+- `exec` command should return if no arg presented
+- Commanders can now be cancelled by Ctrl-C and wont hang the shell anymore.
+See [issue 198](https://github.com/Rosettea/Hilbish/issues/198).
+- Shell interpreter can now preserve its environment and set PWD properly.
+
+## [2.2.3] - 2024-04-27
+### Fixed
+- Highligher and hinter work now, since it was regressed from the previous minor release.
+- `cat` command no longer prints extra newline at end of each file
+
+### Added
+- `cat` command now reads files in chunks, allowing for reading large files
+
+## [2.2.2] - 2024-04-16
 ### Fixed
 - Line refresh fixes (less flicker)
 - Do more checks for a TTY
@@ -708,6 +787,11 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.3]: https://github.com/Rosettea/Hilbish/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
+[2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
+[2.3.0]: https://github.com/Rosettea/Hilbish/compare/v2.2.3...v2.3.0
+[2.2.3]: https://github.com/Rosettea/Hilbish/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/Rosettea/Hilbish/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/Rosettea/Hilbish/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/Rosettea/Hilbish/compare/v2.1.0...v2.2.0

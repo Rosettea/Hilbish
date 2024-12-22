@@ -128,7 +128,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	}
 
 	// add lua registered commands to completions
-	for cmdName := range commands {
+	for cmdName := range cmds.Commands {
 		if strings.HasPrefix(cmdName, query) {
 			completions = append(completions, cmdName)
 		}
@@ -157,9 +157,12 @@ func matchPath(query string) ([]string, string) {
 
 	files, _ := os.ReadDir(path)
 	for _, entry := range files {
-		// should we handle errors here?
 		file, err := entry.Info()
-		if err == nil && file.Mode() & os.ModeSymlink != 0 {
+		if err != nil {
+			continue
+		}
+
+		if file.Mode() & os.ModeSymlink != 0 {
 			path, err := filepath.EvalSymlinks(filepath.Join(path, file.Name()))
 			if err == nil {
 				file, err = os.Lstat(path)

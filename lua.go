@@ -30,22 +30,11 @@ func luaInit() {
 	util.DoString(l, "hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
-	lib.LoadLibs(l, fs.Loader)
+	f := fs.New(runner)
+	lib.LoadLibs(l, f.Loader)
 	lib.LoadLibs(l, terminal.Loader)
 
-	cmds := commander.New(l)
-	// When a command from Lua is added, register it for use
-	cmds.Events.On("commandRegister", func(args ...interface{}) {
-		cmdName := args[0].(string)
-		cmd := args[1].(*rt.Closure)
-
-		commands[cmdName] = cmd
-	})
-	cmds.Events.On("commandDeregister", func(args ...interface{}) {
-		cmdName := args[0].(string)
-
-		delete(commands, cmdName)
-	})
+	cmds = commander.New(l)
 	lib.LoadLibs(l, cmds.Loader)
 
 	hooks = bait.New(l)

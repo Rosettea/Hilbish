@@ -61,17 +61,24 @@ function Greenhouse:updateCurrentPage(text)
 	page:setText(text)
 end
 
+local ansiPatters = {
+	'\x1b%[%d+;%d+;%d+;%d+;%d+%w',
+	'\x1b%[%d+;%d+;%d+;%d+%w',
+	'\x1b%[%d+;%d+;%d+%w',
+	'\x1b%[%d+;%d+%w',
+	'\x1b%[%d+%w'
+}
+
 function Greenhouse:sub(str, offset, limit)
 	local overhead = 0
 	local function addOverhead(s)
 		overhead = overhead + string.len(s)
 	end
 
-	local s = str:gsub('\x1b%[%d+;%d+;%d+;%d+;%d+%w', addOverhead)
-     :gsub('\x1b%[%d+;%d+;%d+;%d+%w', addOverhead)
-     :gsub('\x1b%[%d+;%d+;%d+%w',addOverhead)
-     :gsub('\x1b%[%d+;%d+%w', addOverhead)
-     :gsub('\x1b%[%d+%w', addOverhead)
+	local s = str
+	for _, pat in ipairs(ansiPatters) do
+		s = s:gsub(pat, addOverhead)
+	end
 
 	return s:sub(offset, utf8.offset(str, limit + overhead) or limit + overhead)
 	--return s:sub(offset, limit + overhead)
@@ -94,14 +101,40 @@ function Greenhouse:draw()
 	self.sink:write(ansikit.getCSI(2, 'J'))
 
 	local writer = self.sink.writeln
+	self.attributes = {}
 	for i = offset, offset + self.region.height - 1 do
+		local resetEnd = false
 		if i > #lines then break end
 
 		if i == offset + self.region.height - 1 then writer = self.sink.write end
 
 		self.sink:write(ansikit.getCSI(self.start + i - offset .. ';1', 'H'))
 		local line = lines[i]:gsub('{separator}', function() return self.separator:rep(self.region.width - 1) end)
-		writer(self.sink, self:sub(line:gsub('\t', '        '), self.horizOffset, self.region.width))
+		for _, pat in ipairs(ansiPatters) do
+			line:gsub(pat, function(s)
+				if s == lunacolors.formatColors.reset then
+					self.attributes = {}
+					resetEnd = true
+				else
+					--resetEnd = false
+					--table.insert(self.attributes, s)
+				end
+			end)
+		end
+
+--[[
+		if #self.attributes ~= 0 then
+			for _, attr in ipairs(self.attributes) do
+				--writer(self.sink, attr)
+			end
+		end
+]]--
+
+		self.sink:write(lunacolors.formatColors.reset)
+		writer(self.sink, self:sub(line:gsub('\t', '        '), self.horizOffset, self.region.width + self.horizOffset))
+		if resetEnd then
+			self.sink:write(lunacolors.formatColors.reset)
+		end
 	end
 	writer(self.sink, '\27[0m')
 	self:render()
@@ -271,6 +304,15 @@ end
 function Greenhouse:input(char)
 end
 
+local function read()
+	terminal.saveState()
+	terminal.setRaw()
+	local c = hilbish.editor.readChar()
+
+	terminal.restoreState()
+	return c
+end
+
 function Greenhouse:initUi()
 	local ansikit = require 'ansikit'
 	local bait = require 'bait'
@@ -280,14 +322,17 @@ function Greenhouse:initUi()
 	local Page = require 'nature.greenhouse.page'
 	local done = false
 
-	bait.catch('signal.sigint', function()
+	local function sigint()
 		ansikit.clear()
 		done = true
-	end)
+	end
 
-	bait.catch('signal.resize', function()
+	local function resize()
 		self:update()
-	end)
+	end
+	bait.catch('signal.sigint', sigint)
+
+	bait.catch('signal.resize', resize)
 
 	ansikit.screenAlt()
 	ansikit.clear(true)
@@ -311,15 +356,10 @@ function Greenhouse:initUi()
 
 	ansikit.showCursor()
 	ansikit.screenMain()
-end
 
-function read()
-	terminal.saveState()
-	terminal.setRaw()
-	local c = hilbish.editor.readChar()
-
-	terminal.restoreState()
-	return c
+	self = nil
+	bait.release('signal.sigint', sigint)
+	bait.release('signal.resize', resize)
 end
 
 return Greenhouse

@@ -29,7 +29,7 @@ func (rl *Instance) updateTabFind(r []rune) {
 	rl.search = string(rl.tfLine)
 
 	// We update and print
-	rl.clearHelpers()
+	//rl.clearHelpers()
 	rl.getTabCompletion()
 	rl.renderHelpers()
 }

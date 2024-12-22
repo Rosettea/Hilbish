@@ -26,8 +26,11 @@ In this example, a command with the name of `hello` is created
 that will print `Hello world!` to output. One question you may
 have is: What is the `sinks` parameter?
 
-The `sinks` parameter is a table with 3 keys: `in`, `out`,
-and `err`. All of them are a <a href="/Hilbish/docs/api/hilbish/#sink" style="text-decoration: none;">Sink</a>.
+The `sinks` parameter is a table with 3 keys: `input`, `out`, and `err`.
+There is an `in` alias to `input`, but it requires using the string accessor syntax (`sinks['in']`)
+as `in` is also a Lua keyword, so `input` is preferred for use.
+All of them are a <a href="/Hilbish/docs/api/hilbish/#sink" style="text-decoration: none;">Sink</a>.
+In the future, `sinks.in` will be removed.
 
 - `in` is the standard input.
 You may use the read functions on this sink to get input from the user.
@@ -41,6 +44,7 @@ This sink is for writing errors, as the name would suggest.
 |----|----|
 |<a href="#deregister">deregister(name)</a>|Removes the named command. Note that this will only remove Commander-registered commands.|
 |<a href="#register">register(name, cb)</a>|Adds a new command with the given `name`. When Hilbish has to run a command with a name,|
+|<a href="#registry">registry() -> table</a>|Returns all registered commanders. Returns a list of tables with the following keys:|
 
 <hr>
 <div id='deregister'>
@@ -89,5 +93,21 @@ commander.register('hello', function(args, sinks)
 	sinks.out:writeln('Hello ' .. name)
 end)
 ```
+</div>
+
+<hr>
+<div id='registry'>
+<h4 class='heading'>
+commander.registry() -> table
+<a href="#registry" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Returns all registered commanders. Returns a list of tables with the following keys:  
+- `exec`: The function used to run the commander. Commanders require args and sinks to be passed.  
+
+#### Parameters
+This function has no parameters.  
 </div>
 

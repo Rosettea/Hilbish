@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -27,6 +28,12 @@ import (
 var errNotExec = errors.New("not executable")
 var errNotFound = errors.New("not found")
 var runnerMode rt.Value = rt.StringValue("hybrid")
+
+type streams struct {
+	stdout io.Writer
+	stderr io.Writer
+	stdin io.Reader
+}
 
 type execError struct{
 	typ string
@@ -91,6 +98,7 @@ func runInput(input string, priv bool) {
 	var exitCode uint8
 	var err error
 	var cont bool
+	var newline bool
 	// save incase it changes while prompting (For some reason)
 	currentRunner := runnerMode
 	if currentRunner.Type() == rt.StringType {
@@ -101,9 +109,9 @@ func runInput(input string, priv bool) {
 					cmdFinish(0, input, priv)
 					return
 				}
-				input, exitCode, cont, err = handleSh(input)
+				input, exitCode, cont, newline, err = handleSh(input)
 			case "hybridRev":
-				_, _, _, err = handleSh(input)
+				_, _, _, _, err = handleSh(input)
 				if err == nil {
 					cmdFinish(0, input, priv)
 					return
@@ -112,12 +120,12 @@ func runInput(input string, priv bool) {
 			case "lua":
 				input, exitCode, err = handleLua(input)
 			case "sh":
-				input, exitCode, cont, err = handleSh(input)
+				input, exitCode, cont, newline, err = handleSh(input)
 		}
 	} else {
 		// can only be a string or function so
 		var runnerErr error
-		input, exitCode, cont, runnerErr, err = runLuaRunner(currentRunner, input)
+		input, exitCode, cont, newline, runnerErr, err = runLuaRunner(currentRunner, input)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			cmdFinish(124, input, priv)
@@ -130,15 +138,15 @@ func runInput(input string, priv bool) {
 	}
 
 	if cont {
-		input, err = reprompt(input)
+		input, err = continuePrompt(input, newline)
 		if err == nil {
 			goto rerun
 		} else if err == io.EOF {
-			return
+			lr.SetPrompt(fmtPrompt(prompt))
 		}
 	}
 
-	if err != nil {
+	if err != nil && err != io.EOF {
 		if exErr, ok := isExecError(err); ok {
 			hooks.Emit("command." + exErr.typ, exErr.cmd)
 		} else {
@@ -148,26 +156,28 @@ func runInput(input string, priv bool) {
 	cmdFinish(exitCode, input, priv)
 }
 
-func reprompt(input string) (string, error) {
+func reprompt(input string, newline bool) (string, error) {
 	for {
-		in, err := continuePrompt(strings.TrimSuffix(input, "\\"))
+		/*
+		if strings.HasSuffix(input, "\\") {
+			input = strings.TrimSuffix(input, "\\") + "\n"
+		}
+		*/
+		in, err := continuePrompt(input, newline)
 		if err != nil {
 			lr.SetPrompt(fmtPrompt(prompt))
 			return input, err
 		}
 
-		if strings.HasSuffix(in, "\\") {
-			continue
-		}
 		return in, nil
 	}
 }
 
-func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, runnerErr, err error) {
+func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8, continued bool, newline bool, runnerErr, err error) {
 	term := rt.NewTerminationWith(l.MainThread().CurrentCont(), 3, false)
 	err = rt.Call(l.MainThread(), runr, []rt.Value{rt.StringValue(userInput)}, term)
 	if err != nil {
-		return "", 124, false, nil, err
+		return "", 124, false, false, nil, err
 	}
 
 	var runner *rt.Table
@@ -194,6 +204,10 @@ func runLuaRunner(runr rt.Value, userInput string) (input string, exitCode uint8
 
 	if c, ok := runner.Get(rt.StringValue("continue")).TryBool(); ok {
 		continued = c
+	}
+
+	if nl, ok := runner.Get(rt.StringValue("newline")).TryBool(); ok {
+		newline = nl
 	}
 	return
 }
@@ -225,55 +239,68 @@ func handleLua(input string) (string, uint8, error) {
 	return cmdString, 125, err
 }
 
-func handleSh(cmdString string) (input string, exitCode uint8, cont bool, runErr error) {
+func handleSh(cmdString string) (input string, exitCode uint8, cont bool, newline bool, runErr error) {
 	shRunner := hshMod.Get(rt.StringValue("runner")).AsTable().Get(rt.StringValue("sh"))
 	var err error
-	input, exitCode, cont, runErr, err = runLuaRunner(shRunner, cmdString)
+	input, exitCode, cont, newline, runErr, err = runLuaRunner(shRunner, cmdString)
 	if err != nil {
 		runErr = err
 	}
 	return
 }
 
-func execSh(cmdString string) (string, uint8, bool, error) {
-	_, _, err := execCommand(cmdString, true)
+func execSh(cmdString string) (input string, exitcode uint8, cont bool, newline bool, e error) {
+	_, _, err := execCommand(cmdString, nil)
 	if err != nil {
 		// If input is incomplete, start multiline prompting
 		if syntax.IsIncomplete(err) {
 			if !interactive {
-				return cmdString, 126, false, err
+				return cmdString, 126, false, false, err
 			}
-			return cmdString, 126, true, err
+
+			newline := false
+			if strings.Contains(err.Error(), "unclosed here-document") {
+				newline = true
+			}
+			return cmdString, 126, true, newline, err
 		} else {
 			if code, ok := interp.IsExitStatus(err); ok {
-				return cmdString, code, false, nil
+				return cmdString, code, false, false, nil
 			} else {
-				return cmdString, 126, false, err
+				return cmdString, 126, false, false, err
 			}
 		}
 	}
 
-	return cmdString, 0, false, nil
+	return cmdString, 0, false, false, nil
 }
 
 // Run command in sh interpreter
-func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
+func execCommand(cmd string, strms *streams) (io.Writer, io.Writer, error) {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return nil, nil, err
 	}
 
-	runner, _ := interp.New()
-
-	var stdout io.Writer
-	var stderr io.Writer
-	if terminalOut {
-		interp.StdIO(os.Stdin, os.Stdout, os.Stderr)(runner)
-	} else {
-		stdout = new(bytes.Buffer)
-		stderr = new(bytes.Buffer)
-		interp.StdIO(os.Stdin, stdout, stderr)(runner)
+	if strms == nil {
+		strms = &streams{}
 	}
+
+	if strms.stdout == nil {
+		strms.stdout = os.Stdout
+	}
+
+	if strms.stderr == nil {
+		strms.stderr = os.Stderr
+	}
+
+	if strms.stdin == nil {
+		strms.stdin = os.Stdin
+	}
+
+	interp.StdIO(strms.stdin, strms.stdout, strms.stderr)(runner)
+	interp.Env(nil)(runner)
+
 	buf := new(bytes.Buffer)
 	printer := syntax.NewPrinter()
 
@@ -292,11 +319,11 @@ func execCommand(cmd string, terminalOut bool) (io.Writer, io.Writer, error) {
 		interp.ExecHandler(execHandle(bg))(runner)
 		err = runner.Run(context.TODO(), stmt)
 		if err != nil {
-			return stdout, stderr, err
+			return strms.stdout, strms.stderr, err
 		}
 	}
 
-	return stdout, stderr, nil
+	return strms.stdout, strms.stderr, nil
 }
 
 func execHandle(bg bool) interp.ExecHandlerFunc {
@@ -327,17 +354,45 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		}
 
 		hc := interp.HandlerCtx(ctx)
-		if commands[args[0]] != nil {
+		if cmd := cmds.Commands[args[0]]; cmd != nil {
 			stdin := newSinkInput(hc.Stdin)
 			stdout := newSinkOutput(hc.Stdout)
 			stderr := newSinkOutput(hc.Stderr)
 
 			sinks := rt.NewTable()
 			sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.ud))
+			sinks.Set(rt.StringValue("input"), rt.UserDataValue(stdin.ud))
 			sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.ud))
 			sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.ud))
 
-			luaexitcode, err := rt.Call1(l.MainThread(), rt.FunctionValue(commands[args[0]]), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+			t := rt.NewThread(l)
+			sig := make(chan os.Signal)
+			exit := make(chan bool)
+
+			luaexitcode := rt.IntValue(63)
+			var err error
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						exit <- true
+					}
+				}()
+
+				signal.Notify(sig, os.Interrupt)
+				select {
+					case <-sig:
+						t.KillContext()
+						return
+				}
+
+			}()
+
+			go func() {
+				luaexitcode, err = rt.Call1(t, rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+				exit <- true
+			}()
+
+			<-exit
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
 				return interp.NewExitStatus(1)
@@ -349,14 +404,14 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 				exitcode = uint8(code)
 			} else if luaexitcode != rt.NilValue {
 				// deregister commander
-				delete(commands, args[0])
+				delete(cmds.Commands, args[0])
 				fmt.Fprintf(os.Stderr, "Commander did not return number for exit code. %s, you're fired.\n", args[0])
 			}
 
 			return interp.NewExitStatus(exitcode)
 		}
 
-		err := lookpath(args[0])
+		path, err := lookpath(args[0])
 		if err == errNotExec {
 			return execError{
 				typ: "not-executable",
@@ -377,15 +432,16 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		killTimeout := 2 * time.Second
 		// from here is basically copy-paste of the default exec handler from
 		// sh/interp but with our job handling
-		path, err := interp.LookPathDir(hc.Dir, hc.Env, args[0])
-		if err != nil {
-			fmt.Fprintln(hc.Stderr, err)
-			return interp.NewExitStatus(127)
-		}
 
 		env := hc.Env
 		envList := make([]string, 0, 64)
 		env.Each(func(name string, vr expand.Variable) bool {
+			if name == "PATH" {
+				pathEnv := os.Getenv("PATH")
+				envList = append(envList, "PATH="+pathEnv)
+				return true
+			}
+
 			if !vr.IsSet() {
 				// If a variable is set globally but unset in the
 				// runner, we need to ensure it's not part of the final
@@ -403,6 +459,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			}
 			return true
 		})
+
 		cmd := exec.Cmd{
 			Path: path,
 			Args: args,
@@ -485,7 +542,7 @@ func handleExecErr(err error) (exit uint8) {
 
 	return
 }
-func lookpath(file string) error { // custom lookpath function so we know if a command is found *and* is executable
+func lookpath(file string) (string, error) { // custom lookpath function so we know if a command is found *and* is executable
 	var skip []string
 	if runtime.GOOS == "windows" {
 		skip = []string{"./", "../", "~/", "C:"}
@@ -494,20 +551,20 @@ func lookpath(file string) error { // custom lookpath function so we know if a c
 	}
 	for _, s := range skip {
 		if strings.HasPrefix(file, s) {
-			return findExecutable(file, false, false)
+			return file, findExecutable(file, false, false)
 		}
 	}
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		path := filepath.Join(dir, file)
 		err := findExecutable(path, true, false)
 		if err == errNotExec {
-			return err
+			return "", err
 		} else if err == nil {
-			return nil
+			return path, nil
 		}
 	}
 
-	return os.ErrNotExist
+	return "", os.ErrNotExist
 }
 
 func splitInput(input string) ([]string, string) {

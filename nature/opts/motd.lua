@@ -2,8 +2,9 @@ local bait = require 'bait'
 local lunacolors = require 'lunacolors'
 
 hilbish.motd = [[
-Finally at {red}v2.2!{reset} So much {green}documentation improvements{reset}
-and 1 single fix for Windows! {blue}.. and a feature they can't use.{reset}
+Wait ... {magenta}2.3{reset} is basically the same as {red}2.2?{reset}
+Erm.. {blue}Ctrl-C works for Commanders,{reset} {cyan}and the sh runner has some fixes.{reset}
+Just trust me bro, this is an important bug fix release. {red}- 🌺 sammyette{reset}
 ]]
 
 bait.catch('hilbish.init', function()

@@ -18,17 +18,29 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
+	"github.com/arnodel/golua/lib/iolib"
+	"mvdan.cc/sh/v3/interp"
 )
 
-var rtmm *rt.Runtime
 var watcherMetaKey = rt.StringValue("hshwatcher")
-var Loader = packagelib.Loader{
-	Load: loaderFunc,
-	Name: "fs",
+type fs struct{
+	runner *interp.Runner
+	Loader packagelib.Loader
 }
 
-func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
-	rtmm = rtm
+func New(runner *interp.Runner) *fs {
+	f := &fs{
+		runner: runner,
+	}
+	f.Loader = packagelib.Loader{
+		Load: f.loaderFunc,
+		Name: "fs",
+	}
+
+	return f
+}
+
+func (f *fs) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	watcherMethods := rt.NewTable()
 	watcherFuncs := map[string]util.LuaExport{
 		"start": {watcherStart, 1, false},
@@ -54,15 +66,16 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	rtm.SetRegistry(watcherMetaKey, rt.TableValue(watcherMeta))
 
 	exports := map[string]util.LuaExport{
-		"cd": util.LuaExport{fcd, 1, false},
-		"mkdir": util.LuaExport{fmkdir, 2, false},
-		"stat": util.LuaExport{fstat, 1, false},
-		"readdir": util.LuaExport{freaddir, 1, false},
-		"abs": util.LuaExport{fabs, 1, false},
-		"basename": util.LuaExport{fbasename, 1, false},
-		"dir": util.LuaExport{fdir, 1, false},
-		"glob": util.LuaExport{fglob, 1, false},
-		"join": util.LuaExport{fjoin, 0, true},
+		"cd": util.LuaExport{f.fcd, 1, false},
+		"mkdir": util.LuaExport{f.fmkdir, 2, false},
+		"stat": util.LuaExport{f.fstat, 1, false},
+		"readdir": util.LuaExport{f.freaddir, 1, false},
+		"abs": util.LuaExport{f.fabs, 1, false},
+		"basename": util.LuaExport{f.fbasename, 1, false},
+		"dir": util.LuaExport{f.fdir, 1, false},
+		"glob": util.LuaExport{f.fglob, 1, false},
+		"join": util.LuaExport{f.fjoin, 0, true},
+		"pipe": util.LuaExport{f.fpipe, 0, false},
 		"watch": util.LuaExport{fwatch, 2, false},
 	}
 	mod := rt.NewTable()
@@ -78,7 +91,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 // This can be used to resolve short paths like `..` to `/home/user`.
 // #param path string
 // #returns string
-func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	path, err := c.StringArg(0)
 	if err != nil {
 		return nil, err
@@ -98,7 +111,7 @@ func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `.` will be returned.
 // #param path string Path to get the base name of.
 // #returns string
-func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -113,7 +126,7 @@ func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // cd(dir)
 // Changes Hilbish's directory to `dir`.
 // #param dir string Path to change directory to.
-func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -123,10 +136,12 @@ func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 	path = util.ExpandHome(strings.TrimSpace(path))
 
+	abspath, _ := filepath.Abs(path)
 	err = os.Chdir(path)
 	if err != nil {
 		return nil, err
 	}
+	interp.Dir(abspath)(f.runner)
 
 	return c.Next(), err
 }
@@ -136,7 +151,7 @@ func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `~/Documents/doc.txt` then this function will return `~/Documents`.
 // #param path string Path to get the directory for.
 // #returns string
-func fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -167,7 +182,7 @@ print(matches)
 -- -> {'init.lua', 'code.lua'}
 #example
 */
-func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -201,7 +216,7 @@ print(fs.join(hilbish.userDir.config, 'hilbish'))
 -- -> '/home/user/.config/hilbish' on Linux
 #example
 */
-func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	strs := make([]string, len(c.Etc()))
 	for i, v := range c.Etc() {
 		if v.Type() != rt.StringType {
@@ -228,7 +243,7 @@ func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 fs.mkdir('./foo/bar', true)
 #example
 */
-func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -254,11 +269,27 @@ func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), err
 }
 
+// fpipe() -> File, File
+// Returns a pair of connected files, also known as a pipe.
+// The type returned is a Lua file, same as returned from `io` functions.
+// #returns File
+// #returns File
+func (f *fs) fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	rf, wf, err := os.Pipe()
+	if err != nil {
+		return nil, err
+	}
+
+	rfLua := iolib.NewFile(rf, 0)
+	wfLua := iolib.NewFile(wf, 0)
+
+	return c.PushingNext(t.Runtime, rfLua.Value(t.Runtime), wfLua.Value(t.Runtime)), nil
+}
 // readdir(path) -> table[string]
 // Returns a list of all files and directories in the provided path.
 // #param dir string
 // #returns table
-func freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) freaddir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -306,7 +337,7 @@ Would print the following:
 ]]--
 #example
 */
-func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func (f *fs) fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -350,7 +381,7 @@ func fwatch(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	dw := newWatcher(dir, watcher)
+	dw := newWatcher(dir, watcher, t.Runtime)
 
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(dw.ud)), nil
 }

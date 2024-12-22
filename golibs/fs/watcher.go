@@ -16,6 +16,7 @@ type watcher struct{
 	started bool
 	ud *rt.UserData
 	notifyChan chan notify.EventInfo
+	rtm *rt.Runtime
 }
 
 func (w *watcher) start() {
@@ -32,7 +33,7 @@ func (w *watcher) start() {
 			ev := notif.Event().String()
 			path := notif.Path()
 
-			_, err := rt.Call1(rtmm.MainThread(), rt.FunctionValue(w.callback), rt.StringValue(ev), rt.StringValue(path))
+			_, err := rt.Call1(w.rtm.MainThread(), rt.FunctionValue(w.callback), rt.StringValue(ev), rt.StringValue(path))
 			if err != nil {
 				// TODO: throw error
 			}
@@ -73,9 +74,10 @@ func watcherStop(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func newWatcher(path string, callback *rt.Closure) *watcher {
+func newWatcher(path string, callback *rt.Closure, rtm *rt.Runtime) *watcher {
 	pw := &watcher{
 		path: path,
+		rtm: rtm,
 		callback: callback,
 	}
 	pw.ud = watcherUserData(pw)
@@ -104,6 +106,6 @@ func valueToWatcher(val rt.Value) (*watcher, bool) {
 }
 
 func watcherUserData(j *watcher) *rt.UserData {
-	watcherMeta := rtmm.Registry(watcherMetaKey)
+	watcherMeta := j.rtm.Registry(watcherMetaKey)
 	return rt.NewUserData(j, watcherMeta.AsTable())
 }
