@@ -61,6 +61,7 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		*/
 	}
 	hshMod = moonlight.NewTable()
+	hshMod.SetRuntime(mlr)
 	mlr.SetExports(hshMod, exports)
 
 	host, _ := os.Hostname()
@@ -70,9 +71,7 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
 	}
 
-	println("setting ver field")
 	hshMod.SetField("ver", moonlight.StringValue(getVersion()))
-	println("setting goversion field")
 	hshMod.SetField("goVersion", moonlight.StringValue(runtime.Version()))
 	hshMod.SetField("user", moonlight.StringValue(username))
 	hshMod.SetField("host", moonlight.StringValue(host))

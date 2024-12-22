@@ -48,7 +48,7 @@ func (mlr *Runtime) pushToState(v Value) {
 		case TableType:
 			tbl := v.AsTable()
 			tbl.SetRuntime(mlr)
-			mlr.state.RawGeti(lua.LUA_REGISTRYINDEX, tbl.refIdx)
+			tbl.Push()
 		default: mlr.state.PushNil()
 	}
 }
