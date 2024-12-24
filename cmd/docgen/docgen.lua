@@ -134,7 +134,7 @@ for iface, dps in pairs(pieces) do
 		if tocPos then
 			local pos = f:seek()
 			f:seek('set', tocPos)
-			f:write(string.format('|<a href="#%s">|%s|\n', func, docs.description[1]))
+			f:write(string.format('|<a href="#%s">%s</a>|%s|\n', func, sig, docs.description[1]))
 			tocPos = f:seek()
 			f:seek('set', pos)
 		end
