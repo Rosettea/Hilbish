@@ -57,22 +57,13 @@ end)
 |<a href="#runner.setMode">setMode(cb)</a>|This is the same as the `hilbish.runnerMode` function.|
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
-
-<hr>
-<div id='runner.setMode'>
-<h4 class='heading'>
-hilbish.runner.setMode(cb)
-<a href="#runner.setMode" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-This is the same as the `hilbish.runnerMode` function.  
-It takes a callback, which will be used to execute all interactive input.  
-In normal cases, neither callbacks should be overrided by the user,  
-as the higher level functions listed below this will handle it.  
-
-#### Parameters
+|<a href="#getCurrent">|Returns the current runner by name.|
+|<a href="#setCurrent">|Sets the current interactive/command line runner mode.|
+|<a href="#add">|Adds a runner to the table of available runners. If runner is a table,|
+|<a href="#get">|Get a runner by name.|
+|<a href="#set">|Sets a runner by name. The runner table must have the run function in it.|
+|<a href="#exec">|Executes cmd with a runner. If runnerName isn't passed, it uses|
+### Parameters
 `function` **`cb`**  
 
 
@@ -112,5 +103,94 @@ This is the equivalent of using `source`.
 `string` **`cmd`**  
 
 
+</div>
+
+<hr>
+<div id='getCurrent'>
+<h4 class='heading'>
+hilbish.runner.getCurrent()
+<a href="#getCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Returns the current runner by name.
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr>
+<div id='setCurrent'>
+<h4 class='heading'>
+hilbish.runner.setCurrent(name)
+<a href="#setCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Sets the current interactive/command line runner mode.
+#### Parameters
+`name` **`string`**
+</div>
+
+<hr>
+<div id='add'>
+<h4 class='heading'>
+hilbish.runner.add(name, runner)
+<a href="#add" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Adds a runner to the table of available runners. If runner is a table,
+it must have the run function in it.
+#### Parameters
+`name` **`string`**
+`runner` **`function`**
+</div>
+
+<hr>
+<div id='get'>
+<h4 class='heading'>
+hilbish.runner.get(name)
+<a href="#get" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Get a runner by name.
+#### Parameters
+`name` **`string`**
+</div>
+
+<hr>
+<div id='set'>
+<h4 class='heading'>
+hilbish.runner.set(name, runner)
+<a href="#set" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Sets a runner by name. The runner table must have the run function in it.
+#### Parameters
+`name` **`string`**
+`runner` **`table`**
+</div>
+
+<hr>
+<div id='exec'>
+<h4 class='heading'>
+hilbish.runner.exec(cmd, runnerName)
+<a href="#exec" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Executes cmd with a runner. If runnerName isn't passed, it uses
+the user's current runner.
+#### Parameters
+`cmd` **`string`**
+`runnerName` **`string?`**
 </div>
 

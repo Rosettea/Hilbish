@@ -1,6 +1,6 @@
 local fs = require 'fs'
 local emmyPattern = '^%-%-%- (.+)'
-local modpattern = '^%-+ @module (%w+)'
+local modpattern = '^%-+ @module (.+)'
 local pieces = {}
 
 local files = fs.readdir 'nature'
@@ -19,6 +19,8 @@ for _, fname in ipairs(files) do
 	local docPiece = {}
 	local lines = {}
 	local lineno = 0
+	local tocPos
+	local tocSearch = false
 	for line in f:lines() do
 		lineno = lineno + 1
 		lines[lineno] = line
@@ -81,30 +83,64 @@ description: %s
 layout: doc
 menu:
   docs:
-    parent: "Nature"
+    parent: "%s"
 ---
 
 ]]
 
 for iface, dps in pairs(pieces) do
 	local mod = iface:match '(%w+)%.' or 'nature'
-	local path = string.format('docs/%s/%s.md', mod, iface)
+	local docParent = 'Nature'
+
+	path = string.format('docs/%s/%s.md', mod, iface)
+	if mod ~= 'nature' then
+		docParent = "API"
+		path = string.format('docs/api/%s/%s.md', mod, iface)
+	end
+
 	fs.mkdir(fs.dir(path), true)
-	local f <close> = io.open(path, 'w')
-	f:write(string.format(header, 'Module', iface, 'No description.'))
+
+	local exists = pcall(fs.stat, path)
+	local newOrNotNature = exists and mod ~= 'nature'
+
+	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
+	if not newOrNotNature then
+		f:write(string.format(header, 'Module', iface, 'No description.', docParent))
+	end
 	print(f)
 
-	print(mod, path)
+	print('mod and path:', mod, path)
+
+	local tocSearch = false
+	local tocPos
+	for line in f:lines() do
+		if line:match '^## Functions' then
+			tocSearch = true
+		end
+		if tocSearch and line == '' then
+			tocSearch = false
+			tocPos = f:seek() - 1
+		end
+	end
 
 	for func, docs in pairs(dps) do
-		f:write(string.format('<hr>\n<div id=\'%s\'>', func))
 		local sig = string.format('%s.%s(', iface, func)
 		for idx, param in ipairs(docs.params) do
 			sig = sig .. ((param.name:gsub('%?$', '')))
 			if idx ~= #docs.params then sig = sig .. ', ' end
 		end
 		sig = sig .. ')'
-		f:write(string.format([[			
+
+		if tocPos then
+			local pos = f:seek()
+			f:seek('set', tocPos)
+			f:write(string.format('|<a href="#%s">|%s|\n', func, docs.description[1]))
+			tocPos = f:seek()
+			f:seek('set', pos)
+		end
+
+		f:write(string.format('<hr>\n<div id=\'%s\'>\n', func))
+		f:write(string.format([[
 <h4 class='heading'>
 %s
 <a href="#%s" class='heading-link'>
