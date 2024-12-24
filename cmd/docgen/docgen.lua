@@ -125,16 +125,21 @@ for iface, dps in pairs(pieces) do
 
 	for func, docs in pairs(dps) do
 		local sig = string.format('%s.%s(', iface, func)
+		local params = ''
 		for idx, param in ipairs(docs.params) do
-			sig = sig .. ((param.name:gsub('%?$', '')))
-			if idx ~= #docs.params then sig = sig .. ', ' end
+			sig = sig .. param.name:gsub('%?$', '')
+			params = params .. param.name:gsub('%?$', '')
+			if idx ~= #docs.params then
+				sig = sig .. ', '
+				params = params .. ', '
+			end
 		end
 		sig = sig .. ')'
 
 		if tocPos then
 			local pos = f:seek()
 			f:seek('set', tocPos)
-			f:write(string.format('|<a href="#%s">%s</a>|%s|\n', func, sig, docs.description[1]))
+			f:write(string.format('|<a href="#%s">%s</a>|%s|\n', func, string.format('%s(%s)', func, params), docs.description[1]))
 			tocPos = f:seek()
 			f:seek('set', pos)
 		end
