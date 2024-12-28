@@ -434,26 +434,8 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 		// sh/interp but with our job handling
 
 		env := hc.Env
-		envList := make([]string, 0, 64)
+		envList := os.Environ()
 		env.Each(func(name string, vr expand.Variable) bool {
-			if name == "PATH" {
-				pathEnv := os.Getenv("PATH")
-				envList = append(envList, "PATH="+pathEnv)
-				return true
-			}
-
-			if !vr.IsSet() {
-				// If a variable is set globally but unset in the
-				// runner, we need to ensure it's not part of the final
-				// list. Seems like zeroing the element is enough.
-				// This is a linear search, but this scenario should be
-				// rare, and the number of variables shouldn't be large.
-				for i, kv := range envList {
-					if strings.HasPrefix(kv, name+"=") {
-						envList[i] = ""
-					}
-				}
-			}
 			if vr.Exported && vr.Kind == expand.String {
 				envList = append(envList, name+"="+vr.String())
 			}
