@@ -4,8 +4,10 @@
 ### Added
 - Forward/Right arrow key will fill in hint text (#327)
 
+## [2.3.4] - 2024-12-28
 ### Fixed
 - Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
+- Apply environment variables properly after 2.3 shell interpreter changes
 
 ## [2.3.3] - 2024-11-04
 ### Fixed
@@ -787,6 +789,7 @@ This input for example will prompt for more input to complete:
 
 First "stable" release of Hilbish.
 
+[2.3.4]: https://github.com/Rosettea/Hilbish/compare/v2.3.3...v2.3.4
 [2.3.3]: https://github.com/Rosettea/Hilbish/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/Rosettea/Hilbish/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/Rosettea/Hilbish/compare/v2.3.0...v2.3.1
