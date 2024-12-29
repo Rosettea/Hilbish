@@ -15,7 +15,7 @@ import (
 var snailMetaKey = rt.StringValue("hshsnail")
 var Loader = packagelib.Loader{
 	Load: loaderFunc,
-	Name: "fs",
+	Name: "snail",
 }
 
 func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
