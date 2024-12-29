@@ -30,8 +30,7 @@ func luaInit() {
 	util.DoString(l, "hilbish = require 'hilbish'")
 
 	// Add fs and terminal module module to Lua
-	f := fs.New(runner)
-	lib.LoadLibs(l, f.Loader)
+	lib.LoadLibs(l, fs.Loader)
 	lib.LoadLibs(l, terminal.Loader)
 
 	cmds = commander.New(l)
