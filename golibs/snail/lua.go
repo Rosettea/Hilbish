@@ -85,6 +85,9 @@ func srun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			if code, ok := interp.IsExitStatus(err); ok {
 				exitCode = int(code)
 			} else {
+				if exErr, ok := util.IsExecError(err); ok {
+					exitCode = exErr.Code
+				}
 				luaErr = rt.StringValue(err.Error())
 			}
 		}
