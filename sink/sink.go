@@ -2,6 +2,7 @@ package sink
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -18,14 +19,13 @@ var sinkMetaKey = rt.StringValue("hshsink")
 // A sink is a structure that has input and/or output to/from
 // a desination.
 type Sink struct{
-	writer *bufio.Writer
-	reader *bufio.Reader
+	rw *bufio.ReadWriter
 	file *os.File
 	UserData *rt.UserData
 	autoFlush bool
 }
 
-func SetupSinkType(rtm *rt.Runtime) {
+func Loader(rtm *rt.Runtime) *rt.Table {
 	sinkMeta := rt.NewTable()
 
 	sinkMethods := rt.NewTable()
@@ -65,8 +65,23 @@ func SetupSinkType(rtm *rt.Runtime) {
 
 	sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
 	rtm.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
+
+	exports := map[string]util.LuaExport{
+		"new": {luaSinkNew, 0, false},
+	}
+
+	mod := rt.NewTable()
+	util.SetExports(rtm, mod, exports)
+
+	return mod
 }
 
+
+func luaSinkNew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	snk := NewSink(t.Runtime, new(bytes.Buffer))
+
+	return c.PushingNext1(t.Runtime, rt.UserDataValue(snk.UserData)), nil
+}
 
 // #member
 // readAll() -> string
@@ -84,7 +99,7 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	lines := []string{}
 	for {
-		line, err := s.reader.ReadString('\n')
+		line, err := s.rw.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -113,7 +128,7 @@ func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	str, _ := s.reader.ReadString('\n')
+	str, _ := s.rw.ReadString('\n')
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(str)), nil
 }
@@ -135,9 +150,9 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.writer.Write([]byte(data))
+	s.rw.Write([]byte(data))
 	if s.autoFlush {
-		s.writer.Flush()
+		s.rw.Flush()
 	}
 
 	return c.Next(), nil
@@ -160,9 +175,9 @@ func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.writer.Write([]byte(data + "\n"))
+	s.rw.Write([]byte(data + "\n"))
 	if s.autoFlush {
-		s.writer.Flush()
+		s.rw.Flush()
 	}
 
 	return c.Next(), nil
@@ -181,7 +196,7 @@ func luaSinkFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.writer.Flush()
+	s.rw.Flush()
 
 	return c.Next(), nil
 }
@@ -212,9 +227,22 @@ func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+func NewSink(rtm *rt.Runtime, rw io.ReadWriter) *Sink {
+	s := &Sink{
+		rw: bufio.NewReadWriter(bufio.NewReader(rw), bufio.NewWriter(rw)),
+	}
+	s.UserData = sinkUserData(rtm, s)
+
+	if f, ok := rw.(*os.File); ok {
+		s.file = f
+	}
+
+	return s
+}
+
 func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
 	s := &Sink{
-		reader: bufio.NewReader(r),
+		rw: bufio.NewReadWriter(bufio.NewReader(r), nil),
 	}
 	s.UserData = sinkUserData(rtm, s)
 
@@ -227,7 +255,7 @@ func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
 
 func NewSinkOutput(rtm *rt.Runtime, w io.Writer) *Sink {
 	s := &Sink{
-		writer: bufio.NewWriter(w),
+		rw: bufio.NewReadWriter(nil, bufio.NewWriter(w)),
 		autoFlush: true,
 	}
 	s.UserData = sinkUserData(rtm, s)

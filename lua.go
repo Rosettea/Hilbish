@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"hilbish/sink"
 	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
@@ -25,7 +24,6 @@ func luaInit() {
 		MessageHandler: debuglib.Traceback,
 	})
 	lib.LoadAll(l)
-	sink.SetupSinkType(l)
 
 	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
