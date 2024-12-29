@@ -83,6 +83,11 @@ function hilbish.runner.getCurrent()
 	return currentRunner
 end
 
+local snaili = snail.new()
+function hilbish.runner.sh(input)
+	return snaili:run(input)
+end
+
 hilbish.runner.add('hybrid', function(input)
 	local cmdStr = hilbish.aliases.resolve(input)
 
@@ -109,5 +114,5 @@ hilbish.runner.add('lua', function(input)
 	return hilbish.runner.lua(cmdStr)
 end)
 
-hilbish.runner.add('sh', snail.new())
-
+hilbish.runner.add('sh', hilbish.runner.sh)
+hilbish.runner.setCurrent 'hybrid'

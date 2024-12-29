@@ -82,7 +82,7 @@ func (s *snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			_, argstring := splitInput(strings.Join(args, " "))
 			// i dont really like this but it works
 			aliases := make(map[string]string)
-			aliasesLua, _ := util.DoString(s.runtime, "return hilbish.aliases.all()")
+			aliasesLua, _ := util.DoString(s.runtime, "return hilbish.aliases.list()")
 			util.ForEach(aliasesLua.AsTable(), func(k, v rt.Value) {
 				aliases[k.AsString()] = v.AsString()
 			})
@@ -115,7 +115,7 @@ func (s *snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			cmds := make(map[string]*rt.Closure)
 			luaCmds := util.MustDoString(s.runtime, "local commander = require 'commander'; return commander.registry()").AsTable()
 			util.ForEach(luaCmds, func(k, v rt.Value) {
-				cmds[k.AsString()] = k.AsTable().Get(rt.StringValue("exec")).AsClosure()
+				cmds[k.AsString()] = v.AsTable().Get(rt.StringValue("exec")).AsClosure()
 			})
 			if cmd := cmds[args[0]]; cmd != nil {
 				stdin := sink.NewSinkInput(s.runtime, hc.Stdin)
