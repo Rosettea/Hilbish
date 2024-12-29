@@ -411,7 +411,7 @@ func execHandle(bg bool) interp.ExecHandlerFunc {
 			return interp.NewExitStatus(exitcode)
 		}
 
-		path, err := lookpath(args[0])
+		path, err := util.LookPath(args[0])
 		if err == errNotExec {
 			return execError{
 				typ: "not-executable",
@@ -524,41 +524,14 @@ func handleExecErr(err error) (exit uint8) {
 
 	return
 }
-func lookpath(file string) (string, error) { // custom lookpath function so we know if a command is found *and* is executable
-	var skip []string
-	if runtime.GOOS == "windows" {
-		skip = []string{"./", "../", "~/", "C:"}
-	} else {
-		skip = []string{"./", "/", "../", "~/"}
-	}
-	for _, s := range skip {
-		if strings.HasPrefix(file, s) {
-			return file, findExecutable(file, false, false)
-		}
-	}
-	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
-		path := filepath.Join(dir, file)
-		err := findExecutable(path, true, false)
-		if err == errNotExec {
-			return "", err
-		} else if err == nil {
-			return path, nil
-		}
-	}
-
-	return "", os.ErrNotExist
-}
 
 func splitInput(input string) ([]string, string) {
 	// end my suffering
 	// TODO: refactor this garbage
 	quoted := false
-	startlastcmd := false
-	lastcmddone := false
 	cmdArgs := []string{}
 	sb := &strings.Builder{}
 	cmdstr := &strings.Builder{}
-	lastcmd := "" //readline.GetHistory(readline.HistorySize() - 1)
 
 	for _, r := range input {
 		if r == '"' {
@@ -574,22 +547,6 @@ func splitInput(input string) ([]string, string) {
 			// if not quoted and there's a space then add to cmdargs
 			cmdArgs = append(cmdArgs, sb.String())
 			sb.Reset()
-		} else if !quoted && r == '^' && startlastcmd && !lastcmddone {
-			// if ^ is found, isnt in quotes and is
-			// the second occurence of the character and is
-			// the first time "^^" has been used
-			cmdstr.WriteString(lastcmd)
-			sb.WriteString(lastcmd)
-
-			startlastcmd = !startlastcmd
-			lastcmddone = !lastcmddone
-
-			continue
-		} else if !quoted && r == '^' && !lastcmddone {
-			// if ^ is found, isnt in quotes and is the
-			// first time of starting "^^"
-			startlastcmd = !startlastcmd
-			continue
 		} else {
 			sb.WriteRune(r)
 		}

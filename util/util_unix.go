@@ -1,17 +1,12 @@
 //go:build unix
 
-package main
+package util
 
 import (
 	"os"
-	"syscall"
 )
 
-var bgProcAttr *syscall.SysProcAttr = &syscall.SysProcAttr{
-	Setpgid: true,
-}
-
-func findExecutable(path string, inPath, dirs bool) error {
+func FindExecutable(path string, inPath, dirs bool) error {
 	f, err := os.Stat(path)
 	if err != nil {
 		return err

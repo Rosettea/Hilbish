@@ -508,7 +508,7 @@ func hlexec(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 	cmdArgs, _ := splitInput(cmd)
 	if runtime.GOOS != "windows" {
-		cmdPath, err := exec.LookPath(cmdArgs[0])
+		cmdPath, err := util.LookPath(cmdArgs[0])
 		if err != nil {
 			fmt.Println(err)
 			// if we get here, cmdPath will be nothing
@@ -706,7 +706,7 @@ func hlwhich(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return c.PushingNext1(t.Runtime, rt.StringValue(cmd)), nil
 	}
 
-	path, err := exec.LookPath(cmd)
+	path, err := util.LookPath(cmd)
 	if err != nil {
 		return c.Next(), nil
 	}

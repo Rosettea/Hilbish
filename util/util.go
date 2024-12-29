@@ -141,3 +141,28 @@ func AbbrevHome(path string) string {
 
 	return path
 }
+
+func LookPath(file string) (string, error) { // custom lookpath function so we know if a command is found *and* is executable
+	var skip []string
+	if runtime.GOOS == "windows" {
+		skip = []string{"./", "../", "~/", "C:"}
+	} else {
+		skip = []string{"./", "/", "../", "~/"}
+	}
+	for _, s := range skip {
+		if strings.HasPrefix(file, s) {
+			return file, findExecutable(file, false, false)
+		}
+	}
+	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
+		path := filepath.Join(dir, file)
+		err := findExecutable(path, true, false)
+		if err == errNotExec {
+			return "", err
+		} else if err == nil {
+			return path, nil
+		}
+	}
+
+	return "", os.ErrNotExist
+}

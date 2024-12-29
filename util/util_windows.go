@@ -1,18 +1,13 @@
 //go:build windows
 
-package main
+package util
 
 import (
 	"path/filepath"
 	"os"
-	"syscall"
 )
 
-var bgProcAttr *syscall.SysProcAttr = &syscall.SysProcAttr{
-	CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
-}
-
-func findExecutable(path string, inPath, dirs bool) error {
+func FindExecutable(path string, inPath, dirs bool) error {
 	nameExt := filepath.Ext(path)
 	pathExts := filepath.SplitList(os.Getenv("PATHEXT"))
 	if inPath {

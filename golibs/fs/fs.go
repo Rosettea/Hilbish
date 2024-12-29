@@ -110,12 +110,10 @@ func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 	path = util.ExpandHome(strings.TrimSpace(path))
 
-	abspath, _ := filepath.Abs(path)
 	err = os.Chdir(path)
 	if err != nil {
 		return nil, err
 	}
-	interp.Dir(abspath)(f.runner)
 
 	return c.Next(), err
 }
