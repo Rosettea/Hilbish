@@ -22,5 +22,6 @@ commander.register('cd', function (args, sinks)
 		sinks.out:writeln(err)
 		return 1
 	end
+	bait.throw('cd', path, oldPath)
 	bait.throw('hilbish.cd', fs.abs(path), oldPath)
 end)
