@@ -13,10 +13,9 @@
 package main
 
 import (
-	"bytes"
+	//"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -28,9 +27,9 @@ import (
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/packagelib"
-	"github.com/arnodel/golua/lib/iolib"
+	//"github.com/arnodel/golua/lib/iolib"
 	"github.com/maxlandon/readline"
-	"mvdan.cc/sh/v3/interp"
+	//"mvdan.cc/sh/v3/interp"
 )
 
 var exports = map[string]util.LuaExport{
@@ -49,7 +48,7 @@ var exports = map[string]util.LuaExport{
 	"inputMode": {hlinputMode, 1, false},
 	"interval": {hlinterval, 2, false},
 	"read": {hlread, 1, false},
-	"run": {hlrun, 1, true},
+	//"run": {hlrun, 1, true},
 	"timeout": {hltimeout, 2, false},
 	"which": {hlwhich, 1, false},
 }
@@ -154,6 +153,7 @@ func unsetVimMode() {
 	util.SetField(l, hshMod, "vimMode", rt.NilValue)
 }
 
+/*
 func handleStream(v rt.Value, strms *streams, errStream bool) error {
 	ud, ok := v.TryUserData()
 	if !ok {
@@ -182,6 +182,7 @@ func handleStream(v rt.Value, strms *streams, errStream bool) error {
 
 	return nil
 }
+*/
 
 // run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 // Runs `cmd` in Hilbish's shell script interpreter.
@@ -210,6 +211,7 @@ hilbish.run('wc -l', {
 })
 */
 // #example
+/*
 func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	// TODO: ON BREAKING RELEASE, DO NOT ACCEPT `streams` AS A BOOLEAN.
 	if err := c.Check1Arg(); err != nil {
@@ -288,6 +290,7 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.PushingNext(t.Runtime, rt.IntValue(int64(exitcode)), rt.StringValue(stdoutStr), rt.StringValue(stderrStr)), nil
 }
+*/
 
 // cwd() -> string
 // Returns the current directory of the shell.
@@ -743,6 +746,8 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // runnerMode(mode)
+// **NOTE: This function is deprecated and will be removed in 3.0**
+// Use `hilbish.runner.setCurrent` instead.
 // Sets the execution/runner mode for interactive Hilbish.
 // This determines whether Hilbish wll try to run input as Lua
 // and/or sh or only do one of either.
@@ -752,6 +757,7 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Read [about runner mode](../features/runner-mode) for more information.
 // #param mode string|function
 func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	// TODO: Reimplement in Lua
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}

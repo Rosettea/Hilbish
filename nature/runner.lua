@@ -1,4 +1,6 @@
 --- hilbish.runner
+local snail = require 'snail'
+
 local currentRunner = 'hybrid'
 local runners = {}
 
@@ -107,7 +109,5 @@ hilbish.runner.add('lua', function(input)
 	return hilbish.runner.lua(cmdStr)
 end)
 
-hilbish.runner.add('sh', function(input)
-	return hilbish.runner.sh(input)
-end)
+hilbish.runner.add('sh', snail.new())
 

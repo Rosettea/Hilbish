@@ -136,7 +136,7 @@ func luaStartJob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	if !j.running {
 		err := j.start()
-		exit := handleExecErr(err)
+		exit := util.HandleExecErr(err)
 		j.exitCode = int(exit)
 		j.finish()
 	}

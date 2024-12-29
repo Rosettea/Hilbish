@@ -20,5 +20,5 @@ func FindExecutable(path string, inPath, dirs bool) error {
 			return nil
 		}
 	}
-	return errNotExec
+	return ErrNotExec
 }
