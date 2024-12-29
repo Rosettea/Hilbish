@@ -16,7 +16,7 @@ import (
 
 var errNotExec = errors.New("not executable")
 var errNotFound = errors.New("not found")
-var runnerMode rt.Value = rt.StringValue("hybrid")
+var runnerMode rt.Value = rt.NilValue
 
 func runInput(input string, priv bool) {
 	running = true
