@@ -5,6 +5,8 @@ package util
 import (
 	"path/filepath"
 	"os"
+
+	"hilbish/util"
 )
 
 func FindExecutable(path string, inPath, dirs bool) error {
@@ -21,15 +23,15 @@ func FindExecutable(path string, inPath, dirs bool) error {
 		} else {
 			_, err := os.Stat(path)
 			if err == nil {
-				if contains(pathExts, nameExt) { return nil }
-				return errNotExec
+				if util.Contains(pathExts, nameExt) { return nil }
+				return util.ErrNotExec
 			}
 		}
 	} else {
 		_, err := os.Stat(path)
 		if err == nil {
-			if contains(pathExts, nameExt) { return nil }
-			return errNotExec
+			if util.Contains(pathExts, nameExt) { return nil }
+			return util.ErrNotExec
 		}
 	}
 
