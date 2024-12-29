@@ -22,7 +22,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	snailMeta := rt.NewTable()
 	snailMethods := rt.NewTable()
 	snailFuncs := map[string]util.LuaExport{
-		"run": {srun, 1, false},
+		"run": {srun, 2, false},
 	}
 	util.SetExports(rtm, snailMethods, snailFuncs)
 
