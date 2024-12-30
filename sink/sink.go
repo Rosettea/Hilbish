@@ -19,7 +19,7 @@ var sinkMetaKey = rt.StringValue("hshsink")
 // A sink is a structure that has input and/or output to/from
 // a desination.
 type Sink struct{
-	rw *bufio.ReadWriter
+	Rw *bufio.ReadWriter
 	file *os.File
 	UserData *rt.UserData
 	autoFlush bool
@@ -99,7 +99,7 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	lines := []string{}
 	for {
-		line, err := s.rw.ReadString('\n')
+		line, err := s.Rw.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -128,7 +128,7 @@ func luaSinkRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	str, _ := s.rw.ReadString('\n')
+	str, _ := s.Rw.ReadString('\n')
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(str)), nil
 }
@@ -150,9 +150,9 @@ func luaSinkWrite(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.rw.Write([]byte(data))
+	s.Rw.Write([]byte(data))
 	if s.autoFlush {
-		s.rw.Flush()
+		s.Rw.Flush()
 	}
 
 	return c.Next(), nil
@@ -175,9 +175,9 @@ func luaSinkWriteln(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.rw.Write([]byte(data + "\n"))
+	s.Rw.Write([]byte(data + "\n"))
 	if s.autoFlush {
-		s.rw.Flush()
+		s.Rw.Flush()
 	}
 
 	return c.Next(), nil
@@ -196,7 +196,7 @@ func luaSinkFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	s.rw.Flush()
+	s.Rw.Flush()
 
 	return c.Next(), nil
 }
@@ -227,13 +227,13 @@ func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func NewSink(rtm *rt.Runtime, rw io.ReadWriter) *Sink {
+func NewSink(rtm *rt.Runtime, Rw io.ReadWriter) *Sink {
 	s := &Sink{
-		rw: bufio.NewReadWriter(bufio.NewReader(rw), bufio.NewWriter(rw)),
+		Rw: bufio.NewReadWriter(bufio.NewReader(Rw), bufio.NewWriter(Rw)),
 	}
 	s.UserData = sinkUserData(rtm, s)
 
-	if f, ok := rw.(*os.File); ok {
+	if f, ok := Rw.(*os.File); ok {
 		s.file = f
 	}
 
@@ -242,7 +242,7 @@ func NewSink(rtm *rt.Runtime, rw io.ReadWriter) *Sink {
 
 func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
 	s := &Sink{
-		rw: bufio.NewReadWriter(bufio.NewReader(r), nil),
+		Rw: bufio.NewReadWriter(bufio.NewReader(r), nil),
 	}
 	s.UserData = sinkUserData(rtm, s)
 
@@ -255,7 +255,7 @@ func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
 
 func NewSinkOutput(rtm *rt.Runtime, w io.Writer) *Sink {
 	s := &Sink{
-		rw: bufio.NewReadWriter(nil, bufio.NewWriter(w)),
+		Rw: bufio.NewReadWriter(nil, bufio.NewWriter(w)),
 		autoFlush: true,
 	}
 	s.UserData = sinkUserData(rtm, s)

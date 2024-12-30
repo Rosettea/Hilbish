@@ -83,9 +83,8 @@ function hilbish.runner.getCurrent()
 	return currentRunner
 end
 
-local snaili = snail.new()
 function hilbish.runner.sh(input)
-	return snaili:run(input)
+	return hilbish.snail:run(input)
 end
 
 hilbish.runner.add('hybrid', function(input)
