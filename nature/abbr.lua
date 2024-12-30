@@ -21,7 +21,8 @@ hilbish.abbr.add {
 }
 
 bait.catch('hilbish.rawInput', function(c)
-	if c == ' ' then -- space
+	-- 0x0d == enter
+	if c == ' ' or c == string.char(0x0d) then
 		-- check if the last "word" was a valid abbreviation
 		local line = hilbish.editor.getLine()
 		local lineSplits = string.split(line, ' ')
