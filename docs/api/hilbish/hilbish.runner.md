@@ -57,13 +57,37 @@ end)
 |<a href="#runner.setMode">setMode(cb)</a>|This is the same as the `hilbish.runnerMode` function.|
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
-|<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
-|<a href="#setCurrent">setCurrent(name)</a>|Sets the current interactive/command line runner mode.|
-|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners. If runner is a table,|
-|<a href="#get">get(name)</a>|Get a runner by name.|
-|<a href="#set">set(name, runner)</a>|Sets a runner by name. The runner table must have the run function in it.|
 |<a href="#exec">exec(cmd, runnerName)</a>|Executes cmd with a runner. If runnerName isn't passed, it uses|
-d)
+|<a href="#set">set(name, runner)</a>|Sets a runner by name. The runner table must have the run function in it.|
+|<a href="#get">get(name)</a>|Get a runner by name.|
+|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners. If runner is a table,|
+|<a href="#setCurrent">setCurrent(name)</a>|Sets the current interactive/command line runner mode.|
+|<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
+
+<hr>
+<div id='runner.setMode'>
+<h4 class='heading'>
+hilbish.runner.setMode(cb)
+<a href="#runner.setMode" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+This is the same as the `hilbish.runnerMode` function.  
+It takes a callback, which will be used to execute all interactive input.  
+In normal cases, neither callbacks should be overrided by the user,  
+as the higher level functions listed below this will handle it.  
+
+#### Parameters
+`function` **`cb`**  
+
+
+</div>
+
+<hr>
+<div id='runner.lua'>
+<h4 class='heading'>
+hilbish.runner.lua(cmd)
 <a href="#runner.lua" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>

@@ -19,8 +19,6 @@ for _, fname in ipairs(files) do
 	local docPiece = {}
 	local lines = {}
 	local lineno = 0
-	local tocPos
-	local tocSearch = false
 	for line in f:lines() do
 		lineno = lineno + 1
 		lines[lineno] = line
@@ -137,11 +135,12 @@ for iface, dps in pairs(pieces) do
 		sig = sig .. ')'
 
 		if tocPos then
-			local pos = f:seek()
 			f:seek('set', tocPos)
-			f:write(string.format('|<a href="#%s">%s</a>|%s|\n', func, string.format('%s(%s)', func, params), docs.description[1]))
-			tocPos = f:seek()
-			f:seek('set', pos)
+			local contents = f:read '*a'
+			f:seek('set', tocPos)
+			local tocLine = string.format('|<a href="#%s">%s</a>|%s|\n', func, string.format('%s(%s)', func, params), docs.description[1])
+			f:write(tocLine .. contents)
+			f:seek 'end'
 		end
 
 		f:write(string.format('<hr>\n<div id=\'%s\'>\n', func))
