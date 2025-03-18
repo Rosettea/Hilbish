@@ -57,11 +57,11 @@ end)
 |<a href="#runner.setMode">setMode(cb)</a>|This is the same as the `hilbish.runnerMode` function.|
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
-|<a href="#exec">exec(cmd, runnerName)</a>|Executes cmd with a runner. If runnerName isn't passed, it uses|
-|<a href="#set">set(name, runner)</a>|Sets a runner by name. The runner table must have the run function in it.|
+|<a href="#exec">exec(cmd, runnerName)</a>|Executes `cmd` with a runner.|
+|<a href="#set">set(name, runner)</a>|*Sets* a runner by name. The difference between this function and|
 |<a href="#get">get(name)</a>|Get a runner by name.|
-|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners. If runner is a table,|
-|<a href="#setCurrent">setCurrent(name)</a>|Sets the current interactive/command line runner mode.|
+|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners.|
+|<a href="#setCurrent">setCurrent(name)</a>|Sets Hilbish's runner mode by name.|
 |<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
 
 <hr>
@@ -143,7 +143,7 @@ hilbish.runner.setCurrent(name)
 </a>
 </h4>
 
-Sets the current interactive/command line runner mode.
+Sets Hilbish's runner mode by name.
 #### Parameters
 `name` **`string`**  
 
@@ -159,14 +159,14 @@ hilbish.runner.add(name, runner)
 </a>
 </h4>
 
-Adds a runner to the table of available runners. If runner is a table,
-it must have the run function in it.
+Adds a runner to the table of available runners.
+If runner is a table, it must have the run function in it.
 #### Parameters
 `name` **`string`**  
-
+ Name of the runner
 
 `runner` **`function|table`**  
-
+ 
 
 </div>
 
@@ -182,7 +182,7 @@ hilbish.runner.get(name)
 Get a runner by name.
 #### Parameters
 `name` **`string`**  
-
+ Name of the runner to retrieve.
 
 </div>
 
@@ -195,7 +195,9 @@ hilbish.runner.set(name, runner)
 </a>
 </h4>
 
-Sets a runner by name. The runner table must have the run function in it.
+*Sets* a runner by name. The difference between this function and
+add, is set will *not* check if the named runner exists.
+The runner table must have the run function in it.
 #### Parameters
 `name` **`string`**  
 
@@ -214,8 +216,8 @@ hilbish.runner.exec(cmd, runnerName)
 </a>
 </h4>
 
-Executes cmd with a runner. If runnerName isn't passed, it uses
-the user's current runner.
+Executes `cmd` with a runner.
+If `runnerName` is not specified, it uses the default Hilbish runner.
 #### Parameters
 `cmd` **`string`**  
 

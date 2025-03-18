@@ -26,15 +26,17 @@ Sets the old directory string.
 <hr>
 <div id='push'>
 <h4 class='heading'>
-dirs.push()
+dirs.push(dir)
 <a href="#push" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
-Add `d` to the recent directories list.
+Add `dir` to the recent directories list.
 #### Parameters
-This function has no parameters.  
+`dir` **`string`**  
+
+
 </div>
 
 <hr>
@@ -47,6 +49,7 @@ dirs.peak(num)
 </h4>
 
 Look at `num` amount of recent directories, starting from the latest.
+This returns  a table of recent directories, up to the `num` amount.
 #### Parameters
 `num` **`number`**  
 

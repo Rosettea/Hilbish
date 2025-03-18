@@ -6,7 +6,7 @@ local runners = {}
 hilbish = hilbish
 
 --- Get a runner by name.
---- @param name string
+--- @param name string Name of the runner to retrieve.
 --- @return table
 function hilbish.runner.get(name)
 	local r = runners[name]
@@ -18,10 +18,10 @@ function hilbish.runner.get(name)
 	return r
 end
 
---- Adds a runner to the table of available runners. If runner is a table,
---- it must have the run function in it.
---- @param name string
---- @param runner function|table
+--- Adds a runner to the table of available runners.
+--- If runner is a table, it must have the run function in it.
+--- @param name string Name of the runner
+--- @param runner function|table 
 function hilbish.runner.add(name, runner)
 	if type(name) ~= 'string' then
 		error 'expected runner name to be a table'
@@ -42,7 +42,9 @@ function hilbish.runner.add(name, runner)
 	hilbish.runner.set(name, runner)
 end
 
---- Sets a runner by name. The runner table must have the run function in it.
+--- *Sets* a runner by name. The difference between this function and
+--- add, is set will *not* check if the named runner exists.
+--- The runner table must have the run function in it.
 --- @param name string
 --- @param runner table
 function hilbish.runner.set(name, runner)
@@ -53,11 +55,11 @@ function hilbish.runner.set(name, runner)
 	runners[name] = runner
 end
 
---- Executes cmd with a runner. If runnerName isn't passed, it uses
---- the user's current runner.
+--- Executes `cmd` with a runner.
+--- If `runnerName` is not specified, it uses the default Hilbish runner.
 --- @param cmd string
 --- @param runnerName string?
---- @return string, number, string
+--- @return table
 function hilbish.runner.exec(cmd, runnerName)
 	if not runnerName then runnerName = currentRunner end
 
@@ -66,7 +68,7 @@ function hilbish.runner.exec(cmd, runnerName)
 	return r.run(cmd)
 end
 
---- Sets the current interactive/command line runner mode.
+--- Sets Hilbish's runner mode by name.
 --- @param name string
 function hilbish.runner.setCurrent(name)
 	local r = hilbish.runner.get(name)
