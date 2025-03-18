@@ -49,10 +49,14 @@ for _, fname in ipairs(files) do
 
 						if emmy then
 							if emmy == 'param' then
+								print('bruh', emmythings[1], emmythings[2])
 								table.insert(dps.params, 1, {
 									name = emmythings[1],
-									type = emmythings[2]
+									type = emmythings[2],
+									-- the +1 accounts for space.
+									description = table.concat(emmythings, ' '):sub(emmythings[1]:len() + 1 + emmythings[2]:len() + 1)
 								})
+								print(table.concat(emmythings, '/'))
 							end
 						else
 							table.insert(dps.description, 1, docline)
@@ -160,7 +164,8 @@ for iface, dps in pairs(pieces) do
 			f:write 'This function has no parameters.  \n'
 		end
 		for _, param in ipairs(docs.params) do
-			f:write(string.format('`%s` **`%s`**\n', param.name:gsub('%?$', ''), param.type))
+			f:write(string.format('`%s` **`%s`**  \n', param.name:gsub('%?$', ''), param.type))
+			f:write(string.format('%s\n\n', param.description))
 		end
 		--[[
 		local params = table.filter(docs, function(t)

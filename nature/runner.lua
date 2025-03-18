@@ -21,7 +21,7 @@ end
 --- Adds a runner to the table of available runners. If runner is a table,
 --- it must have the run function in it.
 --- @param name string
---- @param runner function | table
+--- @param runner function|table
 function hilbish.runner.add(name, runner)
 	if type(name) ~= 'string' then
 		error 'expected runner name to be a table'

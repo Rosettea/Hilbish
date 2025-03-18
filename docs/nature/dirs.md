@@ -18,7 +18,9 @@ dirs.setOld(d)
 
 Sets the old directory string.
 #### Parameters
-`d` **`string`**
+`d` **`string`**  
+
+
 </div>
 
 <hr>
@@ -46,7 +48,9 @@ dirs.peak(num)
 
 Look at `num` amount of recent directories, starting from the latest.
 #### Parameters
-`num` **`number`**
+`num` **`number`**  
+
+
 </div>
 
 <hr>
@@ -60,7 +64,9 @@ dirs.pop(num)
 
 Remove the specified amount of dirs from the recent directories list.
 #### Parameters
-`num` **`number`**
+`num` **`number`**  
+
+
 </div>
 
 <hr>
@@ -74,6 +80,8 @@ dirs.recent(idx)
 
 Get entry from recent directories list based on index.
 #### Parameters
-`idx` **`number`**
+`idx` **`number`**  
+
+
 </div>
 

@@ -145,7 +145,9 @@ hilbish.runner.setCurrent(name)
 
 Sets the current interactive/command line runner mode.
 #### Parameters
-`name` **`string`**
+`name` **`string`**  
+
+
 </div>
 
 <hr>
@@ -160,8 +162,12 @@ hilbish.runner.add(name, runner)
 Adds a runner to the table of available runners. If runner is a table,
 it must have the run function in it.
 #### Parameters
-`name` **`string`**
-`runner` **`function`**
+`name` **`string`**  
+
+
+`runner` **`function|table`**  
+
+
 </div>
 
 <hr>
@@ -175,7 +181,9 @@ hilbish.runner.get(name)
 
 Get a runner by name.
 #### Parameters
-`name` **`string`**
+`name` **`string`**  
+
+
 </div>
 
 <hr>
@@ -189,8 +197,12 @@ hilbish.runner.set(name, runner)
 
 Sets a runner by name. The runner table must have the run function in it.
 #### Parameters
-`name` **`string`**
-`runner` **`table`**
+`name` **`string`**  
+
+
+`runner` **`table`**  
+
+
 </div>
 
 <hr>
@@ -205,7 +217,11 @@ hilbish.runner.exec(cmd, runnerName)
 Executes cmd with a runner. If runnerName isn't passed, it uses
 the user's current runner.
 #### Parameters
-`cmd` **`string`**
-`runnerName` **`string?`**
+`cmd` **`string`**  
+
+
+`runnerName` **`string?`**  
+
+
 </div>
 

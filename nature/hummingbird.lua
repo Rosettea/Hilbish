@@ -53,7 +53,7 @@ function hilbish.messages.read(idx)
 	end
 end
 
-function hilbish.messages.readAll(idx)
+function hilbish.messages.readAll()
 	for _, msg in ipairs(hilbish.messages.all()) do
 		hilbish.messages.read(msg.index)
 	end
@@ -63,6 +63,7 @@ function hilbish.messages.unreadCount()
 	return unread
 end
 
+--- Deletes the message at `idx`.
 function hilbish.messages.delete(idx)
 	local msg = M._messages[idx]
 	if not msg then
