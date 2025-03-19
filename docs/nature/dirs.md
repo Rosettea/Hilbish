@@ -1,12 +1,18 @@
 ---
 title: Module dirs
-description: No description.
+description: internal directory management
 layout: doc
 menu:
   docs:
     parent: "Nature"
 ---
 
+
+## Introduction
+The dirs module defines a small set of functions to store and manage
+directories.
+
+## Functions
 <hr>
 <div id='setOld'>
 <h4 class='heading'>

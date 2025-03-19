@@ -1,7 +1,9 @@
 local fs = require 'fs'
 local emmyPattern = '^%-%-%- (.+)'
+local emmyPattern2 = '^%-%- (.+)'
 local modpattern = '^%-+ @module (.+)'
 local pieces = {}
+local descriptions = {}
 
 local files = fs.readdir 'nature'
 for _, fname in ipairs(files) do
@@ -15,16 +17,24 @@ for _, fname in ipairs(files) do
 
 	print(fname, mod)
 	pieces[mod] = {}
+	descriptions[mod] = {}
 
 	local docPiece = {}
 	local lines = {}
 	local lineno = 0
+	local doingDescription = true
+
 	for line in f:lines() do
 		lineno = lineno + 1
 		lines[lineno] = line
 
 		if line == header then goto continue2 end
-		if not line:match(emmyPattern) then
+		if line:match(emmyPattern) or line:match(emmyPattern2) then
+			if doingDescription then
+				table.insert(descriptions[mod], line:match(emmyPattern) or line:match(emmyPattern2))
+			end
+		else
+			doingDescription = false
 			if line:match '^function' then
 				local pattern = (string.format('^function %s%%.', mod) .. '(%w+)')
 				local funcName = line:match(pattern)
@@ -107,7 +117,12 @@ for iface, dps in pairs(pieces) do
 
 	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
 	if not newOrNotNature then
-		f:write(string.format(header, 'Module', iface, 'No description.', docParent))
+		f:write(string.format(header, 'Module', iface, (descriptions[iface] and #descriptions[iface] > 0) and descriptions[iface][1] or 'No description.', docParent))
+		if descriptions[iface] and #descriptions[iface] > 0 then
+			table.remove(descriptions[iface], 1)
+			f:write(string.format('\n## Introduction\n%s\n\n', table.concat(descriptions[iface], '\n')))
+			f:write('## Functions\n')
+		end
 	end
 	print(f)
 

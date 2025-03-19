@@ -1,12 +1,20 @@
 ---
 title: Module doc
-description: No description.
+description: command-line doc rendering
 layout: doc
 menu:
   docs:
     parent: "Nature"
 ---
 
+
+## Introduction
+The doc module contains a small set of functions
+used by the Greenhouse pager to render parts of the documentation pages.
+This is only documented for the sake of it. It's only intended use
+is by the Greenhouse pager.
+
+## Functions
 <hr>
 <div id='renderInfoBlock'>
 <h4 class='heading'>
