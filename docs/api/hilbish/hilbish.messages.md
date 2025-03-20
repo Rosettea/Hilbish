@@ -20,6 +20,14 @@ The `hilbish.message` type is a table with the following keys:
 `read` (boolean): Whether the full message has been read or not.
 
 ## Functions
+|<a href="#unreadCount">unreadCount()</a>|Returns the amount of unread messages.|
+|<a href="#readAll">readAll()</a>|Marks all messages as read.|
+|<a href="#send">send(message)</a>|Sends a message.|
+|<a href="#read">read(idx)</a>|Marks a message at `idx` as read.|
+|<a href="#delete">delete(idx)</a>|Deletes the message at `idx`.|
+|<a href="#clear">clear()</a>|Deletes all messages.|
+|<a href="#all">all()</a>|Returns all messages.|
+
 <hr>
 <div id='all'>
 <h4 class='heading'>
@@ -34,6 +42,7 @@ Returns all messages.
 This function has no parameters.  
 </div>
 
+
 <hr>
 <div id='clear'>
 <h4 class='heading'>
@@ -47,6 +56,7 @@ Deletes all messages.
 #### Parameters
 This function has no parameters.  
 </div>
+
 
 <hr>
 <div id='delete'>
@@ -64,6 +74,7 @@ Deletes the message at `idx`.
 
 </div>
 
+
 <hr>
 <div id='read'>
 <h4 class='heading'>
@@ -79,6 +90,7 @@ Marks a message at `idx` as read.
 
 
 </div>
+
 
 <hr>
 <div id='send'>
@@ -96,6 +108,7 @@ Sends a message.
 
 </div>
 
+
 <hr>
 <div id='readAll'>
 <h4 class='heading'>
@@ -109,6 +122,7 @@ Marks all messages as read.
 #### Parameters
 This function has no parameters.  
 </div>
+
 
 <hr>
 <div id='unreadCount'>

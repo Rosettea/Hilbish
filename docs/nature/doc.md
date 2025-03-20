@@ -15,6 +15,10 @@ This is only documented for the sake of it. It's only intended use
 is by the Greenhouse pager.
 
 ## Functions
+|<a href="#renderCodeBlock">renderCodeBlock(text)</a>|Assembles and renders a code block. This returns|
+|<a href="#highlight">highlight(text)</a>|Performs basic Lua code highlighting.|
+|<a href="#renderInfoBlock">renderInfoBlock(type, text)</a>|Renders an info block. An info block is a block of text with|
+
 <hr>
 <div id='renderInfoBlock'>
 <h4 class='heading'>
@@ -35,6 +39,7 @@ an icon and styled text block.
 
 </div>
 
+
 <hr>
 <div id='highlight'>
 <h4 class='heading'>
@@ -50,6 +55,7 @@ Performs basic Lua code highlighting.
  Code/text to do highlighting on.
 
 </div>
+
 
 <hr>
 <div id='renderCodeBlock'>

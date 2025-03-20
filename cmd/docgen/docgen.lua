@@ -116,12 +116,14 @@ for iface, dps in pairs(pieces) do
 	local newOrNotNature = exists and mod ~= 'nature'
 
 	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
+	local tocPos
 	if not newOrNotNature then
 		f:write(string.format(header, 'Module', iface, (descriptions[iface] and #descriptions[iface] > 0) and descriptions[iface][1] or 'No description.', docParent))
 		if descriptions[iface] and #descriptions[iface] > 0 then
 			table.remove(descriptions[iface], 1)
 			f:write(string.format('\n## Introduction\n%s\n\n', table.concat(descriptions[iface], '\n')))
 			f:write('## Functions\n')
+			tocPos = f:seek()
 		end
 	end
 	print(f)
@@ -129,7 +131,6 @@ for iface, dps in pairs(pieces) do
 	print('mod and path:', mod, path)
 
 	local tocSearch = false
-	local tocPos
 	for line in f:lines() do
 		if line:match '^## Functions' then
 			tocSearch = true

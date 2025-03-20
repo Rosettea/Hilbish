@@ -120,6 +120,7 @@ This is the equivalent of using `source`.
 
 </div>
 
+
 <hr>
 <div id='getCurrent'>
 <h4 class='heading'>
@@ -133,6 +134,7 @@ Returns the current runner by name.
 #### Parameters
 This function has no parameters.  
 </div>
+
 
 <hr>
 <div id='setCurrent'>
@@ -149,6 +151,7 @@ Sets Hilbish's runner mode by name.
 
 
 </div>
+
 
 <hr>
 <div id='add'>
@@ -170,6 +173,7 @@ If runner is a table, it must have the run function in it.
 
 </div>
 
+
 <hr>
 <div id='get'>
 <h4 class='heading'>
@@ -185,6 +189,7 @@ Get a runner by name.
  Name of the runner to retrieve.
 
 </div>
+
 
 <hr>
 <div id='set'>
@@ -206,6 +211,7 @@ The runner table must have the run function in it.
 
 
 </div>
+
 
 <hr>
 <div id='exec'>
