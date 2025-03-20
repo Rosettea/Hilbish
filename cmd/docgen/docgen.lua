@@ -123,6 +123,9 @@ for iface, dps in pairs(pieces) do
 			table.remove(descriptions[iface], 1)
 			f:write(string.format('\n## Introduction\n%s\n\n', table.concat(descriptions[iface], '\n')))
 			f:write('## Functions\n')
+			f:write([[|||
+|----|----|
+]])
 			tocPos = f:seek()
 		end
 	end
