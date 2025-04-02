@@ -299,7 +299,25 @@ start:
 func main() {
 	fset := token.NewFileSet()
 	os.Mkdir("docs", 0777)
+	os.RemoveAll("docs/api")
 	os.Mkdir("docs/api", 0777)
+
+	f, err := os.Create("docs/api/_index.md")
+	if err != nil {
+		panic(err)
+	}
+	f.WriteString(`---
+title: API
+layout: doc
+weight: -100
+menu: docs
+---
+
+Welcome to the API documentation for Hilbish. This documents Lua functions
+provided by Hilbish.
+`)
+	f.Close()
+
 	os.Mkdir("emmyLuaDocs", 0777)
 
 	dirs := []string{"./"}

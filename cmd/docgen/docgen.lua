@@ -1,7 +1,9 @@
 local fs = require 'fs'
 local emmyPattern = '^%-%-%- (.+)'
-local modpattern = '^%-+ @module (%w+)'
+local emmyPattern2 = '^%-%- (.+)'
+local modpattern = '^%-+ @module (.+)'
 local pieces = {}
+local descriptions = {}
 
 local files = fs.readdir 'nature'
 for _, fname in ipairs(files) do
@@ -15,16 +17,24 @@ for _, fname in ipairs(files) do
 
 	print(fname, mod)
 	pieces[mod] = {}
+	descriptions[mod] = {}
 
 	local docPiece = {}
 	local lines = {}
 	local lineno = 0
+	local doingDescription = true
+
 	for line in f:lines() do
 		lineno = lineno + 1
 		lines[lineno] = line
 
 		if line == header then goto continue2 end
-		if not line:match(emmyPattern) then
+		if line:match(emmyPattern) or line:match(emmyPattern2) then
+			if doingDescription then
+				table.insert(descriptions[mod], line:match(emmyPattern) or line:match(emmyPattern2))
+			end
+		else
+			doingDescription = false
 			if line:match '^function' then
 				local pattern = (string.format('^function %s%%.', mod) .. '(%w+)')
 				local funcName = line:match(pattern)
@@ -49,10 +59,14 @@ for _, fname in ipairs(files) do
 
 						if emmy then
 							if emmy == 'param' then
+								print('bruh', emmythings[1], emmythings[2])
 								table.insert(dps.params, 1, {
 									name = emmythings[1],
-									type = emmythings[2]
+									type = emmythings[2],
+									-- the +1 accounts for space.
+									description = table.concat(emmythings, ' '):sub(emmythings[1]:len() + 1 + emmythings[2]:len() + 1)
 								})
+								print(table.concat(emmythings, '/'))
 							end
 						else
 							table.insert(dps.description, 1, docline)
@@ -81,30 +95,79 @@ description: %s
 layout: doc
 menu:
   docs:
-    parent: "Nature"
+    parent: "%s"
 ---
 
 ]]
 
 for iface, dps in pairs(pieces) do
 	local mod = iface:match '(%w+)%.' or 'nature'
-	local path = string.format('docs/%s/%s.md', mod, iface)
+	local docParent = 'Nature'
+
+	path = string.format('docs/%s/%s.md', mod, iface)
+	if mod ~= 'nature' then
+		docParent = "API"
+		path = string.format('docs/api/%s/%s.md', mod, iface)
+	end
+
 	fs.mkdir(fs.dir(path), true)
-	local f <close> = io.open(path, 'w')
-	f:write(string.format(header, 'Module', iface, 'No description.'))
+
+	local exists = pcall(fs.stat, path)
+	local newOrNotNature = exists and mod ~= 'nature'
+
+	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
+	local tocPos
+	if not newOrNotNature then
+		f:write(string.format(header, 'Module', iface, (descriptions[iface] and #descriptions[iface] > 0) and descriptions[iface][1] or 'No description.', docParent))
+		if descriptions[iface] and #descriptions[iface] > 0 then
+			table.remove(descriptions[iface], 1)
+			f:write(string.format('\n## Introduction\n%s\n\n', table.concat(descriptions[iface], '\n')))
+			f:write('## Functions\n')
+			f:write([[|||
+|----|----|
+]])
+			tocPos = f:seek()
+		end
+	end
 	print(f)
 
-	print(mod, path)
+	print('mod and path:', mod, path)
+
+	local tocSearch = false
+	for line in f:lines() do
+		if line:match '^## Functions' then
+			tocSearch = true
+		end
+		if tocSearch and line == '' then
+			tocSearch = false
+			tocPos = f:seek() - 1
+		end
+	end
 
 	for func, docs in pairs(dps) do
-		f:write(string.format('<hr>\n<div id=\'%s\'>', func))
 		local sig = string.format('%s.%s(', iface, func)
+		local params = ''
 		for idx, param in ipairs(docs.params) do
-			sig = sig .. ((param.name:gsub('%?$', '')))
-			if idx ~= #docs.params then sig = sig .. ', ' end
+			sig = sig .. param.name:gsub('%?$', '')
+			params = params .. param.name:gsub('%?$', '')
+			if idx ~= #docs.params then
+				sig = sig .. ', '
+				params = params .. ', '
+			end
 		end
 		sig = sig .. ')'
-		f:write(string.format([[			
+
+		if tocPos then
+			f:seek('set', tocPos)
+			local contents = f:read '*a'
+			f:seek('set', tocPos)
+			local tocLine = string.format('|<a href="#%s">%s</a>|%s|\n', func, string.format('%s(%s)', func, params), docs.description[1])
+			f:write(tocLine .. contents)
+			f:seek 'end'
+		end
+
+		f:write(string.format('<hr>\n<div id=\'%s\'>\n', func))
+		f:write(string.format([[
 <h4 class='heading'>
 %s
 <a href="#%s" class='heading-link'>
@@ -120,7 +183,8 @@ for iface, dps in pairs(pieces) do
 			f:write 'This function has no parameters.  \n'
 		end
 		for _, param in ipairs(docs.params) do
-			f:write(string.format('`%s` **`%s`**\n', param.name:gsub('%?$', ''), param.type))
+			f:write(string.format('`%s` **`%s`**  \n', param.name:gsub('%?$', ''), param.type))
+			f:write(string.format('%s\n\n', param.description))
 		end
 		--[[
 		local params = table.filter(docs, function(t)
