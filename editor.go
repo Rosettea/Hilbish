@@ -48,7 +48,7 @@ func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface editor
 // setVimRegister(register, text)
 // Sets the vim register at `register` to hold the passed text.
-// #aram register string
+// #param register string
 // #param text string
 func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
@@ -109,8 +109,9 @@ func editorReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 }
 
 // #interface editor
-// deleteByAmount() -> string
-// Reads a keystroke from the user. This is in a format of something like Ctrl-L.
+// deleteByAmount(amount)
+// Deletes characters in the line by the given amount.
+// #param amount number
 func editorDeleteByAmount(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
