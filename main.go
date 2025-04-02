@@ -42,12 +42,24 @@ var (
 )
 
 func main() {
+	if runtime.GOOS == "linux" {
+		// dataDir should only be empty on linux to allow XDG_DATA_DIRS searching.
+		// but since it might be set on some distros (nixos) we should still check if its really is empty.
+		if dataDir == "" {
+			searchableDirs := getenv("XDG_DATA_DIRS", "/usr/local/share/:/usr/share/")
+			for _, path := range strings.Split(searchableDirs, ":") {
+				_, err := os.Stat(filepath.Join(path, "hilbish", ".hilbishrc.lua"))
+				if err == nil {
+					dataDir = filepath.Join(path, "hilbish")
+					break
+				}
+			}
+		}
+	}
+
 	runner, _ = interp.New()
 	curuser, _ = user.Current()
-	homedir := curuser.HomeDir
 	confDir, _ = os.UserConfigDir()
-	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
-	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
@@ -141,10 +153,11 @@ func main() {
 		confpath := ".hilbishrc.lua"
 		if err != nil {
 			// If it wasnt found, go to the real sample conf
-			_, err = os.ReadFile(sampleConfPath)
-			confpath = sampleConfPath
+			sampleConfigPath := filepath.Join(dataDir, ".hilbishrc.lua")
+			_, err = os.ReadFile(sampleConfigPath)
+			confpath = sampleConfigPath
 			if err != nil {
-				fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
+				fmt.Println("could not find .hilbishrc.lua or", sampleConfigPath)
 				return
 			}
 		}
