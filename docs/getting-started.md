@@ -53,8 +53,39 @@ which follows XDG on Linux and MacOS, and is located in %APPDATA% on Windows.
 As the directory is usually `~/.config` on Linux, you can run this command to copy it:  
 `cp /usr/share/hilbish/.hilbishrc.lua ~/.config/hilbish/init.lua`
 
-Now you can get to editing it. Since it's just a Lua file, having basic
-knowledge of Lua would help. All of Lua's standard libraries and functions
-from Lua 5.4 are available. Hilbish has some custom and modules that are
-available. To see them, you can run the `doc` command. This also works as
-general documentation for other things.
+Now we can get to customization!
+
+If we closely examine a small snippet of the default config:  
+```lua
+-- Default Hilbish config
+-- .. with some omitted code .. --
+
+local function doPrompt(fail)
+	hilbish.prompt(lunacolors.format(
+		'{blue}%u {cyan}%d ' .. (fail and '{red}' or '{green}') .. '∆ '
+	))
+end
+
+doPrompt()
+
+bait.catch('command.exit', function(code)
+	doPrompt(code ~= 0)
+end)
+```
+
+We see a whopping **three** Hilbish libraries being used in this part of code.
+First is of course, named after the shell itself, [`hilbish`](../api/hilbish). This is kind of a
+"catch-all" namespace for functions that directly related to shell functionality/settings.
+
+And as we can see, the [hilbish.prompt](../api/hilbish/#prompt) function is used
+to change our prompt. Change our prompt to what, exactly?
+
+The doc for the function states that the verbs `%u` and `%d`are used for username and current directory
+of the shell, respectively. 
+
+We wrap this in the [`lunacolors.format`](../lunacolors) function, to give
+our prompt some nice color.
+
+But you might have also noticed that this is in the `doPrompt` function, which is called once,
+and then used again in a [bait](../api/bait) hook. Specifically, the `command.exit` hook,
+which is called after a command exits, so when it finishes running.
