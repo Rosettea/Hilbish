@@ -47,6 +47,7 @@ func main() {
 		// but since it might be set on some distros (nixos) we should still check if its really is empty.
 		if dataDir == "" {
 			searchableDirs := getenv("XDG_DATA_DIRS", "/usr/local/share/:/usr/share/")
+			dataDir = "."
 			for _, path := range strings.Split(searchableDirs, ":") {
 				_, err := os.Stat(filepath.Join(path, "hilbish", ".hilbishrc.lua"))
 				if err == nil {
