@@ -57,6 +57,12 @@ end)
 |<a href="#runner.setMode">setMode(cb)</a>|This is the same as the `hilbish.runnerMode` function.|
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#runner.sh">sh(cmd)</a>|Runs a command in Hilbish's shell script interpreter.|
+|<a href="#exec">exec(cmd, runnerName)</a>|Executes `cmd` with a runner.|
+|<a href="#set">set(name, runner)</a>|*Sets* a runner by name. The difference between this function and|
+|<a href="#get">get(name)</a>|Get a runner by name.|
+|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners.|
+|<a href="#setCurrent">setCurrent(name)</a>|Sets Hilbish's runner mode by name.|
+|<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
 
 <hr>
 <div id='runner.setMode'>
@@ -110,6 +116,113 @@ This is the equivalent of using `source`.
 
 #### Parameters
 `string` **`cmd`**  
+
+
+</div>
+
+<hr>
+<div id='getCurrent'>
+<h4 class='heading'>
+hilbish.runner.getCurrent()
+<a href="#getCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Returns the current runner by name.
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr>
+<div id='setCurrent'>
+<h4 class='heading'>
+hilbish.runner.setCurrent(name)
+<a href="#setCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Sets Hilbish's runner mode by name.
+#### Parameters
+`name` **`string`**  
+
+
+</div>
+
+<hr>
+<div id='add'>
+<h4 class='heading'>
+hilbish.runner.add(name, runner)
+<a href="#add" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Adds a runner to the table of available runners.
+If runner is a table, it must have the run function in it.
+#### Parameters
+`name` **`string`**  
+ Name of the runner
+
+`runner` **`function|table`**  
+ 
+
+</div>
+
+<hr>
+<div id='get'>
+<h4 class='heading'>
+hilbish.runner.get(name)
+<a href="#get" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Get a runner by name.
+#### Parameters
+`name` **`string`**  
+ Name of the runner to retrieve.
+
+</div>
+
+<hr>
+<div id='set'>
+<h4 class='heading'>
+hilbish.runner.set(name, runner)
+<a href="#set" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+*Sets* a runner by name. The difference between this function and
+add, is set will *not* check if the named runner exists.
+The runner table must have the run function in it.
+#### Parameters
+`name` **`string`**  
+
+
+`runner` **`table`**  
+
+
+</div>
+
+<hr>
+<div id='exec'>
+<h4 class='heading'>
+hilbish.runner.exec(cmd, runnerName)
+<a href="#exec" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Executes `cmd` with a runner.
+If `runnerName` is not specified, it uses the default Hilbish runner.
+#### Parameters
+`cmd` **`string`**  
+
+
+`runnerName` **`string?`**  
 
 
 </div>
