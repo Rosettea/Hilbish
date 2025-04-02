@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"hilbish/sink"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -118,9 +117,9 @@ func (s *snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 				cmds[k.AsString()] = v.AsTable().Get(rt.StringValue("exec")).AsClosure()
 			})
 			if cmd := cmds[args[0]]; cmd != nil {
-				stdin := sink.NewSinkInput(s.runtime, hc.Stdin)
-				stdout := sink.NewSinkOutput(s.runtime, hc.Stdout)
-				stderr := sink.NewSinkOutput(s.runtime, hc.Stderr)
+				stdin := util.NewSinkInput(s.runtime, hc.Stdin)
+				stdout := util.NewSinkOutput(s.runtime, hc.Stdout)
+				stderr := util.NewSinkOutput(s.runtime, hc.Stderr)
 
 				sinks := rt.NewTable()
 				sinks.Set(rt.StringValue("in"), rt.UserDataValue(stdin.UserData))

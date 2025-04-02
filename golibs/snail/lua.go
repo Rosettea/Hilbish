@@ -6,7 +6,6 @@ import (
 	"io"
 	"strings"
 
-	"hilbish/sink"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -139,7 +138,7 @@ func handleStream(v rt.Value, strms *util.Streams, errStream, inStream bool) err
 		varstrm = f.Handle()
 	}
 
-	if f, ok := val.(*sink.Sink); ok {
+	if f, ok := val.(*util.Sink); ok {
 		varstrm = f.Rw
 	}
 

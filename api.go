@@ -23,7 +23,6 @@ import (
 	"syscall"
 	"time"
 
-	"hilbish/sink"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -133,7 +132,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	pluginModule := moduleLoader(rtm)
 	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
 
-	sinkModule := sink.Loader(l)
+	sinkModule := util.SinkLoader(l)
 	mod.Set(rt.StringValue("sink"), rt.TableValue(sinkModule))
 
 	return rt.TableValue(mod), nil

@@ -1,4 +1,4 @@
-package sink
+package util
 
 import (
 	"bufio"
@@ -7,8 +7,6 @@ import (
 	"io"
 	"os"
 	"strings"
-
-	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -25,11 +23,11 @@ type Sink struct{
 	autoFlush bool
 }
 
-func Loader(rtm *rt.Runtime) *rt.Table {
+func SinkLoader(rtm *rt.Runtime) *rt.Table {
 	sinkMeta := rt.NewTable()
 
 	sinkMethods := rt.NewTable()
-	sinkFuncs := map[string]util.LuaExport{
+	sinkFuncs := map[string]LuaExport{
 		"flush": {luaSinkFlush, 1, false},
 		"read": {luaSinkRead, 1, false},
 		"readAll": {luaSinkReadAll, 1, false},
@@ -37,7 +35,7 @@ func Loader(rtm *rt.Runtime) *rt.Table {
 		"write": {luaSinkWrite, 2, false},
 		"writeln": {luaSinkWriteln, 2, false},
 	}
-	util.SetExports(rtm, sinkMethods, sinkFuncs)
+	SetExports(rtm, sinkMethods, sinkFuncs)
 
 	sinkIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		s, _ := sinkArg(c, 0)
@@ -66,12 +64,12 @@ func Loader(rtm *rt.Runtime) *rt.Table {
 	sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
 	rtm.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
 
-	exports := map[string]util.LuaExport{
+	exports := map[string]LuaExport{
 		"new": {luaSinkNew, 0, false},
 	}
 
 	mod := rt.NewTable()
-	util.SetExports(rtm, mod, exports)
+	SetExports(rtm, mod, exports)
 
 	return mod
 }
