@@ -6,8 +6,7 @@ local fs = require 'fs'
 
 local dirs = {}
 
---- Last (current working) directory. Separate from recentDirs mainly for
---- easier use.
+--- Last (current working) directory. Separate from recentDirs mainly for easier use.
 dirs.old = ''
 --- Table of recent directories. For use, look at public functions.
 dirs.recentDirs = {}
