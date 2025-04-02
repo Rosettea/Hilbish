@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"hilbish/util"
-	//herror "hilbish/errors"
 
 	rt "github.com/arnodel/golua/runtime"
 	//"github.com/yuin/gopher-lua/parse"
@@ -23,13 +22,13 @@ func runInput(input string, priv bool) {
 	cmdString := aliases.Resolve(input)
 	hooks.Emit("command.preexec", input, cmdString)
 
+	// save incase it changes while prompting (For some reason)
 	currentRunner := runnerMode
 
 	rerun:
 	var exitCode uint8
 	var cont bool
 	var newline bool
-	// save incase it changes while prompting (For some reason)
 	input, exitCode, cont, newline, runnerErr, err := runLuaRunner(currentRunner, input)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

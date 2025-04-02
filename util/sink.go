@@ -14,8 +14,7 @@ import (
 var sinkMetaKey = rt.StringValue("hshsink")
 
 // #type
-// A sink is a structure that has input and/or output to/from
-// a desination.
+// A sink is a structure that has input and/or output to/from a desination.
 type Sink struct{
 	Rw *bufio.ReadWriter
 	file *os.File

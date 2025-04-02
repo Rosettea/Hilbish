@@ -38,7 +38,6 @@ var exports = map[string]util.LuaExport{
 	"complete": {hlcomplete, 2, false},
 	"cwd": {hlcwd, 0, false},
 	"exec": {hlexec, 1, false},
-	"runnerMode": {hlrunnerMode, 1, false},
 	"goro": {hlgoro, 1, true},
 	"highlighter": {hlhighlighter, 1, false},
 	"hinter": {hlhinter, 1, false},
@@ -634,37 +633,6 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			lr.rl.InputMode = readline.Vim
 		default:
 			return nil, errors.New("inputMode: expected vim or emacs, received " + mode)
-	}
-
-	return c.Next(), nil
-}
-
-// runnerMode(mode)
-// **NOTE: This function is deprecated and will be removed in 3.0**
-// Use `hilbish.runner.setCurrent` instead.
-// Sets the execution/runner mode for interactive Hilbish.
-// This determines whether Hilbish wll try to run input as Lua
-// and/or sh or only do one of either.
-// Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
-// sh, and lua. It also accepts a function, to which if it is passed one
-// will call it to execute user input instead.
-// Read [about runner mode](../features/runner-mode) for more information.
-// #param mode string|function
-func hlrunnerMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	// TODO: Reimplement in Lua
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	mode := c.Arg(0)
-
-	switch mode.Type() {
-		case rt.StringType:
-			switch mode.AsString() {
-				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
-				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
-			}
-		case rt.FunctionType: runnerMode = mode
-		default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
 	return c.Next(), nil
