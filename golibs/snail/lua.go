@@ -1,8 +1,8 @@
 // shell script interpreter library
 /*
-	The snail library houses Hilbish's Lua wrapper of its shell script interpreter.
-	It's not very useful other than running shell scripts, which can be done with other
-	Hilbish functions.
+The snail library houses Hilbish's Lua wrapper of its shell script interpreter.
+It's not very useful other than running shell scripts, which can be done with other
+Hilbish functions.
 */
 package snail
 
@@ -56,7 +56,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 
 // new() -> @Snail
 // Creates a new Snail instance.
-func snew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func snailnew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	s := New(t.Runtime)
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(snailUserData(s))), nil
 }
@@ -64,7 +64,7 @@ func snew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #member
 // run(command, streams)
 // Runs a shell command. Works the same as `hilbish.run`.
-func srun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}

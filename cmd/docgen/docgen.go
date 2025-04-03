@@ -84,6 +84,7 @@ var prefix = map[string]string{
 	"commander": "c",
 	"bait": "b",
 	"terminal": "term",
+	"snail": "snail",
 }
 
 func getTagsAndDocs(docs string) (map[string][]tag, []string) {
@@ -209,6 +210,10 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 }
 
 func setupDoc(mod string, fun *doc.Func) *docPiece {
+	if fun.Doc == "" {
+		return nil
+	}
+
 	docs := strings.TrimSpace(fun.Doc)
 	tags, parts := getTagsAndDocs(docs)
 
