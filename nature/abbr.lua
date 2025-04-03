@@ -12,9 +12,7 @@ hilbish.abbr = {
 	all = {}
 }
 
-print 'abbr loaded'
-
---- Adds an abbreviation. The `abbr` is the abbreviation itself,
+2--- Adds an abbreviation. The `abbr` is the abbreviation itself,
 --- while `expanded` is what the abbreviation should expand to.
 --- It can be either a function or a string. If it is a function, it will expand to what
 --- the function returns.
@@ -54,19 +52,10 @@ bait.catch('hilbish.rawInput', function(c)
 				local expandRet = thisAbbr.expand()
 				if type(expandRet) ~= 'string' then
 					print(string.format('abbr %s has an expand function that did not return a string. instead it returned: %s', thisAbbr.abbr, expandRet))
+					return
 				end
 				hilbish.editor.insert(expandRet)
 			end
 		end
 	end
-end)
-
-hilbish.abbr.add('tt', 'echo titties')
-
-hilbish.abbr.add('idk', 'i dont know', {
-	anywhere = true
-})
-
-hilbish.abbr.add('!!', function()
-	return hilbish.history.get(hilbish.history.size() - 1)
 end)
