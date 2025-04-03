@@ -79,6 +79,7 @@ function dirs.setOld(d)
 end
 
 bait.catch('hilbish.cd', function(path, oldPath)
+	print(path, oldPath)
 	dirs.setOld(oldPath)
 	dirs.push(path)
 end)

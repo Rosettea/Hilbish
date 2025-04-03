@@ -1,9 +1,11 @@
 -- @module hilbish
-local hilbish = require 'hilbish'
+local bait = require 'bait'
 local snail = require 'snail'
 
 hilbish.snail = snail.new()
-
+bait.catch('hilbish.cd', function(path)
+	hilbish.snail:dir(path)
+end)
 --- Runs `cmd` in Hilbish's shell script interpreter.
 --- The `streams` parameter specifies the output and input streams the command should use.
 --- For example, to write command output to a sink.

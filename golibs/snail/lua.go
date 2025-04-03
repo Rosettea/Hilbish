@@ -32,6 +32,7 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	snailMethods := rt.NewTable()
 	snailFuncs := map[string]util.LuaExport{
 		"run": {snailrun, 3, false},
+		"dir": {snaildir, 2, false},
 	}
 	util.SetExports(rtm, snailMethods, snailFuncs)
 
@@ -63,7 +64,9 @@ func snailnew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 // #member
 // run(command, streams)
-// Runs a shell command. Works the same as `hilbish.run`.
+// Runs a shell command. Works the same as `hilbish.run`, but only accepts a table of streams.
+// #param command string
+// #param streams table
 func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -92,7 +95,7 @@ func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 			}
 		case rt.NilType: // noop
 		default:
-			return nil, errors.New("expected 3rd arg to either be a table or a boolean")
+			return nil, errors.New("expected 3rd arg to be a table")
 	}
 
 	var newline bool
@@ -131,6 +134,31 @@ func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	runnerRet.Set(rt.StringValue("bg"), rt.BoolValue(bg))
 	return c.PushingNext1(t.Runtime, rt.TableValue(runnerRet)), nil
+}
+
+// #member
+// dir(path)
+// Changes the directory of the snail instance.
+// The interpreter keeps its set directory even when the Hilbish process changes
+// directory, so this should be called on the `hilbish.cd` hook.
+// #param path string Has to be an absolute path.
+func snaildir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.CheckNArgs(2); err != nil {
+		return nil, err
+	}
+
+	s, err := snailArg(c, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	dir, err := c.StringArg(1)
+	if err != nil {
+		return nil, err
+	}
+
+	interp.Dir(dir)(s.runner)
+	return c.Next(), nil
 }
 
 func handleStream(v rt.Value, strms *util.Streams, errStream, inStream bool) error {

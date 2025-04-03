@@ -40,6 +40,11 @@ This function has no parameters.
 A Snail is a shell script interpreter instance.
 
 ### Methods
+#### dir(path)
+Changes the directory of the snail instance.
+The interpreter keeps its set directory even when the Hilbish process changes
+directory, so this should be called on the `hilbish.cd` hook.
+
 #### run(command, streams)
-Runs a shell command. Works the same as `hilbish.run`.
+Runs a shell command. Works the same as `hilbish.run`, but only accepts a table of streams.
 
