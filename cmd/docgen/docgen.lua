@@ -41,10 +41,12 @@ for _, fname in ipairs(files) do
 
 				local dps = {
 					description = {},
+					example = {},
 					params = {}
 				}
 
 				local offset = 1
+				local doingExample = false
 				while true do
 					local prev = lines[lineno - offset]
 
@@ -66,7 +68,17 @@ for _, fname in ipairs(files) do
 								})
 							end
 						else
-							table.insert(dps.description, 1, docline)
+							if docline:match '#example' then
+								doingExample = not doingExample
+							end
+
+							if not docline:match '#example' then
+								if doingExample then
+										table.insert(dps.example, 1, docline)
+								else
+									table.insert(dps.description, 1, docline)
+								end
+							end
 						end
 						offset = offset + 1
 					else
@@ -186,6 +198,10 @@ for iface, dps in pairs(pieces) do
 		for _, param in ipairs(docs.params) do
 			f:write(string.format('`%s` **`%s`**  \n', param.name:gsub('%?$', ''), param.type))
 			f:write(string.format('%s\n\n', param.description))
+		end
+		if #docs.example ~= 0 then
+			f:write '#### Example\n'
+			f:write(string.format('```lua\n%s\n```\n', table.concat(docs.example, '\n')))
 		end
 		--[[
 		local params = table.filter(docs, function(t)

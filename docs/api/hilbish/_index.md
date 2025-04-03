@@ -31,6 +31,7 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#timeout">timeout(cb, time) -> @Timer</a>|Executed the `cb` function after a period of `time`.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
 |<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish.|
+|<a href="#run">run(cmd, streams)</a>|Runs `cmd` in Hilbish's shell script interpreter.|
 
 ## Static module fields
 |||
@@ -473,6 +474,44 @@ Writes data to a sink.
 
 #### writeln(str)
 Writes data to a sink with a newline at the end.
+
+<hr>
+<div id='run'>
+<h4 class='heading'>
+hilbish.run(cmd, streams)
+<a href="#run" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Runs `cmd` in Hilbish's shell script interpreter.
+The `streams` parameter specifies the output and input streams the command should use.
+For example, to write command output to a sink.
+As a table, the caller can directly specify the standard output, error, and input
+streams of the command with the table keys `out`, `err`, and `input` respectively.
+As a boolean, it specifies whether the command should use standard output or return its output streams.
+#### Parameters
+`cmd` **`string`**  
+
+
+`streams` **`table|boolean`**  
+
+
+#### Example
+```lua
+This code is the same as `ls -l | wc -l`
+local fs = require 'fs'
+local pr, pw = fs.pipe()
+hilbish.run('ls -l', {
+	stdout = pw,
+	stderr = pw,
+})
+pw:close()
+hilbish.run('wc -l', {
+	stdin = pr
+})
+```
+</div>
 
 <hr>
 <div id='runnerMode'>
