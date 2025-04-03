@@ -18,7 +18,7 @@ table.insert(package.searchers, function(module)
 	return function() return hilbish.module.load(path) end, path
 end)
 
-require 'nature.hilbish'
+require 'nature.snail'
 
 require 'nature.commands'
 require 'nature.completions'
