@@ -499,7 +499,7 @@ As a boolean, it specifies whether the command should use standard output or ret
 
 #### Example
 ```lua
-This code is the same as `ls -l | wc -l`
+-- This code is the same as `ls -l | wc -l`
 local fs = require 'fs'
 local pr, pw = fs.pipe()
 hilbish.run('ls -l', {
