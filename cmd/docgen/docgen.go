@@ -204,7 +204,6 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 	}
 
 	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
-	println(typeName, parentMod, interfaces)
 
 	return dps
 }
@@ -437,10 +436,8 @@ provided by Hilbish.
 			interfaceModules[modname].Types = append(interfaceModules[modname].Types, piece)
 		}
 
-		println(mod)
 		fmt.Println(filteredTypePieces)
 		if newDoc, ok := docs[mod]; ok {
-			println("fuck")
 			oldMod := docs[mod]
 			newDoc.Types = append(filteredTypePieces, oldMod.Types...)
 			newDoc.Docs = append(filteredPieces, oldMod.Docs...)
