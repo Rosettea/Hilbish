@@ -12,7 +12,7 @@ hilbish.abbr = {
 	all = {}
 }
 
-2--- Adds an abbreviation. The `abbr` is the abbreviation itself,
+--- Adds an abbreviation. The `abbr` is the abbreviation itself,
 --- while `expanded` is what the abbreviation should expand to.
 --- It can be either a function or a string. If it is a function, it will expand to what
 --- the function returns.
