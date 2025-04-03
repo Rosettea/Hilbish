@@ -15,7 +15,6 @@ for _, fname in ipairs(files) do
 	local mod = header:match(modpattern)
 	if not mod then goto continue end
 
-	print(fname, mod)
 	pieces[mod] = {}
 	descriptions[mod] = {}
 
@@ -42,10 +41,12 @@ for _, fname in ipairs(files) do
 
 				local dps = {
 					description = {},
+					example = {},
 					params = {}
 				}
 
 				local offset = 1
+				local doingExample = false
 				while true do
 					local prev = lines[lineno - offset]
 
@@ -59,17 +60,25 @@ for _, fname in ipairs(files) do
 
 						if emmy then
 							if emmy == 'param' then
-								print('bruh', emmythings[1], emmythings[2])
 								table.insert(dps.params, 1, {
 									name = emmythings[1],
 									type = emmythings[2],
 									-- the +1 accounts for space.
 									description = table.concat(emmythings, ' '):sub(emmythings[1]:len() + 1 + emmythings[2]:len() + 1)
 								})
-								print(table.concat(emmythings, '/'))
 							end
 						else
-							table.insert(dps.description, 1, docline)
+							if docline:match '#example' then
+								doingExample = not doingExample
+							end
+
+							if not docline:match '#example' then
+								if doingExample then
+										table.insert(dps.example, 1, docline)
+								else
+									table.insert(dps.description, 1, docline)
+								end
+							end
 						end
 						offset = offset + 1
 					else
@@ -77,7 +86,7 @@ for _, fname in ipairs(files) do
 					end
 				end
 
-				pieces[mod][funcName] = dps
+				table.insert(pieces[mod], {funcName, dps})
 			end
 			docPiece = {}
 			goto continue2
@@ -109,11 +118,15 @@ for iface, dps in pairs(pieces) do
 		docParent = "API"
 		path = string.format('docs/api/%s/%s.md', mod, iface)
 	end
+	if iface == 'hilbish' then
+		docParent = "API"
+		path = string.format('docs/api/hilbish/_index.md', mod, iface)
+	end
 
 	fs.mkdir(fs.dir(path), true)
 
 	local exists = pcall(fs.stat, path)
-	local newOrNotNature = exists and mod ~= 'nature'
+	local newOrNotNature = (exists and mod ~= 'nature') or iface == 'hilbish'
 
 	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
 	local tocPos
@@ -129,9 +142,6 @@ for iface, dps in pairs(pieces) do
 			tocPos = f:seek()
 		end
 	end
-	print(f)
-
-	print('mod and path:', mod, path)
 
 	local tocSearch = false
 	for line in f:lines() do
@@ -144,7 +154,10 @@ for iface, dps in pairs(pieces) do
 		end
 	end
 
-	for func, docs in pairs(dps) do
+	table.sort(dps, function(a, b) return a[1] < b[1] end)
+	for _, piece in pairs(dps) do
+		local func = piece[1]
+		local docs = piece[2]
 		local sig = string.format('%s.%s(', iface, func)
 		local params = ''
 		for idx, param in ipairs(docs.params) do
@@ -185,6 +198,10 @@ for iface, dps in pairs(pieces) do
 		for _, param in ipairs(docs.params) do
 			f:write(string.format('`%s` **`%s`**  \n', param.name:gsub('%?$', ''), param.type))
 			f:write(string.format('%s\n\n', param.description))
+		end
+		if #docs.example ~= 0 then
+			f:write '#### Example\n'
+			f:write(string.format('```lua\n%s\n```\n', table.concat(docs.example, '\n')))
 		end
 		--[[
 		local params = table.filter(docs, function(t)

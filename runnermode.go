@@ -53,53 +53,13 @@ end)
 */
 func runnerModeLoader(rtm *rt.Runtime) *rt.Table {
 	exports := map[string]util.LuaExport{
-		"sh": {shRunner, 1, false},
 		"lua": {luaRunner, 1, false},
-		"setMode": {hlrunnerMode, 1, false},
 	}
 
 	mod := rt.NewTable()
 	util.SetExports(rtm, mod, exports)
 
 	return mod
-}
-
-// #interface runner
-// setMode(cb)
-// This is the same as the `hilbish.runnerMode` function.
-// It takes a callback, which will be used to execute all interactive input.
-// In normal cases, neither callbacks should be overrided by the user,
-// as the higher level functions listed below this will handle it.
-// #param cb function
-func _runnerMode() {}
-
-// #interface runner
-// sh(cmd)
-// Runs a command in Hilbish's shell script interpreter.
-// This is the equivalent of using `source`.
-// #param cmd string
-func shRunner(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	cmd, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-
-	_, exitCode, cont, newline, err := execSh(aliases.Resolve(cmd))
-	var luaErr rt.Value = rt.NilValue
-	if err != nil {
-		luaErr = rt.StringValue(err.Error())
-	}
-	runnerRet := rt.NewTable()
-	runnerRet.Set(rt.StringValue("input"), rt.StringValue(cmd))
-	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
-	runnerRet.Set(rt.StringValue("continue"), rt.BoolValue(cont))
-	runnerRet.Set(rt.StringValue("newline"), rt.BoolValue(newline))
-	runnerRet.Set(rt.StringValue("err"), luaErr)
-
-	return c.PushingNext(t.Runtime, rt.TableValue(runnerRet)), nil
 }
 
 // #interface runner
