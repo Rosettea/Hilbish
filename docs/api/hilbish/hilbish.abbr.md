@@ -19,24 +19,8 @@ Instead of the aliased form of the same command.
 ## Functions
 |||
 |----|----|
-|<a href="#add">add(abbr, expanded|function, opts)</a>|Adds an abbreviation. The `abbr` is the abbreviation itself,|
 |<a href="#remove">remove(abbr)</a>|Removes the named `abbr`.|
-<hr>
-<div id='remove'>
-<h4 class='heading'>
-hilbish.abbr.remove(abbr)
-<a href="#remove" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Removes the named `abbr`.
-#### Parameters
-`abbr` **`string`**  
-
-
-</div>
-
+|<a href="#add">add(abbr, expanded|function, opts)</a>|Adds an abbreviation. The `abbr` is the abbreviation itself,|
 <hr>
 <div id='add'>
 <h4 class='heading'>
@@ -61,6 +45,22 @@ whereas the default behavior is only at the beginning of the line
 
 
 `opts` **`table`**  
+
+
+</div>
+
+<hr>
+<div id='remove'>
+<h4 class='heading'>
+hilbish.abbr.remove(abbr)
+<a href="#remove" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Removes the named `abbr`.
+#### Parameters
+`abbr` **`string`**  
 
 
 </div>
