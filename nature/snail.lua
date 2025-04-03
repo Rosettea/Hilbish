@@ -3,7 +3,6 @@ local snail = require 'snail'
 
 hilbish.snail = snail.new()
 
---- run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
 --- Runs `cmd` in Hilbish's shell script interpreter.
 --- The `streams` parameter specifies the output and input streams the command should use.
 --- For example, to write command output to a sink.

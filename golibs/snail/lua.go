@@ -1,3 +1,9 @@
+// shell script interpreter library
+/*
+	The snail library houses Hilbish's Lua wrapper of its shell script interpreter.
+	It's not very useful other than running shell scripts, which can be done with other
+	Hilbish functions.
+*/
 package snail
 
 import (
@@ -48,11 +54,16 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 	return rt.TableValue(mod), nil
 }
 
+// new() -> @Snail
+// Creates a new Snail instance.
 func snew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	s := New(t.Runtime)
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(snailUserData(s))), nil
 }
 
+// #member
+// run(command, streams)
+// Runs a shell command. Works the same as `hilbish.run`.
 func srun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
@@ -157,7 +168,7 @@ func handleStream(v rt.Value, strms *util.Streams, errStream, inStream bool) err
 	return nil
 }
 
-func snailArg(c *rt.GoCont, arg int) (*snail, error) {
+func snailArg(c *rt.GoCont, arg int) (*Snail, error) {
 	s, ok := valueToSnail(c.Arg(arg))
 	if !ok {
 		return nil, fmt.Errorf("#%d must be a snail", arg + 1)
@@ -166,17 +177,17 @@ func snailArg(c *rt.GoCont, arg int) (*snail, error) {
 	return s, nil
 }
 
-func valueToSnail(val rt.Value) (*snail, bool) {
+func valueToSnail(val rt.Value) (*Snail, bool) {
 	u, ok := val.TryUserData()
 	if !ok {
 		return nil, false
 	}
 
-	s, ok := u.Value().(*snail)
+	s, ok := u.Value().(*Snail)
 	return s, ok
 }
 
-func snailUserData(s *snail) *rt.UserData {
+func snailUserData(s *Snail) *rt.UserData {
 	snailMeta := s.runtime.Registry(snailMetaKey)
 	return rt.NewUserData(s, snailMeta.AsTable())
 }

@@ -28,8 +28,6 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#prependPath">prependPath(dir)</a>|Prepends `dir` to $PATH.|
 |<a href="#prompt">prompt(str, typ)</a>|Changes the shell prompt to the provided string.|
 |<a href="#read">read(prompt) -> input (string)</a>|Read input from the user, using Hilbish's line editor/input reader.|
-|<a href="#run">run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)</a>|Runs `cmd` in Hilbish's shell script interpreter.|
-|<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish.|
 |<a href="#timeout">timeout(cb, time) -> @Timer</a>|Executed the `cb` function after a period of `time`.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
 
@@ -411,72 +409,6 @@ Text to print before input, can be empty.
 </div>
 
 <hr>
-<div id='run'>
-<h4 class='heading'>
-hilbish.run(cmd, streams) -> exitCode (number), stdout (string), stderr (string)
-<a href="#run" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Runs `cmd` in Hilbish's shell script interpreter.  
-The `streams` parameter specifies the output and input streams the command should use.  
-For example, to write command output to a sink.  
-As a table, the caller can directly specify the standard output, error, and input  
-streams of the command with the table keys `out`, `err`, and `input` respectively.  
-As a boolean, it specifies whether the command should use standard output or return its output streams.  
-
-#### Parameters
-`string` **`cmd`**  
-
-
-`table|boolean` **`streams`**  
-
-
-#### Example
-```lua
-
-// This code is the same as `ls -l | wc -l`
-local fs = require 'fs'
-local pr, pw = fs.pipe()
-hilbish.run('ls -l', {
-	stdout = pw,
-	stderr = pw,
-})
-
-pw:close()
-
-hilbish.run('wc -l', {
-	stdin = pr
-})
-
-```
-</div>
-
-<hr>
-<div id='runnerMode'>
-<h4 class='heading'>
-hilbish.runnerMode(mode)
-<a href="#runnerMode" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Sets the execution/runner mode for interactive Hilbish.  
-This determines whether Hilbish wll try to run input as Lua  
-and/or sh or only do one of either.  
-Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),  
-sh, and lua. It also accepts a function, to which if it is passed one  
-will call it to execute user input instead.  
-Read [about runner mode](../features/runner-mode) for more information.  
-
-#### Parameters
-`string|function` **`mode`**  
-
-
-</div>
-
-<hr>
 <div id='timeout'>
 <h4 class='heading'>
 hilbish.timeout(cb, time) -> <a href="/Hilbish/docs/api/hilbish/hilbish.timers/#timer" style="text-decoration: none;" id="lol">Timer</a>
@@ -514,31 +446,4 @@ Will return the path of the binary, or a basename if it's a commander.
 
 
 </div>
-
-## Types
-<hr>
-
-## Sink
-A sink is a structure that has input and/or output to/from
-a desination.
-
-### Methods
-#### autoFlush(auto)
-Sets/toggles the option of automatically flushing output.
-A call with no argument will toggle the value.
-
-#### flush()
-Flush writes all buffered input to the sink.
-
-#### read() -> string
-Reads a liine of input from the sink.
-
-#### readAll() -> string
-Reads all input from the sink.
-
-#### write(str)
-Writes data to a sink.
-
-#### writeln(str)
-Writes data to a sink with a newline at the end.
 

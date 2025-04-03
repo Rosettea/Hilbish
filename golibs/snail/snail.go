@@ -1,4 +1,3 @@
-// shell script interpreter library
 package snail
 
 import (
@@ -23,21 +22,23 @@ import (
 	"mvdan.cc/sh/v3/expand"
 )
 
-type snail struct{
+// #type
+// A Snail is a shell script interpreter instance.
+type Snail struct{
 	runner *interp.Runner
 	runtime *rt.Runtime
 }
 
-func New(rtm *rt.Runtime) *snail {
+func New(rtm *rt.Runtime) *Snail {
 	runner, _ := interp.New()
 
-	return &snail{
+	return &Snail{
 		runner: runner,
 		runtime: rtm,
 	}
 }
 
-func (s *snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer, error){
+func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer, error){
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return false, nil, nil, err
