@@ -109,7 +109,17 @@ interfaces and functions which directly relate to shell functionality.</p><h3 id
 <a href=#timeout class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Executed the <code>cb</code> function after a period of <code>time</code>.<br>This creates a Timer that starts ticking immediately.</p><h5 id=parameters-14 class=heading>Parameters
 <a href=#parameters-14 class=heading-link><i class="fas fa-paperclip"></i></a></h5><p><code>function</code> <strong><code>cb</code></strong></p><p><code>number</code> <strong><code>time</code></strong><br>Time to run in milliseconds.</p></div><hr><div id=which><h4 class=heading>hilbish.which(name) -> string
 <a href=#which class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Checks if <code>name</code> is a valid command.<br>Will return the path of the binary, or a basename if it&rsquo;s a commander.</p><h5 id=parameters-15 class=heading>Parameters
-<a href=#parameters-15 class=heading-link><i class="fas fa-paperclip"></i></a></h5><p><code>string</code> <strong><code>name</code></strong></p></div><hr><div id=runnerMode><h4 class=heading>hilbish.runnerMode(mode)
+<a href=#parameters-15 class=heading-link><i class="fas fa-paperclip"></i></a></h5><p><code>string</code> <strong><code>name</code></strong></p></div><h3 id=types class=heading>Types
+<a href=#types class=heading-link><i class="fas fa-paperclip"></i></a></h3><hr><h3 id=sink class=heading>Sink
+<a href=#sink class=heading-link><i class="fas fa-paperclip"></i></a></h3><p>A sink is a structure that has input and/or output to/from a desination.</p><h4 id=methods class=heading>Methods
+<a href=#methods class=heading-link><i class="fas fa-paperclip"></i></a></h4><h5 id=autoflushauto class=heading>autoFlush(auto)
+<a href=#autoflushauto class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Sets/toggles the option of automatically flushing output.
+A call with no argument will toggle the value.</p><h5 id=flush class=heading>flush()
+<a href=#flush class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Flush writes all buffered input to the sink.</p><h5 id=read---string class=heading>read() -> string
+<a href=#read---string class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Reads a liine of input from the sink.</p><h5 id=readall---string class=heading>readAll() -> string
+<a href=#readall---string class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Reads all input from the sink.</p><h5 id=writestr class=heading>write(str)
+<a href=#writestr class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Writes data to a sink.</p><h5 id=writelnstr class=heading>writeln(str)
+<a href=#writelnstr class=heading-link><i class="fas fa-paperclip"></i></a></h5><p>Writes data to a sink with a newline at the end.</p><hr><div id=runnerMode><h4 class=heading>hilbish.runnerMode(mode)
 <a href=#runnerMode class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Sets the execution/runner mode for interactive Hilbish.
 <strong>NOTE: This function is deprecated and will be removed in 3.0</strong>
 Use <code>hilbish.runner.setCurrent</code> instead.
