@@ -72,16 +72,75 @@ end
 --- Sets Hilbish's runner mode by name.
 --- @param name string
 function hilbish.runner.setCurrent(name)
-	local r = hilbish.runner.get(name)
+	hilbish.runner.get(name) -- throws if it doesnt exist.
 	currentRunner = name
-
-	hilbish.runner.setMode(r.run)
 end
 
 --- Returns the current runner by name.
 --- @returns string
 function hilbish.runner.getCurrent()
 	return currentRunner
+end
+
+local function finishExec(exitCode, input, priv)
+	hilbish.exitCode = exitCode
+	bait.throw('command.exit', exitCode, input, priv)
+end
+
+local function continuePrompt(prev, newline)
+	local multilinePrompt = hilbish.multiprompt()
+	-- the return of hilbish.read is nil when error or ctrl-d
+	local cont = hilbish.read(multilinePrompt)
+	if not cont then
+		return
+	end
+
+	if newline then
+		cont = '\n' .. cont
+	end
+
+	if cont:match '\\$' then
+		cont = cont:gsub('\\$', '') .. '\n'
+	end
+
+	return prev .. cont
+end
+
+--- Runs `input` with the currently set Hilbish runner.
+--- This method is how Hilbish executes commands.
+--- `priv` is an optional boolean used to state if the input should be saved to history.
+-- @param input string
+-- @param priv bool
+function hilbish.runner.run(input, priv)
+	local command = hilbish.aliases.resolve(input)
+	bait.throw('command.preexec', input, command)
+
+	::rerun::
+	local runner = hilbish.runner.get(currentRunner)
+	local ok, out = pcall(runner.run, input)
+	if not ok then
+		io.stderr:write(out .. '\n')
+		finishExec(124, out.input, priv)
+		return
+	end
+
+	if out.continue then
+		local contInput = continuePrompt(input, out.newline)
+		if contInput then
+			input = contInput
+			goto rerun
+		end
+	end
+
+	if out.err then
+		local fields = string.split(out.err, ': ')
+		if fields[2] == 'not-found' or fields[2] == 'not-executable' then
+			bait.throw('command.' .. fields[2], fields[1])
+		else
+			io.stderr:write(out.err .. '\n')
+		end
+	end
+	finishExec(out.exitCode, out.input, priv)
 end
 
 function hilbish.runner.sh(input)
