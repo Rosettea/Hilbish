@@ -448,6 +448,32 @@ Will return the path of the binary, or a basename if it's a commander.
 
 </div>
 
+## Types
+<hr>
+
+## Sink
+A sink is a structure that has input and/or output to/from a desination.
+
+### Methods
+#### autoFlush(auto)
+Sets/toggles the option of automatically flushing output.
+A call with no argument will toggle the value.
+
+#### flush()
+Flush writes all buffered input to the sink.
+
+#### read() -> string
+Reads a liine of input from the sink.
+
+#### readAll() -> string
+Reads all input from the sink.
+
+#### write(str)
+Writes data to a sink.
+
+#### writeln(str)
+Writes data to a sink with a newline at the end.
+
 <hr>
 <div id='runnerMode'>
 <h4 class='heading'>

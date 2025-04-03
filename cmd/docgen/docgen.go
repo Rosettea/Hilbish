@@ -204,6 +204,7 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 	}
 
 	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
+	println(typeName, parentMod, interfaces)
 
 	return dps
 }
@@ -325,7 +326,7 @@ provided by Hilbish.
 
 	os.Mkdir("emmyLuaDocs", 0777)
 
-	dirs := []string{"./util", "./"}
+	dirs := []string{"./", "./util"}
 	filepath.Walk("golibs/", func (path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			return nil
@@ -436,14 +437,25 @@ provided by Hilbish.
 			interfaceModules[modname].Types = append(interfaceModules[modname].Types, piece)
 		}
 
-		docs[mod] = module{
-			Types: filteredTypePieces,
-			Docs: filteredPieces,
-			ShortDescription: shortDesc,
-			Description: strings.Join(desc, "\n"),
-			HasInterfaces: hasInterfaces,
-			Properties: docPieceTag("property", tags),
-			Fields: docPieceTag("field", tags),
+		println(mod)
+		fmt.Println(filteredTypePieces)
+		if newDoc, ok := docs[mod]; ok {
+			println("fuck")
+			oldMod := docs[mod]
+			newDoc.Types = append(filteredTypePieces, oldMod.Types...)
+			newDoc.Docs = append(filteredPieces, oldMod.Docs...)
+
+			docs[mod] = newDoc
+		} else {
+			docs[mod] = module{
+				Types: filteredTypePieces,
+				Docs: filteredPieces,
+				ShortDescription: shortDesc,
+				Description: strings.Join(desc, "\n"),
+				HasInterfaces: hasInterfaces,
+				Properties: docPieceTag("property", tags),
+				Fields: docPieceTag("field", tags),
+			}
 		}
 	}
 
