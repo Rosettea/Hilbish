@@ -82,6 +82,16 @@ function hilbish.runner.getCurrent()
 	return currentRunner
 end
 
+--- **NOTE: This function is deprecated and will be removed in 3.0**
+--- Use `hilbish.runner.setCurrent` instead.
+--- This is the same as the `hilbish.runnerMode` function.
+--- It takes a callback, which will be used to execute all interactive input.
+--- Or a string which names the runner mode to use.
+-- @param mode string|function
+function hilbish.runner.setMode(mode)
+	hilbish.runnerMode(mode)
+end
+
 local function finishExec(exitCode, input, priv)
 	hilbish.exitCode = exitCode
 	bait.throw('command.exit', exitCode, input, priv)

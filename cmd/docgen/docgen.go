@@ -203,7 +203,6 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 		Tags: tags,
 	}
 
-	fmt.Println(typeName, parentMod, interfaces)
 	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
 
 	return dps
@@ -477,12 +476,9 @@ provided by Hilbish.
 			f, _ := os.Create(docPath)
 			f.WriteString(fmt.Sprintf(header, modOrIface, modname, modu.ShortDescription))
 			typeTag, _ := regexp.Compile(`\B@\w+`)
-			//fmt.Println(modu.Description)
 			modDescription := typeTag.ReplaceAllStringFunc(strings.Replace(strings.Replace(modu.Description, "<", `\<`, -1), "{{\\<", "{{<", -1), func(typ string) string {
 				typName := typ[1:]
-				fmt.Println("typ name", typName)
 				typLookup := typeTable[strings.ToLower(typName)]
-				fmt.Println(typLookup)
 				ifaces := typLookup[0] + "." + typLookup[1] + "/"
 				if typLookup[1] == "" {
 					ifaces = ""

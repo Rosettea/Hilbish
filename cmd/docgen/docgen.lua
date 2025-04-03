@@ -15,7 +15,6 @@ for _, fname in ipairs(files) do
 	local mod = header:match(modpattern)
 	if not mod then goto continue end
 
-	print(fname, mod)
 	pieces[mod] = {}
 	descriptions[mod] = {}
 
@@ -59,14 +58,12 @@ for _, fname in ipairs(files) do
 
 						if emmy then
 							if emmy == 'param' then
-								print('bruh', emmythings[1], emmythings[2])
 								table.insert(dps.params, 1, {
 									name = emmythings[1],
 									type = emmythings[2],
 									-- the +1 accounts for space.
 									description = table.concat(emmythings, ' '):sub(emmythings[1]:len() + 1 + emmythings[2]:len() + 1)
 								})
-								print(table.concat(emmythings, '/'))
 							end
 						else
 							table.insert(dps.description, 1, docline)
@@ -109,11 +106,15 @@ for iface, dps in pairs(pieces) do
 		docParent = "API"
 		path = string.format('docs/api/%s/%s.md', mod, iface)
 	end
+	if iface == 'hilbish' then
+		docParent = "API"
+		path = string.format('docs/api/hilbish/_index.md', mod, iface)
+	end
 
 	fs.mkdir(fs.dir(path), true)
 
 	local exists = pcall(fs.stat, path)
-	local newOrNotNature = exists and mod ~= 'nature'
+	local newOrNotNature = (exists and mod ~= 'nature') or iface == 'hilbish'
 
 	local f <close> = io.open(path, newOrNotNature and 'r+' or 'w+')
 	local tocPos
@@ -129,9 +130,6 @@ for iface, dps in pairs(pieces) do
 			tocPos = f:seek()
 		end
 	end
-	print(f)
-
-	print('mod and path:', mod, path)
 
 	local tocSearch = false
 	for line in f:lines() do

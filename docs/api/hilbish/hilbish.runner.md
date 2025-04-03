@@ -56,13 +56,14 @@ end)
 |----|----|
 |<a href="#runner.lua">lua(cmd)</a>|Evaluates `cmd` as Lua input. This is the same as using `dofile`|
 |<a href="#exec">exec(cmd, runnerName)</a>|Executes `cmd` with a runner.|
+|<a href="#run">run(input, priv)</a>|Runs `input` with the currently set Hilbish runner.|
+|<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
+|<a href="#setCurrent">setCurrent(name)</a>|Sets Hilbish's runner mode by name.|
+|<a href="#setMode">setMode(mode)</a>|**NOTE: This function is deprecated and will be removed in 3.0**|
+|<a href="#sh">sh()</a>|nil|
+|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners.|
 |<a href="#set">set(name, runner)</a>|*Sets* a runner by name. The difference between this function and|
 |<a href="#get">get(name)</a>|Get a runner by name.|
-|<a href="#add">add(name, runner)</a>|Adds a runner to the table of available runners.|
-|<a href="#setCurrent">setCurrent(name)</a>|Sets Hilbish's runner mode by name.|
-|<a href="#getCurrent">getCurrent()</a>|Returns the current runner by name.|
-|<a href="#run">run(input, priv)</a>|Runs `input` with the currently set Hilbish runner.|
-|<a href="#sh">sh()</a>|nil|
 
 <hr>
 <div id='runner.lua'>
@@ -79,91 +80,6 @@ or `load`, but is appropriated for the runner interface.
 #### Parameters
 `string` **`cmd`**  
 
-
-</div>
-
-<hr>
-<div id='sh'>
-<h4 class='heading'>
-hilbish.runner.sh()
-<a href="#sh" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-
-#### Parameters
-This function has no parameters.  
-</div>
-
-<hr>
-<div id='run'>
-<h4 class='heading'>
-hilbish.runner.run(input, priv)
-<a href="#run" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Runs `input` with the currently set Hilbish runner.
-This method is how Hilbish executes commands.
-`priv` is an optional boolean used to state if the input should be saved to history.
-#### Parameters
-`input` **`string`**  
-
-
-`priv` **`bool`**  
-
-
-</div>
-
-<hr>
-<div id='getCurrent'>
-<h4 class='heading'>
-hilbish.runner.getCurrent()
-<a href="#getCurrent" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Returns the current runner by name.
-#### Parameters
-This function has no parameters.  
-</div>
-
-<hr>
-<div id='setCurrent'>
-<h4 class='heading'>
-hilbish.runner.setCurrent(name)
-<a href="#setCurrent" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Sets Hilbish's runner mode by name.
-#### Parameters
-`name` **`string`**  
-
-
-</div>
-
-<hr>
-<div id='add'>
-<h4 class='heading'>
-hilbish.runner.add(name, runner)
-<a href="#add" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Adds a runner to the table of available runners.
-If runner is a table, it must have the run function in it.
-#### Parameters
-`name` **`string`**  
- Name of the runner
-
-`runner` **`function|table`**  
- 
 
 </div>
 
@@ -200,6 +116,111 @@ The runner table must have the run function in it.
 
 
 `runner` **`table`**  
+
+
+</div>
+
+<hr>
+<div id='add'>
+<h4 class='heading'>
+hilbish.runner.add(name, runner)
+<a href="#add" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Adds a runner to the table of available runners.
+If runner is a table, it must have the run function in it.
+#### Parameters
+`name` **`string`**  
+ Name of the runner
+
+`runner` **`function|table`**  
+ 
+
+</div>
+
+<hr>
+<div id='sh'>
+<h4 class='heading'>
+hilbish.runner.sh()
+<a href="#sh" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr>
+<div id='setMode'>
+<h4 class='heading'>
+hilbish.runner.setMode(mode)
+<a href="#setMode" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+**NOTE: This function is deprecated and will be removed in 3.0**
+Use `hilbish.runner.setCurrent` instead.
+This is the same as the `hilbish.runnerMode` function.
+It takes a callback, which will be used to execute all interactive input.
+Or a string which names the runner mode to use.
+#### Parameters
+`mode` **`string|function`**  
+
+
+</div>
+
+<hr>
+<div id='setCurrent'>
+<h4 class='heading'>
+hilbish.runner.setCurrent(name)
+<a href="#setCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Sets Hilbish's runner mode by name.
+#### Parameters
+`name` **`string`**  
+
+
+</div>
+
+<hr>
+<div id='getCurrent'>
+<h4 class='heading'>
+hilbish.runner.getCurrent()
+<a href="#getCurrent" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Returns the current runner by name.
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr>
+<div id='run'>
+<h4 class='heading'>
+hilbish.runner.run(input, priv)
+<a href="#run" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Runs `input` with the currently set Hilbish runner.
+This method is how Hilbish executes commands.
+`priv` is an optional boolean used to state if the input should be saved to history.
+#### Parameters
+`input` **`string`**  
+
+
+`priv` **`bool`**  
 
 
 </div>

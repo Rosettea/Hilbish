@@ -30,6 +30,7 @@ interfaces and functions which directly relate to shell functionality.
 |<a href="#read">read(prompt) -> input (string)</a>|Read input from the user, using Hilbish's line editor/input reader.|
 |<a href="#timeout">timeout(cb, time) -> @Timer</a>|Executed the `cb` function after a period of `time`.|
 |<a href="#which">which(name) -> string</a>|Checks if `name` is a valid command.|
+|<a href="#runnerMode">runnerMode(mode)</a>|Sets the execution/runner mode for interactive Hilbish.|
 
 ## Static module fields
 |||
@@ -443,6 +444,30 @@ Will return the path of the binary, or a basename if it's a commander.
 
 #### Parameters
 `string` **`name`**  
+
+
+</div>
+
+<hr>
+<div id='runnerMode'>
+<h4 class='heading'>
+hilbish.runnerMode(mode)
+<a href="#runnerMode" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Sets the execution/runner mode for interactive Hilbish.
+**NOTE: This function is deprecated and will be removed in 3.0**
+Use `hilbish.runner.setCurrent` instead.
+This determines whether Hilbish wll try to run input as Lua
+and/or sh or only do one of either.
+Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
+sh, and lua. It also accepts a function, to which if it is passed one
+will call it to execute user input instead.
+Read [about runner mode](../features/runner-mode) for more information.
+#### Parameters
+`mode` **`string|function`**  
 
 
 </div>
