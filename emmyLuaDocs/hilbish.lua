@@ -7,6 +7,9 @@ local hilbish = {}
 --- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
+--- Deletes characters in the line by the given amount.
+function hilbish.editor.deleteByAmount(amount) end
+
 --- Returns the current input line.
 function hilbish.editor.getLine() end
 
