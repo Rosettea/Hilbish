@@ -23,8 +23,8 @@ The `hilbish.message` type is a table with the following keys:
 |||
 |----|----|
 |<a href="#unreadCount">unreadCount()</a>|Returns the amount of unread messages.|
-|<a href="#readAll">readAll()</a>|Marks all messages as read.|
 |<a href="#send">send(message)</a>|Sends a message.|
+|<a href="#readAll">readAll()</a>|Marks all messages as read.|
 |<a href="#read">read(idx)</a>|Marks a message at `idx` as read.|
 |<a href="#delete">delete(idx)</a>|Deletes the message at `idx`.|
 |<a href="#clear">clear()</a>|Deletes all messages.|
@@ -90,6 +90,20 @@ Marks a message at `idx` as read.
 </div>
 
 <hr>
+<div id='readAll'>
+<h4 class='heading'>
+hilbish.messages.readAll()
+<a href="#readAll" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Marks all messages as read.
+#### Parameters
+This function has no parameters.  
+</div>
+
+<hr>
 <div id='send'>
 <h4 class='heading'>
 hilbish.messages.send(message)
@@ -103,20 +117,6 @@ Sends a message.
 `message` **`hilbish.message`**  
 
 
-</div>
-
-<hr>
-<div id='readAll'>
-<h4 class='heading'>
-hilbish.messages.readAll()
-<a href="#readAll" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Marks all messages as read.
-#### Parameters
-This function has no parameters.  
 </div>
 
 <hr>

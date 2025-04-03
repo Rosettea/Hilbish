@@ -84,6 +84,7 @@ var prefix = map[string]string{
 	"commander": "c",
 	"bait": "b",
 	"terminal": "term",
+	"snail": "snail",
 }
 
 func getTagsAndDocs(docs string) (map[string][]tag, []string) {
@@ -208,6 +209,10 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 }
 
 func setupDoc(mod string, fun *doc.Func) *docPiece {
+	if fun.Doc == "" {
+		return nil
+	}
+
 	docs := strings.TrimSpace(fun.Doc)
 	tags, parts := getTagsAndDocs(docs)
 
@@ -320,7 +325,7 @@ provided by Hilbish.
 
 	os.Mkdir("emmyLuaDocs", 0777)
 
-	dirs := []string{"./"}
+	dirs := []string{"./", "./util"}
 	filepath.Walk("golibs/", func (path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			return nil
@@ -347,7 +352,7 @@ provided by Hilbish.
 		pieces := []docPiece{}
 		typePieces := []docPiece{}
 		mod := l
-		if mod == "main" {
+		if mod == "main" || mod == "util" {
 			mod = "hilbish"
 		}
 		var hasInterfaces bool
@@ -431,14 +436,23 @@ provided by Hilbish.
 			interfaceModules[modname].Types = append(interfaceModules[modname].Types, piece)
 		}
 
-		docs[mod] = module{
-			Types: filteredTypePieces,
-			Docs: filteredPieces,
-			ShortDescription: shortDesc,
-			Description: strings.Join(desc, "\n"),
-			HasInterfaces: hasInterfaces,
-			Properties: docPieceTag("property", tags),
-			Fields: docPieceTag("field", tags),
+		fmt.Println(filteredTypePieces)
+		if newDoc, ok := docs[mod]; ok {
+			oldMod := docs[mod]
+			newDoc.Types = append(filteredTypePieces, oldMod.Types...)
+			newDoc.Docs = append(filteredPieces, oldMod.Docs...)
+
+			docs[mod] = newDoc
+		} else {
+			docs[mod] = module{
+				Types: filteredTypePieces,
+				Docs: filteredPieces,
+				ShortDescription: shortDesc,
+				Description: strings.Join(desc, "\n"),
+				HasInterfaces: hasInterfaces,
+				Properties: docPieceTag("property", tags),
+				Fields: docPieceTag("field", tags),
+			}
 		}
 	}
 
