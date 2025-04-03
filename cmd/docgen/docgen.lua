@@ -74,7 +74,7 @@ for _, fname in ipairs(files) do
 					end
 				end
 
-				pieces[mod][funcName] = dps
+				table.insert(pieces[mod], {funcName, dps})
 			end
 			docPiece = {}
 			goto continue2
@@ -142,7 +142,10 @@ for iface, dps in pairs(pieces) do
 		end
 	end
 
-	for func, docs in pairs(dps) do
+	table.sort(dps, function(a, b) return a[1] < b[1] end)
+	for _, piece in pairs(dps) do
+		local func = piece[1]
+		local docs = piece[2]
 		local sig = string.format('%s.%s(', iface, func)
 		local params = ''
 		for idx, param in ipairs(docs.params) do
