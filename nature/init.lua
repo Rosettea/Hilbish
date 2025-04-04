@@ -19,6 +19,7 @@ table.insert(package.searchers, function(module)
 end)
 
 require 'nature.hilbish'
+require 'nature.processors'
 
 require 'nature.commands'
 require 'nature.completions'
