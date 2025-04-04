@@ -7,11 +7,8 @@ local hilbish = {}
 --- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
---- This is the same as the `hilbish.runnerMode` function.
---- It takes a callback, which will be used to execute all interactive input.
---- In normal cases, neither callbacks should be overrided by the user,
---- as the higher level functions listed below this will handle it.
-function hilbish.runner.setMode(cb) end
+--- Deletes characters in the line by the given amount.
+function hilbish.editor.deleteByAmount(amount) end
 
 --- Returns the current input line.
 function hilbish.editor.getLine() end
@@ -131,24 +128,6 @@ function hilbish.prompt(str, typ) end
 --- Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
 function hilbish.read(prompt) end
 
---- Runs `cmd` in Hilbish's shell script interpreter.
---- The `streams` parameter specifies the output and input streams the command should use.
---- For example, to write command output to a sink.
---- As a table, the caller can directly specify the standard output, error, and input
---- streams of the command with the table keys `out`, `err`, and `input` respectively.
---- As a boolean, it specifies whether the command should use standard output or return its output streams.
---- 
-function hilbish.run(cmd, streams) end
-
---- Sets the execution/runner mode for interactive Hilbish.
---- This determines whether Hilbish wll try to run input as Lua
---- and/or sh or only do one of either.
---- Accepted values for mode are hybrid (the default), hybridRev (sh first then Lua),
---- sh, and lua. It also accepts a function, to which if it is passed one
---- will call it to execute user input instead.
---- Read [about runner mode](../features/runner-mode) for more information.
-function hilbish.runnerMode(mode) end
-
 --- Executed the `cb` function after a period of `time`.
 --- This creates a Timer that starts ticking immediately.
 function hilbish.timeout(cb, time) end
@@ -168,28 +147,6 @@ function hilbish.jobs:foreground() end
 --- or `load`, but is appropriated for the runner interface.
 function hilbish.runner.lua(cmd) end
 
---- Sets/toggles the option of automatically flushing output.
---- A call with no argument will toggle the value.
---- @param auto boolean|nil
-function hilbish:autoFlush(auto) end
-
---- Flush writes all buffered input to the sink.
-function hilbish:flush() end
-
---- Reads a liine of input from the sink.
---- @returns string
-function hilbish:read() end
-
---- Reads all input from the sink.
---- @returns string
-function hilbish:readAll() end
-
---- Writes data to a sink.
-function hilbish:write(str) end
-
---- Writes data to a sink with a newline at the end.
-function hilbish:writeln(str) end
-
 --- Starts running the job.
 function hilbish.jobs:start() end
 
@@ -199,10 +156,6 @@ function hilbish.jobs:stop() end
 --- Loads a module at the designated `path`.
 --- It will throw if any error occurs.
 function hilbish.module.load(path) end
-
---- Runs a command in Hilbish's shell script interpreter.
---- This is the equivalent of using `source`.
-function hilbish.runner.sh(cmd) end
 
 --- Starts a timer.
 function hilbish.timers:start() end
@@ -261,5 +214,27 @@ function hilbish.timers.create(type, time, callback) end
 
 --- Retrieves a timer via its ID.
 function hilbish.timers.get(id) end
+
+--- Sets/toggles the option of automatically flushing output.
+--- A call with no argument will toggle the value.
+--- @param auto boolean|nil
+function hilbish:autoFlush(auto) end
+
+--- Flush writes all buffered input to the sink.
+function hilbish:flush() end
+
+--- Reads a liine of input from the sink.
+--- @returns string
+function hilbish:read() end
+
+--- Reads all input from the sink.
+--- @returns string
+function hilbish:readAll() end
+
+--- Writes data to a sink.
+function hilbish:write(str) end
+
+--- Writes data to a sink with a newline at the end.
+function hilbish:writeln(str) end
 
 return hilbish

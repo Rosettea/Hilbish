@@ -18,12 +18,15 @@ table.insert(package.searchers, function(module)
 	return function() return hilbish.module.load(path) end, path
 end)
 
+require 'nature.hilbish'
+
 require 'nature.commands'
 require 'nature.completions'
 require 'nature.opts'
 require 'nature.vim'
 require 'nature.runner'
 require 'nature.hummingbird'
+require 'nature.abbr'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then

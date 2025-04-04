@@ -17,29 +17,9 @@ is by the Greenhouse pager.
 ## Functions
 |||
 |----|----|
+|<a href="#renderInfoBlock">renderInfoBlock(type, text)</a>|Renders an info block. An info block is a block of text with|
 |<a href="#renderCodeBlock">renderCodeBlock(text)</a>|Assembles and renders a code block. This returns|
 |<a href="#highlight">highlight(text)</a>|Performs basic Lua code highlighting.|
-|<a href="#renderInfoBlock">renderInfoBlock(type, text)</a>|Renders an info block. An info block is a block of text with|
-<hr>
-<div id='renderInfoBlock'>
-<h4 class='heading'>
-doc.renderInfoBlock(type, text)
-<a href="#renderInfoBlock" class='heading-link'>
-	<i class="fas fa-paperclip"></i>
-</a>
-</h4>
-
-Renders an info block. An info block is a block of text with
-an icon and styled text block.
-#### Parameters
-`type` **`string`**  
- Type of info block. The only one specially styled is the `warning`.
-
-`text` **`string`**  
-
-
-</div>
-
 <hr>
 <div id='highlight'>
 <h4 class='heading'>
@@ -69,6 +49,26 @@ Assembles and renders a code block. This returns
 the supplied text based on the number of command line columns,
 and styles it to resemble a code block.
 #### Parameters
+`text` **`string`**  
+
+
+</div>
+
+<hr>
+<div id='renderInfoBlock'>
+<h4 class='heading'>
+doc.renderInfoBlock(type, text)
+<a href="#renderInfoBlock" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Renders an info block. An info block is a block of text with
+an icon and styled text block.
+#### Parameters
+`type` **`string`**  
+ Type of info block. The only one specially styled is the `warning`.
+
 `text` **`string`**  
 
 
