@@ -1,7 +1,7 @@
 -- @module hilbish.processors
 
 hilbish.processors = {
-	list = {}
+	list = {},
 	sorted = {}
 }
 
@@ -20,7 +20,7 @@ end
 function hilbish.processors.execute(command)
 	local continue = true
 	for _, processor in ipairs(hilbish.processors.list) do
-		local processed = hilbish.processors.func(command)
+		local processed = processor.func(command)
 		if processed.command then command = processed.command end
 		if not processed.continue then
 			continue = false
