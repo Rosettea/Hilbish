@@ -122,6 +122,13 @@ end
 -- @param input string
 -- @param priv bool
 function hilbish.runner.run(input, priv)
+	bait.throw('command.preprocess', input)
+	local input, continue = hilbish.processors.execute(input)
+	if not continue then
+		finishExec(0, '', true)
+		return
+	end
+
 	local command = hilbish.aliases.resolve(input)
 	bait.throw('command.preexec', input, command)
 
