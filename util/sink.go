@@ -95,7 +95,6 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	}
 
 	if s.autoFlush {
-		println("flushing the toilet")
 		s.Rw.Flush()
 	}
 
@@ -104,8 +103,8 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		line, err := s.Rw.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
-    			// We still want to add the data we read
-        		lines = append(lines, line)
+				// We still want to add the data we read
+				lines = append(lines, line)
 				break
 			}
 
