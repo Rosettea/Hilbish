@@ -8,6 +8,7 @@
 ### Fixed
 - Skip over file and prevent panic if info cannot be retrieved during file completion (due to permission error or anything else)
 - Apply environment variables properly after 2.3 shell interpreter changes
+- hilbish.sink.readAll() function now reads data that doesn't end in a newline
 
 ## [2.3.3] - 2024-11-04
 ### Fixed
