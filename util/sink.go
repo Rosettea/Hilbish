@@ -99,6 +99,8 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		line, err := s.Rw.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
+    			// We still want to add the data we read
+        		lines = append(lines, line)
 				break
 			}
 
