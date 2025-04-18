@@ -44,7 +44,7 @@ function hilbish.run(cmd, streams)
 	end
 
 	local out = hilbish.snail:run(cmd, {sinks = sinks})
-	local returns = {out}
+	local returns = {out.exitCode}
 
 	if type(streams) == 'boolean' and not streams then
 		table.insert(returns, sinks.out:readAll())
