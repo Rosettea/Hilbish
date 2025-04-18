@@ -94,6 +94,11 @@ func luaSinkReadAll(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
+	if s.autoFlush {
+		println("flushing the toilet")
+		s.Rw.Flush()
+	}
+
 	lines := []string{}
 	for {
 		line, err := s.Rw.ReadString('\n')
@@ -227,6 +232,7 @@ func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 func NewSink(rtm *rt.Runtime, Rw io.ReadWriter) *Sink {
 	s := &Sink{
 		Rw: bufio.NewReadWriter(bufio.NewReader(Rw), bufio.NewWriter(Rw)),
+		autoFlush: true,
 	}
 	s.UserData = sinkUserData(rtm, s)
 
