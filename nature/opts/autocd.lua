@@ -1,6 +1,7 @@
 local fs = require 'fs'
 
 hilbish.processors.add {
+	name = 'hilbish.autocd',
 	func = function(path)
 		if hilbish.opts.autocd then
 			local ok, stat = pcall(fs.stat, path)
