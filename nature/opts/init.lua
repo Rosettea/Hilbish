@@ -15,7 +15,8 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	fuzzy = false,
 	notifyJobFinish = true,
 	crimmas = true,
-	tips = true
+	tips = true,
+	processorSkipList = {}
 }
 
 for optsName, default in pairs(defaultOpts) do

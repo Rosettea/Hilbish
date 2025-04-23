@@ -123,7 +123,9 @@ end
 -- @param priv bool
 function hilbish.runner.run(input, priv)
 	bait.throw('command.preprocess', input)
-	local input, continue = hilbish.processors.execute(input)
+	local input, continue = hilbish.processors.execute(input, {
+		skip = hilbish.opts.processorSkipList
+	})
 	if not continue then
 		finishExec(0, '', true)
 		return
