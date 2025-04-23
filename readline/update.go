@@ -121,7 +121,7 @@ func (rl *Instance) clearHelpers() {
 	moveCursorForwards(rl.fullX)
 
 	// Clear everything below
-	//print(seqClearScreenBelow)
+	print(seqClearScreenBelow)
 
 	// Go back to current cursor position
 	moveCursorBackwards(GetTermWidth())

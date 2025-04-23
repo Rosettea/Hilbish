@@ -1,10 +1,13 @@
 -- @module dirs
+-- internal directory management
+-- The dirs module defines a small set of functions to store and manage
+-- directories.
+local bait = require 'bait'
 local fs = require 'fs'
 
 local dirs = {}
 
---- Last (current working) directory. Separate from recentDirs mainly for
---- easier use.
+--- Last (current working) directory. Separate from recentDirs mainly for easier use.
 dirs.old = ''
 --- Table of recent directories. For use, look at public functions.
 dirs.recentDirs = {}
@@ -35,19 +38,21 @@ function dirRecents(num, remove)
 end
 
 --- Look at `num` amount of recent directories, starting from the latest.
+--- This returns  a table of recent directories, up to the `num` amount.
 -- @param num? number
 function dirs.peak(num)
 	return dirRecents(num)
 end
 
---- Add `d` to the recent directories list.
-function dirs.push(d)
+--- Add `dir` to the recent directories list.
+--- @param dir string
+function dirs.push(dir)
 	dirs.recentDirs[dirs.recentSize + 1] = nil
-	if dirs.recentDirs[#dirs.recentDirs - 1] ~= d then
-		ok, d = pcall(fs.abs, d)
-		assert(ok, 'could not turn "' .. d .. '"into an absolute path')
+	if dirs.recentDirs[#dirs.recentDirs - 1] ~= dir then
+		local ok, dir = pcall(fs.abs, dir)
+		assert(ok, 'could not turn "' .. dir .. '"into an absolute path')
 
-		table.insert(dirs.recentDirs, 1, d)
+		table.insert(dirs.recentDirs, 1, dir)
 	end
 end
 
@@ -72,5 +77,10 @@ function dirs.setOld(d)
 	os.setenv('OLDPWD', d)
 	dirs.old = d
 end
+
+bait.catch('hilbish.cd', function(path, oldPath)
+	dirs.setOld(oldPath)
+	dirs.push(path)
+end)
 
 return dirs

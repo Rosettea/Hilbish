@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
+	"hilbish/golibs/snail"
 	"hilbish/golibs/terminal"
 
 	rt "github.com/arnodel/golua/runtime"
@@ -23,15 +25,14 @@ func luaInit() {
 		MessageHandler: debuglib.Traceback,
 	})
 	lib.LoadAll(l)
-	setupSinkType(l)
 
 	lib.LoadLibs(l, hilbishLoader)
 	// yes this is stupid, i know
 	util.DoString(l, "hilbish = require 'hilbish'")
 
-	// Add fs and terminal module module to Lua
 	lib.LoadLibs(l, fs.Loader)
 	lib.LoadLibs(l, terminal.Loader)
+	lib.LoadLibs(l, snail.Loader)
 
 	cmds = commander.New(l)
 	lib.LoadLibs(l, cmds.Loader)
@@ -63,7 +64,7 @@ func luaInit() {
 
 	err1 := util.DoFile(l, "nature/init.lua")
 	if err1 != nil {
-		err2 := util.DoFile(l, preloadPath)
+		err2 := util.DoFile(l, filepath.Join(dataDir, "nature", "init.lua"))
 		if err2 != nil {
 			fmt.Fprintln(os.Stderr, "Missing nature module, some functionality and builtins will be missing.")
 			fmt.Fprintln(os.Stderr, "local error:", err1)

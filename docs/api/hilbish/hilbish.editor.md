@@ -14,11 +14,29 @@ directly interact with the line editor in use.
 ## Functions
 |||
 |----|----|
+|<a href="#editor.deleteByAmount">deleteByAmount(amount)</a>|Deletes characters in the line by the given amount.|
 |<a href="#editor.getLine">getLine() -> string</a>|Returns the current input line.|
 |<a href="#editor.getVimRegister">getVimRegister(register) -> string</a>|Returns the text that is at the register.|
 |<a href="#editor.insert">insert(text)</a>|Inserts text into the Hilbish command line.|
 |<a href="#editor.getChar">getChar() -> string</a>|Reads a keystroke from the user. This is in a format of something like Ctrl-L.|
 |<a href="#editor.setVimRegister">setVimRegister(register, text)</a>|Sets the vim register at `register` to hold the passed text.|
+
+<hr>
+<div id='editor.deleteByAmount'>
+<h4 class='heading'>
+hilbish.editor.deleteByAmount(amount)
+<a href="#editor.deleteByAmount" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Deletes characters in the line by the given amount.  
+
+#### Parameters
+`number` **`amount`**  
+
+
+</div>
 
 <hr>
 <div id='editor.getLine'>
@@ -96,6 +114,9 @@ hilbish.editor.setVimRegister(register, text)
 Sets the vim register at `register` to hold the passed text.  
 
 #### Parameters
+`string` **`register`**  
+
+
 `string` **`text`**  
 
 
