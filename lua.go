@@ -46,10 +46,11 @@ func luaInit() {
 	lib.LoadLibs(l, hooks.Loader)
 
 	// Add Ctrl-C handler
-	hooks.On("signal.sigint", func(...interface{}) {
+	hooks.On("signal.sigint", func(...interface{}) rt.Value {
 		if !interactive {
 			os.Exit(0)
 		}
+		return rt.NilValue
 	})
 
 	lr.rl.RawInputCallback = func(r []rune) {

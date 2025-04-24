@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Forward/Right arrow key will fill in hint text (#327)
+- Values returned by bait hooks will be passed to the `throw` caller
 
 ## [2.3.4] - 2024-12-28
 ### Fixed
