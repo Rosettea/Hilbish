@@ -240,7 +240,7 @@ func NewInstance() *Instance {
 		var err error
 		rl.regexSearch, err = regexp.Compile("(?i)" + string(rl.tfLine))
 		if err != nil {
-			rl.RefreshPromptLog(err.Error())
+			//rl.RefreshPromptLog(err.Error())
 			rl.infoText = []rune(Red("Failed to match search regexp"))
 		}
 
