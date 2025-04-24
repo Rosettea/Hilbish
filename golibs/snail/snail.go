@@ -66,6 +66,8 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 	buf := new(bytes.Buffer)
 	//printer := syntax.NewPrinter()
 
+	replacer := strings.NewReplacer("[", "\\[", "]", "\\]")
+
 	var bg bool
 	for _, stmt := range file.Stmts {
 		bg = false
@@ -95,7 +97,7 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 				_, argstring = splitInput(strings.Join(args, " "))
 
 				// If alias was found, use command alias
-				argstring = util.MustDoString(s.runtime, fmt.Sprintf(`return hilbish.aliases.resolve("%s")`, argstring)).AsString()
+				argstring = util.MustDoString(s.runtime, fmt.Sprintf(`return hilbish.aliases.resolve [[%s]]`, replacer.Replace(argstring))).AsString()
 
 				var err error
 				args, err = shell.Fields(argstring, nil)
