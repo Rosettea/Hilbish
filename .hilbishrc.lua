@@ -47,3 +47,7 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
+
+local human = require 'nature.human'
+local manfile = human.where('man', {1})
+human.parse(manfile)
