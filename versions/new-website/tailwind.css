@@ -1658,6 +1658,9 @@
   .border-\[\#fbf0df\] {
     border-color: #fbf0df;
   }
+  .border-t-zinc-300 {
+    border-top-color: var(--color-zinc-300);
+  }
   .border-b-zinc-300 {
     border-bottom-color: var(--color-zinc-300);
   }
@@ -2127,6 +2130,9 @@
   .py-3 {
     padding-block: calc(var(--spacing) * 3);
   }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
   .py-\[0\.2rem\] {
     padding-block: 0.2rem;
   }
@@ -2203,6 +2209,10 @@
     font-size: var(--text-5xl);
     line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
+  .text-6xl {
+    font-size: var(--text-6xl);
+    line-height: var(--tw-leading, var(--text-6xl--line-height));
+  }
   .text-base {
     font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-base--line-height));
@@ -2210,6 +2220,10 @@
   .text-sm {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
   }
   .text-xs {
     font-size: var(--text-xs);
@@ -2327,6 +2341,12 @@
   }
   .text-black {
     color: var(--color-black);
+  }
+  .text-neutral-500 {
+    color: var(--color-neutral-500);
+  }
+  .text-pink-300 {
+    color: var(--color-pink-300);
   }
   .capitalize {
     text-transform: capitalize;
