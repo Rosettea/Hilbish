@@ -26,7 +26,7 @@ pub fn main() {
 fn create_page(content: element.Element(a)) -> element.Element(a) {
 	let description = "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
 
-	html.html([attribute.class("bg-stone-50 dark:bg-stone-950 text-black dark:text-white")], [
+	html.html([attribute.class("bg-stone-50 dark:bg-neutral-950 text-black dark:text-white")], [
 		html.head([], [
 			html.meta([
 				attribute.name("viewport"),
