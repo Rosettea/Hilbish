@@ -3069,9 +3069,9 @@
       background-color: var(--color-stone-950);
     }
   }
-  .dark\:to-stone-950 {
+  .dark\:to-black {
     @media (prefers-color-scheme: dark) {
-      --tw-gradient-to: var(--color-stone-950);
+      --tw-gradient-to: var(--color-black);
       --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
     }
   }
