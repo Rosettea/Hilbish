@@ -4,7 +4,7 @@ import lustre/element/html
 
 pub fn page() -> element.Element(a) {
 	html.div([attribute.class("flex flex-col gap-4 mb-4")], [
-		html.div([attribute.class("border-b border-b-zinc-300 gap-3 -mx-4 pt-2 h-screen bg-radial-[at_100%_100%] from-pink-500 to-stone-50 dark:to-stone-950 to-35% flex flex-col items-center justify-center")], [
+		html.div([attribute.class("border-b border-b-zinc-300 gap-3 -mx-4 pt-2 h-screen bg-radial-[at_100%_100%] from-pink-500 to-stone-50 dark:to-black to-35% flex flex-col items-center justify-center")], [
 			html.div([attribute.class("gap-1 flex flex-col items-center")], [
 				html.span([attribute.class("flex flex-row items-center justify-center")], [
 					html.img([
