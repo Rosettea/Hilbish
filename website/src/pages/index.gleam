@@ -8,7 +8,7 @@ pub fn page() -> element.Element(a) {
 			html.div([attribute.class("gap-1 flex flex-col items-center")], [
 				html.span([attribute.class("flex flex-row items-center justify-center")], [
 					html.img([
-						attribute.src("/hilbish-flower.png"),
+						attribute.src("./hilbish-flower.png"),
 						attribute.class("h-20")
 					]),
 					html.p([attribute.class("text-4xl font-bold")], [element.text("Hilbish")]),

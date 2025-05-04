@@ -41,7 +41,7 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 					html.div([], [
 						html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
 							html.img([
-								attribute.src("/hilbish-flower.png"),
+								attribute.src("./hilbish-flower.png"),
 								attribute.class("h-6")
 							]),
 							html.span([
