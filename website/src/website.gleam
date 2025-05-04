@@ -48,7 +48,7 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 			html.meta([attribute.content("https://rosettea.github.io/Hilbish/versions/new-website"), attribute.attribute("property", "og:url")])
 		]),
 		html.body([], [
-			html.nav([attribute.class("fixed top-0 w-full z-50 p-1 mb-2 border-b border-b-zinc-300 backdrop-blur-md")], [
+			html.nav([attribute.class("sticky top-0 w-full z-50 p-1 mb-2 border-b border-b-zinc-300 backdrop-blur-md")], [
 				html.div([attribute.class("flex mx-auto")], [
 					html.div([], [
 						html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
@@ -65,7 +65,33 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 					])
 				]),
 			]),
-			html.main([attribute.class("mx-4")], [content])
+			html.main([attribute.class("mx-4")], [content]),
+			html.footer([attribute.class("py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300")], [
+				html.div([attribute.class("flex flex-col")], [
+					html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
+						html.img([
+							attribute.src("/hilbish-flower.png"),
+							attribute.class("h-24")
+						]),
+						html.span([
+							attribute.class("self-center text-6xl")
+						], [
+							element.text("Hilbish"),
+						]),
+					]),
+					html.span([attribute.class("text-xl")], [element.text("The Moon-powered shell!")]),
+					html.span([attribute.class("text-light text-neutral-500")], [element.text("MIT License, copyright sammyette 2025")])
+				]),
+				html.div([attribute.class("flex flex-col")], [
+					link("https://github.com/Rosettea/Hilbish", "GitHub")
+				])
+			])
 		])
+	])
+}
+
+fn link(url: String, text: String) {
+	html.a([attribute.href(url)], [
+		html.span([attribute.class("text-pink-300 text-light")], [element.text(text)])
 	])
 }
