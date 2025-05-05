@@ -47,16 +47,3 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
-
-hilbish.complete('command.comp', function(query, ctx, fields)
-	local cg = {
-	items = {
-			'list item 1',
-			['--command-flag-here'] = {'this does a thing', '--the-flag-alias'},
-			['--styled-command-flag-here'] = {'this does a thing', '--the-flag-alias', display = lunacolors.blue '--styled-command-flag-here'}
-		},
-		type = 'list'
-	}
-
-	return {cg}, prefix
-end)
