@@ -1,16 +1,110 @@
+import gleam/option
+import gleam/dict
 import gleam/io
+import gleam/order
+import gleam/list
+import gleam/string
 
 import lustre/attribute
 import lustre/element
 import lustre/element/html
 import lustre/ssg
+import lustre/ssg/djot
+import tom
+import simplifile
+import glaml
 
+import post
 import pages/index
+import pages/doc
+
+const base_url = "https://rosettea.github.io/Hilbish/versions/new-website"
 
 pub fn main() {
+	let assert Ok(files) = simplifile.get_files("./content")
+	let posts = list.map(files, fn(path: String) {
+		let assert Ok(ext) = path |> string.split(".") |> list.last
+		let slug = path |> string.replace("./content", "") |> string.drop_end({ext |> string.length()} + 1)
+		let assert Ok(name) = slug |> string.split("/") |> list.last
+
+		let assert Ok(content) = simplifile.read(path)
+		let frontmatter = djot.frontmatter(content)
+		let metadata = case frontmatter {
+			Ok(frntmtr) -> {
+				let assert Ok([metadata]) = glaml.parse_string(frntmtr)
+				option.Some(metadata)
+			}
+			Error(_) -> option.None
+		}
+		let content = djot.content(content)
+
+		let title = case metadata {
+			option.Some(metadata) -> {
+				case glaml.select_sugar(glaml.document_root(metadata), "title") {
+					Ok(glaml.NodeStr(s)) -> s
+					_ -> ""
+				}
+				
+			}
+			option.None -> ""
+		}
+
+		let assert Ok(filename) = path |> string.split("/") |> list.last
+		#(slug, post.Post(name, title, slug, metadata, content))
+	})
+
+	let doc_pages = list.filter(posts, fn(page) {
+		let isdoc = is_doc_page(page.0)
+		io.debug(page.0)
+		io.debug(isdoc)
+		isdoc
+	}) |> list.filter(fn(page) {
+		case page.1.metadata {
+			option.Some(_) -> True
+			option.None -> False
+		}
+	}) |> list.sort(fn(p1, p2) {
+		io.debug(p1)
+		io.debug(p2)
+		let assert option.Some(p1_metadata) = p1.1.metadata
+		let p1_weight = case glaml.select_sugar(glaml.document_root(p1_metadata), "weight") {
+			Ok(glaml.NodeInt(w)) -> w
+			_ -> 0
+		}
+
+		let assert option.Some(p2_metadata) = p2.1.metadata
+		let p2_weight = case glaml.select_sugar(glaml.document_root(p2_metadata), "weight") {
+			Ok(glaml.NodeInt(w)) -> w
+			_ -> 0
+		}
+
+		case p1_weight == 0 {
+			True -> order.Eq
+			False -> {
+				case p1_weight < p2_weight {
+					True -> order.Lt
+					False -> order.Gt
+				}
+			}
+		}
+	})
+
 	let build = ssg.new("./public")
 	|> ssg.add_static_dir("static")
 	|> ssg.add_static_route("/", create_page(index.page()))
+	|> list.fold(posts, _, fn(config, post) {
+		let route = case post.1.name {
+			"_index" -> post.0 |> string.drop_end("_index" |> string.length())
+			_ -> post.0
+		}
+		
+
+		let page = case is_doc_page(post.0) {
+			True -> doc.page(post.1, doc_pages)
+			False -> doc.page(post.1, doc_pages)
+		}
+		ssg.add_static_route(config, route, create_page(page))
+	})
 	|> ssg.use_index_routes
 	|> ssg.build
 
@@ -20,6 +114,13 @@ pub fn main() {
 			io.debug(e)
 			io.println("Website could not be built.")
 		}
+	}
+}
+
+fn is_doc_page(slug: String) {
+	let is_docs = case slug {
+		"/docs" <> _ -> True
+		_ -> False
 	}
 }
 
@@ -34,7 +135,7 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 			]),
 			html.link([
 				attribute.rel("stylesheet"),
-				attribute.href("./tailwind.css")
+				attribute.href("/tailwind.css")
 			]),
 			html.title([], "Hilbish"),
 			html.meta([attribute.name("theme-color"), attribute.content("#ff89dd")]),
@@ -48,12 +149,12 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 			html.meta([attribute.content("https://rosettea.github.io/Hilbish/versions/new-website"), attribute.attribute("property", "og:url")])
 		]),
 		html.body([], [
-			html.nav([attribute.class("sticky top-0 w-full z-50 p-1 mb-2 border-b border-b-zinc-300 backdrop-blur-md")], [
-				html.div([attribute.class("flex mx-auto")], [
+			html.nav([attribute.class("flex sticky top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12")], [
+				html.div([attribute.class("flex my-auto px-2")], [
 					html.div([], [
 						html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
 							html.img([
-								attribute.src("./hilbish-flower.png"),
+								attribute.src("/hilbish-flower.png"),
 								attribute.class("h-6")
 							]),
 							html.span([
@@ -65,7 +166,7 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 					])
 				]),
 			]),
-			html.main([attribute.class("mx-4")], [content]),
+			content,
 			html.footer([attribute.class("py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300")], [
 				html.div([attribute.class("flex flex-col")], [
 					html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
