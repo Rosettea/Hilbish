@@ -1,4 +1,5 @@
--- Greenhouse is a simple text scrolling handler for terminal programs.
+-- @module greenhouse
+-- Greenhouse is a simple text scrolling handler (pager) for terminal programs.
 -- The idea is that it can be set a region to do its scrolling and paging
 -- job and then the user can draw whatever outside it.
 -- This reduces code duplication for the message viewer

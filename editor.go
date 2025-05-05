@@ -17,6 +17,7 @@ func editorLoader(rtm *rt.Runtime) *rt.Table {
 		"getVimRegister": {editorGetRegister, 2, false},
 		"getLine": {editorGetLine, 0, false},
 		"readChar": {editorReadChar, 0, false},
+		"deleteByAmount": {editorDeleteByAmount, 1, false},
 	}
 
 	mod := rt.NewTable()
@@ -47,7 +48,7 @@ func editorInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // #interface editor
 // setVimRegister(register, text)
 // Sets the vim register at `register` to hold the passed text.
-// #aram register string
+// #param register string
 // #param text string
 func editorSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
@@ -105,4 +106,23 @@ func editorReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	buf := lr.rl.ReadChar()
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
+}
+
+// #interface editor
+// deleteByAmount(amount)
+// Deletes characters in the line by the given amount.
+// #param amount number
+func editorDeleteByAmount(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+	if err := c.Check1Arg(); err != nil {
+		return nil, err
+	}
+
+	amount, err := c.IntArg(0)
+	if err != nil {
+		return nil, err
+	}
+
+	lr.rl.DeleteByAmount(int(amount))
+
+	return c.Next(), nil
 }
