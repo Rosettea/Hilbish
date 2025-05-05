@@ -28,7 +28,36 @@ Example:</p><div class=highlight><pre tabindex=0 class=chroma><code class=langua
 </span></span><span class=line><span class=ln>13</span><span class=cl><span class=kr>return</span> <span class=p>{</span><span class=n>cg</span><span class=p>,</span> <span class=n>cg2</span><span class=p>},</span> <span class=n>prefix</span>
 </span></span></code></pre></div><p>Which looks like this:<br><video src=https://safe.saya.moe/t4CiLK6dgPbD.mp4 style=height:auto;max-width:100% controls>
 There's a video missing here...
-Well here is the URL: https://safe.saya.moe/t4CiLK6dgPbD.mp4</video></p><h2 id=completion-handler class=heading>Completion Handler
+Well here is the URL: https://safe.saya.moe/t4CiLK6dgPbD.mp4</video></p><h2 id=completion-group-types class=heading>Completion Group Types
+<a href=#completion-group-types class=heading-link><i class="fas fa-paperclip"></i></a></h2><h4 id=grid class=heading>grid
+<a href=#grid class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>Grid is the simplest completion group type. All items are strings and when
+completion is done is displayed in a grid based on size.</p><p>Example:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=ln>1</span><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=ln>2</span><span class=cl>	<span class=n>items</span> <span class=o>=</span> <span class=p>{</span><span class=s1>&#39;just&#39;</span><span class=p>,</span> <span class=s1>&#39;a bunch&#39;</span><span class=p>,</span> <span class=s1>&#39;of items&#39;</span><span class=p>,</span> <span class=s1>&#39;here&#39;</span><span class=p>,</span> <span class=s1>&#39;hehe&#39;</span><span class=p>},</span>
+</span></span><span class=line><span class=ln>3</span><span class=cl>	<span class=n>type</span> <span class=o>=</span> <span class=s1>&#39;grid&#39;</span>
+</span></span><span class=line><span class=ln>4</span><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h4 id=list class=heading>list
+<a href=#list class=heading-link><i class="fas fa-paperclip"></i></a></h4><p>The list completion group type displays in a list. It displays more info than grid.
+A list item can either be a string, or a table for additional display options.
+If a completion has an alias, it can be specified either as the <code>2nd</code> entry in the options table
+or te <code>alias</code> key. A description can optionally be displayed for a list item, which is either the <code>1st</code>
+entry or the <code>description</code> key.</p><p>Lastly, list entries can be styled. This is done with the <code>display</code> key. If this is present, this
+overrides what the completion item <em>looks</em> like.</p><p>Example:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=ln> 1</span><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=ln> 2</span><span class=cl>	<span class=n>items</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln> 3</span><span class=cl>		<span class=p>[</span><span class=s1>&#39;--flag&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln> 4</span><span class=cl>			<span class=n>description</span> <span class=o>=</span> <span class=s1>&#39;this flag nukes the bri ish&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=ln> 5</span><span class=cl>			<span class=n>alias</span> <span class=o>=</span> <span class=s1>&#39;--bye-bri-ish&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=ln> 6</span><span class=cl>			<span class=n>display</span> <span class=o>=</span> <span class=n>lunacolors.format</span><span class=p>(</span><span class=s1>&#39;--{blue}fl{red}ag&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=ln> 7</span><span class=cl>		<span class=p>},</span>
+</span></span><span class=line><span class=ln> 8</span><span class=cl>		<span class=p>[</span><span class=s1>&#39;--flag2&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=ln> 9</span><span class=cl>			<span class=s1>&#39;make pizza&#39;</span><span class=p>,</span> <span class=c1>-- description</span>
+</span></span><span class=line><span class=ln>10</span><span class=cl>			<span class=s1>&#39;--pizzuh&#39;</span><span class=p>,</span> <span class=c1>-- alias</span>
+</span></span><span class=line><span class=ln>11</span><span class=cl>			<span class=n>display</span> <span class=o>=</span> <span class=n>lunacolors.yellow</span> <span class=s1>&#39;--pizzuh&#39;</span>
+</span></span><span class=line><span class=ln>12</span><span class=cl>		<span class=p>},</span>
+</span></span><span class=line><span class=ln>13</span><span class=cl>		<span class=s1>&#39;--flag3&#39;</span>
+</span></span><span class=line><span class=ln>14</span><span class=cl>	<span class=p>},</span>
+</span></span><span class=line><span class=ln>15</span><span class=cl>	<span class=n>type</span> <span class=o>=</span> <span class=s1>&#39;list&#39;</span>
+</span></span><span class=line><span class=ln>16</span><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=completion-handler class=heading>Completion Handler
 <a href=#completion-handler class=heading-link><i class="fas fa-paperclip"></i></a></h2><p>Like most parts of Hilbish, it&rsquo;s made to be extensible and
 customizable. The default handler for completions in general can
 be overwritten to provide more advanced completions if needed.
