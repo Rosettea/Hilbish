@@ -76,3 +76,8 @@ of an exact match.
 #### Default: `true`
 If this is enabled, when a background job is finished,
 a [notification](../notifications) will be sent.
+
+### `processorSkipList`
+#### Value: `table`
+#### Default: `{}`
+A table listing the names of command processors to skip.
