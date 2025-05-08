@@ -36,9 +36,11 @@ function hilbish.processors.execute(command, opts)
 	opts.skip = opts.skip or {}
 
 	local continue = true
+	local history
 	for _, processor in ipairs(hilbish.processors.list) do
 		if not contains(opts.skip, processor.name) then
 			local processed = processor.func(command)
+			if processed.history ~= nil then history = processed.history end
 			if processed.command then command = processed.command end
 			if not processed.continue then
 				continue = false
@@ -47,5 +49,9 @@ function hilbish.processors.execute(command, opts)
 		end
 	end
 
-	return command, continue
+	return {
+		command = command,
+		continue = continue,
+		history = history
+	}
 end

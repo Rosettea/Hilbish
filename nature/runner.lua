@@ -123,20 +123,21 @@ end
 -- @param priv bool
 function hilbish.runner.run(input, priv)
 	bait.throw('command.preprocess', input)
-	local input, continue = hilbish.processors.execute(input, {
+	local processed = hilbish.processors.execute(input, {
 		skip = hilbish.opts.processorSkipList
 	})
-	if not continue then
+	priv = processed.history ~= nil and (not processed.history) or priv
+	if not processed.continue then
 		finishExec(0, '', true)
 		return
 	end
 
-	local command = hilbish.aliases.resolve(input)
-	bait.throw('command.preexec', input, command)
+	local command = hilbish.aliases.resolve(processed.command)
+	bait.throw('command.preexec', processed.command, command)
 
 	::rerun::
 	local runner = hilbish.runner.get(currentRunner)
-	local ok, out = pcall(runner.run, input)
+	local ok, out = pcall(runner.run, processed.command)
 	if not ok then
 		io.stderr:write(out .. '\n')
 		finishExec(124, out.input, priv)
@@ -144,9 +145,9 @@ function hilbish.runner.run(input, priv)
 	end
 
 	if out.continue then
-		local contInput = continuePrompt(input, out.newline)
+		local contInput = continuePrompt(processed.command, out.newline)
 		if contInput then
-			input = contInput
+			processed.command = contInput
 			goto rerun
 		end
 	end
