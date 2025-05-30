@@ -96,11 +96,22 @@ func fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 	path = util.ExpandHome(strings.TrimSpace(path))
+	oldWd, _ := os.Getwd()
+
+	abspath, err := filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
 
 	err = os.Chdir(path)
 	if err != nil {
 		return nil, err
 	}
+
+	util.DoString(t.Runtime, fmt.Sprintf(`
+	local bait = require 'bait'
+	bait.throw('hilbish.cd', '%s', '%s')
+	`, abspath, oldWd))
 
 	return c.Next(), err
 }

@@ -30,19 +30,11 @@ func luaInit() {
 	// yes this is stupid, i know
 	util.DoString(l, "hilbish = require 'hilbish'")
 
-	lib.LoadLibs(l, fs.Loader)
-	lib.LoadLibs(l, terminal.Loader)
-	lib.LoadLibs(l, snail.Loader)
-
-	cmds = commander.New(l)
-	lib.LoadLibs(l, cmds.Loader)
-
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
 		fmt.Println("Error in `error` hook handler:", err)
 		hooks.Off(event, handler)
 	})
-
 	lib.LoadLibs(l, hooks.Loader)
 
 	// Add Ctrl-C handler
@@ -56,6 +48,14 @@ func luaInit() {
 	lr.rl.RawInputCallback = func(r []rune) {
 		hooks.Emit("hilbish.rawInput", string(r))
 	}
+
+	lib.LoadLibs(l, fs.Loader)
+	lib.LoadLibs(l, terminal.Loader)
+	lib.LoadLibs(l, snail.Loader)
+
+	cmds = commander.New(l)
+	lib.LoadLibs(l, cmds.Loader)
+
 
 	// Add more paths that Lua can require from
 	_, err := util.DoString(l, "package.path = package.path .. " + requirePaths)

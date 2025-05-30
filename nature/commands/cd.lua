@@ -25,5 +25,4 @@ commander.register('cd', function (args, sinks)
 	end
 
 	bait.throw('cd', path, oldPath)
-	bait.throw('hilbish.cd', absPath, oldPath)
 end)
