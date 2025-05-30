@@ -138,10 +138,15 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 
 			items := []string{}
 			itemDescriptions := make(map[string]string)
+			itemDisplays := make(map[string]string)
+			itemAliases := make(map[string]string)
 
 			util.ForEach(luaCompItems.AsTable(), func(lkey rt.Value, lval rt.Value) {
 				if keytyp := lkey.Type(); keytyp == rt.StringType {
+					// TODO: remove in 3.0
 					// ['--flag'] = {'description', '--flag-alias'}
+					// OR
+					// ['--flag'] = {description = '', alias = '', display = ''}
 					itemName, ok := lkey.TryString()
 					vlTbl, okk := lval.TryTable()
 					if !ok && !okk {
@@ -152,10 +157,22 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 					items = append(items, itemName)
 					itemDescription, ok := vlTbl.Get(rt.IntValue(1)).TryString()
 					if !ok {
-						// TODO: error
-						return
+						// if we can't get it by number index, try by string key
+						itemDescription, _ = vlTbl.Get(rt.StringValue("description")).TryString()
 					}
 					itemDescriptions[itemName] = itemDescription
+
+					// display
+					if itemDisplay, ok := vlTbl.Get(rt.StringValue("display")).TryString(); ok {
+						itemDisplays[itemName] = itemDisplay
+					}
+
+					itemAlias, ok := vlTbl.Get(rt.IntValue(2)).TryString()
+					if !ok {
+						// if we can't get it by number index, try by string key
+						itemAlias, _ = vlTbl.Get(rt.StringValue("alias")).TryString()
+					}
+					itemAliases[itemName] = itemAlias
 				} else if keytyp == rt.IntType {
 					vlStr, ok := lval.TryString()
 						if !ok {
@@ -179,7 +196,9 @@ func newLineReader(prompt string, noHist bool) *lineReader {
 
 			compGroups = append(compGroups, &readline.CompletionGroup{
 				DisplayType: dispType,
+				Aliases: itemAliases,
 				Descriptions: itemDescriptions,
+				ItemDisplays: itemDisplays,
 				Suggestions: items,
 				TrimSlash: false,
 				NoSpace: true,

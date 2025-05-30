@@ -56,6 +56,50 @@ return {cg, cg2}, prefix
 Which looks like this:  
 {{< video src="https://safe.saya.moe/t4CiLK6dgPbD.mp4" >}}
 
+# Completion Group Types
+### grid
+Grid is the simplest completion group type. All items are strings and when
+completion is done is displayed in a grid based on size.
+
+Example:
+```lua
+{
+	items = {'just', 'a bunch', 'of items', 'here', 'hehe'},
+	type = 'grid'
+}
+```
+
+### list
+The list completion group type displays in a list. A list item can either be a string, or a table for additional display options.
+A completion alias can be specified either as the `2nd` entry in the options table
+or te `alias` key.
+
+A description can optionally be displayed for a list item, which is either the `1st`
+entry or the `description` key.
+
+Lastly, list entries can be styled. This is done with the `display` key. If this is present, this
+overrides what the completion item *looks* like.
+
+Example:
+```lua
+{
+	items = {
+		['--flag'] = {
+			description = 'this flag nukes the bri ish',
+			alias = '--bye-bri-ish',
+			display = lunacolors.format('--{blue}fl{red}ag')
+		},
+		['--flag2'] = {
+			'make pizza', -- description
+			'--pizzuh', -- alias
+			display = lunacolors.yellow '--pizzuh'
+		},
+		'--flag3'
+	},
+	type = 'list'
+}
+```
+
 # Completion Handler
 Like most parts of Hilbish, it's made to be extensible and
 customizable. The default handler for completions in general can
