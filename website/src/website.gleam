@@ -125,8 +125,9 @@ fn is_doc_page(slug: String) {
 }
 
 fn base_url_join(cont: String) -> String {
-	return base_url <> "/" <> cont
+	base_url <> "/" <> cont
 }
+
 fn create_page(content: element.Element(a)) -> element.Element(a) {
 	let description = "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
 
