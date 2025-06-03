@@ -124,6 +124,9 @@ fn is_doc_page(slug: String) {
 	}
 }
 
+fn base_url_join(cont: String) -> String {
+	return base_url <> "/" <> cont
+}
 fn create_page(content: element.Element(a)) -> element.Element(a) {
 	let description = "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
 
@@ -135,18 +138,18 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 			]),
 			html.link([
 				attribute.rel("stylesheet"),
-				attribute.href("/tailwind.css")
+				attribute.href(base_url_join("tailwind.css"))
 			]),
 			html.title([], "Hilbish"),
 			html.meta([attribute.name("theme-color"), attribute.content("#ff89dd")]),
-			html.meta([attribute.content("./hilbish-flower.png"), attribute.attribute("property", "og:image")]),
+			html.meta([attribute.content(base_url_join("hilbish-flower.png")), attribute.attribute("property", "og:image")]),
 			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:title")]), // this should be same as title
 			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:site_name")]),
 			html.meta([attribute.content("website"), attribute.attribute("property", "og:type")]),
 			html.meta([attribute.content(description), attribute.attribute("property", "og:description")]),
 			html.meta([attribute.content(description), attribute.name("description")]),
 			html.meta([attribute.name("keywords"), attribute.content("Lua,Shell,Hilbish,Linux,zsh,bash")]),
-			html.meta([attribute.content("https://rosettea.github.io/Hilbish/versions/new-website"), attribute.attribute("property", "og:url")])
+			html.meta([attribute.content(base_url), attribute.attribute("property", "og:url")])
 		]),
 		html.body([], [
 			html.nav([attribute.class("flex sticky top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12")], [
@@ -169,7 +172,7 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 			content,
 			html.footer([attribute.class("py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300")], [
 				html.div([attribute.class("flex flex-col")], [
-					html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
+					html.a([attribute.href(base_url), attribute.class("flex items-center gap-1")], [
 						html.img([
 							attribute.src("/hilbish-flower.png"),
 							attribute.class("h-24")
