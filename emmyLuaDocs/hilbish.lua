@@ -2,6 +2,28 @@
 
 local hilbish = {}
 
+--- Sets/toggles the option of automatically flushing output.
+--- A call with no argument will toggle the value.
+--- @param auto boolean|nil
+function hilbish:autoFlush(auto) end
+
+--- Flush writes all buffered input to the sink.
+function hilbish:flush() end
+
+--- Reads a liine of input from the sink.
+--- @returns string
+function hilbish:read() end
+
+--- Reads all input from the sink.
+--- @returns string
+function hilbish:readAll() end
+
+--- Writes data to a sink.
+function hilbish:write(str) end
+
+--- Writes data to a sink with a newline at the end.
+function hilbish:writeln(str) end
+
 --- This is an alias (ha) for the [hilbish.alias](../#alias) function.
 --- @param alias string
 --- @param cmd string
@@ -214,27 +236,5 @@ function hilbish.timers.create(type, time, callback) end
 
 --- Retrieves a timer via its ID.
 function hilbish.timers.get(id) end
-
---- Sets/toggles the option of automatically flushing output.
---- A call with no argument will toggle the value.
---- @param auto boolean|nil
-function hilbish:autoFlush(auto) end
-
---- Flush writes all buffered input to the sink.
-function hilbish:flush() end
-
---- Reads a liine of input from the sink.
---- @returns string
-function hilbish:read() end
-
---- Reads all input from the sink.
---- @returns string
-function hilbish:readAll() end
-
---- Writes data to a sink.
-function hilbish:write(str) end
-
---- Writes data to a sink with a newline at the end.
-function hilbish:writeln(str) end
 
 return hilbish

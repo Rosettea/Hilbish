@@ -14,11 +14,10 @@ import tom
 import simplifile
 import glaml
 
+import conf
 import post
 import pages/index
 import pages/doc
-
-const base_url = "https://rosettea.github.io/Hilbish/versions/new-website"
 
 pub fn main() {
 	let assert Ok(files) = simplifile.get_files("./content")
@@ -55,8 +54,8 @@ pub fn main() {
 
 	let doc_pages = list.filter(posts, fn(page) {
 		let isdoc = is_doc_page(page.0)
-		io.debug(page.0)
-		io.debug(isdoc)
+		//io.debug(page.0)
+		//io.debug(isdoc)
 		isdoc
 	}) |> list.filter(fn(page) {
 		case page.1.metadata {
@@ -64,8 +63,8 @@ pub fn main() {
 			option.None -> False
 		}
 	}) |> list.sort(fn(p1, p2) {
-		io.debug(p1)
-		io.debug(p2)
+		//io.debug(p1)
+		//io.debug(p2)
 		let assert option.Some(p1_metadata) = p1.1.metadata
 		let p1_weight = case glaml.select_sugar(glaml.document_root(p1_metadata), "weight") {
 			Ok(glaml.NodeInt(w)) -> w
@@ -118,42 +117,14 @@ pub fn main() {
 }
 
 fn is_doc_page(slug: String) {
-	let is_docs = case slug {
+	case slug {
 		"/docs" <> _ -> True
 		_ -> False
 	}
 }
 
-fn base_url_join(cont: String) -> String {
-	base_url <> "/" <> cont
-}
-
-fn create_page(content: element.Element(a)) -> element.Element(a) {
-	let description = "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
-
-	html.html([attribute.class("bg-stone-50 dark:bg-neutral-950 text-black dark:text-white")], [
-		html.head([], [
-			html.meta([
-				attribute.name("viewport"),
-				attribute.attribute("content", "width=device-width, initial-scale=1.0")
-			]),
-			html.link([
-				attribute.rel("stylesheet"),
-				attribute.href(base_url_join("tailwind.css"))
-			]),
-			html.title([], "Hilbish"),
-			html.meta([attribute.name("theme-color"), attribute.content("#ff89dd")]),
-			html.meta([attribute.content(base_url_join("hilbish-flower.png")), attribute.attribute("property", "og:image")]),
-			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:title")]), // this should be same as title
-			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:site_name")]),
-			html.meta([attribute.content("website"), attribute.attribute("property", "og:type")]),
-			html.meta([attribute.content(description), attribute.attribute("property", "og:description")]),
-			html.meta([attribute.content(description), attribute.name("description")]),
-			html.meta([attribute.name("keywords"), attribute.content("Lua,Shell,Hilbish,Linux,zsh,bash")]),
-			html.meta([attribute.content(base_url), attribute.attribute("property", "og:url")])
-		]),
-		html.body([], [
-			html.nav([attribute.class("flex sticky top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12")], [
+fn nav() -> element.Element(a) {
+	html.nav([attribute.class("flex sticky top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12")], [
 				html.div([attribute.class("flex my-auto px-2")], [
 					html.div([], [
 						html.a([attribute.href("/"), attribute.class("flex items-center gap-1")], [
@@ -169,11 +140,13 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 						]),
 					])
 				]),
-			]),
-			content,
-			html.footer([attribute.class("py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300")], [
+			])
+}
+
+fn footer() -> element.Element(a) {
+	html.footer([attribute.class("py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300")], [
 				html.div([attribute.class("flex flex-col")], [
-					html.a([attribute.href(base_url), attribute.class("flex items-center gap-1")], [
+					html.a([attribute.href(conf.base_url), attribute.class("flex items-center gap-1")], [
 						html.img([
 							attribute.src("/hilbish-flower.png"),
 							attribute.class("h-24")
@@ -191,6 +164,35 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
 					link("https://github.com/Rosettea/Hilbish", "GitHub")
 				])
 			])
+}
+fn create_page(content: element.Element(a)) -> element.Element(a) {
+	let description = "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
+
+	html.html([attribute.class("bg-stone-50 dark:bg-neutral-900 text-black dark:text-white")], [
+		html.head([], [
+			html.meta([
+				attribute.name("viewport"),
+				attribute.attribute("content", "width=device-width, initial-scale=1.0")
+			]),
+			html.link([
+				attribute.rel("stylesheet"),
+				attribute.href(conf.base_url_join("tailwind.css"))
+			]),
+			html.title([], "Hilbish"),
+			html.meta([attribute.name("theme-color"), attribute.content("#ff89dd")]),
+			html.meta([attribute.content(conf.base_url_join("hilbish-flower.png")), attribute.attribute("property", "og:image")]),
+			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:title")]), // this should be same as title
+			html.meta([attribute.content("Hilbish"), attribute.attribute("property", "og:site_name")]),
+			html.meta([attribute.content("website"), attribute.attribute("property", "og:type")]),
+			html.meta([attribute.content(description), attribute.attribute("property", "og:description")]),
+			html.meta([attribute.content(description), attribute.name("description")]),
+			html.meta([attribute.name("keywords"), attribute.content("Lua,Shell,Hilbish,Linux,zsh,bash")]),
+			html.meta([attribute.content(conf.base_url), attribute.attribute("property", "og:url")])
+		]),
+		html.body([attribute.class("min-h-screen flex flex-col")], [
+			nav(),
+			content,
+			footer(),
 		])
 	])
 }

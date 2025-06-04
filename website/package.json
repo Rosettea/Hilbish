@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@djot/djot": "^0.3.2",
     "@tailwindcss/cli": "^4.1.4",
     "tailwindcss": "^4.1.4"
   }

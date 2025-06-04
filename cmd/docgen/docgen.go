@@ -11,8 +11,6 @@ import (
 	"strings"
 	"os"
 	"sync"
-
-	md "github.com/atsushinee/go-markdown-generator/doc"
 )
 
 var header = `---
@@ -495,7 +493,9 @@ provided by Hilbish.
 				linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s#%s", typLookup[0], ifaces, strings.ToLower(typName))
 				return fmt.Sprintf(`<a href="%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 			})
-			f.WriteString(fmt.Sprintf("## Introduction\n%s\n\n", modDescription))
+			f.WriteString(heading("Introduction", 2))
+			f.WriteString(modDescription)
+			f.WriteString("\n\n")
 			if len(modu.Docs) != 0 {
 				funcCount := 0
 				for _, dps := range modu.Docs {
@@ -505,65 +505,48 @@ provided by Hilbish.
 					funcCount++
 				}
 
-				f.WriteString("## Functions\n")
+				f.WriteString(heading("Functions", 2))
 				lastHeader = "functions"
 
-				mdTable := md.NewTable(funcCount, 2)
-				mdTable.SetTitle(0, "")
-				mdTable.SetTitle(1, "")
-
 				diff := 0
-				for i, dps := range modu.Docs {
+				funcTable := [][]string{}
+				for _, dps := range modu.Docs {
 					if dps.IsMember {
 						diff++
 						continue
 					}
 
-					mdTable.SetContent(i - diff, 0, fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig))
 					if len(dps.Doc) == 0 {
 						fmt.Printf("WARNING! Function %s on module %s has no documentation!\n", dps.FuncName, modname)
 					} else {
-						mdTable.SetContent(i - diff, 1, dps.Doc[0])
+						funcTable = append(funcTable, []string{fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig), dps.Doc[0]})
 					}
 				}
-				f.WriteString(mdTable.String())
-				f.WriteString("\n")
+				f.WriteString(table(funcTable))
 			}
 
 			if len(modu.Fields) != 0 {
-				f.WriteString("## Static module fields\n")
+				f.WriteString(heading("Static module fields", 2))
 
-				mdTable := md.NewTable(len(modu.Fields), 2)
-				mdTable.SetTitle(0, "")
-				mdTable.SetTitle(1, "")
-
-
-				for i, dps := range modu.Fields {
-					mdTable.SetContent(i, 0, dps.FuncName)
-					mdTable.SetContent(i, 1, strings.Join(dps.Doc, " "))
+				fieldsTable := [][]string{}
+				for _, dps := range modu.Fields {
+					fieldsTable = append(fieldsTable, []string{dps.FuncName, strings.Join(dps.Doc, " ")})
 				}
-				f.WriteString(mdTable.String())
-				f.WriteString("\n")
+				f.WriteString(table(fieldsTable))
 			}
 			if len(modu.Properties) != 0 {
-				f.WriteString("## Object properties\n")
+				f.WriteString(heading("Object properties", 2))
 
-				mdTable := md.NewTable(len(modu.Fields), 2)
-				mdTable.SetTitle(0, "")
-				mdTable.SetTitle(1, "")
-
-
-				for i, dps := range modu.Properties {
-					mdTable.SetContent(i, 0, dps.FuncName)
-					mdTable.SetContent(i, 1, strings.Join(dps.Doc, " "))
+				propertiesTable := [][]string{}
+				for _, dps := range modu.Properties {
+					propertiesTable = append(propertiesTable, []string{dps.FuncName, strings.Join(dps.Doc, " ")})
 				}
-				f.WriteString(mdTable.String())
-				f.WriteString("\n")
+				f.WriteString(table(propertiesTable))
 			}
 
 			if len(modu.Docs) != 0 {
 				if lastHeader != "functions" {
-					f.WriteString("## Functions\n")
+					f.WriteString(heading("Functions", 2))
 				}
 				for _, dps := range modu.Docs {
 					if dps.IsMember {
@@ -594,7 +577,8 @@ provided by Hilbish.
 							f.WriteString(doc + "  \n")
 						}
 					}
-					f.WriteString("\n#### Parameters\n")
+					f.WriteString("\n")
+					f.WriteString(heading("Parameters", 4))
 					if len(dps.Params) == 0 {
 						f.WriteString("This function has no parameters.  \n")
 					}
@@ -606,7 +590,7 @@ provided by Hilbish.
 							typ = p.Type[3:]
 						}
 
-						f.WriteString(fmt.Sprintf("`%s` **`%s`**", typ, p.Name))
+						f.WriteString(fmt.Sprintf("`%s` *`%s`*", typ, p.Name))
 						if isVariadic {
 							f.WriteString(" (This type is variadic. You can pass an infinite amount of parameters with this type.)")
 						}
@@ -615,7 +599,7 @@ provided by Hilbish.
 						f.WriteString("\n\n")
 					}
 					if codeExample := dps.Tags["example"]; codeExample != nil {
-						f.WriteString("#### Example\n")
+						f.WriteString(heading("Example", 4))
 						f.WriteString(fmt.Sprintf("```lua\n%s\n```\n", strings.Join(codeExample[0].fields, "\n")))
 					}
 					f.WriteString("</div>")
@@ -624,31 +608,26 @@ provided by Hilbish.
 			}
 
 			if len(modu.Types) != 0 {
-				f.WriteString("## Types\n")
+				f.WriteString(heading("Types", 2))
 				for _, dps := range modu.Types {
 					f.WriteString("<hr>\n\n")
-					f.WriteString(fmt.Sprintf("## %s\n", dps.FuncName))
+					f.WriteString(heading(dps.FuncName, 2))
 					for _, doc := range dps.Doc {
 						if !strings.HasPrefix(doc, "---") {
 							f.WriteString(doc + "\n")
 						}
 					}
 					if len(dps.Properties) != 0 {
-						f.WriteString("## Object properties\n")
+						f.WriteString(heading("Object Properties", 2))
 
-						mdTable := md.NewTable(len(dps.Properties), 2)
-						mdTable.SetTitle(0, "")
-						mdTable.SetTitle(1, "")
-
-						for i, d := range dps.Properties {
-							mdTable.SetContent(i, 0, d.FuncName)
-							mdTable.SetContent(i, 1, strings.Join(d.Doc, " "))
+						propertiesTable := [][]string{}
+						for _, dps := range modu.Properties {
+							propertiesTable = append(propertiesTable, []string{dps.FuncName, strings.Join(dps.Doc, " ")})
 						}
-						f.WriteString(mdTable.String())
-						f.WriteString("\n")
+						f.WriteString(table(propertiesTable))
 					}
 					f.WriteString("\n")
-					f.WriteString("### Methods\n")
+					f.WriteString(heading("Methods", 3))
 					for _, dps := range modu.Docs {
 						if !dps.IsMember {
 							continue
@@ -660,7 +639,8 @@ provided by Hilbish.
 							linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
 							return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 						})
-						f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))
+						//f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))
+						f.WriteString(heading(htmlSig, 4))
 						for _, doc := range dps.Doc {
 							if !strings.HasPrefix(doc, "---") {
 								f.WriteString(doc + "\n")
@@ -707,4 +687,31 @@ provided by Hilbish.
 		}(mod, mod, v)
 	}
 	wg.Wait()
+}
+
+func heading(name string, level int) string {
+	return fmt.Sprintf("%s %s\n\n", strings.Repeat("#", level), name)
+}
+
+func table(elems [][]string) string {
+	var b strings.Builder
+	b.WriteString("``` =html\n")
+	b.WriteString("<div class='p-2 rounded'>\n")
+	b.WriteString("<table class='w-full'>\n")
+	b.WriteString("<tbody>\n")
+	for _, line := range elems {
+		b.WriteString("<tr class='m-2 bg-neutral-700'>\n")
+		for _, col := range line {
+			b.WriteString("<td>")
+			b.WriteString(col)
+			b.WriteString("</td>\n")
+		}
+		b.WriteString("</tr>\n")
+	}
+	b.WriteString("</tbody>\n")
+	b.WriteString("</table>\n")
+	b.WriteString("</div>\n")
+	b.WriteString("```\n\n")
+
+	return b.String()
 }
