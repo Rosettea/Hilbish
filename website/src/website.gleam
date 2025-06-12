@@ -116,16 +116,12 @@ pub fn main() {
     |> ssg.add_static_dir("static")
     |> ssg.add_static_route("/", create_page(index.page()))
     |> list.fold(posts, _, fn(config, post) {
-      let route = case { post.1 }.name {
-        "_index" -> post.0 |> string.drop_end("_index" |> string.length())
-        _ -> post.0
-      }
-
       let page = case is_doc_page(post.0) {
         True -> doc.page(post.1, doc_pages)
         False -> doc.page(post.1, doc_pages)
       }
-      ssg.add_static_route(config, route, create_page(page))
+      io.debug(post.0)
+      ssg.add_static_route(config, post.0, create_page(page))
     })
     |> ssg.use_index_routes
     |> ssg.build
