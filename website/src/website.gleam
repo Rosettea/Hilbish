@@ -173,10 +173,18 @@ fn nav() -> element.Element(a) {
       html.div(
         [attribute.class("flex gap-3 dark:text-pink-300 text-pink-600")],
         [
-          html.a([attribute.href("/")], [element.text("Home")]),
-          html.a([attribute.href("/install")], [element.text("Install")]),
-          html.a([attribute.href("/docs")], [element.text("Docs")]),
-          html.a([attribute.href("/blog")], [element.text("Blog")]),
+          html.a([attribute.href(conf.base_url_join(""))], [
+            element.text("Home"),
+          ]),
+          html.a([attribute.href(conf.base_url_join("/install"))], [
+            element.text("Install"),
+          ]),
+          html.a([attribute.href(conf.base_url_join("/docs"))], [
+            element.text("Docs"),
+          ]),
+          html.a([attribute.href(conf.base_url_join("/blog"))], [
+            element.text("Blog"),
+          ]),
         ],
       ),
     ],
