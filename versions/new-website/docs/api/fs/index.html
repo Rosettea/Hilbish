@@ -1,72 +1,104 @@
 <!doctype html>
-<html class="bg-stone-50 dark:bg-neutral-900 text-black dark:text-white"><head><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="/tailwind.css" rel="stylesheet"><title>Hilbish</title><meta content="#ff89dd" name="theme-color"><meta content="/hilbish-flower.png" property="og:image"><meta content="Hilbish" property="og:title"><meta content="Hilbish" property="og:site_name"><meta content="website" property="og:type"><meta content="Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua." property="og:description"><meta content="Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua." name="description"><meta content="Lua,Shell,Hilbish,Linux,zsh,bash" name="keywords"><meta content property="og:url"></head><body class="min-h-screen flex flex-col"><nav class="flex sticky top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12"><div class="flex my-auto px-2"><div><a class="flex items-center gap-1" href="/"><img class="h-6" src="/hilbish-flower.png"><span class="self-center text-2xl">Hilbish</span></a></div></div></nav><div class="flex flex-col"><div class="h-10 flex py-2 px-4 border-b border-b-zinc-300 w-full gap-2 backdrop-blur-sm bg-zinc-300/50 dark:bg-zinc-800/50 z-50"><label class="cursor-pointer" for="sidebar-toggle"><tag><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-black"><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg></tag></label><span>Module fs</span></div><div class="grid"><input class="peer hidden" id="sidebar-toggle" type="checkbox"><div class="border-r border-r-zinc-300 col-start-1 row-start-1 sticky top-22 sm:top-12 h-full sm:h-svh bg-neutral-200 dark:bg-neutral-900 basis-3/5 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 z-30"><div class="p-4 -mb-4 overflow-y-auto h-full"><h2 class="text-xl font-semibold mb-4">Sidebar</h2><ul><li class="mb-2">Vim Mode</li><li class="mb-2">Completions</li><li class="mb-2">Lunacolors</li><li class="mb-2">Frequently Asked Questions</li><li class="mb-2">Getting Started</li><li class="mb-2">Introduction</li><li class="mb-2">Module hilbish</li><li class="mb-2">Module fs</li><li class="mb-2">Module snail</li><li class="mb-2">Module terminal</li><li class="mb-2">Module commander</li><li class="mb-2">API</li><li class="mb-2">Module bait</li><li class="mb-2">Module hilbish.module</li><li class="mb-2">Module hilbish.abbr</li><li class="mb-2">Module hilbish.userDir</li><li class="mb-2">Module hilbish.os</li><li class="mb-2">Module hilbish.history</li><li class="mb-2">Module hilbish.completion</li><li class="mb-2">Module hilbish.messages</li><li class="mb-2">Module hilbish.aliases</li><li class="mb-2">Module hilbish.runner</li><li class="mb-2">Module hilbish.timers</li><li class="mb-2">Module hilbish</li><li class="mb-2">Module hilbish.jobs</li><li class="mb-2">Module hilbish.editor</li><li class="mb-2">Actions</li><li class="mb-2">Module doc</li><li class="mb-2">Nature</li><li class="mb-2">Module dirs</li><li class="mb-2">Hilbish</li><li class="mb-2">Command</li><li class="mb-2">Signals</li><li class="mb-2">Signal</li><li class="mb-2">Notification</li><li class="mb-2">Runner Mode</li><li class="mb-2">Options</li><li class="mb-2">Features</li></ul></div></div><main class="col-start-1 row-start-1 transition-all duration-300 peer-checked:filter peer-checked:blur-sm peer-checked:bg-black/30 px-4 pt-2"><h1 class="font-bold text-4xl">Module fs</h1><h2 class="font-bold text-3xl" id="Introduction">Introduction</h2><p>The fs module provides filesystem functions to Hilbish. While Lua&#39;s standard
-library has some I/O functions, they&#39;re missing a lot of the basics. The <code>fs</code>
-library offers more functions and will work on any operating system Hilbish does.</p><h2 class="font-bold text-3xl" id="Functions-|||-|----|----|-|&lt;a-href=&quot;abs&quot;&gt;abs(path)--&gt;-string&lt;/a&gt;|Returns-an-absolute-version-of-the-path.|-|&lt;a-href=&quot;basename&quot;&gt;basename(path)--&gt;-string&lt;/a&gt;|Returns-the-&quot;basename&quot;-or-the-last-part-of-the-provided-path.-If-path-is-empty|-|&lt;a-href=&quot;cd&quot;&gt;cd(dir)&lt;/a&gt;|Changes-Hilbish&#39;s-directory-to-dir.|-|&lt;a-href=&quot;dir&quot;&gt;dir(path)--&gt;-string&lt;/a&gt;|Returns-the-directory-part-of-path.-If-a-file-path-like|-|&lt;a-href=&quot;glob&quot;&gt;glob(pattern)--&gt;-matches-(table)&lt;/a&gt;|Match-all-files-based-on-the-provided-pattern.|-|&lt;a-href=&quot;join&quot;&gt;join(...path)--&gt;-string&lt;/a&gt;|Takes-any-list-of-paths-and-joins-them-based-on-the-operating-system&#39;s-path-separator.|-|&lt;a-href=&quot;mkdir&quot;&gt;mkdir(name-recursive)&lt;/a&gt;|Creates-a-new-directory-with-the-provided-name.|-|&lt;a-href=&quot;pipe&quot;&gt;fpipe()--&gt;-File-File&lt;/a&gt;|Returns-a-pair-of-connected-files-also-known-as-a-pipe.|-|&lt;a-href=&quot;readdir&quot;&gt;readdir(path)--&gt;-table[string]&lt;/a&gt;|Returns-a-list-of-all-files-and-directories-in-the-provided-path.|-|&lt;a-href=&quot;stat&quot;&gt;stat(path)--&gt;-{}&lt;/a&gt;|Returns-the-information-about-a-given-path.|">Functions
-|||
-|----|----|
-|&lt;a href=&quot;#abs&quot;&gt;abs(path) -&gt; string&lt;/a&gt;|Returns an absolute version of the <code>path</code>.|
-|&lt;a href=&quot;#basename&quot;&gt;basename(path) -&gt; string&lt;/a&gt;|Returns the &quot;basename,&quot; or the last part of the provided <code>path</code>. If path is empty,|
-|&lt;a href=&quot;#cd&quot;&gt;cd(dir)&lt;/a&gt;|Changes Hilbish&#39;s directory to <code>dir</code>.|
-|&lt;a href=&quot;#dir&quot;&gt;dir(path) -&gt; string&lt;/a&gt;|Returns the directory part of <code>path</code>. If a file path like|
-|&lt;a href=&quot;#glob&quot;&gt;glob(pattern) -&gt; matches (table)&lt;/a&gt;|Match all files based on the provided <code>pattern</code>.|
-|&lt;a href=&quot;#join&quot;&gt;join(...path) -&gt; string&lt;/a&gt;|Takes any list of paths and joins them based on the operating system&#39;s path separator.|
-|&lt;a href=&quot;#mkdir&quot;&gt;mkdir(name, recursive)&lt;/a&gt;|Creates a new directory with the provided <code>name</code>.|
-|&lt;a href=&quot;#pipe&quot;&gt;fpipe() -&gt; File, File&lt;/a&gt;|Returns a pair of connected files, also known as a pipe.|
-|&lt;a href=&quot;#readdir&quot;&gt;readdir(path) -&gt; table[string]&lt;/a&gt;|Returns a list of all files and directories in the provided path.|
-|&lt;a href=&quot;#stat&quot;&gt;stat(path) -&gt; {}&lt;/a&gt;|Returns the information about a given <code>path</code>.|</h2><h2 class="font-bold text-3xl" id="Static-module-fields-|||-|----|----|-|pathSep|The-operating-system&#39;s-path-separator.|">Static module fields
-|||
-|----|----|
-|pathSep|The operating system&#39;s path separator.|</h2><p>&lt;hr&gt;
-&lt;div id=&#39;abs&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.abs(path) -&gt; string
-&lt;a href=&quot;#abs&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns an absolute version of the <code>path</code>.  
-This can be used to resolve short paths like <code>..</code> to <code>/home/user</code>.  </p><p class="font-bold text-xl" id="Parameters-string-**path**">Parameters
-<code>string</code> **<code>path</code>**  </p><p>&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;basename&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.basename(path) -&gt; string
-&lt;a href=&quot;#basename&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns the &quot;basename,&quot; or the last part of the provided <code>path</code>. If path is empty,  
-<code>.</code> will be returned.  </p><p class="font-bold text-xl" id="Parameters-string-**path**---Path-to-get-the-base-name-of.">Parameters
-<code>string</code> **<code>path</code>**  
-Path to get the base name of.</p><p>&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;cd&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
+<html class="bg-stone-50 dark:bg-neutral-900 text-black dark:text-white"><head><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="http://localhost:9080/tailwind.css" rel="stylesheet"><title>Hilbish</title><meta content="#ff89dd" name="theme-color"><meta content="http://localhost:9080/hilbish-flower.png" property="og:image"><meta content="Hilbish" property="og:title"><meta content="Hilbish" property="og:site_name"><meta content="website" property="og:type"><meta content="Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua." property="og:description"><meta content="Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua." name="description"><meta content="Lua,Shell,Hilbish,Linux,zsh,bash" name="keywords"><meta content="http://localhost:9080" property="og:url"></head><body class="min-h-screen flex flex-col"><nav class="bg-stone-50/80 dark:bg-neutral-900/80 flex justify-around sticky items-center top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-18"><div class="flex my-auto px-2"><div><a class="flex items-center gap-1" href="/"><img class="h-16" src="/hilbish-flower.png"><span class="self-center text-3xl font-medium">Hilbish</span></a></div></div><div class="flex gap-3 dark:text-pink-300 text-pink-600"><a href="/">Home</a><a href="/install">Install</a><a href="/docs">Docs</a><a href="/blog">Blog</a></div></nav><div class="flex-auto flex flex-col overflow-none"><div class="sm:hidden h-10 flex py-2 px-4 border-b border-b-zinc-300 w-full gap-2 backdrop-blur-sm bg-zinc-300/50 dark:bg-zinc-800/50 z-50"><label class="cursor-pointer" for="sidebar-toggle"><tag><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" class="fill-black"><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg></tag></label><span>Module fs</span></div><div class="h-full sm:flex grid"><input class="peer hidden" id="sidebar-toggle" type="checkbox"><div class="p-4 border-r border-r-zinc-300 col-start-1 row-start-1 bg-neutral-200 dark:bg-neutral-900 basis-2/10 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 sm:translate-x-0 z-30"><ul><li class="mb-2"><a href="/docs/completions">Completions</a></li><li class="mb-2"><a href="/docs/nature/doc">Module doc</a></li><li class="mb-2"><a href="/docs">Introduction</a></li><li class="mb-2"><a href="/docs/getting-started">Getting Started</a></li><li class="mb-2"><a href="/docs/faq">Frequently Asked Questions</a></li><li class="mb-2"><a href="/docs/lunacolors">Lunacolors</a></li><li class="mb-2"><a href="/docs/nature/dirs">Module dirs</a></li><li class="mb-2"><a href="/docs/nature">Nature</a></li><li class="mb-2"><a href="/docs/api/fs">Module fs</a></li><li class="mb-2"><a href="/docs/api/hilbish">Module hilbish</a></li><li class="mb-2"><a href="/docs/api/bait">Module bait</a></li><li class="mb-2"><a href="/docs/api/terminal">Module terminal</a></li><li class="mb-2"><a href="/docs/api/commander">Module commander</a></li><li class="mb-2"><a href="/docs/api">API</a></li><li class="mb-2"><a href="/docs/api/snail">Module snail</a></li><li class="mb-2"><a href="/docs/features/runner-mode">Runner Mode</a></li><li class="mb-2"><a href="/docs/features/opts">Options</a></li><li class="mb-2"><a href="/docs/features">Features</a></li><li class="mb-2"><a href="/docs/features/notifications">Notification</a></li><li class="mb-2"><a href="/docs/hooks/hilbish">Hilbish</a></li><li class="mb-2"><a href="/docs/hooks">Signals</a></li><li class="mb-2"><a href="/docs/hooks/command">Command</a></li><li class="mb-2"><a href="/docs/hooks/signal">Signal</a></li><li class="mb-2"><a href="/docs/vim-mode/actions">Actions</a></li><li class="mb-2"><a href="/docs/vim-mode">Vim Mode</a></li></ul></div><main class="mb-4 h-full overflow-y-auto basis-7/7 col-start-1 row-start-1 transition-all duration-300 peer-checked:filter peer-checked:blur-sm peer-checked:bg-black/30 px-4 pt-2"><h1 class="mb-2 font-bold text-4xl">Module fs</h1><h2 class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Introduction">Introduction</h2><p>The fs module provides filesystem functions to Hilbish. While Lua&#39;s standard
+library has some I/O functions, they&#39;re missing a lot of the basics. The <code class="text-violet-600 dark:text-violet-400">fs</code>
+library offers more functions and will work on any operating system Hilbish does.</p><h2 class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Functions">Functions</h2><div><div class='relative overflow-x-auto sm:rounded-lg my-4'>
+<table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+<tbody>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#abs">abs(path) -> string</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns an absolute version of the `path`.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#basename">basename(path) -> string</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns the "basename," or the last part of the provided `path`. If path is empty,</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#cd">cd(dir)</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Changes Hilbish's directory to `dir`.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#dir">dir(path) -> string</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns the directory part of `path`. If a file path like</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#glob">glob(pattern) -> matches (table)</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Match all files based on the provided `pattern`.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#join">join(...path) -> string</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Takes any list of paths and joins them based on the operating system's path separator.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#mkdir">mkdir(name, recursive)</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Creates a new directory with the provided `name`.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#pipe">fpipe() -> File, File</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns a pair of connected files, also known as a pipe.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#readdir">readdir(path) -> table[string]</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns a list of all files and directories in the provided path.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#stat">stat(path) -> {}</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns the information about a given `path`.</td>
+</tr>
+</tbody>
+</table>
+</div></div><h2 class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Static-module-fields">Static module fields</h2><div><div class='relative overflow-x-auto sm:rounded-lg my-4'>
+<table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+<tbody>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>pathSep</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The operating system's path separator.</td>
+</tr>
+</tbody>
+</table>
+</div></div><h2 class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl">Functions</h2><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='abs'>
+<h4 class='text-xl font-medium mb-2'>
+fs.abs(path) -> string
+<a href="#abs" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns an absolute version of the <code class="text-violet-600 dark:text-violet-400">path</code>.  
+This can be used to resolve short paths like <code class="text-violet-600 dark:text-violet-400">..</code> to <code class="text-violet-600 dark:text-violet-400">/home/user</code>.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='basename'>
+<h4 class='text-xl font-medium mb-2'>
+fs.basename(path) -> string
+<a href="#basename" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns the &quot;basename,&quot; or the last part of the provided <code class="text-violet-600 dark:text-violet-400">path</code>. If path is empty,  
+<code class="text-violet-600 dark:text-violet-400">.</code> will be returned.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  
+Path to get the base name of.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='cd'>
+<h4 class='text-xl font-medium mb-2'>
 fs.cd(dir)
-&lt;a href=&quot;#cd&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Changes Hilbish&#39;s directory to <code>dir</code>.  </p><p class="font-bold text-xl" id="Parameters-string-**dir**---Path-to-change-directory-to.">Parameters
-<code>string</code> **<code>dir</code>**  
-Path to change directory to.</p><p>&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;dir&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.dir(path) -&gt; string
-&lt;a href=&quot;#dir&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns the directory part of <code>path</code>. If a file path like  
-<code>~/Documents/doc.txt</code> then this function will return <code>~/Documents</code>.  </p><p class="font-bold text-xl" id="Parameters-string-**path**---Path-to-get-the-directory-for.">Parameters
-<code>string</code> **<code>path</code>**  
-Path to get the directory for.</p><p>&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;glob&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.glob(pattern) -&gt; matches (table)
-&lt;a href=&quot;#glob&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Match all files based on the provided <code>pattern</code>.  
-For the syntax&#39; refer to Go&#39;s filepath.Match function: https://pkg.go.dev/path/filepath#Match  </p><p class="font-bold text-xl" id="Parameters-string-**pattern**---Pattern-to-compare-files-with.">Parameters
-<code>string</code> **<code>pattern</code>**  
-Pattern to compare files with.</p><p class="font-bold text-xl" id="Example-lua---[[-	Within-a-folder-that-contains-the-following-files:-	a.txt-	init.lua-	code.lua-	doc.pdf-]]---local-matches-=-fs.glob-&#39;./*.lua&#39;-print(matches)-----&gt;-{&#39;init.lua&#39;-&#39;code.lua&#39;}--&lt;/div&gt;">Example
-<code>lua
---[[
+<a href="#cd" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Changes Hilbish&#39;s directory to <code class="text-violet-600 dark:text-violet-400">dir</code>.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  
+Path to change directory to.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='dir'>
+<h4 class='text-xl font-medium mb-2'>
+fs.dir(path) -> string
+<a href="#dir" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns the directory part of <code class="text-violet-600 dark:text-violet-400">path</code>. If a file path like  
+<code class="text-violet-600 dark:text-violet-400">~/Documents/doc.txt</code> then this function will return <code class="text-violet-600 dark:text-violet-400">~/Documents</code>.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  
+Path to get the directory for.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='glob'>
+<h4 class='text-xl font-medium mb-2'>
+fs.glob(pattern) -> matches (table)
+<a href="#glob" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Match all files based on the provided <code class="text-violet-600 dark:text-violet-400">pattern</code>.  
+For the syntax&#39; refer to Go&#39;s filepath.Match function: https://pkg.go.dev/path/filepath#Match  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*pattern*</code>  
+Pattern to compare files with.</p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Example">Example</p><pre><code data-lang="lua">--[[
 	Within a folder that contains the following files:
 	a.txt
 	init.lua
@@ -76,82 +108,68 @@ Pattern to compare files with.</p><p class="font-bold text-xl" id="Example-lua--
 local matches = fs.glob &#39;./*.lua&#39;
 print(matches)
 -- -&gt; {&#39;init.lua&#39;, &#39;code.lua&#39;}
-</code>
-&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;join&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.join(...path) -&gt; string
-&lt;a href=&quot;#join&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Takes any list of paths and joins them based on the operating system&#39;s path separator.  </p><p class="font-bold text-xl" id="Parameters-string-**path**-(This-type-is-variadic.-You-can-pass-an-infinite-amount-of-parameters-with-this-type.)---Paths-to-join-together">Parameters
-<code>string</code> **<code>path</code>** (This type is variadic. You can pass an infinite amount of parameters with this type.)  
-Paths to join together</p><p class="font-bold text-xl" id="Example-lua----This-prints-the-directory-for-Hilbish&#39;s-config-print(fs.join(hilbish.userDir.config-&#39;hilbish&#39;))-----&gt;-&#39;/home/user/.config/hilbish&#39;-on-Linux--&lt;/div&gt;">Example
-<code>lua
--- This prints the directory for Hilbish&#39;s config!
+</code></pre><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='join'>
+<h4 class='text-xl font-medium mb-2'>
+fs.join(...path) -> string
+<a href="#join" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Takes any list of paths and joins them based on the operating system&#39;s path separator.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code> (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+Paths to join together</p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</p><pre><code data-lang="lua">-- This prints the directory for Hilbish&#39;s config!
 print(fs.join(hilbish.userDir.config, &#39;hilbish&#39;))
 -- -&gt; &#39;/home/user/.config/hilbish&#39; on Linux
-</code>
-&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;mkdir&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
+</code></pre><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='mkdir'>
+<h4 class='text-xl font-medium mb-2'>
 fs.mkdir(name, recursive)
-&lt;a href=&quot;#mkdir&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Creates a new directory with the provided <code>name</code>.  
-With <code>recursive</code>, mkdir will create parent directories.  </p><p class="font-bold text-xl" id="Parameters-string-**name**---Name-of-the-directory">Parameters
-<code>string</code> **<code>name</code>**  
-Name of the directory</p><p><code>boolean</code> **<code>recursive</code>**  
-Whether to create parent directories for the provided name</p><p class="font-bold text-xl" id="Example-lua----This-will-create-the-directory-foo-then-create-the-directory-bar-in-the----foo-directory.-If-recursive-is-false-in-this-case-it-will-fail.-fs.mkdir(&#39;./foo/bar&#39;-true)--&lt;/div&gt;">Example
-<code>lua
--- This will create the directory foo, then create the directory bar in the
+<a href="#mkdir" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Creates a new directory with the provided <code class="text-violet-600 dark:text-violet-400">name</code>.  
+With <code class="text-violet-600 dark:text-violet-400">recursive</code>, mkdir will create parent directories.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
+Name of the directory</p><p><code class="text-violet-600 dark:text-violet-400">boolean</code> <code class="text-violet-600 dark:text-violet-400">*recursive*</code>  
+Whether to create parent directories for the provided name</p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</p><pre><code data-lang="lua">-- This will create the directory foo, then create the directory bar in the
 -- foo directory. If recursive is false in this case, it will fail.
 fs.mkdir(&#39;./foo/bar&#39;, true)
-</code>
-&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;pipe&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.fpipe() -&gt; File, File
-&lt;a href=&quot;#pipe&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns a pair of connected files, also known as a pipe.  
-The type returned is a Lua file, same as returned from <code>io</code> functions.  </p><p class="font-bold text-xl" id="Parameters-This-function-has-no-parameters.---&lt;/div&gt;">Parameters
-This function has no parameters.  
-&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;readdir&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.readdir(path) -&gt; table[string]
-&lt;a href=&quot;#readdir&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns a list of all files and directories in the provided path.  </p><p class="font-bold text-xl" id="Parameters-string-**dir**">Parameters
-<code>string</code> **<code>dir</code>**  </p><p>&lt;/div&gt;</p><p>&lt;hr&gt;
-&lt;div id=&#39;stat&#39;&gt;
-&lt;h4 class=&#39;heading&#39;&gt;
-fs.stat(path) -&gt; {}
-&lt;a href=&quot;#stat&quot; class=&#39;heading-link&#39;&gt;
-	&lt;i class=&quot;fas fa-paperclip&quot;&gt;&lt;/i&gt;
-&lt;/a&gt;
-&lt;/h4&gt;</p><p>Returns the information about a given <code>path</code>.  
+</code></pre><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='pipe'>
+<h4 class='text-xl font-medium mb-2'>
+fs.fpipe() -> File, File
+<a href="#pipe" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns a pair of connected files, also known as a pipe.  
+The type returned is a Lua file, same as returned from <code class="text-violet-600 dark:text-violet-400">io</code> functions.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p>This function has no parameters.  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='readdir'>
+<h4 class='text-xl font-medium mb-2'>
+fs.readdir(path) -> table[string]
+<a href="#readdir" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns a list of all files and directories in the provided path.  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+<div id='stat'>
+<h4 class='text-xl font-medium mb-2'>
+fs.stat(path) -> {}
+<a href="#stat" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4></div><p>Returns the information about a given <code class="text-violet-600 dark:text-violet-400">path</code>.  
 The returned table contains the following values:  
 name (string) - Name of the path  
 size (number) - Size of the path in bytes  
 mode (string) - Unix permission mode in an octal format string (with leading 0)  
-isDir (boolean) - If the path is a directory  </p><p class="font-bold text-xl">Parameters
-<code>string</code> **<code>path</code>**  </p><p class="font-bold text-xl" id="Example-lua-local-inspect-=-require-&#39;inspect&#39;">Example
-<code>lua
-local inspect = require &#39;inspect&#39;</code></p><p>local stat = fs.stat &#39;~&#39;
+isDir (boolean) - If the path is a directory  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  </p><p class="mb-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</p><pre><code data-lang="lua">local inspect = require &#39;inspect&#39;
+
+local stat = fs.stat &#39;~&#39;
 print(inspect(stat))
 --[[
 Would print the following:
 {
-isDir = true,
-mode = &quot;0755&quot;,
-name = &quot;username&quot;,
-size = 12288
+  isDir = true,
+  mode = &quot;0755&quot;,
+  name = &quot;username&quot;,
+  size = 12288
 }
 ]]--
-<code>
-&lt;/div&gt;</code></p></main></div></div><footer class="py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300"><div class="flex flex-col"><a class="flex items-center gap-1" href><img class="h-24" src="/hilbish-flower.png"><span class="self-center text-6xl">Hilbish</span></a><span class="text-xl">The Moon-powered shell!</span><span class="text-light text-neutral-500">MIT License, copyright sammyette 2025</span></div><div class="flex flex-col"><a href="https://github.com/Rosettea/Hilbish"><span class="text-pink-300 text-light">GitHub</span></a></div></footer></body></html>
+</code></pre></main></div></div><footer class="py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300"><div class="flex flex-col"><a class="flex items-center gap-1" href="http://localhost:9080"><img class="h-24" src="/hilbish-flower.png"><span class="self-center text-6xl">Hilbish</span></a><span class="text-xl">The Moon-powered shell!</span><span class="text-light text-neutral-500">MIT License, copyright sammyette 2025</span></div><div class="flex flex-col"><a href="https://github.com/Rosettea/Hilbish"><span class="text-pink-300 text-light">GitHub</span></a></div></footer></body></html>
