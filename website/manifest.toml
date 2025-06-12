@@ -3,8 +3,6 @@
 
 packages = [
   { name = "argv", version = "1.0.2", build_tools = ["gleam"], requirements = [], otp_app = "argv", source = "hex", outer_checksum = "BA1FF0929525DEBA1CE67256E5ADF77A7CDDFE729E3E3F57A5BDCAA031DED09D" },
-  { name = "autumn", version = "0.3.2", build_tools = ["mix"], requirements = ["nimble_options", "rustler", "rustler_precompiled"], otp_app = "autumn", source = "hex", outer_checksum = "5C8C4A30F3159E7C63C7A3F97D274EC9693402AA30EEDE855870DB7F390DEB67" },
-  { name = "castore", version = "1.0.12", build_tools = ["mix"], requirements = [], otp_app = "castore", source = "hex", outer_checksum = "3DCA286B2186055BA0C9449B4E95B97BF1B57B47C1F2644555879E659960C224" },
   { name = "directories", version = "1.2.0", build_tools = ["gleam"], requirements = ["envoy", "gleam_stdlib", "platform", "simplifile"], otp_app = "directories", source = "hex", outer_checksum = "D13090CFCDF6759B87217E8DDD73A75903A700148A82C1D33799F333E249BF9E" },
   { name = "envoy", version = "1.0.2", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "envoy", source = "hex", outer_checksum = "95FD059345AA982E89A0B6E2A3BF1CF43E17A7048DCD85B5B65D3B9E4E39D359" },
   { name = "exception", version = "2.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "exception", source = "hex", outer_checksum = "F5580D584F16A20B7FCDCABF9E9BE9A2C1F6AC4F9176FA6DD0B63E3B20D450AA" },
@@ -30,20 +28,15 @@ packages = [
   { name = "gramps", version = "3.0.1", build_tools = ["gleam"], requirements = ["gleam_crypto", "gleam_erlang", "gleam_http", "gleam_stdlib"], otp_app = "gramps", source = "hex", outer_checksum = "59194B3980110B403EE6B75330DB82CDE05FC8138491C2EAEACBC7AAEF30B2E8" },
   { name = "houdini", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "houdini", source = "hex", outer_checksum = "5BA517E5179F132F0471CB314F27FE210A10407387DA1EA4F6FD084F74469FC2" },
   { name = "hpack_erl", version = "0.3.0", build_tools = ["rebar3"], requirements = [], otp_app = "hpack", source = "hex", outer_checksum = "D6137D7079169D8C485C6962DFE261AF5B9EF60FBC557344511C1E65E3D95FB0" },
-  { name = "jason", version = "1.4.4", build_tools = ["mix"], requirements = ["decimal"], otp_app = "jason", source = "hex", outer_checksum = "C5EB0CAB91F094599F94D55BC63409236A8EC69A21A67814529E8D5F6CC90B3B" },
   { name = "jot", version = "4.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "houdini", "splitter"], otp_app = "jot", source = "hex", outer_checksum = "E9E266D2768EA1238283D2CF125AA68095F17BAA4DDF3598360FD19F38593C59" },
   { name = "logging", version = "1.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "logging", source = "hex", outer_checksum = "1098FBF10B54B44C2C7FDF0B01C1253CAFACDACABEFB4B0D027803246753E06D" },
   { name = "lustre", version = "5.0.2", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_json", "gleam_otp", "gleam_stdlib", "houdini"], otp_app = "lustre", source = "hex", outer_checksum = "ED46F0CA5BA61067DDC2CEDEA9906AC99E88F49918EFDC58283A531F0A14F042" },
   { name = "lustre_dev_tools", version = "1.7.1", build_tools = ["gleam"], requirements = ["argv", "filepath", "fs", "gleam_community_ansi", "gleam_crypto", "gleam_deque", "gleam_erlang", "gleam_http", "gleam_httpc", "gleam_json", "gleam_otp", "gleam_package_interface", "gleam_regexp", "gleam_stdlib", "glint", "glisten", "lustre", "mist", "repeatedly", "simplifile", "term_size", "tom", "wisp"], otp_app = "lustre_dev_tools", source = "hex", outer_checksum = "B426F3E518B44144643CAE956D072E3ADAA9BBC71ECE08CD559CA0276A74C167" },
   { name = "lustre_ssg", version = "0.11.0", build_tools = ["gleam"], requirements = ["filepath", "gleam_regexp", "gleam_stdlib", "jot", "lustre", "simplifile", "temporary", "tom"], source = "git", repo = "https://github.com/lustre-labs/ssg.git", commit = "3b75ef77a5038b4843a0f8b18f31331d0d64a543" },
   { name = "marceau", version = "1.3.0", build_tools = ["gleam"], requirements = [], otp_app = "marceau", source = "hex", outer_checksum = "2D1C27504BEF45005F5DFB18591F8610FB4BFA91744878210BDC464412EC44E9" },
-  { name = "mdex", version = "0.6.1", build_tools = ["mix"], requirements = ["autumn", "jason", "nimble_options", "rustler", "rustler_precompiled"], otp_app = "mdex", source = "hex", outer_checksum = "025645518F19E585878AE2D4210BD5C78A92010169006AA3C5CD9C758F982F37" },
   { name = "mist", version = "4.0.7", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_otp", "gleam_stdlib", "gleam_yielder", "glisten", "gramps", "hpack_erl", "logging"], otp_app = "mist", source = "hex", outer_checksum = "F7D15A1E3232E124C7CE31900253633434E59B34ED0E99F273DEE61CDB573CDD" },
-  { name = "nimble_options", version = "1.1.1", build_tools = ["mix"], requirements = [], otp_app = "nimble_options", source = "hex", outer_checksum = "821B2470CA9442C4B6984882FE9BB0389371B8DDEC4D45A9504F00A66F650B44" },
   { name = "platform", version = "1.0.0", build_tools = ["gleam"], requirements = [], otp_app = "platform", source = "hex", outer_checksum = "8339420A95AD89AAC0F82F4C3DB8DD401041742D6C3F46132A8739F6AEB75391" },
   { name = "repeatedly", version = "2.1.2", build_tools = ["gleam"], requirements = [], otp_app = "repeatedly", source = "hex", outer_checksum = "93AE1938DDE0DC0F7034F32C1BF0D4E89ACEBA82198A1FE21F604E849DA5F589" },
-  { name = "rustler", version = "0.36.1", build_tools = ["mix"], requirements = ["jason", "toml"], otp_app = "rustler", source = "hex", outer_checksum = "F3FBA4AD272970E0D1BC62972FC4A99809651E54A125C5242DE9BAD4574B2D02" },
-  { name = "rustler_precompiled", version = "0.8.2", build_tools = ["mix"], requirements = ["castore", "rustler"], otp_app = "rustler_precompiled", source = "hex", outer_checksum = "63D1BD5F8E23096D1FF851839923162096364BAC8656A4A3C00D1FFF8E83EE0A" },
   { name = "simplifile", version = "2.2.1", build_tools = ["gleam"], requirements = ["filepath", "gleam_stdlib"], otp_app = "simplifile", source = "hex", outer_checksum = "C88E0EE2D509F6D86EB55161D631657675AA7684DAB83822F7E59EB93D9A60E3" },
   { name = "snag", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "snag", source = "hex", outer_checksum = "7E9F06390040EB5FAB392CE642771484136F2EC103A92AE11BA898C8167E6E17" },
   { name = "splitter", version = "1.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "splitter", source = "hex", outer_checksum = "128FC521EE33B0012E3E64D5B55168586BC1B9C8D7B0D0CA223B68B0D770A547" },
@@ -51,7 +44,6 @@ packages = [
   { name = "temporary", version = "1.0.0", build_tools = ["gleam"], requirements = ["envoy", "exception", "filepath", "gleam_crypto", "gleam_stdlib", "simplifile"], otp_app = "temporary", source = "hex", outer_checksum = "51C0FEF4D72CE7CA507BD188B21C1F00695B3D5B09D7DFE38240BFD3A8E1E9B3" },
   { name = "term_size", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "term_size", source = "hex", outer_checksum = "D00BD2BC8FB3EBB7E6AE076F3F1FF2AC9D5ED1805F004D0896C784D06C6645F1" },
   { name = "tom", version = "1.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "tom", source = "hex", outer_checksum = "0910EE688A713994515ACAF1F486A4F05752E585B9E3209D8F35A85B234C2719" },
-  { name = "toml", version = "0.7.0", build_tools = ["mix"], requirements = [], otp_app = "toml", source = "hex", outer_checksum = "0690246A2478C1DEFD100B0C9B89B4EA280A22BE9A7B313A8A058A2408A2FA70" },
   { name = "wisp", version = "1.6.0", build_tools = ["gleam"], requirements = ["directories", "exception", "gleam_crypto", "gleam_erlang", "gleam_http", "gleam_json", "gleam_stdlib", "logging", "marceau", "mist", "simplifile"], otp_app = "wisp", source = "hex", outer_checksum = "AE1C568FE30718C358D3B37666DF0A0743ECD96094AD98C9F4921475075F660A" },
   { name = "yamerl", version = "0.10.0", build_tools = ["rebar3"], requirements = [], otp_app = "yamerl", source = "hex", outer_checksum = "346ADB2963F1051DC837A2364E4ACF6EB7D80097C0F53CBDC3046EC8EC4B4E6E" },
 ]
@@ -64,6 +56,5 @@ jot = { version = ">= 4.0.0 and < 5.0.0" }
 lustre = { version = ">= 5.0.2 and < 6.0.0" }
 lustre_dev_tools = { version = ">= 1.7.1 and < 2.0.0" }
 lustre_ssg = { git = "https://github.com/lustre-labs/ssg.git", ref = "v0.11.0" }
-mdex = { version = ">= 0.6.1 and < 1.0.0" }
 simplifile = { version = ">= 2.2.1 and < 3.0.0" }
 tom = { version = ">= 1.1.1 and < 2.0.0" }

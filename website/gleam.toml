@@ -19,7 +19,6 @@ lustre_ssg = { git = "https://github.com/lustre-labs/ssg.git", ref = "v0.11.0" }
 tom = ">= 1.1.1 and < 2.0.0"
 simplifile = ">= 2.2.1 and < 3.0.0"
 glaml = ">= 3.0.2 and < 4.0.0"
-mdex = ">= 0.6.1 and < 1.0.0"
 jot = ">= 4.0.0 and < 5.0.0"
 
 [dev-dependencies]
