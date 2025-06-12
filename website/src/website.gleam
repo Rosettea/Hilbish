@@ -160,7 +160,7 @@ fn nav() -> element.Element(a) {
             [attribute.href("/"), attribute.class("flex items-center gap-1")],
             [
               html.img([
-                attribute.src("/hilbish-flower.png"),
+                attribute.src(conf.base_url_join("hilbish-flower.png")),
                 attribute.class("h-16"),
               ]),
               html.span([attribute.class("self-center text-3xl font-medium")], [
@@ -207,7 +207,7 @@ fn footer() -> element.Element(a) {
           ],
           [
             html.img([
-              attribute.src("/hilbish-flower.png"),
+              attribute.src(conf.base_url_join("hilbish-flower.png")),
               attribute.class("h-24"),
             ]),
             html.span([attribute.class("self-center text-6xl")], [
