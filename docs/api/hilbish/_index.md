@@ -227,7 +227,9 @@ Note that to set a highlighter, one has to override this function.
 ```lua
 --This code will highlight all double quoted strings in green.
 function hilbish.highlighter(line)
-   return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+
+	return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+
 end
 ```
 </div>
