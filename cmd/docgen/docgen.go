@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 	"go/ast"
 	"go/doc"
 	"go/parser"
 	"go/token"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
-	"os"
 	"sync"
 
 	md "github.com/atsushinee/go-markdown-generator/doc"
@@ -27,49 +27,49 @@ menu:
 `
 
 type emmyPiece struct {
-	DocPiece *docPiece
+	DocPiece    *docPiece
 	Annotations []string
-	Params []string // we only need to know param name to put in function
-	FuncName string
+	Params      []string // we only need to know param name to put in function
+	FuncName    string
 }
 
 type module struct {
-	Types []docPiece
-	Docs []docPiece
-	Fields []docPiece
-	Properties []docPiece
+	Types            []docPiece
+	Docs             []docPiece
+	Fields           []docPiece
+	Properties       []docPiece
 	ShortDescription string
-	Description string
-	ParentModule string
-	HasInterfaces bool
-	HasTypes bool
+	Description      string
+	ParentModule     string
+	HasInterfaces    bool
+	HasTypes         bool
 }
 
-type param struct{
+type param struct {
 	Name string
 	Type string
-	Doc []string
+	Doc  []string
 }
 
 type docPiece struct {
-	Doc []string
-	FuncSig string
-	FuncName string
-	Interfacing string
+	Doc          []string
+	FuncSig      string
+	FuncName     string
+	Interfacing  string
 	ParentModule string
-	GoFuncName string
-	IsInterface bool
-	IsMember bool
-	IsType bool
-	Fields []docPiece
-	Properties []docPiece
-	Params []param
-	Tags map[string][]tag
+	GoFuncName   string
+	IsInterface  bool
+	IsMember     bool
+	IsType       bool
+	Fields       []docPiece
+	Properties   []docPiece
+	Params       []param
+	Tags         map[string][]tag
 }
 
 type tag struct {
-	id string
-	fields []string
+	id       string
+	fields   []string
 	startIdx int
 }
 
@@ -78,13 +78,13 @@ var interfaceDocs = make(map[string]module)
 var emmyDocs = make(map[string][]emmyPiece)
 var typeTable = make(map[string][]string) // [0] = parentMod, [1] = interfaces
 var prefix = map[string]string{
-	"main": "hl",
-	"hilbish": "hl",
-	"fs": "f",
+	"main":      "hl",
+	"hilbish":   "hl",
+	"fs":        "f",
 	"commander": "c",
-	"bait": "b",
-	"terminal": "term",
-	"snail": "snail",
+	"bait":      "b",
+	"terminal":  "term",
+	"snail":     "snail",
 }
 
 func getTagsAndDocs(docs string) (map[string][]tag, []string) {
@@ -109,7 +109,7 @@ func getTagsAndDocs(docs string) (map[string][]tag, []string) {
 			} else {
 				if tagParts[0] == "example" {
 					exampleIdx := tags["example"][0].startIdx
-					exampleCode := pts[exampleIdx+1:idx]
+					exampleCode := pts[exampleIdx+1 : idx]
 
 					tags["example"][0].fields = exampleCode
 					parts = strings.Split(strings.Replace(strings.Join(parts, "\n"), strings.TrimPrefix(strings.Join(exampleCode, "\n"), "#example\n"), "", -1), "\n")
@@ -121,7 +121,7 @@ func getTagsAndDocs(docs string) (map[string][]tag, []string) {
 					fleds = tagParts[2:]
 				}
 				tags[tagParts[0]] = append(tags[tagParts[0]], tag{
-					id: tagParts[1],
+					id:     tagParts[1],
 					fields: fleds,
 				})
 			}
@@ -138,7 +138,7 @@ func docPieceTag(tagName string, tags map[string][]tag) []docPiece {
 	for _, tag := range tags[tagName] {
 		dps = append(dps, docPiece{
 			FuncName: tag.id,
-			Doc: tag.fields,
+			Doc:      tag.fields,
 		})
 	}
 
@@ -169,16 +169,16 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 		if strings.HasPrefix(d, "---") {
 			// TODO: document types in lua
 			/*
-			emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
-			emmyLinePieces := strings.Split(emmyLine, " ")
-			emmyType := emmyLinePieces[0]
-			if emmyType == "@param" {
-				em.Params = append(em.Params, emmyLinePieces[1])
-			}
-			if emmyType == "@vararg" {
-				em.Params = append(em.Params, "...") // add vararg
-			}
-			em.Annotations = append(em.Annotations, d)
+				emmyLine := strings.TrimSpace(strings.TrimPrefix(d, "---"))
+				emmyLinePieces := strings.Split(emmyLine, " ")
+				emmyType := emmyLinePieces[0]
+				if emmyType == "@param" {
+					em.Params = append(em.Params, emmyLinePieces[1])
+				}
+				if emmyType == "@vararg" {
+					em.Params = append(em.Params, "...") // add vararg
+				}
+				em.Annotations = append(em.Annotations, d)
 			*/
 		} else {
 			typeDoc = append(typeDoc, d)
@@ -191,16 +191,16 @@ func setupDocType(mod string, typ *doc.Type) *docPiece {
 	}
 	parentMod := mod
 	dps := &docPiece{
-		Doc: typeDoc,
-		FuncName: typeName,
-		Interfacing: interfaces,
-		IsInterface: inInterface,
-		IsMember: isMember,
-		IsType: true,
+		Doc:          typeDoc,
+		FuncName:     typeName,
+		Interfacing:  interfaces,
+		IsInterface:  inInterface,
+		IsMember:     isMember,
+		IsType:       true,
 		ParentModule: parentMod,
-		Fields: fields,
-		Properties: properties,
-		Tags: tags,
+		Fields:       fields,
+		Properties:   properties,
+		Tags:         tags,
 	}
 
 	typeTable[strings.ToLower(typeName)] = []string{parentMod, interfaces}
@@ -219,6 +219,10 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 	// i couldnt fit this into the condition below for some reason so here's a goto!
 	if tags["member"] != nil {
 		goto start
+	}
+
+	if prefix[mod] == "" {
+		return nil
 	}
 
 	if (!strings.HasPrefix(fun.Name, prefix[mod]) && tags["interface"] == nil) || (strings.ToLower(fun.Name) == "loader" && tags["interface"] == nil) {
@@ -248,7 +252,7 @@ start:
 			params[i] = param{
 				Name: p.id,
 				Type: p.fields[0],
-				Doc: p.fields[1:],
+				Doc:  p.fields[1:],
 			}
 		}
 	}
@@ -279,24 +283,24 @@ start:
 		parentMod = mod
 	}
 	dps := &docPiece{
-		Doc: funcdoc,
-		FuncSig: funcsig,
-		FuncName: funcName,
-		Interfacing: interfaces,
-		GoFuncName: strings.ToLower(fun.Name),
-		IsInterface: inInterface,
-		IsMember: isMember,
+		Doc:          funcdoc,
+		FuncSig:      funcsig,
+		FuncName:     funcName,
+		Interfacing:  interfaces,
+		GoFuncName:   strings.ToLower(fun.Name),
+		IsInterface:  inInterface,
+		IsMember:     isMember,
 		ParentModule: parentMod,
-		Fields: fields,
-		Properties: properties,
-		Params: params,
-		Tags: tags,
+		Fields:       fields,
+		Properties:   properties,
+		Params:       params,
+		Tags:         tags,
 	}
 	if strings.HasSuffix(dps.GoFuncName, strings.ToLower("loader")) {
 		dps.Doc = parts
 	}
 	em.DocPiece = dps
-			
+
 	emmyDocs[mod] = append(emmyDocs[mod], em)
 	return dps
 }
@@ -326,11 +330,11 @@ provided by Hilbish.
 	os.Mkdir("emmyLuaDocs", 0777)
 
 	dirs := []string{"./", "./util"}
-	filepath.Walk("golibs/", func (path string, info os.FileInfo, err error) error {
+	filepath.Walk("golibs/", func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			return nil
 		}
-		dirs = append(dirs, "./" + path)
+		dirs = append(dirs, "./"+path)
 		return nil
 	})
 
@@ -445,13 +449,13 @@ provided by Hilbish.
 			docs[mod] = newDoc
 		} else {
 			docs[mod] = module{
-				Types: filteredTypePieces,
-				Docs: filteredPieces,
+				Types:            filteredTypePieces,
+				Docs:             filteredPieces,
 				ShortDescription: shortDesc,
-				Description: strings.Join(desc, "\n"),
-				HasInterfaces: hasInterfaces,
-				Properties: docPieceTag("property", tags),
-				Fields: docPieceTag("field", tags),
+				Description:      strings.Join(desc, "\n"),
+				HasInterfaces:    hasInterfaces,
+				Properties:       docPieceTag("property", tags),
+				Fields:           docPieceTag("field", tags),
 			}
 		}
 	}
@@ -466,7 +470,7 @@ provided by Hilbish.
 	for mod, v := range docs {
 		docPath := "docs/api/" + mod + ".md"
 		if v.HasInterfaces {
-			os.Mkdir("docs/api/" + mod, 0777)
+			os.Mkdir("docs/api/"+mod, 0777)
 			os.Remove(docPath) // remove old doc path if it exists
 			docPath = "docs/api/" + mod + "/_index.md"
 		}
@@ -519,11 +523,11 @@ provided by Hilbish.
 						continue
 					}
 
-					mdTable.SetContent(i - diff, 0, fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig))
+					mdTable.SetContent(i-diff, 0, fmt.Sprintf(`<a href="#%s">%s</a>`, dps.FuncName, dps.FuncSig))
 					if len(dps.Doc) == 0 {
 						fmt.Printf("WARNING! Function %s on module %s has no documentation!\n", dps.FuncName, modname)
 					} else {
-						mdTable.SetContent(i - diff, 1, dps.Doc[0])
+						mdTable.SetContent(i-diff, 1, dps.Doc[0])
 					}
 				}
 				f.WriteString(mdTable.String())
@@ -536,7 +540,6 @@ provided by Hilbish.
 				mdTable := md.NewTable(len(modu.Fields), 2)
 				mdTable.SetTitle(0, "")
 				mdTable.SetTitle(1, "")
-
 
 				for i, dps := range modu.Fields {
 					mdTable.SetContent(i, 0, dps.FuncName)
@@ -551,7 +554,6 @@ provided by Hilbish.
 				mdTable := md.NewTable(len(modu.Fields), 2)
 				mdTable.SetTitle(0, "")
 				mdTable.SetTitle(1, "")
-
 
 				for i, dps := range modu.Properties {
 					mdTable.SetContent(i, 0, dps.FuncName)
@@ -570,7 +572,7 @@ provided by Hilbish.
 						continue
 					}
 					f.WriteString(fmt.Sprintf("<hr>\n<div id='%s'>", dps.FuncName))
-					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(modname + "." + dps.FuncSig, "<", `\<`, -1), func(typ string) string {
+					htmlSig := typeTag.ReplaceAllStringFunc(strings.Replace(modname+"."+dps.FuncSig, "<", `\<`, -1), func(typ string) string {
 						typName := typ[1:]
 						typLookup := typeTable[strings.ToLower(typName)]
 						ifaces := typLookup[0] + "." + typLookup[1] + "/"
@@ -657,7 +659,7 @@ provided by Hilbish.
 							typName := regexp.MustCompile(`\w+`).FindString(typ[1:])
 							typLookup := typeTable[strings.ToLower(typName)]
 							fmt.Printf("%+q, \n", typLookup)
-							linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0] + "." + typLookup[1], strings.ToLower(typName))
+							linkedTyp := fmt.Sprintf("/Hilbish/docs/api/%s/%s/#%s", typLookup[0], typLookup[0]+"."+typLookup[1], strings.ToLower(typName))
 							return fmt.Sprintf(`<a href="#%s" style="text-decoration: none;">%s</a>`, linkedTyp, typName)
 						})
 						f.WriteString(fmt.Sprintf("#### %s\n", htmlSig))
