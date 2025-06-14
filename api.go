@@ -46,7 +46,6 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 			"alias": {hlalias, 2, false},
 			"appendPath": {hlappendPath, 1, false},
 			"complete": {hlcomplete, 2, false},
-			"cwd": {hlcwd, 0, false},
 			"exec": {hlexec, 1, false},
 			"runnerMode": {hlrunnerMode, 1, false},
 			"goro": {hlgoro, 1, true},
@@ -55,6 +54,7 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 			"multiprompt": {hlmultiprompt, 1, false},
 			"prependPath": {hlprependPath, 1, false},
 		*/
+		"cwd":    {hlcwd, 0, false},
 		"prompt": {hlprompt, 1, true},
 		/*
 			"inputMode": {hlinputMode, 1, false},
