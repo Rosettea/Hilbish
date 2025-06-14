@@ -42,8 +42,8 @@ func (mlr *Runtime) TableArg(num int) (*Table, error) {
 	return nil, errors.New("TableArg unimplemented")
 }
 
-func (mlr *Runtime) Arg(c *GoCont, num int) Value {
-	return c.vals[num]
+func (mlr *Runtime) Arg(num int) Value {
+	return NilValue
 }
 
 func (mlr *Runtime) GoFunction(fun GoToLuaFunc) *GoFunctionFunc {

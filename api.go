@@ -44,7 +44,6 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	var exports = map[string]moonlight.Export{
 		/*
 			"alias": {hlalias, 2, false},
-			"appendPath": {hlappendPath, 1, false},
 			"complete": {hlcomplete, 2, false},
 			"exec": {hlexec, 1, false},
 			"runnerMode": {hlrunnerMode, 1, false},
@@ -54,8 +53,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 			"multiprompt": {hlmultiprompt, 1, false},
 			"prependPath": {hlprependPath, 1, false},
 		*/
-		"cwd":    {hlcwd, 0, false},
-		"prompt": {hlprompt, 1, true},
+		"appendPath": {hlappendPath, 1, false},
+		"cwd":        {hlcwd, 0, false},
+		"prompt":     {hlprompt, 1, true},
 		/*
 			"inputMode": {hlinputMode, 1, false},
 			"interval": {hlinterval, 2, false},
@@ -112,8 +112,8 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	hshMod.SetField("completions", moonlight.TableValue(hshcomp))
 
 	// hilbish.runner table
-	//runnerModule := runnerModeLoader(mlr)
-	//hshMod.SetField("runner", moonlight.TableValue(runnerModule))
+	runnerModule := runnerModeLoader(mlr)
+	hshMod.SetField("runner", moonlight.TableValue(runnerModule))
 
 	// hilbish.jobs table
 	jobs = newJobHandler()
@@ -475,11 +475,11 @@ hilbish.appendPath {
 }
 #example
 */
-func hlappendPath(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+func hlappendPath(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
-		return nil, err
+		return err
 	}
-	arg := mlr.Arg(c, 0)
+	arg := mlr.Arg(0)
 
 	// check if dir is a table or a string
 	if moonlight.Type(arg) == moonlight.TableType {
@@ -491,10 +491,10 @@ func hlappendPath(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, 
 	} else if moonlight.Type(arg) == moonlight.StringType {
 		appendPath(arg.AsString())
 	} else {
-		return nil, errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
+		return errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
 	}
 
-	return c.Next(), nil
+	return nil
 }
 
 func appendPath(dir string) {
@@ -770,11 +770,11 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // will call it to execute user input instead.
 // Read [about runner mode](../features/runner-mode) for more information.
 // #param mode string|function
-func hlrunnerMode(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+func hlrunnerMode(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
-		return nil, err
+		return err
 	}
-	mode := mlr.Arg(c, 0)
+	mode := mlr.Arg(0)
 
 	switch moonlight.Type(mode) {
 	case moonlight.StringType:
@@ -782,15 +782,15 @@ func hlrunnerMode(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, 
 		case "hybrid", "hybridRev", "lua", "sh":
 			runnerMode = mode
 		default:
-			return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
+			return errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
 		}
 	case moonlight.FunctionType:
 		runnerMode = mode
 	default:
-		return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
+		return errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
-	return c.Next(), nil
+	return nil
 }
 
 // hinter(line, pos)
