@@ -106,10 +106,10 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("history"), rt.TableValue(historyModule))
 
 	// hilbish.completion table
-	//hshcomp := completionLoader(rtm)
+	hshcomp := completionLoader(mlr)
 	// TODO: REMOVE "completion" AND ONLY USE "completions" WITH AN S
-	//mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
-	//mod.Set(rt.StringValue("completions"), rt.TableValue(hshcomp))
+	hshMod.SetField("completion", moonlight.TableValue(hshcomp))
+	hshMod.SetField("completions", moonlight.TableValue(hshcomp))
 
 	// hilbish.runner table
 	//runnerModule := runnerModeLoader(mlr)

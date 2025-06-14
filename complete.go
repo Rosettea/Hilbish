@@ -2,13 +2,12 @@ package main
 
 import (
 	//"errors"
+	"os"
 	"path/filepath"
 	"strings"
-	"os"
 
+	"hilbish/moonlight"
 	"hilbish/util"
-
-	//rt "github.com/arnodel/golua/runtime"
 )
 
 var charEscapeMap = []string{
@@ -34,9 +33,9 @@ var escapeInvertReplaer = strings.NewReplacer(charEscapeMapInvert...)
 func invert(m []string) []string {
 	newM := make([]string, len(charEscapeMap))
 	for i := range m {
-		if (i + 1) % 2 == 0 {
-			newM[i] = m[i - 1]
-			newM[i - 1] = m[i]
+		if (i+1)%2 == 0 {
+			newM[i] = m[i-1]
+			newM[i-1] = m[i]
 		}
 	}
 
@@ -52,7 +51,7 @@ func splitForFile(str string) []string {
 		if r == '"' {
 			quoted = !quoted
 			sb.WriteRune(r)
-		} else if r == ' ' && str[i - 1] == '\\' {
+		} else if r == ' ' && str[i-1] == '\\' {
 			sb.WriteRune(r)
 		} else if !quoted && r == ' ' {
 			split = append(split, sb.String())
@@ -76,7 +75,7 @@ func fileComplete(query, ctx string, fields []string) ([]string, string) {
 	q := splitForFile(ctx)
 	path := ""
 	if len(q) != 0 {
-		path = q[len(q) - 1]
+		path = q[len(q)-1]
 	}
 
 	return matchPath(path)
@@ -86,7 +85,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	q := splitForFile(ctx)
 	query = ""
 	if len(q) != 0 {
-		query = q[len(q) - 1]
+		query = q[len(q)-1]
 	}
 
 	var completions []string
@@ -111,7 +110,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 	// filter out executables, but in path
 	for _, dir := range filepath.SplitList(os.Getenv("PATH")) {
 		// search for an executable which matches our query string
-		if matches, err := filepath.Glob(filepath.Join(dir, query + "*")); err == nil {
+		if matches, err := filepath.Glob(filepath.Join(dir, query+"*")); err == nil {
 			// get basename from matches
 			for _, match := range matches {
 				// check if we have execute permissions for our match
@@ -159,7 +158,7 @@ func matchPath(query string) ([]string, string) {
 	for _, entry := range files {
 		// should we handle errors here?
 		file, err := entry.Info()
-		if err == nil && file.Mode() & os.ModeSymlink != 0 {
+		if err == nil && file.Mode()&os.ModeSymlink != 0 {
 			path, err := filepath.EvalSymlinks(filepath.Join(path, file.Name()))
 			if err == nil {
 				file, err = os.Lstat(path)
@@ -191,21 +190,19 @@ func escapeFilename(fname string) string {
 // #interface completion
 // tab completions
 // The completions interface deals with tab completions.
-/*
-func completionLoader(rtm *rt.Runtime) *rt.Table {
-	exports := map[string]util.LuaExport{
+func completionLoader(mlr *moonlight.Runtime) *moonlight.Table {
+	exports := map[string]moonlight.Export{
 		"bins": {hcmpBins, 3, false},
-		"call": {hcmpCall, 4, false},
-		"files": {hcmpFiles, 3, false},
-		"handler": {hcmpHandler, 2, false},
+		//"call":    {hcmpCall, 4, false},
+		//		"files":   {hcmpFiles, 3, false},
+		//		"handler": {hcmpHandler, 2, false},
 	}
 
-	mod := rt.NewTable()
-	util.SetExports(rtm, mod, exports)
-	
+	mod := moonlight.NewTable()
+	mlr.SetExports(mod, exports)
+
 	return mod
 }
-*/
 
 // #interface completion
 // bins(query, ctx, fields) -> entries (table), prefix (string)
@@ -233,23 +230,23 @@ hilbish.complete('command.sudo', function(query, ctx, fields)
 end)
 #example
 */
-/*
-func hcmpBins(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	query, ctx, fds, err := getCompleteParams(t, c)
+func hcmpBins(mlr *moonlight.Runtime) error {
+	query, ctx, fds, err := getCompleteParams(mlr)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	completions, pfx := binaryComplete(query, ctx, fds)
-	luaComps := rt.NewTable()
+	completions, _ := binaryComplete(query, ctx, fds)
+	luaComps := moonlight.NewTable()
 
 	for i, comp := range completions {
-		luaComps.Set(rt.IntValue(int64(i + 1)), rt.StringValue(comp))
+		luaComps.Set(moonlight.IntValue(int64(i+1)), moonlight.StringValue(comp))
 	}
 
-	return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+	mlr.PushNext1(moonlight.TableValue(luaComps))
+	//return c.PushingNext(t.Runtime, rt.TableValue(luaComps), rt.StringValue(pfx)), nil
+	return nil
 }
-*/
 
 // #interface completion
 // call(name, query, ctx, fields) -> completionGroups (table), prefix (string)
@@ -352,35 +349,33 @@ function hilbish.completion.handler(line, pos)
 end
 #example
 */
-/*
-func hcmpHandler(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	return c.Next(), nil
+func hcmpHandler(mlr *moonlight.Runtime) error {
+	return nil
 }
 
-func getCompleteParams(t *rt.Thread, c *rt.GoCont) (string, string, []string, error) {
-	if err := c.CheckNArgs(3); err != nil {
+func getCompleteParams(mlr *moonlight.Runtime) (string, string, []string, error) {
+	if err := mlr.CheckNArgs(3); err != nil {
 		return "", "", []string{}, err
 	}
-	query, err := c.StringArg(0)
+	query, err := mlr.StringArg(0)
 	if err != nil {
 		return "", "", []string{}, err
 	}
-	ctx, err := c.StringArg(1)
+	ctx, err := mlr.StringArg(1)
 	if err != nil {
 		return "", "", []string{}, err
 	}
-	fields, err := c.TableArg(2)
+	fields, err := mlr.TableArg(2)
 	if err != nil {
 		return "", "", []string{}, err
 	}
 
 	var fds []string
-	util.ForEach(fields, func(k rt.Value, v rt.Value) {
-		if v.Type() == rt.StringType {
+	moonlight.ForEach(fields, func(k moonlight.Value, v moonlight.Value) {
+		if v.Type() == moonlight.StringType {
 			fds = append(fds, v.AsString())
 		}
 	})
 
 	return query, ctx, fds, err
 }
-*/

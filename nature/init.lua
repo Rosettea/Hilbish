@@ -18,6 +18,8 @@ if not hilbish.midnightEdition then
 		-- it didnt work normally, idk
 		return function() return hilbish.module.load(path) end, path
 	end)
+else
+	pcall = unsafe_pcall
 end
 
 require 'nature.commands'

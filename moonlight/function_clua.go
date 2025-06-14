@@ -3,6 +3,7 @@
 package moonlight
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/aarzilli/golua/lua"
@@ -34,6 +35,11 @@ func (mlr *Runtime) Check1Arg() error {
 
 func (mlr *Runtime) StringArg(num int) (string, error) {
 	return mlr.state.CheckString(num + 1), nil
+}
+
+func (mlr *Runtime) TableArg(num int) (*Table, error) {
+	//return mlr.state.CheckType(num+1, lua.LUA_TTABLE)
+	return nil, errors.New("TableArg unimplemented")
 }
 
 func (mlr *Runtime) Arg(c *GoCont, num int) Value {
