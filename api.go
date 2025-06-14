@@ -136,9 +136,9 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	//mod.Set(rt.StringValue("version"), rt.TableValue(versionModule))
 
 	// very meta
-	if moonlight.IsMidnight() {
-		//moduleModule := moduleLoader(mlr)
-		//hshMod.SetField("module", moonlight.TableValue(moduleModule))
+	if !moonlight.IsMidnight() {
+		moduleModule := moduleLoader(mlr)
+		hshMod.SetField("module", moonlight.TableValue(moduleModule))
 	}
 
 	return moonlight.TableValue(hshMod)
