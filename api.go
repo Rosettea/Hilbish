@@ -299,10 +299,11 @@ func hlrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // cwd() -> string
 // Returns the current directory of the shell.
 // #returns string
-func hlcwd(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+func hlcwd(mlr *moonlight.Runtime) error {
 	cwd, _ := os.Getwd()
 
-	return mlr.PushNext1(c, moonlight.StringValue(cwd)), nil
+	mlr.PushNext1(moonlight.StringValue(cwd))
+	return nil
 }
 
 // read(prompt) -> input (string)

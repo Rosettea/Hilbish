@@ -1,15 +1,16 @@
 //go:build !midnight
+
 package moonlight
 
 import (
 	"os"
 
-	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
 	"github.com/arnodel/golua/lib/debuglib"
+	rt "github.com/arnodel/golua/runtime"
 )
 
-type Runtime struct{
+type Runtime struct {
 	rt *rt.Runtime
 }
 
@@ -40,8 +41,8 @@ func (mlr *Runtime) Push(c *GoCont, v Value) {
 	c.cont.Push(c.thread.Runtime, v)
 }
 
-func (mlr *Runtime) PushNext1(c *GoCont, v Value) Cont {
-	return c.cont.PushingNext1(c.thread.Runtime, v)
+func (mlr *Runtime) PushNext1(v Value) {
+	mlr.rt.MainThread().CurrentCont().(*rt.GoCont).Next().Push(mlr.rt.MainThread().Runtime, v)
 }
 
 func (mlr *Runtime) Call1(val Value, args ...Value) (Value, error) {

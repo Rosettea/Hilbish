@@ -3,8 +3,6 @@
 package terminal
 
 import (
-	"os"
-
 	"hilbish/moonlight"
 
 	"golang.org/x/term"
@@ -28,6 +26,7 @@ func Loader(rtm *moonlight.Runtime) moonlight.Value {
 	return moonlight.TableValue(mod)
 }
 
+/*
 // size()
 // Gets the dimensions of the terminal. Returns a table with `width` and `height`
 // NOTE: The size refers to the amount of columns and rows of text that can fit in the terminal.
@@ -77,3 +76,4 @@ func termsetRaw(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, er
 
 	return c.Next(), nil
 }
+*/

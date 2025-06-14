@@ -7,7 +7,8 @@ import (
 )
 
 type Runtime struct {
-	state *lua.State
+	state     *lua.State
+	returnNum int
 }
 
 func NewRuntime() *Runtime {
@@ -19,10 +20,10 @@ func NewRuntime() *Runtime {
 	}
 }
 
-func (mlr *Runtime) PushNext1(c *GoCont, v Value) Cont {
-	c.vals = []Value{v}
+func (mlr *Runtime) PushNext1(v Value) {
+	mlr.returnNum = 1
 
-	return c
+	mlr.pushToState(v)
 }
 
 func (mlr *Runtime) Call1(f Value, args ...Value) (Value, error) {

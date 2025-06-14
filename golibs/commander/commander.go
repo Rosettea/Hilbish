@@ -117,7 +117,7 @@ func (c *Commander) cderegister(mlr *moonlight.Runtime) error {
 // Returns all registered commanders. Returns a list of tables with the following keys:
 // - `exec`: The function used to run the commander. Commanders require args and sinks to be passed.
 // #returns table
-func (c *Commander) cregistry(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moonlight.Cont, error) {
+/*func (c *Commander) cregistry(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moonlight.Cont, error) {
 	registryLua := moonlight.NewTable()
 	for cmdName, cmd := range c.Commands {
 		cmdTbl := moonlight.NewTable()
@@ -129,4 +129,4 @@ func (c *Commander) cregistry(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moo
 	}
 
 	return mlr.PushNext1(ct, moonlight.TableValue(registryLua)), nil
-}
+}*/

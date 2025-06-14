@@ -1,9 +1,4 @@
 -- Prelude initializes everything else for our shell
-print(require 'hilbish')
-print('hilbitch type', type(hilbish))
-print(hilbish.prompt)
-print(hilbish.ver)
---[[
 local _ = require 'succulent' -- Function additions
 local bait = require 'bait'
 --local fs = require 'fs'
@@ -97,4 +92,3 @@ end)
 bait.catch('command.not-executable', function(cmd)
 	print(string.format('hilbish: %s: not executable', cmd))
 end)
-]]--

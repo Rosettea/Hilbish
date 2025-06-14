@@ -39,14 +39,14 @@ func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
 			"cd": util.LuaExport{f.fcd, 1, false},
 			"mkdir": util.LuaExport{f.fmkdir, 2, false},
 			"stat": util.LuaExport{f.fstat, 1, false},
-			"readdir": {f.freaddir, 1, false},
 			"abs": util.LuaExport{f.fabs, 1, false},
 			"basename": util.LuaExport{f.fbasename, 1, false},
-			"dir": {f.fdir, 1, false},
 			"glob": util.LuaExport{f.fglob, 1, false},
 			"join": util.LuaExport{f.fjoin, 0, true},
 			"pipe": util.LuaExport{f.fpipe, 0, false},
 		*/
+		"readdir": {f.freaddir, 1, false},
+		"dir":     {f.fdir, 1, false},
 	}
 
 	mod := moonlight.NewTable()
@@ -122,8 +122,7 @@ func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `~/Documents/doc.txt` then this function will return `~/Documents`.
 // #param path string Path to get the directory for.
 // #returns string
-/*
-func (f *fs) fdir(mlr *moonlight.Runtime, c *moonlight.GoCont) error {
+func (f *fs) fdir(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
 		return err
 	}
@@ -132,11 +131,9 @@ func (f *fs) fdir(mlr *moonlight.Runtime, c *moonlight.GoCont) error {
 		return err
 	}
 
-	println(patg)
-	//next := mlr.PushNext1(c, moonlight.StringValue(filepath.Dir(path)))
+	mlr.PushNext1(moonlight.StringValue(filepath.Dir(path)))
 	return nil
 }
-*/
 
 // glob(pattern) -> matches (table)
 // Match all files based on the provided `pattern`.
@@ -265,26 +262,27 @@ func (f *fs) fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Returns a list of all files and directories in the provided path.
 // #param dir string
 // #returns table
-func (f *fs) freaddir(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+func (f *fs) freaddir(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
-		return nil, err
+		return err
 	}
 	dir, err := mlr.StringArg(0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	dir = util.ExpandHome(dir)
 	names := moonlight.NewTable()
 
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	for i, entry := range dirEntries {
 		names.Set(moonlight.IntValue(int64(i+1)), moonlight.StringValue(entry.Name()))
 	}
 
-	return mlr.PushNext1(c, moonlight.TableValue(names)), nil
+	mlr.PushNext1(moonlight.TableValue(names))
+	return nil
 }
 
 // stat(path) -> {}

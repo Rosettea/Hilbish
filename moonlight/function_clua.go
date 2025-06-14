@@ -41,6 +41,8 @@ func (mlr *Runtime) Arg(c *GoCont, num int) Value {
 }
 
 func (mlr *Runtime) GoFunction(fun GoToLuaFunc) *GoFunctionFunc {
+	mlr.returnNum = 0
+
 	return &GoFunctionFunc{
 		cf: func(L *lua.State) int {
 			err := fun(mlr)
@@ -57,7 +59,7 @@ func (mlr *Runtime) GoFunction(fun GoToLuaFunc) *GoFunctionFunc {
 			}*/
 
 			//return len(cont.(*GoCont).vals)
-			return 0
+			return mlr.returnNum
 		},
 	}
 }
