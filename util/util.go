@@ -17,7 +17,7 @@ func SetField(module *rt.Table, field string, value rt.Value) {
 
 // HandleStrCallback handles function parameters for Go functions which take
 // a string and a closure.
-func HandleStrCallback(mlr *moonlight.Runtime, c *moonlight.GoCont) (string, *moonlight.Closure, error) {
+func HandleStrCallback(mlr *moonlight.Runtime) (string, *moonlight.Closure, error) {
 	if err := mlr.CheckNArgs(2); err != nil {
 		return "", nil, err
 	}

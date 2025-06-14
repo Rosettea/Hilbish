@@ -262,7 +262,7 @@ end)
 #example
 */
 func (b *Bait) bcatch(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	name, catcher, err := util.HandleStrCallback(mlr, c)
+	name, catcher, err := util.HandleStrCallback(mlr)
 	if err != nil {
 		return nil, err
 	}

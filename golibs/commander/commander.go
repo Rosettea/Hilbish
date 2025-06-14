@@ -54,11 +54,9 @@ func New(rtm *moonlight.Runtime) *Commander {
 
 func (c *Commander) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
-		/*
-			"register":   {c.cregister, 2, false},
-			"deregister": {c.cderegister, 1, false},
-			"registry":   {c.cregistry, 0, false},
-		*/
+		"register":   {c.cregister, 2, false},
+		"deregister": {c.cderegister, 1, false},
+		"registry":   {c.cregistry, 0, false},
 	}
 	mod := moonlight.NewTable()
 	rtm.SetExports(mod, exports)
@@ -83,21 +81,20 @@ commander.register('hello', function(args, sinks)
 end)
 #example
 */
-func (c *Commander) cregister(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moonlight.Cont, error) {
-	cmdName, cmd, err := util.HandleStrCallback(mlr, ct)
+func (c *Commander) cregister(mlr *moonlight.Runtime) error {
+	cmdName, cmd, err := util.HandleStrCallback(mlr)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	c.Commands[cmdName] = cmd
 
-	return ct.Next(), err
+	return nil
 }
 
 // deregister(name)
 // Removes the named command. Note that this will only remove Commander-registered commands.
 // #param name string Name of the command to remove.
-/*
 func (c *Commander) cderegister(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
 		return err
@@ -111,13 +108,12 @@ func (c *Commander) cderegister(mlr *moonlight.Runtime) error {
 
 	return err
 }
-*/
 
 // registry() -> table
 // Returns all registered commanders. Returns a list of tables with the following keys:
 // - `exec`: The function used to run the commander. Commanders require args and sinks to be passed.
 // #returns table
-/*func (c *Commander) cregistry(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moonlight.Cont, error) {
+func (c *Commander) cregistry(mlr *moonlight.Runtime) error {
 	registryLua := moonlight.NewTable()
 	for cmdName, cmd := range c.Commands {
 		cmdTbl := moonlight.NewTable()
@@ -128,5 +124,6 @@ func (c *Commander) cderegister(mlr *moonlight.Runtime) error {
 		registryLua.SetField(cmdName, moonlight.TableValue(cmdTbl))
 	}
 
-	return mlr.PushNext1(ct, moonlight.TableValue(registryLua)), nil
-}*/
+	mlr.PushNext1(moonlight.TableValue(registryLua))
+	return nil
+}
