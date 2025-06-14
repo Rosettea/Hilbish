@@ -14,10 +14,12 @@ var termState *term.State
 
 func Loader(rtm *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
-		"setRaw": {termsetRaw, 0, false},
-		"restoreState": {termrestoreState, 0, false},
-		"size": {termsize, 0, false},
-		"saveState": {termsaveState, 0, false},
+		/*
+			"setRaw": {termsetRaw, 0, false},
+			"restoreState": {termrestoreState, 0, false},
+			"size": {termsize, 0, false},
+			"saveState": {termsaveState, 0, false},
+		*/
 	}
 
 	mod := moonlight.NewTable()

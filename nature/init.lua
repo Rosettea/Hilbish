@@ -1,4 +1,8 @@
 -- Prelude initializes everything else for our shell
+print(require 'hilbish')
+print('hilbitch type', type(hilbish))
+print(hilbish.prompt)
+print(hilbish.ver)
 --[[
 local _ = require 'succulent' -- Function additions
 local bait = require 'bait'

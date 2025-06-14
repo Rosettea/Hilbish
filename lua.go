@@ -38,17 +38,17 @@ func luaInit() {
 		hooks.Off(event, handler)
 	})
 	l.LoadLibrary(hooks.Loader, "bait")
-/*
-	// Add Ctrl-C handler
-	hooks.On("signal.sigint", func(...interface{}) {
-		if !interactive {
-			os.Exit(0)
-		}
-	})
+	/*
+		// Add Ctrl-C handler
+		hooks.On("signal.sigint", func(...interface{}) {
+			if !interactive {
+				os.Exit(0)
+			}
+		})
 
-	lr.rl.RawInputCallback = func(r []rune) {
-		hooks.Emit("hilbish.rawInput", string(r))
-	}
+		lr.rl.RawInputCallback = func(r []rune) {
+			hooks.Emit("hilbish.rawInput", string(r))
+		}
 	*/
 
 	// Add more paths that Lua can require from

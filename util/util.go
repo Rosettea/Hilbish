@@ -1,8 +1,8 @@
 package util
 
 import (
-	"strings"
 	"os/user"
+	"strings"
 
 	"hilbish/moonlight"
 
@@ -18,14 +18,14 @@ func SetField(module *rt.Table, field string, value rt.Value) {
 // HandleStrCallback handles function parameters for Go functions which take
 // a string and a closure.
 func HandleStrCallback(mlr *moonlight.Runtime, c *moonlight.GoCont) (string, *moonlight.Closure, error) {
-	if err := mlr.CheckNArgs(c, 2); err != nil {
+	if err := mlr.CheckNArgs(2); err != nil {
 		return "", nil, err
 	}
-	name, err := mlr.StringArg(c, 0)
+	name, err := mlr.StringArg(0)
 	if err != nil {
 		return "", nil, err
 	}
-	cb, err := mlr.ClosureArg(c, 1)
+	cb, err := mlr.ClosureArg(1)
 	if err != nil {
 		return "", nil, err
 	}

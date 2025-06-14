@@ -1,8 +1,11 @@
 //go:build midnight
+
 package moonlight
 
-type Value struct{
-	iface interface{}
+import "github.com/aarzilli/golua/lua"
+
+type Value struct {
+	iface  interface{}
 	relIdx int
 	refIdx int
 }
@@ -10,6 +13,7 @@ type Value struct{
 var NilValue = Value{nil, -1, -1}
 
 type ValueType uint8
+
 const (
 	NilType ValueType = iota
 	BoolType
@@ -34,7 +38,7 @@ func IntValue(i int64) Value {
 
 func StringValue(str string) Value {
 	return Value{iface: str}
-} 
+}
 
 func TableValue(t *Table) Value {
 	return Value{iface: t}
@@ -50,13 +54,18 @@ func AsValue(i interface{}) Value {
 	}
 
 	switch v := i.(type) {
-		case bool: return BoolValue(v)
-		case int64: return IntValue(v)
-		case string: return StringValue(v)
-		case *Table: return TableValue(v)
-		case Value: return v
-		default:
-			return Value{iface: i}
+	case bool:
+		return BoolValue(v)
+	case int64:
+		return IntValue(v)
+	case string:
+		return StringValue(v)
+	case *Table:
+		return TableValue(v)
+	case Value:
+		return v
+	default:
+		return Value{iface: i}
 	}
 }
 
@@ -66,12 +75,18 @@ func (v Value) Type() ValueType {
 	}
 
 	switch v.iface.(type) {
-		case bool: return BoolType
-		case int64: return IntType
-		case string: return StringType
-		case *Table: return TableType
-		case *Closure: return FunctionType
-		default: return UnknownType
+	case bool:
+		return BoolType
+	case int64:
+		return IntType
+	case string:
+		return StringType
+	case *Table:
+		return TableType
+	case *GoFunctionFunc:
+		return FunctionType
+	default:
+		return UnknownType
 	}
 }
 
@@ -91,18 +106,28 @@ func (v Value) AsTable() *Table {
 	return v.iface.(*Table)
 }
 
+func (v Value) AsLuaFunction() lua.LuaGoFunction {
+	return v.iface.(*GoFunctionFunc).cf
+}
+
 func ToString(v Value) string {
 	return v.AsString()
 }
 
 func (v Value) TypeName() string {
 	switch v.iface.(type) {
-		case bool: return "bool"
-		case int64: return "number"
-		case string: return "string"
-		case *Table: return "table"
-		case *Closure: return "function"
-		default: return "<unknown type>"
+	case bool:
+		return "bool"
+	case int64:
+		return "number"
+	case string:
+		return "string"
+	case *Table:
+		return "table"
+	case *Closure:
+		return "function"
+	default:
+		return "<unknown type>"
 	}
 }
 

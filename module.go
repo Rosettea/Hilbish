@@ -1,8 +1,6 @@
 package main
 
 import (
-	"plugin"
-
 	"hilbish/moonlight"
 )
 
@@ -46,7 +44,7 @@ If you attempt to require and print the result (`print(require 'plugin')`), it w
 */
 func moduleLoader(mlr *moonlight.Runtime) *moonlight.Table {
 	exports := map[string]moonlight.Export{
-		"load": {moduleLoad, 2, false},
+		//"load": {moduleLoad, 2, false},
 	}
 
 	mod := moonlight.NewTable()
@@ -59,12 +57,13 @@ func moduleLoader(mlr *moonlight.Runtime) *moonlight.Table {
 // load(path)
 // Loads a module at the designated `path`.
 // It will throw if any error occurs.
-// #param path string 
+// #param path string
+/*
 func moduleLoad(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
 	if err := mlr.Check1Arg(c); err != nil {
 		return nil, err
 	}
-	
+
 	path, err := mlr.StringArg(c, 0)
 	if err != nil {
 		return nil, err
@@ -89,3 +88,4 @@ func moduleLoad(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, er
 
 	return mlr.PushNext1(c, val), nil
 }
+*/

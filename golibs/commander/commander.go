@@ -33,19 +33,19 @@ This sink is for writing errors, as the name would suggest.
 package commander
 
 import (
+	"hilbish/golibs/bait"
 	"hilbish/moonlight"
 	"hilbish/util"
-	"hilbish/golibs/bait"
 )
 
-type Commander struct{
-	Events *bait.Bait
+type Commander struct {
+	Events   *bait.Bait
 	Commands map[string]*moonlight.Closure
 }
 
 func New(rtm *moonlight.Runtime) *Commander {
 	c := &Commander{
-		Events: bait.New(rtm),
+		Events:   bait.New(rtm),
 		Commands: make(map[string]*moonlight.Closure),
 	}
 
@@ -54,9 +54,11 @@ func New(rtm *moonlight.Runtime) *Commander {
 
 func (c *Commander) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
-		"register": {c.cregister, 2, false},
-		"deregister": {c.cderegister, 1, false},
-		"registry": {c.cregistry, 0, false},
+		/*
+			"register":   {c.cregister, 2, false},
+			"deregister": {c.cderegister, 1, false},
+			"registry":   {c.cregistry, 0, false},
+		*/
 	}
 	mod := moonlight.NewTable()
 	rtm.SetExports(mod, exports)
@@ -95,19 +97,21 @@ func (c *Commander) cregister(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moo
 // deregister(name)
 // Removes the named command. Note that this will only remove Commander-registered commands.
 // #param name string Name of the command to remove.
-func (c *Commander) cderegister(mlr *moonlight.Runtime, ct *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.Check1Arg(ct); err != nil {
-		return nil, err
+/*
+func (c *Commander) cderegister(mlr *moonlight.Runtime) error {
+	if err := mlr.Check1Arg(); err != nil {
+		return err
 	}
-	cmdName, err := mlr.StringArg(ct, 0)
+	cmdName, err := mlr.StringArg(0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	delete(c.Commands, cmdName)
 
-	return ct.Next(), err
+	return err
 }
+*/
 
 // registry() -> table
 // Returns all registered commanders. Returns a list of tables with the following keys:

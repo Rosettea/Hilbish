@@ -1,11 +1,12 @@
 //go:build midnight
+
 package moonlight
 
 import (
 	"github.com/aarzilli/golua/lua"
 )
 
-type Runtime struct{
+type Runtime struct {
 	state *lua.State
 }
 
@@ -43,12 +44,17 @@ func (mlr *Runtime) Call1(f Value, args ...Value) (Value, error) {
 
 func (mlr *Runtime) pushToState(v Value) {
 	switch v.Type() {
-		case NilType: mlr.state.PushNil()
-		case StringType: mlr.state.PushString(v.AsString())
-		case TableType:
-			tbl := v.AsTable()
-			tbl.SetRuntime(mlr)
-			tbl.Push()
-		default: mlr.state.PushNil()
+	case NilType:
+		mlr.state.PushNil()
+	case StringType:
+		mlr.state.PushString(v.AsString())
+	case TableType:
+		tbl := v.AsTable()
+		tbl.SetRuntime(mlr)
+		tbl.Push()
+	case FunctionType:
+		mlr.state.PushGoClosure(v.AsLuaFunction())
+	default:
+		mlr.state.PushNil()
 	}
 }

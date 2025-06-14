@@ -1,9 +1,5 @@
 package main
 
-import (
-	"hilbish/moonlight"
-)
-
 // #interface runner
 // interactive command runner customization
 /* The runner interface contains functions that allow the user to change
@@ -25,7 +21,7 @@ to the history.
 - `err` (string): A string to indicate an interal error for the runner.
 It can be set to a few special values for Hilbish to throw the right hooks and have a better looking message:
 
-`[command]: not-found` will throw a command.not-found hook based on what `[command]` is.  
+`[command]: not-found` will throw a command.not-found hook based on what `[command]` is.
 
 `[command]: not-executable` will throw a command.not-executable hook.
 - `continue` (boolean): Whether to prompt the user for more input.
@@ -46,7 +42,6 @@ hilbish.runnerMode(function(input)
 	return hilbish.runner.sh(input)
 end)
 ```
-*/
 func runnerModeLoader(rtm *moonlight.Runtime) *moonlight.Table {
 	exports := map[string]moonlight.Export{
 		"sh": {shRunner, 1, false},
@@ -124,3 +119,4 @@ func luaRunner(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, err
 
 	return mlr.PushNext1(c, moonlight.TableValue(runnerRet)), nil
 }
+*/

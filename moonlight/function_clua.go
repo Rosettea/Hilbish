@@ -1,4 +1,5 @@
 //go:build midnight
+
 package moonlight
 
 import (
@@ -7,18 +8,18 @@ import (
 	"github.com/aarzilli/golua/lua"
 )
 
-type GoFunctionFunc struct{
+type GoFunctionFunc struct {
 	cf lua.LuaGoFunction
 }
 
 func (gf GoFunctionFunc) Continuation(mlr *Runtime, c Cont) Cont {
 	return &GoCont{
-		f: gf,
+		f:    gf,
 		vals: []Value{},
 	}
 }
 
-func (mlr *Runtime) CheckNArgs(c *GoCont, num int) error {
+func (mlr *Runtime) CheckNArgs(num int) error {
 	args := mlr.state.GetTop()
 	if args < num {
 		return fmt.Errorf("%d arguments needed", num)
@@ -27,11 +28,11 @@ func (mlr *Runtime) CheckNArgs(c *GoCont, num int) error {
 	return nil
 }
 
-func (mlr *Runtime) Check1Arg(c *GoCont) error {
-	return mlr.CheckNArgs(c, 1)
+func (mlr *Runtime) Check1Arg() error {
+	return mlr.CheckNArgs(1)
 }
 
-func (mlr *Runtime) StringArg(c *GoCont, num int) (string, error) {
+func (mlr *Runtime) StringArg(num int) (string, error) {
 	return mlr.state.CheckString(num + 1), nil
 }
 
@@ -39,23 +40,24 @@ func (mlr *Runtime) Arg(c *GoCont, num int) Value {
 	return c.vals[num]
 }
 
-func (mlr *Runtime) GoFunction(fun GoToLuaFunc) GoFunctionFunc {
-	return GoFunctionFunc{
+func (mlr *Runtime) GoFunction(fun GoToLuaFunc) *GoFunctionFunc {
+	return &GoFunctionFunc{
 		cf: func(L *lua.State) int {
-			cont, err := fun(mlr, &GoCont{})
+			err := fun(mlr)
 			if err != nil {
 				L.RaiseError(err.Error())
 				return 0
 			}
 
-			for _, val := range cont.(*GoCont).vals {
+			/*for _, val := range cont.(*GoCont).vals {
 				switch Type(val) {
-					case StringType:
-						L.PushString(val.AsString())
+				case StringType:
+					L.PushString(val.AsString())
 				}
-			}
+			}*/
 
-			return len(cont.(*GoCont).vals)
+			//return len(cont.(*GoCont).vals)
+			return 0
 		},
 	}
 }

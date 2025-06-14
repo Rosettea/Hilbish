@@ -15,13 +15,16 @@ package main
 import (
 	"bytes"
 	"errors"
+
 	//"fmt"
 	"io"
 	"os"
+
 	//"os/exec"
 	"runtime"
 	"strings"
-	//"syscall"
+
+	//"syscall
 	//"time"
 
 	//"hilbish/util"
@@ -40,26 +43,26 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 	println("hilbish loader called")
 	var exports = map[string]moonlight.Export{
 		/*
-		"alias": {hlalias, 2, false},
-		"appendPath": {hlappendPath, 1, false},
-		"complete": {hlcomplete, 2, false},
-		"cwd": {hlcwd, 0, false},
-		"exec": {hlexec, 1, false},
-		"runnerMode": {hlrunnerMode, 1, false},
-		"goro": {hlgoro, 1, true},
-		"highlighter": {hlhighlighter, 1, false},
-		"hinter": {hlhinter, 1, false},
-		"multiprompt": {hlmultiprompt, 1, false},
-		"prependPath": {hlprependPath, 1, false},
+			"alias": {hlalias, 2, false},
+			"appendPath": {hlappendPath, 1, false},
+			"complete": {hlcomplete, 2, false},
+			"cwd": {hlcwd, 0, false},
+			"exec": {hlexec, 1, false},
+			"runnerMode": {hlrunnerMode, 1, false},
+			"goro": {hlgoro, 1, true},
+			"highlighter": {hlhighlighter, 1, false},
+			"hinter": {hlhinter, 1, false},
+			"multiprompt": {hlmultiprompt, 1, false},
+			"prependPath": {hlprependPath, 1, false},
 		*/
 		"prompt": {hlprompt, 1, true},
 		/*
-		"inputMode": {hlinputMode, 1, false},
-		"interval": {hlinterval, 2, false},
-		"read": {hlread, 1, false},
-		"run": {hlrun, 1, true},
-		"timeout": {hltimeout, 2, false},
-		"which": {hlwhich, 1, false},
+			"inputMode": {hlinputMode, 1, false},
+			"interval": {hlinterval, 2, false},
+			"read": {hlread, 1, false},
+			"run": {hlrun, 1, true},
+			"timeout": {hltimeout, 2, false},
+			"which": {hlwhich, 1, false},
 		*/
 	}
 	hshMod = moonlight.NewTable()
@@ -134,19 +137,19 @@ func hilbishLoader(mlr *moonlight.Runtime) moonlight.Value {
 
 	// very meta
 	if moonlight.IsMidnight() {
-		moduleModule := moduleLoader(mlr)
-		hshMod.SetField("module", moonlight.TableValue(moduleModule))
+		//moduleModule := moduleLoader(mlr)
+		//hshMod.SetField("module", moonlight.TableValue(moduleModule))
 	}
 
 	return moonlight.TableValue(hshMod)
 }
 
 func getenv(key, fallback string) string {
-    value := os.Getenv(key)
-    if len(value) == 0 {
-        return fallback
-    }
-    return value
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }
 
 func setVimMode(mode string) {
@@ -302,7 +305,6 @@ func hlcwd(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) 
 	return mlr.PushNext1(c, moonlight.StringValue(cwd)), nil
 }
 
-
 // read(prompt) -> input (string)
 // Read input from the user, using Hilbish's line editor/input reader.
 // This is a separate instance from the one Hilbish actually uses.
@@ -320,7 +322,7 @@ func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		// substitute with an empty string
 		prompt = ""
 	}
-	
+
 	lualr := &lineReader{
 		rl: readline.NewInstance(),
 	}
@@ -352,37 +354,39 @@ hilbish.prompt '%u@%h :%d $'
 -- prompt: user@hostname: ~/directory $
 #example
 */
-func hlprompt(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	err := mlr.Check1Arg(c)
+func hlprompt(mlr *moonlight.Runtime) error {
+	err := mlr.Check1Arg()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	p, err := mlr.StringArg(c, 0)
+	p, err := mlr.StringArg(0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	typ := "left"
 	// optional 2nd arg
 	/*
-	if len(c.Etc()) != 0 {
-		ltyp := c.Etc()[0]
-		var ok bool
-		typ, ok = ltyp.TryString()
-		if !ok {
-			return nil, errors.New("bad argument to run (expected string, got " + ltyp.TypeName() + ")")
+		if len(c.Etc()) != 0 {
+			ltyp := c.Etc()[0]
+			var ok bool
+			typ, ok = ltyp.TryString()
+			if !ok {
+				return nil, errors.New("bad argument to run (expected string, got " + ltyp.TypeName() + ")")
+			}
 		}
-	}
 	*/
 
 	switch typ {
-		case "left":
-			prompt = p
-			lr.SetPrompt(fmtPrompt(prompt))
-		case "right": lr.SetRightPrompt(fmtPrompt(p))
-		default: return nil, errors.New("expected prompt type to be right or left, got " + typ)
+	case "left":
+		prompt = p
+		lr.SetPrompt(fmtPrompt(prompt))
+	case "right":
+		lr.SetRightPrompt(fmtPrompt(p))
+	default:
+		return errors.New("expected prompt type to be right or left, got " + typ)
 	}
 
-	return c.Next(), nil
+	return nil
 }
 
 // multiprompt(str)
@@ -400,7 +404,7 @@ will look like:
 user ~ ∆ echo "hey
 --> ...!"
 
-so then you get 
+so then you get
 user ~ ∆ echo "hey
 --> ...!"
 hey ...!
@@ -437,15 +441,15 @@ hilbish.alias('dircount', 'ls %1 | wc -l')
 */
 //func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 func hlalias(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.CheckNArgs(c, 2); err != nil {
+	if err := mlr.CheckNArgs(2); err != nil {
 		return nil, err
 	}
 
-	cmd, err := mlr.StringArg(c, 0)
+	cmd, err := mlr.StringArg(0)
 	if err != nil {
 		return nil, err
 	}
-	orig, err := mlr.StringArg(c, 1)
+	orig, err := mlr.StringArg(1)
 	if err != nil {
 		return nil, err
 	}
@@ -471,7 +475,7 @@ hilbish.appendPath {
 #example
 */
 func hlappendPath(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.Check1Arg(c); err != nil {
+	if err := mlr.Check1Arg(); err != nil {
 		return nil, err
 	}
 	arg := mlr.Arg(c, 0)
@@ -498,7 +502,7 @@ func appendPath(dir string) {
 
 	// if dir isnt already in $PATH, add it
 	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", pathenv + string(os.PathListSeparator) + dir)
+		os.Setenv("PATH", pathenv+string(os.PathListSeparator)+dir)
 	}
 }
 
@@ -595,7 +599,7 @@ func hltimeout(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	interval := time.Duration(ms) * time.Millisecond
 	timer := timers.create(timerTimeout, interval, cb)
 	timer.start()
-	
+
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(timer.ud)), nil
 }
 
@@ -766,19 +770,23 @@ func hlinputMode(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Read [about runner mode](../features/runner-mode) for more information.
 // #param mode string|function
 func hlrunnerMode(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.Check1Arg(c); err != nil {
+	if err := mlr.Check1Arg(); err != nil {
 		return nil, err
 	}
 	mode := mlr.Arg(c, 0)
 
 	switch moonlight.Type(mode) {
-		case moonlight.StringType:
-			switch mode.AsString() {
-				case "hybrid", "hybridRev", "lua", "sh": runnerMode = mode
-				default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
-			}
-		case moonlight.FunctionType: runnerMode = mode
-		default: return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
+	case moonlight.StringType:
+		switch mode.AsString() {
+		case "hybrid", "hybridRev", "lua", "sh":
+			runnerMode = mode
+		default:
+			return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.AsString())
+		}
+	case moonlight.FunctionType:
+		runnerMode = mode
+	default:
+		return nil, errors.New("execMode: expected either a function or hybrid, hybridRev, lua, sh. Received " + mode.TypeName())
 	}
 
 	return c.Next(), nil

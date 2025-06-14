@@ -69,6 +69,7 @@ func (t *Table) syncToLua() {
 		t.SetField(k.AsString(), v)
 	}
 }
+
 func ForEach(tbl *Table, cb func(key Value, val Value)) {
 }
 

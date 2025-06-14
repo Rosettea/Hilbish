@@ -9,20 +9,20 @@ package fs
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strconv"
-	"os"
 	"strings"
 
 	"hilbish/moonlight"
 	"hilbish/util"
 
-	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib/iolib"
+	rt "github.com/arnodel/golua/runtime"
 	"mvdan.cc/sh/v3/interp"
 )
 
-type fs struct{
+type fs struct {
 	runner *interp.Runner
 }
 
@@ -36,20 +36,16 @@ func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	println("fs loader called")
 	exports := map[string]moonlight.Export{
 		/*
-		"cd": util.LuaExport{f.fcd, 1, false},
-		"mkdir": util.LuaExport{f.fmkdir, 2, false},
-		"stat": util.LuaExport{f.fstat, 1, false},
-		*/
-		"readdir": {f.freaddir, 1, false},
-		/*
-		"abs": util.LuaExport{f.fabs, 1, false},
-		"basename": util.LuaExport{f.fbasename, 1, false},
-		*/
-		"dir": {f.fdir, 1, false},
-		/*
-		"glob": util.LuaExport{f.fglob, 1, false},
-		"join": util.LuaExport{f.fjoin, 0, true},
-		"pipe": util.LuaExport{f.fpipe, 0, false},
+			"cd": util.LuaExport{f.fcd, 1, false},
+			"mkdir": util.LuaExport{f.fmkdir, 2, false},
+			"stat": util.LuaExport{f.fstat, 1, false},
+			"readdir": {f.freaddir, 1, false},
+			"abs": util.LuaExport{f.fabs, 1, false},
+			"basename": util.LuaExport{f.fbasename, 1, false},
+			"dir": {f.fdir, 1, false},
+			"glob": util.LuaExport{f.fglob, 1, false},
+			"join": util.LuaExport{f.fjoin, 0, true},
+			"pipe": util.LuaExport{f.fpipe, 0, false},
 		*/
 	}
 
@@ -126,18 +122,21 @@ func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `~/Documents/doc.txt` then this function will return `~/Documents`.
 // #param path string Path to get the directory for.
 // #returns string
-func (f *fs) fdir(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.Check1Arg(c); err != nil {
-		return nil, err
+/*
+func (f *fs) fdir(mlr *moonlight.Runtime, c *moonlight.GoCont) error {
+	if err := mlr.Check1Arg(); err != nil {
+		return err
 	}
-	path, err := mlr.StringArg(c, 0)
+	path, err := mlr.StringArg(0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	next := mlr.PushNext1(c, moonlight.StringValue(filepath.Dir(path)))
-	return next, nil
+	println(patg)
+	//next := mlr.PushNext1(c, moonlight.StringValue(filepath.Dir(path)))
+	return nil
 }
+*/
 
 // glob(pattern) -> matches (table)
 // Match all files based on the provided `pattern`.
@@ -175,9 +174,9 @@ func (f *fs) fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	luaMatches := rt.NewTable()
 
 	for i, match := range matches {
-		luaMatches.Set(rt.IntValue(int64(i + 1)), rt.StringValue(match))
+		luaMatches.Set(rt.IntValue(int64(i+1)), rt.StringValue(match))
 	}
-	
+
 	return c.PushingNext(t.Runtime, rt.TableValue(luaMatches)), nil
 }
 
@@ -197,7 +196,7 @@ func (f *fs) fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	for i, v := range c.Etc() {
 		if v.Type() != rt.StringType {
 			// +2; go indexes of 0 and first arg from above
-			return nil, fmt.Errorf("bad argument #%d to run (expected string, got %s)", i + 1, v.TypeName())
+			return nil, fmt.Errorf("bad argument #%d to run (expected string, got %s)", i+1, v.TypeName())
 		}
 		strs[i] = v.AsString()
 	}
@@ -261,15 +260,16 @@ func (f *fs) fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 
 	return c.PushingNext(t.Runtime, rfLua.Value(t.Runtime), wfLua.Value(t.Runtime)), nil
 }
+
 // readdir(path) -> table[string]
 // Returns a list of all files and directories in the provided path.
 // #param dir string
 // #returns table
 func (f *fs) freaddir(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
-	if err := mlr.Check1Arg(c); err != nil {
+	if err := mlr.Check1Arg(); err != nil {
 		return nil, err
 	}
-	dir, err := mlr.StringArg(c, 0)
+	dir, err := mlr.StringArg(0)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func (f *fs) freaddir(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Co
 		return nil, err
 	}
 	for i, entry := range dirEntries {
-		names.Set(moonlight.IntValue(int64(i + 1)), moonlight.StringValue(entry.Name()))
+		names.Set(moonlight.IntValue(int64(i+1)), moonlight.StringValue(entry.Name()))
 	}
 
 	return mlr.PushNext1(c, moonlight.TableValue(names)), nil
@@ -330,9 +330,8 @@ func (f *fs) fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	statTbl := rt.NewTable()
 	statTbl.Set(rt.StringValue("name"), rt.StringValue(pathinfo.Name()))
 	statTbl.Set(rt.StringValue("size"), rt.IntValue(pathinfo.Size()))
-	statTbl.Set(rt.StringValue("mode"), rt.StringValue("0" + strconv.FormatInt(int64(pathinfo.Mode().Perm()), 8)))
+	statTbl.Set(rt.StringValue("mode"), rt.StringValue("0"+strconv.FormatInt(int64(pathinfo.Mode().Perm()), 8)))
 	statTbl.Set(rt.StringValue("isDir"), rt.BoolValue(pathinfo.IsDir()))
-	
+
 	return c.PushingNext1(t.Runtime, rt.TableValue(statTbl)), nil
 }
-
