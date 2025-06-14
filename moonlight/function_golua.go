@@ -20,11 +20,22 @@ func (mlr *Runtime) StringArg(num int) (string, error) {
 	return mlr.rt.MainThread().CurrentCont().(*rt.GoCont).StringArg(num)
 }
 
+func (mlr *Runtime) TableArg(num int) (*Table, error) {
+	tbl, err := mlr.rt.MainThread().CurrentCont().(*rt.GoCont).TableArg(num)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Table{
+		lt: tbl,
+	}, nil
+}
+
 func (mlr *Runtime) ClosureArg(num int) (*Closure, error) {
 	return mlr.rt.MainThread().CurrentCont().(*rt.GoCont).ClosureArg(num)
 }
 
-func (mlr *Runtime) Arg(c *GoCont, num int) Value {
+func (mlr *Runtime) Arg(num int) Value {
 	return mlr.rt.MainThread().CurrentCont().(*rt.GoCont).Arg(num)
 }
 
