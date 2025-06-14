@@ -102,6 +102,14 @@ func (v Value) AsString() string {
 	return v.iface.(string)
 }
 
+func (v Value) AsBool() bool {
+	if v.Type() != BoolType {
+		panic("value type was not bool")
+	}
+
+	return v.iface.(bool)
+}
+
 func (v Value) AsTable() *Table {
 	return v.iface.(*Table)
 }

@@ -49,6 +49,8 @@ func (mlr *Runtime) pushToState(v Value) {
 		mlr.state.PushNil()
 	case StringType:
 		mlr.state.PushString(v.AsString())
+	case BoolType:
+		mlr.state.PushBoolean(v.AsBool())
 	case TableType:
 		tbl := v.AsTable()
 		tbl.SetRuntime(mlr)
