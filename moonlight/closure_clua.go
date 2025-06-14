@@ -2,10 +2,6 @@
 
 package moonlight
 
-import (
-	"fmt"
-)
-
 type Callable interface {
 	Continuation(*Runtime, Cont) Cont
 }
@@ -16,8 +12,6 @@ type Closure struct {
 }
 
 func (mlr *Runtime) ClosureArg(num int) (*Closure, error) {
-	fmt.Println("type at ", num, "is", mlr.state.LTypename(num))
-
 	return &Closure{
 		refIdx: -1,
 	}, nil

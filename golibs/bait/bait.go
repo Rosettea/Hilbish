@@ -213,8 +213,8 @@ func (b *Bait) callRecoverer(event string, handler *Listener, err interface{}) {
 
 func (b *Bait) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
+		"catch": {b.bcatch, 2, false},
 		/*
-			"catch": {b.bcatch, 2, false},
 			"catchOnce": util.LuaExport{b.bcatchOnce, 2, false},
 			"throw": util.LuaExport{b.bthrow, 1, true},
 			"release": util.LuaExport{b.brelease, 2, false},
@@ -261,15 +261,15 @@ bait.catch('hilbish.exit', function()
 end)
 #example
 */
-func (b *Bait) bcatch(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+func (b *Bait) bcatch(mlr *moonlight.Runtime) error {
 	name, catcher, err := util.HandleStrCallback(mlr)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	b.OnLua(name, catcher)
 
-	return c.Next(), nil
+	return nil
 }
 
 /*

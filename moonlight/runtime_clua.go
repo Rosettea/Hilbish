@@ -4,6 +4,7 @@ package moonlight
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/aarzilli/golua/lua"
 )
@@ -17,9 +18,39 @@ func NewRuntime() *Runtime {
 	L := lua.NewState()
 	L.OpenLibs()
 
-	return &Runtime{
+	mlr := &Runtime{
 		state: L,
 	}
+
+	mlr.Extras()
+
+	return mlr
+}
+
+func (mlr *Runtime) Extras() {
+	mlr.state.GetGlobal("os")
+	mlr.pushToState(FunctionValue(mlr.GoFunction(setenv)))
+	mlr.state.SetField(-2, "setenv")
+}
+
+func setenv(mlr *Runtime) error {
+	if err := mlr.CheckNArgs(2); err != nil {
+		return err
+	}
+
+	env, err := mlr.StringArg(0)
+	if err != nil {
+		return err
+	}
+
+	varr, err := mlr.StringArg(1)
+	if err != nil {
+		return err
+	}
+
+	os.Setenv(env, varr)
+
+	return nil
 }
 
 func (mlr *Runtime) PushNext1(v Value) {
