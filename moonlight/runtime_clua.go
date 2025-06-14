@@ -3,6 +3,8 @@
 package moonlight
 
 import (
+	"fmt"
+
 	"github.com/aarzilli/golua/lua"
 )
 
@@ -49,6 +51,8 @@ func (mlr *Runtime) pushToState(v Value) {
 		mlr.state.PushNil()
 	case StringType:
 		mlr.state.PushString(v.AsString())
+	case IntType:
+		mlr.state.PushInteger(v.AsInt())
 	case BoolType:
 		mlr.state.PushBoolean(v.AsBool())
 	case TableType:
@@ -58,6 +62,7 @@ func (mlr *Runtime) pushToState(v Value) {
 	case FunctionType:
 		mlr.state.PushGoClosure(v.AsLuaFunction())
 	default:
+		fmt.Println("PUSHING UNIMPLEMENTED TYPE", v.TypeName())
 		mlr.state.PushNil()
 	}
 }

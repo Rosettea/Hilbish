@@ -2,7 +2,12 @@
 
 package moonlight
 
-import "github.com/aarzilli/golua/lua"
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/aarzilli/golua/lua"
+)
 
 type Value struct {
 	iface  interface{}
@@ -120,6 +125,26 @@ func (v Value) AsLuaFunction() lua.LuaGoFunction {
 
 func ToString(v Value) string {
 	return v.AsString()
+}
+
+func (v Value) ToString() string {
+	if v.iface == nil {
+		return "nil"
+	}
+
+	switch v.iface.(type) {
+	case bool:
+		return strconv.FormatBool(v.AsBool())
+	case int64:
+		return strconv.FormatInt(v.AsInt(), 10)
+	case string:
+		return v.AsString()
+	case *Table:
+		return "<moonlight table>"
+	default:
+		fmt.Println("UNKNOWN in ToString", v.TypeName())
+		return "<unk>"
+	}
 }
 
 func (v Value) TypeName() string {

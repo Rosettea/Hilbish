@@ -41,19 +41,21 @@ func (t *Table) Push() {
 
 func (t *Table) SetField(key string, value Value) {
 	if t.refIdx != -1 {
-		t.setInLua(key, value)
+		t.setInLua(StringValue(key), value)
 		return
 	}
 
 	t.setInGo(key, value)
 }
 
-func (t *Table) setInLua(key string, value Value) {
+func (t *Table) setInLua(key Value, value Value) {
 	t.Push()
 	defer t.mlr.state.Pop(1)
 
 	t.mlr.pushToState(value)
-	t.mlr.state.SetField(-2, key)
+	t.mlr.pushToState(key)
+	t.mlr.state.Insert(-2)
+	t.mlr.state.SetTable(-3)
 }
 
 func (t *Table) setInGo(key string, value Value) {
@@ -66,7 +68,7 @@ func (t *Table) Set(key Value, value Value) {
 
 func (t *Table) syncToLua() {
 	for k, v := range t.nativeFields {
-		t.SetField(k.AsString(), v)
+		t.setInLua(k, v)
 	}
 }
 
