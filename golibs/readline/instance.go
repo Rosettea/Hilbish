@@ -5,6 +5,8 @@ import (
 	"os"
 	"regexp"
 	"sync"
+
+	"github.com/arnodel/golua/lib/packagelib"
 )
 
 // Instance is used to encapsulate the parameter group and run time of any given
@@ -31,13 +33,13 @@ type Instance struct {
 	Multiline       bool   // If set to true, the shell will have a two-line prompt.
 	MultilinePrompt string // If multiline is true, this is the content of the 2nd line.
 
-	mainPrompt      string // If multiline true, the full prompt string / If false, the 1st line of the prompt
-	rightPrompt     string
-	rightPromptLen  int
-	realPrompt      []rune // The prompt that is actually on the same line as the beginning of the input line.
-	defaultPrompt   []rune
-	promptLen       int
-	stillOnRefresh  bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
+	mainPrompt     string // If multiline true, the full prompt string / If false, the 1st line of the prompt
+	rightPrompt    string
+	rightPromptLen int
+	realPrompt     []rune // The prompt that is actually on the same line as the beginning of the input line.
+	defaultPrompt  []rune
+	promptLen      int
+	stillOnRefresh bool // True if some logs have printed asynchronously since last loop. Check refresh prompt funcs
 
 	//
 	// Input Line ---------------------------------------------------------------------------------
@@ -114,9 +116,9 @@ type Instance struct {
 	searchMode   FindMode       // Used for varying hints, and underlying functions called
 	regexSearch  *regexp.Regexp // Holds the current search regex match
 	search       string
-	mainHist     bool           // Which history stdin do we want
-	histInfo     []rune         // We store a piece of hist info, for dual history sources
-	Searcher func(string, []string) []string
+	mainHist     bool   // Which history stdin do we want
+	histInfo     []rune // We store a piece of hist info, for dual history sources
+	Searcher     func(string, []string) []string
 
 	//
 	// History -----------------------------------------------------------------------------------
@@ -200,12 +202,14 @@ type Instance struct {
 	// concurency
 	mutex sync.Mutex
 
-	ViModeCallback func(ViMode)
+	ViModeCallback   func(ViMode)
 	ViActionCallback func(ViAction, []string)
 
 	RawInputCallback func([]rune) // called on all input
 
 	bufferedOut *bufio.Writer
+
+	Loader packagelib.Loader
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
@@ -245,7 +249,9 @@ func NewInstance() *Instance {
 		}
 
 		for _, hay := range haystack {
-			if rl.regexSearch == nil { continue }
+			if rl.regexSearch == nil {
+				continue
+			}
 			if rl.regexSearch.MatchString(hay) {
 				suggs = append(suggs, hay)
 			}
@@ -255,6 +261,11 @@ func NewInstance() *Instance {
 	}
 
 	rl.bufferedOut = bufio.NewWriter(os.Stdout)
+
+	rl.Loader = packagelib.Loader{
+		Name: "readline",
+		Load: rl.luaLoader,
+	}
 
 	// Registers
 	rl.initRegisters()
