@@ -18,6 +18,7 @@ table.insert(package.searchers, function(module)
 	return function() return hilbish.module.load(path) end, path
 end)
 
+require 'nature.editor'
 require 'nature.hilbish'
 require 'nature.processors'
 
@@ -28,7 +29,6 @@ require 'nature.vim'
 require 'nature.runner'
 require 'nature.hummingbird'
 require 'nature.abbr'
-require 'nature.editor'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then
@@ -95,3 +95,81 @@ end)
 bait.catch('command.not-executable', function(cmd)
 	print(string.format('hilbish: %s: not executable', cmd))
 end)
+
+local function runConfig(path)
+	if not hilbish.interactive then return end
+
+	local _, err = pcall(dofile, path)
+	if err then
+		print(err)
+		print 'An error has occured while loading your config!\n'
+		hilbish.prompt '& '
+	else
+		bait.throw 'hilbish.init'
+	end
+end
+
+local _, err = pcall(fs.stat, hilbish.confFile)
+if err and tostring(err):match 'no such file' and hilbish.confFile == fs.join(hilbish.defaultConfDir, 'init.lua') then
+	-- Run config from current directory (assuming this is Hilbish's git)
+	local _, err = pcall(fs.stat, '.hilbishrc.lua')
+	local confpath = '.hilbishrc.lua'
+
+	if err then
+		-- If it wasnt found go to system sample config
+		confpath = fs.join(hilbish.dataDir, confpath)
+		local _, err = pcall(fs.stat, confpath)
+		if err then
+			print('could not find .hilbishrc.lua or ' .. confpath)
+			return
+		end
+	end
+
+	runConfig(confpath)
+else
+	runConfig(hilbish.confFile)
+end
+
+-- TODO: hilbish.exit function, stop jobs and timers.
+local function exit(code)
+	os.exit(code)
+end
+
+while hilbish.interactive do
+	hilbish.running = false
+
+	local ok, res = pcall(function() return hilbish.editor:read() end)
+	if not ok and tostring(res):lower():match 'eof' then
+		bait.throw 'hilbish.exit'
+		exit(0)
+	end
+	if not ok then
+		if tostring(res):lower():match 'ctrl%+c' then
+			print '^C'
+			bait.throw 'hilbish.cancel'
+		else
+			error(res)
+			io.read()
+		end
+		goto continue
+	end
+	--- @type string
+	local input = res
+
+	local priv = false
+	if res:sub(1, 1) == ' ' then
+		priv = true
+	end
+	input = input:gsub('%s+', '')
+
+	if input:len() == 0 then
+		hilbish.running = true
+		bait.throw('command.exit', 0 )
+		goto continue
+	end
+
+	hilbish.running = true
+	hilbish.runner.run(input, priv)
+
+	::continue::
+end

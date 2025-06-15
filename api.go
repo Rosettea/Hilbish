@@ -6,10 +6,13 @@
 // #field user Username of the user
 // #field host Hostname of the machine
 // #field dataDir Directory for Hilbish data files, including the docs and default modules
+// #field defaultConfDir Default directory Hilbish runs its config file from
+// #field confFile File to run as Hilbish config, this is only set with the -C flag
 // #field interactive Is Hilbish in an interactive shell?
 // #field login Is Hilbish the login shell?
 // #field vimMode Current Vim input mode of Hilbish (will be nil if not in Vim input mode)
 // #field exitCode Exit code of the last executed command
+// #field exitCode If Hilbish is currently running any interactive input
 package main
 
 import (
@@ -44,10 +47,8 @@ var exports = map[string]util.LuaExport{
 	"hinter":      {hlhinter, 1, false},
 	"multiprompt": {hlmultiprompt, 1, false},
 	"prependPath": {hlprependPath, 1, false},
-	"prompt":      {hlprompt, 1, true},
 	"inputMode":   {hlinputMode, 1, false},
 	"interval":    {hlinterval, 2, false},
-	"read":        {hlread, 1, false},
 	"timeout":     {hltimeout, 2, false},
 	"which":       {hlwhich, 1, false},
 }
@@ -79,6 +80,8 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	util.SetField(rtm, mod, "host", rt.StringValue(host))
 	util.SetField(rtm, mod, "home", rt.StringValue(curuser.HomeDir))
 	util.SetField(rtm, mod, "dataDir", rt.StringValue(dataDir))
+	util.SetField(rtm, mod, "defaultConfDir", rt.StringValue(defaultConfDir))
+	util.SetField(rtm, mod, "confFile", rt.StringValue(confPath))
 	util.SetField(rtm, mod, "interactive", rt.BoolValue(interactive))
 	util.SetField(rtm, mod, "login", rt.BoolValue(login))
 	util.SetField(rtm, mod, "vimMode", rt.NilValue)
@@ -192,88 +195,6 @@ func hlcwd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	cwd, _ := os.Getwd()
 
 	return c.PushingNext1(t.Runtime, rt.StringValue(cwd)), nil
-}
-
-// read(prompt) -> input (string)
-// Read input from the user, using Hilbish's line editor/input reader.
-// This is a separate instance from the one Hilbish actually uses.
-// Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
-// #param prompt? string Text to print before input, can be empty.
-// #returns string|nil
-func hlread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	luaprompt := c.Arg(0)
-	if typ := luaprompt.Type(); typ != rt.StringType && typ != rt.NilType {
-		return nil, errors.New("expected #1 to be a string")
-	}
-	prompt, ok := luaprompt.TryString()
-	if !ok {
-		// if we are here and `luaprompt` is not a string, it's nil
-		// substitute with an empty string
-		prompt = ""
-	}
-
-	lualr := &lineReader{
-		rl: readline.NewInstance(),
-	}
-	lualr.SetPrompt(prompt)
-
-	input, err := lualr.Read()
-	if err != nil {
-		return c.Next(), nil
-	}
-
-	return c.PushingNext1(t.Runtime, rt.StringValue(input)), nil
-}
-
-/*
-prompt(str, typ)
-Changes the shell prompt to the provided string.
-There are a few verbs that can be used in the prompt text.
-These will be formatted and replaced with the appropriate values.
-`%d` - Current working directory
-`%u` - Name of current user
-`%h` - Hostname of device
-#param str string
-#param typ? string Type of prompt, being left or right. Left by default.
-#example
--- the default hilbish prompt without color
-hilbish.prompt '%u %d ∆'
--- or something of old:
-hilbish.prompt '%u@%h :%d $'
--- prompt: user@hostname: ~/directory $
-#example
-*/
-func hlprompt(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	err := c.Check1Arg()
-	if err != nil {
-		return nil, err
-	}
-	p, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-	typ := "left"
-	// optional 2nd arg
-	if len(c.Etc()) != 0 {
-		ltyp := c.Etc()[0]
-		var ok bool
-		typ, ok = ltyp.TryString()
-		if !ok {
-			return nil, errors.New("bad argument to run (expected string, got " + ltyp.TypeName() + ")")
-		}
-	}
-
-	switch typ {
-	case "left":
-		prompt = p
-		lr.SetPrompt(fmtPrompt(prompt))
-	case "right":
-		lr.SetRightPrompt(fmtPrompt(p))
-	default:
-		return nil, errors.New("expected prompt type to be right or left, got " + typ)
-	}
-
-	return c.Next(), nil
 }
 
 // multiprompt(str)

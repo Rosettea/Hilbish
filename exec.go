@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -9,10 +8,6 @@ import (
 	rt "github.com/arnodel/golua/runtime"
 	//"github.com/yuin/gopher-lua/parse"
 )
-
-var errNotExec = errors.New("not executable")
-var errNotFound = errors.New("not found")
-var runnerMode rt.Value = rt.NilValue
 
 func runInput(input string, priv bool) {
 	running = true

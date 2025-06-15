@@ -2,40 +2,36 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"syscall"
 
-	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
+	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 	"github.com/pborman/getopt"
-	"github.com/maxlandon/readline"
 	"golang.org/x/term"
 )
 
 var (
-	l *rt.Runtime
+	l  *rt.Runtime
 	lr *lineReader
 
 	luaCompletions = map[string]*rt.Closure{}
 
-	confDir string
+	confDir     string
 	userDataDir string
-	curuser *user.User
+	curuser     *user.User
 
-	hooks *bait.Bait
-	cmds *commander.Commander
-	defaultConfPath string
+	hooks           *bait.Bait
+	cmds            *commander.Commander
+	confPath        string
 	defaultHistPath string
 )
 
@@ -62,7 +58,7 @@ func main() {
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir + "/.local/share")
+		userDataDir = getenv("XDG_DATA_HOME", curuser.HomeDir+"/.local/share")
 	default:
 		// this is fine on windows, dont know about others
 		userDataDir = confDir
@@ -75,7 +71,7 @@ func main() {
 		// else do ~ substitution
 		defaultConfDir = filepath.Join(util.ExpandHome(defaultConfDir), "hilbish")
 	}
-	defaultConfPath = filepath.Join(defaultConfDir, "init.lua")
+	defaultConfPath := filepath.Join(defaultConfDir, "init.lua")
 	if defaultHistDir == "" {
 		defaultHistDir = filepath.Join(userDataDir, "hilbish")
 	} else {
@@ -95,6 +91,7 @@ func main() {
 	loginshflag := getopt.Lookup('l').Seen()
 	interactiveflag := getopt.Lookup('i').Seen()
 	noexecflag := getopt.Lookup('n').Seen()
+	confPath = *configflag
 
 	if *helpflag {
 		getopt.PrintUsage(os.Stdout)
@@ -105,7 +102,7 @@ func main() {
 		interactive = true
 	}
 
-	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
+	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode()&os.ModeCharDevice) == 0 || !term.IsTerminal(int(os.Stdin.Fd())) {
 		interactive = false
 	}
 
@@ -143,29 +140,6 @@ func main() {
 
 	go handleSignals()
 
-	// If user's config doesn't exixt,
-	if _, err := os.Stat(defaultConfPath); os.IsNotExist(err) && *configflag == defaultConfPath {
-		// Read default from current directory
-		// (this is assuming the current dir is Hilbish's git)
-		_, err := os.ReadFile(".hilbishrc.lua")
-		confpath := ".hilbishrc.lua"
-		if err != nil {
-			// If it wasnt found, go to the real sample conf
-			sampleConfigPath := filepath.Join(dataDir, ".hilbishrc.lua")
-			_, err = os.ReadFile(sampleConfigPath)
-			confpath = sampleConfigPath
-			if err != nil {
-				fmt.Println("could not find .hilbishrc.lua or", sampleConfigPath)
-				return
-			}
-		}
-
-		runConfig(confpath)
-	} else {
-		runConfig(*configflag)
-	}
-	hooks.Emit("hilbish.init")
-
 	if fileInfo, _ := os.Stdin.Stat(); (fileInfo.Mode() & os.ModeCharDevice) == 0 {
 		scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 		for scanner.Scan() {
@@ -180,12 +154,6 @@ func main() {
 	}
 
 	if getopt.NArgs() > 0 {
-		luaArgs := rt.NewTable()
-		for i, arg := range getopt.Args() {
-			luaArgs.Set(rt.IntValue(int64(i)), rt.StringValue(arg))
-		}
-
-		l.GlobalEnv().Set(rt.StringValue("args"), rt.TableValue(luaArgs))
 		err := util.DoFile(l, getopt.Arg(0))
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -195,71 +163,73 @@ func main() {
 	}
 
 	initialized = true
-input:
-	for interactive {
-		running = false
+	/*
+		input:
+			for interactive {
+				running = false
 
-		input, err := lr.Read()
+				input, err := lr.Read()
 
-		if err == io.EOF {
-			// Exit if user presses ^D (ctrl + d)
-			hooks.Emit("hilbish.exit")
-			break
-		}
-		if err != nil {
-			if err == readline.CtrlC {
-				fmt.Println("^C")
-				hooks.Emit("hilbish.cancel")
-			} else {
-				// If we get a completely random error, print
-				fmt.Fprintln(os.Stderr, err)
-				if errors.Is(err, syscall.ENOTTY) {
-					// what are we even doing here?
-					panic("not a tty")
-				}
-				<-make(chan struct{})
-			}
-			continue
-		}
-		var priv bool
-		if strings.HasPrefix(input, " ") {
-			priv = true
-		}
-
-		input = strings.TrimSpace(input)
-		if len(input) == 0 {
-			running = true
-			hooks.Emit("command.exit", 0)
-			continue
-		}
-
-		if strings.HasSuffix(input, "\\") {
-			print("\n")
-			for {
-				input, err = continuePrompt(strings.TrimSuffix(input, "\\") + "\n", false)
-				if err != nil {
-					running = true
-					lr.SetPrompt(fmtPrompt(prompt))
-					goto input // continue inside nested loop
-				}
-				if !strings.HasSuffix(input, "\\") {
+				if err == io.EOF {
+					// Exit if user presses ^D (ctrl + d)
+					hooks.Emit("hilbish.exit")
 					break
 				}
+				if err != nil {
+					if err == readline.CtrlC {
+						fmt.Println("^C")
+						hooks.Emit("hilbish.cancel")
+					} else {
+						// If we get a completely random error, print
+						fmt.Fprintln(os.Stderr, err)
+						if errors.Is(err, syscall.ENOTTY) {
+							// what are we even doing here?
+							panic("not a tty")
+						}
+						<-make(chan struct{})
+					}
+					continue
+				}
+				var priv bool
+				if strings.HasPrefix(input, " ") {
+					priv = true
+				}
+
+				input = strings.TrimSpace(input)
+				if len(input) == 0 {
+					running = true
+					hooks.Emit("command.exit", 0)
+					continue
+				}
+
+				if strings.HasSuffix(input, "\\") {
+					print("\n")
+					for {
+						input, err = continuePrompt(strings.TrimSuffix(input, "\\")+"\n", false)
+						if err != nil {
+							running = true
+							lr.SetPrompt(fmtPrompt(prompt))
+							goto input // continue inside nested loop
+						}
+						if !strings.HasSuffix(input, "\\") {
+							break
+						}
+					}
+				}
+
+				runInput(input, priv)
+
+				termwidth, _, err := term.GetSize(0)
+				if err != nil {
+					continue
+				}
+				fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth-1) + "\r")
 			}
-		}
-
-		runInput(input, priv)
-
-		termwidth, _, err := term.GetSize(0)
-		if err != nil {
-			continue
-		}
-		fmt.Printf("\u001b[7m∆\u001b[0m" + strings.Repeat(" ", termwidth - 1) + "\r")
-	}
-
+	*/
 	exit(0)
 }
 
+/*
 func continuePrompt(prev string, newline bool) (string, error) {
 	hooks.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
@@ -279,6 +249,7 @@ func continuePrompt(prev string, newline bool) (string, error) {
 
 	return prev + cont, nil
 }
+*/
 
 // This semi cursed function formats our prompt (obviously)
 func fmtPrompt(prompt string) string {
@@ -300,7 +271,7 @@ func fmtPrompt(prompt string) string {
 	}
 
 	for i, v := range args {
-		if i % 2 == 0 {
+		if i%2 == 0 {
 			args[i] = "%" + v
 		}
 	}
@@ -354,5 +325,5 @@ func getVersion() string {
 }
 
 func cut(slice []string, idx int) []string {
-	return append(slice[:idx], slice[idx + 1:]...)
+	return append(slice[:idx], slice[idx+1:]...)
 }
