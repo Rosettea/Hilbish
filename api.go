@@ -38,7 +38,6 @@ import (
 
 var exports = map[string]util.LuaExport{
 	"alias":       {hlalias, 2, false},
-	"appendPath":  {hlappendPath, 1, false},
 	"complete":    {hlcomplete, 2, false},
 	"cwd":         {hlcwd, 0, false},
 	"exec":        {hlexec, 1, false},
@@ -46,7 +45,6 @@ var exports = map[string]util.LuaExport{
 	"highlighter": {hlhighlighter, 1, false},
 	"hinter":      {hlhinter, 1, false},
 	"multiprompt": {hlmultiprompt, 1, false},
-	"prependPath": {hlprependPath, 1, false},
 	"inputMode":   {hlinputMode, 1, false},
 	"interval":    {hlinterval, 2, false},
 	"timeout":     {hltimeout, 2, false},
@@ -261,53 +259,6 @@ func hlalias(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-// appendPath(dir)
-// Appends the provided dir to the command path (`$PATH`)
-// #param dir string|table Directory (or directories) to append to path
-/*
-#example
-hilbish.appendPath '~/go/bin'
--- Will add ~/go/bin to the command path.
-
--- Or do multiple:
-hilbish.appendPath {
-	'~/go/bin',
-	'~/.local/bin'
-}
-#example
-*/
-func hlappendPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	arg := c.Arg(0)
-
-	// check if dir is a table or a string
-	if arg.Type() == rt.TableType {
-		util.ForEach(arg.AsTable(), func(k rt.Value, v rt.Value) {
-			if v.Type() == rt.StringType {
-				appendPath(v.AsString())
-			}
-		})
-	} else if arg.Type() == rt.StringType {
-		appendPath(arg.AsString())
-	} else {
-		return nil, errors.New("bad argument to appendPath (expected string or table, got " + arg.TypeName() + ")")
-	}
-
-	return c.Next(), nil
-}
-
-func appendPath(dir string) {
-	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
-	pathenv := os.Getenv("PATH")
-
-	// if dir isnt already in $PATH, add it
-	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", pathenv+string(os.PathListSeparator)+dir)
-	}
-}
-
 // exec(cmd)
 // Replaces the currently running Hilbish instance with the supplied command.
 // This can be used to do an in-place restart.
@@ -469,28 +420,6 @@ func hlcomplete(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 	luaCompletions[scope] = cb
-
-	return c.Next(), nil
-}
-
-// prependPath(dir)
-// Prepends `dir` to $PATH.
-// #param dir string
-func hlprependPath(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
-	}
-	dir, err := c.StringArg(0)
-	if err != nil {
-		return nil, err
-	}
-	dir = strings.Replace(dir, "~", curuser.HomeDir, 1)
-	pathenv := os.Getenv("PATH")
-
-	// if dir isnt already in $PATH, add in
-	if !strings.Contains(pathenv, dir) {
-		os.Setenv("PATH", dir+string(os.PathListSeparator)+pathenv)
-	}
 
 	return c.Next(), nil
 }

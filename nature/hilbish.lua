@@ -18,6 +18,14 @@ local function abbrevHome(path)
 	return path
 end
 
+local function expandHome(path)
+	if path:sub(1, 1) == '~' then
+		return fs.join(hilbish.home, path:sub(2))
+	end
+
+	return path
+end
+
 local function fmtPrompt(p)
 	return p:gsub('%%(%w)', function(c)
 		if c == 'd' then
@@ -68,6 +76,70 @@ function hilbish.prompt(p, typ)
 		end
 	else
 		error('expected prompt type to be right or left, got ' .. tostring(typ))
+	end
+end
+
+local pathSep = ':'
+if hilbish.os.family == 'windows' then
+	pathSep = ';'
+end
+
+local function appendPath(path)
+	os.setenv('PATH', os.getenv 'PATH' .. pathSep .. expandHome(path))
+end
+
+--- appendPath(path)
+--- Appends the provided dir to the command path (`$PATH`)
+--- @param path string|table Directory (or directories) to append to path
+--- #example
+--- hilbish.appendPath '~/go/bin'
+--- -- Will add ~/go/bin to the command path.
+--- 
+--- -- Or do multiple:
+--- hilbish.appendPath {
+--- 	'~/go/bin',
+--- 	'~/.local/bin'
+--- }
+--- #example
+function hilbish.appendPath(path)
+	if type(path) == 'table' then
+		for _, p in ipairs(path) do
+			appendPath(p)
+		end
+	elseif type(path) == 'string' then
+		appendPath(path)
+	else
+		error('bad argument to appendPath (expected string or table, got ' .. type(path) .. ')')
+	end
+end
+
+local function prependPath(path)
+	print('prepending', path, expandHome(path))
+	os.setenv('PATH', expandHome(path) .. pathSep .. os.getenv 'PATH')
+end
+
+--- prependPath(path)
+--- Prepends the provided dir to the command path (`$PATH`)
+--- @param path string|table Directory (or directories) to append to path
+--- #example
+--- hilbish.prependPath '~/go/bin'
+--- -- Will add ~/go/bin to the command path.
+--- 
+--- -- Or do multiple:
+--- hilbish.prependPath {
+--- 	'~/go/bin',
+--- 	'~/.local/bin'
+--- }
+--- #example
+function hilbish.prependPath(path)
+	if type(path) == 'table' then
+		for _, p in ipairs(path) do
+			prependPath(p)
+		end
+	elseif type(path) == 'string' then
+		prependPath(path)
+	else
+		error('bad argument to prependPath (expected string or table, got ' .. type(path) .. ')')
 	end
 end
 
