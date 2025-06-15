@@ -80,6 +80,7 @@ func loadLibs(r *rt.Runtime) {
 
 	cmds = commander.New(r)
 	lib.LoadLibs(r, cmds.Loader)
+	lib.LoadLibs(l, lr.rl.Loader)
 }
 
 func yarnloadLibs(r *rt.Runtime) {
@@ -89,6 +90,13 @@ func yarnloadLibs(r *rt.Runtime) {
 	lib.LoadAll(r)
 
 	lib.LoadLibs(r, hilbishLoader)
+	lib.LoadLibs(r, hooks.Loader)
+	lib.LoadLibs(r, fs.Loader)
+	lib.LoadLibs(r, terminal.Loader)
+	lib.LoadLibs(r, snail.Loader)
+	lib.LoadLibs(r, cmds.Loader)
+	lib.LoadLibs(l, lr.rl.Loader)
+
 }
 
 func runConfig(confpath string) {

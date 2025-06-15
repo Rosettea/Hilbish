@@ -121,9 +121,6 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	timersModule := timers.loader(rtm)
 	mod.Set(rt.StringValue("timers"), rt.TableValue(timersModule))
 
-	editorModule := editorLoader(rtm)
-	mod.Set(rt.StringValue("editor"), rt.TableValue(editorModule))
-
 	versionModule := rt.NewTable()
 	util.SetField(rtm, versionModule, "branch", rt.StringValue(gitBranch))
 	util.SetField(rtm, versionModule, "full", rt.StringValue(getVersion()))

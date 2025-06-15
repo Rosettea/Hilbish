@@ -28,6 +28,7 @@ require 'nature.vim'
 require 'nature.runner'
 require 'nature.hummingbird'
 require 'nature.abbr'
+require 'nature.editor'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then

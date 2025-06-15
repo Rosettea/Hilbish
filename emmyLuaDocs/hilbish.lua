@@ -7,24 +7,6 @@ local hilbish = {}
 --- @param cmd string
 function hilbish.aliases.add(alias, cmd) end
 
---- Deletes characters in the line by the given amount.
-function hilbish.editor.deleteByAmount(amount) end
-
---- Returns the current input line.
-function hilbish.editor.getLine() end
-
---- Returns the text that is at the register.
-function hilbish.editor.getVimRegister(register) end
-
---- Inserts text into the Hilbish command line.
-function hilbish.editor.insert(text) end
-
---- Reads a keystroke from the user. This is in a format of something like Ctrl-L.
-function hilbish.editor.getChar() end
-
---- Sets the vim register at `register` to hold the passed text.
-function hilbish.editor.setVimRegister(register, text) end
-
 --- Return binaries/executables based on the provided parameters.
 --- This function is meant to be used as a helper in a command completion handler.
 --- 
