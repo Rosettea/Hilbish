@@ -5,6 +5,6 @@ package readline
 import "errors"
 
 // StartEditorWithBuffer - Not implemented on Windows platforms.
-func (rl *Instance) StartEditorWithBuffer(multiline []rune, filename string) ([]rune, error) {
+func (rl *Readline) StartEditorWithBuffer(multiline []rune, filename string) ([]rune, error) {
 	return rl.line, errors.New("Not currently supported on Windows")
 }

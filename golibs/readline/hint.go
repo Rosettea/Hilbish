@@ -5,7 +5,7 @@ import "regexp"
 // SetHintText - a nasty function to force writing a new hint text. It does not update helpers, it just renders
 // them, so the hint will survive until the helpers (thus including the hint) will be updated/recomputed.
 /*
-func (rl *Instance) SetHintText(s string) {
+func (rl *Readline) SetHintText(s string) {
 	rl.hintText = []rune(s)
 	rl.renderHelpers()
 }
