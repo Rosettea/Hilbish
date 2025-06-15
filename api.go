@@ -62,7 +62,9 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod := rt.NewTable()
 
 	util.SetExports(rtm, mod, exports)
-	hshMod = mod
+	if hshMod == nil {
+		hshMod = mod
+	}
 
 	host, _ := os.Hostname()
 	username := curuser.Username
@@ -129,7 +131,7 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	pluginModule := moduleLoader(rtm)
 	mod.Set(rt.StringValue("module"), rt.TableValue(pluginModule))
 
-	sinkModule := util.SinkLoader(l)
+	sinkModule := util.SinkLoader(rtm)
 	mod.Set(rt.StringValue("sink"), rt.TableValue(sinkModule))
 
 	return rt.TableValue(mod), nil

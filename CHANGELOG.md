@@ -10,6 +10,8 @@ and the dot operator will cause errors in 3.0.
 Example: `hilbish.editor.getLine()` should be changed to `hilbish.editor:getLine()`
 before 3.0
 - Added the `hilbish.editor:read` and `hilbish.editor:log(text)` functions.
+- `yarn` threading library (See the docs)
+
 ### Changed
 - Documentation for Lunacolors has been improved, with more information added.
 - Values returned by bait hooks will be passed to the `throw` caller
