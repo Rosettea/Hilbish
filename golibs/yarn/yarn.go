@@ -1,3 +1,17 @@
+// multi threading library
+// Yarn is a simple multithreading library. Threads are individual Lua states,
+// so they do NOT share the same environment as the code that runs the thread.
+/*
+Example:
+
+```lua
+local yarn = require 'yarn'
+
+-- calling t will run the yarn thread.
+local t = yarn.thread(print)
+t 'printing from another lua state!'
+```
+*/
 package yarn
 
 import (
@@ -17,6 +31,7 @@ type Yarn struct {
 	Loader      packagelib.Loader
 }
 
+// #type
 type Thread struct {
 	rtm *rt.Runtime
 	f   rt.Callable
@@ -43,7 +58,7 @@ func (y *Yarn) loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 
 	exports := map[string]util.LuaExport{
 		"thread": {
-			Function: yarncreate,
+			Function: yarnthread,
 			ArgNum:   1,
 			Variadic: false,
 		},
@@ -59,9 +74,10 @@ func (y *Yarn) init(th *Thread) {
 	y.initializer(th.rtm)
 }
 
-// create(fun)
+// thread(fun) -> @Thread
 // Creates a new, fresh Yarn thread.
-func yarncreate(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// `fun` is the function that will run in the thread.
+func yarnthread(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
