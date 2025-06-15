@@ -8,20 +8,20 @@ import (
 
 // SetPrompt will define the readline prompt string.
 // It also calculates the runes in the string as well as any non-printable escape codes.
-func (rl *Instance) SetPrompt(s string) {
+func (rl *Readline) SetPrompt(s string) {
 	rl.mainPrompt = s
 	rl.computePrompt()
 }
 
 // SetRightPrompt sets the right prompt.
-func (rl *Instance) SetRightPrompt(s string) {
+func (rl *Readline) SetRightPrompt(s string) {
 	rl.rightPrompt = s + " "
 	rl.computePrompt()
 }
 
 // RefreshPromptLog - A simple function to print a string message (a log, or more broadly,
 // an asynchronous event) without bothering the user, and by "pushing" the prompt below the message.
-func (rl *Instance) RefreshPromptLog(log string) (err error) {
+func (rl *Readline) RefreshPromptLog(log string) (err error) {
 
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
@@ -73,7 +73,7 @@ func (rl *Instance) RefreshPromptLog(log string) (err error) {
 }
 
 // RefreshPromptInPlace - Refreshes the prompt in the very same place he is.
-func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
+func (rl *Readline) RefreshPromptInPlace(prompt string) (err error) {
 	// We adjust cursor movement, depending on which mode we're currently in.
 	// Prompt data intependent
 	if !rl.modeTabCompletion {
@@ -117,7 +117,7 @@ func (rl *Instance) RefreshPromptInPlace(prompt string) (err error) {
 // @prompt      => If not nil (""), will use this prompt instead of the currently set prompt.
 // @offset      => Used to set the number of lines to go upward, before reprinting. Set to 0 if not used.
 // @clearLine   => If true, will clean the current input line on the next refresh.
-func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine bool) (err error) {
+func (rl *Readline) RefreshPromptCustom(prompt string, offset int, clearLine bool) (err error) {
 
 	// We adjust cursor movement, depending on which mode we're currently in.
 	if !rl.modeTabCompletion {
@@ -166,7 +166,7 @@ func (rl *Instance) RefreshPromptCustom(prompt string, offset int, clearLine boo
 
 // computePrompt - At any moment, returns an (1st or 2nd line) actualized prompt,
 // considering all input mode parameters and prompt string values.
-func (rl *Instance) computePrompt() (prompt []rune) {
+func (rl *Readline) computePrompt() (prompt []rune) {
 	if rl.Multiline {
 		if rl.MultilinePrompt != "" {
 			rl.realPrompt = []rune(rl.MultilinePrompt)
@@ -190,11 +190,11 @@ func (rl *Instance) computePrompt() (prompt []rune) {
 	// Strip color escapes
 	rl.promptLen = getRealLength(string(rl.realPrompt))
 	rl.rightPromptLen = getRealLength(string(rl.rightPrompt))
-	
+
 	return
 }
 
-func (rl *Instance) colorizeVimPrompt(p []rune) (cp []rune) {
+func (rl *Readline) colorizeVimPrompt(p []rune) (cp []rune) {
 	if rl.VimModeColorize {
 		return []rune(fmt.Sprintf("%s%s%s", BOLD, string(p), RESET))
 	}
@@ -211,8 +211,8 @@ func getRealLength(s string) (l int) {
 	return getWidth([]rune(stripped))
 }
 
-func (rl *Instance) echoRightPrompt() {
-	if rl.fullX < GetTermWidth() - rl.rightPromptLen - 1 {
+func (rl *Readline) echoRightPrompt() {
+	if rl.fullX < GetTermWidth()-rl.rightPromptLen-1 {
 		moveCursorForwards(GetTermWidth())
 		moveCursorBackwards(rl.rightPromptLen)
 		print(rl.rightPrompt)

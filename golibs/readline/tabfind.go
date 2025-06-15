@@ -12,7 +12,7 @@ const (
 	RegisterFind
 )
 
-func (rl *Instance) backspaceTabFind() {
+func (rl *Readline) backspaceTabFind() {
 	if len(rl.tfLine) > 0 {
 		rl.tfLine = rl.tfLine[:len(rl.tfLine)-1]
 	}
@@ -21,7 +21,7 @@ func (rl *Instance) backspaceTabFind() {
 
 // Filter and refresh (print) a list of completions. The caller should have reset
 // the virtual completion system before, so that should not clash with this.
-func (rl *Instance) updateTabFind(r []rune) {
+func (rl *Readline) updateTabFind(r []rune) {
 
 	rl.tfLine = append(rl.tfLine, r...)
 
@@ -34,7 +34,7 @@ func (rl *Instance) updateTabFind(r []rune) {
 	rl.renderHelpers()
 }
 
-func (rl *Instance) resetTabFind() {
+func (rl *Readline) resetTabFind() {
 	rl.modeTabFind = false
 	// rl.modeAutoFind = false // Added, because otherwise it gets stuck on search completions
 

@@ -49,7 +49,7 @@ type CompletionGroup struct {
 }
 
 // init - The completion group computes and sets all its values, and is then ready to work.
-func (g *CompletionGroup) init(rl *Instance) {
+func (g *CompletionGroup) init(rl *Readline) {
 
 	// Details common to all displays
 	g.checkCycle(rl) // Based on the number of groups given to the shell, allows cycling or not
@@ -70,7 +70,7 @@ func (g *CompletionGroup) init(rl *Instance) {
 // updateTabFind - When searching through all completion groups (whether it be command history or not),
 // we ask each of them to filter its own items and return the results to the shell for aggregating them.
 // The rx parameter is passed, as the shell already checked that the search pattern is valid.
-func (g *CompletionGroup) updateTabFind(rl *Instance) {
+func (g *CompletionGroup) updateTabFind(rl *Readline) {
 
 	suggs := rl.Searcher(rl.search, g.Suggestions)
 	// We perform filter right here, so we create a new completion group, and populate it with our results.
@@ -97,7 +97,7 @@ func (g *CompletionGroup) updateTabFind(rl *Instance) {
 }
 
 // checkCycle - Based on the number of groups given to the shell, allows cycling or not
-func (g *CompletionGroup) checkCycle(rl *Instance) {
+func (g *CompletionGroup) checkCycle(rl *Readline) {
 	if len(rl.tcGroups) == 1 {
 		g.allowCycle = true
 	}
@@ -108,7 +108,7 @@ func (g *CompletionGroup) checkCycle(rl *Instance) {
 }
 
 // checkMaxLength - Based on the number of groups given to the shell, check/set MaxLength defaults
-func (g *CompletionGroup) checkMaxLength(rl *Instance) {
+func (g *CompletionGroup) checkMaxLength(rl *Readline) {
 
 	// This means the user forgot to set it
 	if g.MaxLength == 0 {
@@ -147,7 +147,7 @@ func checkNilItems(groups []*CompletionGroup) (checked []*CompletionGroup) {
 
 // writeCompletion - This function produces a formatted string containing all appropriate items
 // and according to display settings. This string is then appended to the main completion string.
-func (g *CompletionGroup) writeCompletion(rl *Instance) (comp string) {
+func (g *CompletionGroup) writeCompletion(rl *Readline) (comp string) {
 
 	// Avoids empty groups in suggestions
 	if len(g.Suggestions) == 0 {
@@ -169,7 +169,7 @@ func (g *CompletionGroup) writeCompletion(rl *Instance) (comp string) {
 
 // getCurrentCell - The completion groups computes the current cell value,
 // depending on its display type and its different parameters
-func (g *CompletionGroup) getCurrentCell(rl *Instance) string {
+func (g *CompletionGroup) getCurrentCell(rl *Readline) string {
 
 	switch g.DisplayType {
 	case TabDisplayGrid:

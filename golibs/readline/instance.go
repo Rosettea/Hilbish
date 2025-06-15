@@ -12,7 +12,10 @@ import (
 // Instance is used to encapsulate the parameter group and run time of any given
 // readline instance so that you can reuse the readline API for multiple entry
 // captures without having to repeatedly unload configuration.
-type Instance struct {
+
+// #type
+// blah blah
+type Readline struct {
 
 	//
 	// Input Modes  -------------------------------------------------------------------------------
@@ -213,8 +216,8 @@ type Instance struct {
 }
 
 // NewInstance is used to create a readline instance and initialise it with sane defaults.
-func NewInstance() *Instance {
-	rl := new(Instance)
+func NewInstance() *Readline {
+	rl := new(Readline)
 
 	// Prompt
 	rl.Multiline = false

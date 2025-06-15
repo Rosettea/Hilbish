@@ -13,7 +13,7 @@ var rxMultiline = regexp.MustCompile(`[\r\n]+`)
 
 // Readline displays the readline prompt.
 // It will return a string (user entered data) or an error.
-func (rl *Instance) Readline() (string, error) {
+func (rl *Readline) Readline() (string, error) {
 	fd := int(os.Stdin.Fd())
 	state, err := MakeRaw(fd)
 	if err != nil {
@@ -183,7 +183,7 @@ func (rl *Instance) Readline() (string, error) {
 			if rl.modeTabFind {
 				rl.backspaceTabFind()
 			} else {
-				if (rl.pos < len(rl.line)) {
+				if rl.pos < len(rl.line) {
 					rl.deleteBackspace(true)
 				}
 			}
@@ -545,7 +545,7 @@ func (rl *Instance) Readline() (string, error) {
 // editorInput is an unexported function used to determine what mode of text
 // entry readline is currently configured for and then update the line entries
 // accordingly.
-func (rl *Instance) editorInput(r []rune) {
+func (rl *Readline) editorInput(r []rune) {
 	if len(r) == 0 {
 		return
 	}
@@ -595,7 +595,7 @@ func (rl *Instance) editorInput(r []rune) {
 
 // viEscape - In case th user is using Vim input, and the escape sequence has not
 // been handled by other cases, we dispatch it to Vim and handle a few cases here.
-func (rl *Instance) viEscape(r []rune) {
+func (rl *Readline) viEscape(r []rune) {
 
 	// Sometimes the escape sequence is interleaved with another one,
 	// but key strokes might be in the wrong order, so we double check
@@ -611,7 +611,7 @@ func (rl *Instance) viEscape(r []rune) {
 	}
 }
 
-func (rl *Instance) escapeSeq(r []rune) {
+func (rl *Readline) escapeSeq(r []rune) {
 	switch string(r) {
 	// Vim escape sequences & dispatching --------------------------------------------------------
 	case string(charEscape):
@@ -755,11 +755,11 @@ func (rl *Instance) escapeSeq(r []rune) {
 		rl.updateHelpers()
 		return
 
-	case seqDelete,seqDelete2:
+	case seqDelete, seqDelete2:
 		if rl.modeTabFind {
 			rl.backspaceTabFind()
 		} else {
-			if (rl.pos < len(rl.line)) {
+			if rl.pos < len(rl.line) {
 				rl.deleteBackspace(true)
 			}
 		}
@@ -890,7 +890,7 @@ func (rl *Instance) escapeSeq(r []rune) {
 	}
 }
 
-func (rl *Instance) carridgeReturn() {
+func (rl *Readline) carridgeReturn() {
 	rl.moveCursorByAdjust(len(rl.line))
 	rl.updateHelpers()
 	rl.clearHelpers()
@@ -924,7 +924,7 @@ func isMultiline(r []rune) bool {
 	return false
 }
 
-func (rl *Instance) allowMultiline(data []byte) bool {
+func (rl *Readline) allowMultiline(data []byte) bool {
 	rl.clearHelpers()
 	printf("\r\nWARNING: %d bytes of multiline data was dumped into the shell!", len(data))
 	for {

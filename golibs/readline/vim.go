@@ -34,6 +34,7 @@ var (
 )
 
 type ViAction int
+
 const (
 	VimActionYank = iota
 	VimActionPaste
@@ -52,7 +53,7 @@ var (
 // vi - Apply a key to a Vi action. Note that as in the rest of the code, all cursor movements
 // have been moved away, and only the rl.pos is adjusted: when echoing the input line, the shell
 // will compute the new cursor pos accordingly.
-func (rl *Instance) vi(r rune) {
+func (rl *Readline) vi(r rune) {
 	activeRegister := string(rl.registers.currentRegister)
 
 	// Check if we are in register mode. If yes, and for some characters,
@@ -384,7 +385,7 @@ func (rl *Instance) vi(r rune) {
 	}
 }
 
-func (rl *Instance) getViIterations() int {
+func (rl *Readline) getViIterations() int {
 	i, _ := strconv.Atoi(rl.viIteration)
 	if i < 1 {
 		i = 1
@@ -393,7 +394,7 @@ func (rl *Instance) getViIterations() int {
 	return i
 }
 
-func (rl *Instance) refreshVimStatus() {
+func (rl *Readline) refreshVimStatus() {
 	rl.ViModeCallback(rl.modeViMode)
 	rl.computePrompt()
 	rl.updateHelpers()
@@ -401,7 +402,7 @@ func (rl *Instance) refreshVimStatus() {
 
 // viInfoMessage - lmorg's way of showing Vim status is to overwrite the info.
 // Currently not used, as there is a possibility to show the current Vim mode in the prompt.
-func (rl *Instance) viInfoMessage() {
+func (rl *Readline) viInfoMessage() {
 	switch rl.modeViMode {
 	case VimKeys:
 		rl.infoText = []rune("-- VIM KEYS -- (press `i` to return to normal editing mode)")
@@ -421,7 +422,7 @@ func (rl *Instance) viInfoMessage() {
 	rl.renderHelpers()
 }
 
-func (rl *Instance) viJumpB(tokeniser tokeniser) (adjust int) {
+func (rl *Readline) viJumpB(tokeniser tokeniser) (adjust int) {
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	switch {
 	case len(split) == 0:
@@ -436,7 +437,7 @@ func (rl *Instance) viJumpB(tokeniser tokeniser) (adjust int) {
 	return adjust * -1
 }
 
-func (rl *Instance) viJumpE(tokeniser tokeniser) (adjust int) {
+func (rl *Readline) viJumpE(tokeniser tokeniser) (adjust int) {
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	if len(split) == 0 {
 		return
@@ -459,7 +460,7 @@ func (rl *Instance) viJumpE(tokeniser tokeniser) (adjust int) {
 	return
 }
 
-func (rl *Instance) viJumpW(tokeniser tokeniser) (adjust int) {
+func (rl *Readline) viJumpW(tokeniser tokeniser) (adjust int) {
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	switch {
 	case len(split) == 0:
@@ -472,7 +473,7 @@ func (rl *Instance) viJumpW(tokeniser tokeniser) (adjust int) {
 	return
 }
 
-func (rl *Instance) viJumpPreviousBrace() (adjust int) {
+func (rl *Readline) viJumpPreviousBrace() (adjust int) {
 	if rl.pos == 0 {
 		return 0
 	}
@@ -486,7 +487,7 @@ func (rl *Instance) viJumpPreviousBrace() (adjust int) {
 	return 0
 }
 
-func (rl *Instance) viJumpNextBrace() (adjust int) {
+func (rl *Readline) viJumpNextBrace() (adjust int) {
 	if rl.pos >= len(rl.line)-1 {
 		return 0
 	}
@@ -500,7 +501,7 @@ func (rl *Instance) viJumpNextBrace() (adjust int) {
 	return 0
 }
 
-func (rl *Instance) viJumpBracket() (adjust int) {
+func (rl *Readline) viJumpBracket() (adjust int) {
 	split, index, pos := tokeniseBrackets(rl.line, rl.pos)
 	switch {
 	case len(split) == 0:

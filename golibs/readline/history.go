@@ -29,24 +29,24 @@ type History interface {
 }
 
 // SetHistoryCtrlR - Set the history source triggered with Ctrl-r combination
-func (rl *Instance) SetHistoryCtrlR(name string, history History) {
+func (rl *Readline) SetHistoryCtrlR(name string, history History) {
 	rl.mainHistName = name
 	rl.mainHistory = history
 }
 
 // GetHistoryCtrlR - Returns the history source triggered by Ctrl-r
-func (rl *Instance) GetHistoryCtrlR() History {
+func (rl *Readline) GetHistoryCtrlR() History {
 	return rl.mainHistory
 }
 
 // SetHistoryAltR - Set the history source triggered with Alt-r combination
-func (rl *Instance) SetHistoryAltR(name string, history History) {
+func (rl *Readline) SetHistoryAltR(name string, history History) {
 	rl.altHistName = name
 	rl.altHistory = history
 }
 
 // GetHistoryAltR - Returns the history source triggered by Alt-r
-func (rl *Instance) GetHistoryAltR() History {
+func (rl *Readline) GetHistoryAltR() History {
 	return rl.altHistory
 }
 
@@ -101,7 +101,7 @@ func (h *NullHistory) Dump() interface{} {
 }
 
 // Browse historic lines:
-func (rl *Instance) walkHistory(i int) {
+func (rl *Readline) walkHistory(i int) {
 	var (
 		old, new string
 		dedup    bool
@@ -123,7 +123,7 @@ func (rl *Instance) walkHistory(i int) {
 
 	// When we are exiting the current line buffer to move around
 	// the history, we make buffer the current line
-	if rl.histOffset == 0 && rl.histOffset + i == 1 {
+	if rl.histOffset == 0 && rl.histOffset+i == 1 {
 		rl.lineBuf = string(rl.line)
 	}
 
@@ -168,7 +168,7 @@ func (rl *Instance) walkHistory(i int) {
 
 // completeHistory - Populates a CompletionGroup with history and returns it the shell
 // we populate only one group, so as to pass it to the main completion engine.
-func (rl *Instance) completeHistory() (hist []*CompletionGroup) {
+func (rl *Readline) completeHistory() (hist []*CompletionGroup) {
 
 	hist = make([]*CompletionGroup, 1)
 	hist[0] = &CompletionGroup{

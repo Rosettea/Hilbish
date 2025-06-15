@@ -23,7 +23,7 @@ type registers struct {
 	mutex              *sync.Mutex
 }
 
-func (rl *Instance) initRegisters() {
+func (rl *Readline) initRegisters() {
 	rl.registers = &registers{
 		num:   make(map[int][]rune, 10),
 		alpha: make(map[string][]rune, 52),
@@ -36,7 +36,7 @@ func (rl *Instance) initRegisters() {
 // the number of Vim iterations and we save the resulting string to the appropriate buffer.
 // It's the same as saveToRegisterTokenize, but without the need to generate tokenized &
 // cursor-pos-actualized versions of the input line.
-func (rl *Instance) saveToRegister(adjust int) {
+func (rl *Readline) saveToRegister(adjust int) {
 
 	// Get the current cursor position and go the length specified.
 	var begin = rl.pos
@@ -66,7 +66,7 @@ func (rl *Instance) saveToRegister(adjust int) {
 // saveToRegisterTokenize - Passing a function that will move around the line in the desired way, we get
 // the number of Vim iterations and we save the resulting string to the appropriate buffer. Because we
 // need the cursor position to be really moved around between calls to the jumper, we also need the tokeniser.
-func (rl *Instance) saveToRegisterTokenize(tokeniser tokeniser, jumper func(tokeniser) int, vii int) {
+func (rl *Readline) saveToRegisterTokenize(tokeniser tokeniser, jumper func(tokeniser) int, vii int) {
 
 	// The register is going to have to heavily manipulate the cursor position.
 	// Remember the original one first, for the end.
@@ -104,11 +104,11 @@ func (rl *Instance) saveToRegisterTokenize(tokeniser tokeniser, jumper func(toke
 // saveBufToRegister - Instead of computing the buffer ourselves based on an adjust,
 // let the caller pass directly this buffer, yet relying on the register system to
 // determine which register will store the buffer.
-func (rl *Instance) saveBufToRegister(buffer []rune) {
+func (rl *Readline) saveBufToRegister(buffer []rune) {
 	rl.SetRegisterBuf(string(rl.registers.currentRegister), buffer)
 }
 
-func (rl *Instance) SetRegisterBuf(reg string, buffer []rune) {
+func (rl *Readline) SetRegisterBuf(reg string, buffer []rune) {
 	// We must make an immutable version of the buffer first.
 	buf := string(buffer)
 
@@ -141,7 +141,7 @@ func (rl *Instance) SetRegisterBuf(reg string, buffer []rune) {
 
 // The user asked to paste a buffer onto the line, so we check from which register
 // we are supposed to select the buffer, and return it to the caller for insertion.
-func (rl *Instance) pasteFromRegister() (buffer []rune) {
+func (rl *Readline) pasteFromRegister() (buffer []rune) {
 
 	// When exiting this function the currently selected register is dropped,
 	defer rl.registers.resetRegister()
@@ -155,7 +155,7 @@ func (rl *Instance) pasteFromRegister() (buffer []rune) {
 	return rl.GetFromRegister(activeRegister)
 }
 
-func (rl *Instance) GetFromRegister(reg string) []rune {
+func (rl *Readline) GetFromRegister(reg string) []rune {
 	// Find the active register, and return its content.
 	num, err := strconv.Atoi(reg)
 
@@ -264,7 +264,7 @@ func (r *registers) resetRegister() {
 }
 
 // The user can show registers completions and insert, no matter the cursor position.
-func (rl *Instance) completeRegisters() (groups []*CompletionGroup) {
+func (rl *Readline) completeRegisters() (groups []*CompletionGroup) {
 
 	// We set the info exceptionally
 	info := BLUE + "-- registers --" + RESET

@@ -10,7 +10,7 @@ import (
 // updateHelpers is a key part of the whole refresh process:
 // it should coordinate reprinting the input line, any Infos and completions
 // and manage to get back to the current (computed) cursor coordinates
-func (rl *Instance) updateHelpers() {
+func (rl *Readline) updateHelpers() {
 	print(seqHideCursor)
 	// Load all Infos & completions before anything.
 	// Thus overwrites anything having been dirtily added/forced/modified, like rl.SetInfoText()
@@ -19,7 +19,9 @@ func (rl *Instance) updateHelpers() {
 	if rl.modeTabCompletion && !rl.completionOpen {
 		rl.getTabCompletion()
 	} else {
-		if rl.completionOpen { rl.completionOpen = false }
+		if rl.completionOpen {
+			rl.completionOpen = false
+		}
 	}
 
 	// We clear everything
@@ -49,7 +51,7 @@ func getWidth(x []rune) int {
 }
 
 // Update reference should be called only once in a "loop" (not Readline(), but key control loop)
-func (rl *Instance) updateReferences() {
+func (rl *Readline) updateReferences() {
 
 	// We always need to work with clean data,
 	// since we will have incrementers all around
@@ -103,7 +105,7 @@ func (rl *Instance) updateReferences() {
 	}
 }
 
-func (rl *Instance) resetHelpers() {
+func (rl *Readline) resetHelpers() {
 	rl.modeAutoFind = false
 
 	// Now reset all below-input helpers
@@ -113,7 +115,7 @@ func (rl *Instance) resetHelpers() {
 
 // clearHelpers - Clears everything: prompt, input, Infos & comps,
 // and comes back at the prompt.
-func (rl *Instance) clearHelpers() {
+func (rl *Readline) clearHelpers() {
 
 	// Now go down to the last line of input
 	moveCursorDown(rl.fullY - rl.posY)
@@ -132,7 +134,7 @@ func (rl *Instance) clearHelpers() {
 // renderHelpers - pritns all components (prompt, line, Infos & comps)
 // and replaces the cursor to its current position. This function never
 // computes or refreshes any value, except from inside the echo function.
-func (rl *Instance) renderHelpers() {
+func (rl *Readline) renderHelpers() {
 
 	// when the instance is in this state we want it to be "below" the user's
 	// input for it to be aligned properly
@@ -197,14 +199,14 @@ func (rl *Instance) renderHelpers() {
 	moveCursorForwards(rl.posX)
 }
 
-func (rl *Instance) bufprintF(format string, a ...any) {
+func (rl *Readline) bufprintF(format string, a ...any) {
 	fmt.Fprintf(rl.bufferedOut, format, a...)
 }
 
-func (rl *Instance) bufprint(text string) {
+func (rl *Readline) bufprint(text string) {
 	fmt.Fprint(rl.bufferedOut, text)
 }
 
-func (rl *Instance) bufflush() {
+func (rl *Readline) bufflush() {
 	rl.bufferedOut.Flush()
 }

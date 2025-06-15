@@ -5,7 +5,7 @@ import (
 )
 
 // vimDelete -
-func (rl *Instance) viDelete(r rune) {
+func (rl *Readline) viDelete(r rune) {
 
 	// We are allowed to type iterations after a delete ('d') command.
 	// in which case we don't exit the delete mode. The next thing typed
@@ -91,7 +91,7 @@ func (rl *Instance) viDelete(r rune) {
 	}
 }
 
-func (rl *Instance) viDeleteByAdjust(adjust int) {
+func (rl *Readline) viDeleteByAdjust(adjust int) {
 	var (
 		newLine []rune
 		backOne bool
@@ -142,11 +142,11 @@ func (rl *Instance) viDeleteByAdjust(adjust int) {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) DeleteByAmount(adjust int) {
+func (rl *Readline) DeleteByAmount(adjust int) {
 	rl.viDeleteByAdjust(adjust)
 }
 
-func (rl *Instance) vimDeleteToken(r rune) bool {
+func (rl *Readline) vimDeleteToken(r rune) bool {
 	tokens, _, _ := tokeniseSplitSpaces(rl.line, 0)
 	pos := int(r) - 48 // convert ASCII to integer
 	if pos > len(tokens) {

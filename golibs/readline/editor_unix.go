@@ -15,7 +15,7 @@ const defaultEditor = "vi"
 // depending on the actions taken by the user within it (eg: x or q! in Vim)
 // The filename parameter can be used to pass a specific filename.ext pattern,
 // which might be useful if the editor has builtin filetype plugin functionality.
-func (rl *Instance) StartEditorWithBuffer(multiline []rune, filename string) ([]rune, error) {
+func (rl *Readline) StartEditorWithBuffer(multiline []rune, filename string) ([]rune, error) {
 	name, err := rl.writeTempFile([]byte(string(multiline)), filename)
 	if err != nil {
 		return multiline, err

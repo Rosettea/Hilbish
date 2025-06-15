@@ -6,7 +6,7 @@ import (
 
 // When the DelayedSyntaxWorker gives us a new line, we need to check if there
 // is any processing to be made, that all lines match in terms of content.
-func (rl *Instance) updateLine(line []rune) {
+func (rl *Readline) updateLine(line []rune) {
 	if len(rl.currentComp) > 0 {
 
 	} else {
@@ -18,7 +18,7 @@ func (rl *Instance) updateLine(line []rune) {
 
 // getLine - In many places we need the current line input. We either return the real line,
 // or the one that includes the current completion candidate, if there is any.
-func (rl *Instance) GetLine() []rune {
+func (rl *Readline) GetLine() []rune {
 	if len(rl.currentComp) > 0 {
 		return rl.lineComp
 	}
@@ -30,7 +30,7 @@ func (rl *Instance) GetLine() []rune {
 // function is only ever called once, and after having moved back to prompt position
 // and having printed the line: this is so that at any moment, everyone has the good
 // values for moving around, synchronized with the update input line.
-func (rl *Instance) echo() {
+func (rl *Readline) echo() {
 
 	// Then we print the prompt, and the line,
 	hideCursor()
@@ -79,7 +79,7 @@ func (rl *Instance) echo() {
 	unhideCursor()
 }
 
-func (rl *Instance) insert(r []rune) {
+func (rl *Readline) insert(r []rune) {
 	for {
 		// I don't really understand why `0` is creaping in at the end of the
 		// array but it only happens with unicode characters.
@@ -112,11 +112,11 @@ func (rl *Instance) insert(r []rune) {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) Insert(t string) {
+func (rl *Readline) Insert(t string) {
 	rl.insert([]rune(t))
 }
 
-func (rl *Instance) deleteX() {
+func (rl *Readline) deleteX() {
 	switch {
 	case len(rl.line) == 0:
 		return
@@ -134,7 +134,7 @@ func (rl *Instance) deleteX() {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) deleteBackspace(forward bool) {
+func (rl *Readline) deleteBackspace(forward bool) {
 	switch {
 	case len(rl.line) == 0:
 		return
@@ -153,7 +153,7 @@ func (rl *Instance) deleteBackspace(forward bool) {
 	rl.updateHelpers()
 }
 
-func (rl *Instance) clearLine() {
+func (rl *Readline) clearLine() {
 	if len(rl.line) == 0 {
 		return
 	}
@@ -179,21 +179,21 @@ func (rl *Instance) clearLine() {
 	rl.clearVirtualComp()
 }
 
-func (rl *Instance) deleteToBeginning() {
+func (rl *Readline) deleteToBeginning() {
 	rl.resetVirtualComp(false)
 	// Keep the line length up until the cursor
 	rl.line = rl.line[rl.pos:]
 	rl.pos = 0
 }
 
-func (rl *Instance) deleteToEnd() {
+func (rl *Readline) deleteToEnd() {
 	rl.resetVirtualComp(false)
 	// Keep everything before the cursor
 	rl.line = rl.line[:rl.pos]
 }
 
 // @TODO(Renzix): move to emacs sepecific file
-func (rl *Instance) emacsForwardWord(tokeniser tokeniser) (adjust int) {
+func (rl *Readline) emacsForwardWord(tokeniser tokeniser) (adjust int) {
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	if len(split) == 0 {
 		return
@@ -214,7 +214,7 @@ func (rl *Instance) emacsForwardWord(tokeniser tokeniser) (adjust int) {
 	return
 }
 
-func (rl *Instance) emacsBackwardWord(tokeniser tokeniser) (adjust int) {
+func (rl *Readline) emacsBackwardWord(tokeniser tokeniser) (adjust int) {
 	split, index, pos := tokeniser(rl.line, rl.pos)
 	if len(split) == 0 {
 		return

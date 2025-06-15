@@ -85,6 +85,7 @@ var prefix = map[string]string{
 	"bait":      "b",
 	"terminal":  "term",
 	"snail":     "snail",
+	"readline":  "rl",
 }
 
 func getTagsAndDocs(docs string) (map[string][]tag, []string) {

@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
 	"github.com/rivo/uniseg"
-)	
+)
 
 // initGrid - Grid display details. Called each time we want to be sure to have
 // a working completion group either immediately, or later on. Generally defered.
-func (g *CompletionGroup) initGrid(rl *Instance) {
+func (g *CompletionGroup) initGrid(rl *Readline) {
 
 	// Compute size of each completion item box
 	tcMaxLength := 1
@@ -44,7 +45,7 @@ func (g *CompletionGroup) initGrid(rl *Instance) {
 }
 
 // moveTabGridHighlight - Moves the highlighting for currently selected completion item (grid display)
-func (g *CompletionGroup) moveTabGridHighlight(rl *Instance, x, y int) (done bool, next bool) {
+func (g *CompletionGroup) moveTabGridHighlight(rl *Readline, x, y int) (done bool, next bool) {
 
 	g.tcPosX += x
 	g.tcPosY += y
@@ -96,7 +97,7 @@ func (g *CompletionGroup) moveTabGridHighlight(rl *Instance, x, y int) (done boo
 }
 
 // writeGrid - A grid completion string
-func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
+func (g *CompletionGroup) writeGrid(rl *Readline) (comp string) {
 
 	// If group title, print it and adjust offset.
 	if g.Name != "" {
@@ -127,9 +128,9 @@ func (g *CompletionGroup) writeGrid(rl *Instance) (comp string) {
 
 		sugg := g.Suggestions[i]
 		if len(sugg) > GetTermWidth() {
-			sugg = sugg[:GetTermWidth() - 4] + "..."
+			sugg = sugg[:GetTermWidth()-4] + "..."
 		}
-		formatStr := "%-"+cellWidth+"s%s "
+		formatStr := "%-" + cellWidth + "s%s "
 		if g.tcMaxX == 1 {
 			formatStr = "%s%s"
 		}

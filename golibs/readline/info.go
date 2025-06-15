@@ -4,12 +4,12 @@ import "regexp"
 
 // SetInfoText - a nasty function to force writing a new info text. It does not update helpers, it just renders
 // them, so the info will survive until the helpers (thus including the info) will be updated/recomputed.
-func (rl *Instance) SetInfoText(s string) {
+func (rl *Readline) SetInfoText(s string) {
 	rl.infoText = []rune(s)
 	rl.renderHelpers()
 }
 
-func (rl *Instance) getInfoText() {
+func (rl *Readline) getInfoText() {
 
 	if !rl.modeAutoFind && !rl.modeTabFind {
 		// Return if no infos provided by the user/engine
@@ -25,7 +25,7 @@ func (rl *Instance) getInfoText() {
 }
 
 // writeInfoText - only writes the info text and computes its offsets.
-func (rl *Instance) writeInfoText() {
+func (rl *Readline) writeInfoText() {
 	if len(rl.infoText) == 0 {
 		rl.infoY = 0
 		return
@@ -50,7 +50,7 @@ func (rl *Instance) writeInfoText() {
 	}
 }
 
-func (rl *Instance) resetInfoText() {
+func (rl *Readline) resetInfoText() {
 	rl.infoY = 0
 	rl.infoText = []rune{}
 }

@@ -14,7 +14,7 @@ import (
 )
 
 // writeTempFile - This function optionally accepts a filename (generally specified with an extension).
-func (rl *Instance) writeTempFile(content []byte, filename string) (string, error) {
+func (rl *Readline) writeTempFile(content []byte, filename string) (string, error) {
 	// The final path to the buffer on disk
 	var path string
 

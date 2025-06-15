@@ -5,7 +5,7 @@ type undoItem struct {
 	pos  int
 }
 
-func (rl *Instance) undoAppendHistory() {
+func (rl *Readline) undoAppendHistory() {
 	defer func() { rl.viUndoSkipAppend = false }()
 
 	if rl.viUndoSkipAppend {
@@ -18,7 +18,7 @@ func (rl *Instance) undoAppendHistory() {
 	})
 }
 
-func (rl *Instance) undoLast() {
+func (rl *Readline) undoLast() {
 	var undo undoItem
 	for {
 		if len(rl.viUndoHistory) == 0 {

@@ -7,12 +7,12 @@ import (
 
 // DelayedTabContext is a custom context interface for async updates to the tab completions
 type DelayedTabContext struct {
-	rl      *Instance
+	rl      *Readline
 	Context context.Context
 	cancel  context.CancelFunc
 }
 
-func delayedSyntaxTimer(rl *Instance, i int64) {
+func delayedSyntaxTimer(rl *Readline, i int64) {
 	if rl.PasswordMask != 0 || rl.DelayedSyntaxWorker == nil {
 		return
 	}

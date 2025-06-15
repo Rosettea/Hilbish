@@ -11,7 +11,7 @@ func (rl *Instance) SetHintText(s string) {
 }
 */
 
-func (rl *Instance) getHintText() {
+func (rl *Readline) getHintText() {
 
 	if !rl.modeAutoFind && !rl.modeTabFind {
 		// Return if no hints provided by the user/engine
@@ -27,7 +27,7 @@ func (rl *Instance) getHintText() {
 }
 
 // writeHintText - only writes the hint text and computes its offsets.
-func (rl *Instance) writeHintText() {
+func (rl *Readline) writeHintText() {
 	if len(rl.hintText) == 0 {
 		//rl.hintY = 0
 		return
@@ -43,7 +43,7 @@ func (rl *Instance) writeHintText() {
 
 	wrapped, hintLen := WrapText(string(rl.hintText), width)
 	offset += hintLen
-//	rl.hintY = offset
+	//	rl.hintY = offset
 
 	hintText := string(wrapped)
 
@@ -52,12 +52,12 @@ func (rl *Instance) writeHintText() {
 	}
 }
 
-func (rl *Instance) resetHintText() {
+func (rl *Readline) resetHintText() {
 	//rl.hintY = 0
 	rl.hintText = []rune{}
 }
 
-func (rl *Instance) insertHintText() {
+func (rl *Readline) insertHintText() {
 	if len(rl.hintText) != 0 {
 		// fill in hint text
 		rl.insert(rl.hintText)

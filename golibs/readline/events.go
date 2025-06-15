@@ -13,11 +13,11 @@ type EventReturn struct {
 }
 
 // AddEvent registers a new keypress handler
-func (rl *Instance) AddEvent(keyPress string, callback func(string, []rune, int) *EventReturn) {
+func (rl *Readline) AddEvent(keyPress string, callback func(string, []rune, int) *EventReturn) {
 	rl.evtKeyPress[keyPress] = callback
 }
 
 // DelEvent deregisters an existing keypress handler
-func (rl *Instance) DelEvent(keyPress string) {
+func (rl *Readline) DelEvent(keyPress string) {
 	delete(rl.evtKeyPress, keyPress)
 }

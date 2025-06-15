@@ -8,7 +8,7 @@ import (
 
 // initList - List display details. Because of the way alternative completions
 // are handled, MaxLength cannot be set when there are alternative completions.
-func (g *CompletionGroup) initList(rl *Instance) {
+func (g *CompletionGroup) initList(rl *Readline) {
 
 	// We may only ever have two different
 	// columns: (suggestions, and alternatives)
@@ -53,7 +53,7 @@ func (g *CompletionGroup) initList(rl *Instance) {
 
 // moveTabListHighlight - Moves the highlighting for currently selected completion item (list display)
 // We don't care about the x, because only can have 2 columns of selectable choices (--long and -s)
-func (g *CompletionGroup) moveTabListHighlight(rl *Instance, x, y int) (done bool, next bool) {
+func (g *CompletionGroup) moveTabListHighlight(rl *Readline, x, y int) (done bool, next bool) {
 
 	// We dont' pass to x, because not managed by callers
 	g.tcPosY += x
@@ -153,7 +153,7 @@ func (g *CompletionGroup) moveTabListHighlight(rl *Instance, x, y int) (done boo
 }
 
 // writeList - A list completion string
-func (g *CompletionGroup) writeList(rl *Instance) (comp string) {
+func (g *CompletionGroup) writeList(rl *Readline) (comp string) {
 
 	// Print group title and adjust offset if there is one.
 	if g.Name != "" {
@@ -249,7 +249,7 @@ func (g *CompletionGroup) writeList(rl *Instance) (comp string) {
 	return
 }
 
-func (rl *Instance) getListPad() (pad int) {
+func (rl *Readline) getListPad() (pad int) {
 	for _, group := range rl.tcGroups {
 		if group.DisplayType == TabDisplayList {
 			for i := range group.Suggestions {

@@ -17,17 +17,17 @@ import (
 
 var rlMetaKey = rt.StringValue("__readline")
 
-func (rl *Instance) luaLoader(rtm *rt.Runtime) (rt.Value, func()) {
+func (rl *Readline) luaLoader(rtm *rt.Runtime) (rt.Value, func()) {
 	rlMethods := rt.NewTable()
 	rlMethodss := map[string]util.LuaExport{
-		"deleteByAmount": {luaDeleteByAmount, 2, false},
-		"getLine":        {luaGetLine, 1, false},
-		"getVimRegister": {luaGetRegister, 2, false},
-		"insert":         {luaInsert, 2, false},
-		"read":           {luaRead, 1, false},
-		"readChar":       {luaReadChar, 1, false},
-		"setVimRegister": {luaSetRegister, 3, false},
-		"log":            {luaLog, 2, false},
+		"deleteByAmount": {rlDeleteByAmount, 2, false},
+		"getLine":        {rlGetLine, 1, false},
+		"getVimRegister": {rlGetRegister, 2, false},
+		"insert":         {rlInsert, 2, false},
+		"read":           {rlRead, 1, false},
+		"readChar":       {rlReadChar, 1, false},
+		"setVimRegister": {rlSetRegister, 3, false},
+		"log":            {rlLog, 2, false},
 	}
 	util.SetExports(rtm, rlMethods, rlMethodss)
 
@@ -48,7 +48,7 @@ func (rl *Instance) luaLoader(rtm *rt.Runtime) (rt.Value, func()) {
 	rtm.SetRegistry(rlMetaKey, rt.TableValue(rlMeta))
 
 	rlFuncs := map[string]util.LuaExport{
-		"new": {luaNew, 0, false},
+		"new": {rlNew, 0, false},
 	}
 
 	luaRl := rt.NewTable()
@@ -57,14 +57,20 @@ func (rl *Instance) luaLoader(rtm *rt.Runtime) (rt.Value, func()) {
 	return rt.TableValue(luaRl), nil
 }
 
-func luaNew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// new() -> @Readline
+// Creates a new readline instance.
+func rlNew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	rl := NewInstance()
 	ud := rlUserData(t.Runtime, rl)
 
 	return c.PushingNext1(t.Runtime, rt.UserDataValue(ud)), nil
 }
 
-func luaInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #member
+// insert(text)
+// Inserts text into the Hilbish command line.
+// #param text string
+func rlInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -84,7 +90,10 @@ func luaInsert(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func luaRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #member
+// read() -> string
+// Reads input from the user.
+func rlRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -105,11 +114,12 @@ func luaRead(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.StringValue(inp)), nil
 }
 
+// #member
 // setVimRegister(register, text)
 // Sets the vim register at `register` to hold the passed text.
 // #param register string
 // #param text string
-func luaSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func rlSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(3); err != nil {
 		return nil, err
 	}
@@ -134,10 +144,11 @@ func luaSetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
+// #member
 // getVimRegister(register) -> string
 // Returns the text that is at the register.
 // #param register string
-func luaGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func rlGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -157,10 +168,11 @@ func luaGetRegister(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
 }
 
+// #member
 // getLine() -> string
 // Returns the current input line.
 // #returns string
-func luaGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func rlGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -175,9 +187,10 @@ func luaGetLine(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
 }
 
+// #member
 // getChar() -> string
 // Reads a keystroke from the user. This is in a format of something like Ctrl-L.
-func luaReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func rlReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -191,10 +204,11 @@ func luaReadChar(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.PushingNext1(t.Runtime, rt.StringValue(string(buf))), nil
 }
 
+// #member
 // deleteByAmount(amount)
 // Deletes characters in the line by the given amount.
 // #param amount number
-func luaDeleteByAmount(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func rlDeleteByAmount(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -214,7 +228,10 @@ func luaDeleteByAmount(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func luaLog(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+// #member
+// log(text)
+// Prints a message *before* the prompt without it being interrupted by user input.
+func rlLog(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -234,7 +251,7 @@ func luaLog(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func rlArg(c *rt.GoCont, arg int) (*Instance, error) {
+func rlArg(c *rt.GoCont, arg int) (*Readline, error) {
 	j, ok := valueToRl(c.Arg(arg))
 	if !ok {
 		return nil, fmt.Errorf("#%d must be a readline", arg+1)
@@ -243,17 +260,17 @@ func rlArg(c *rt.GoCont, arg int) (*Instance, error) {
 	return j, nil
 }
 
-func valueToRl(val rt.Value) (*Instance, bool) {
+func valueToRl(val rt.Value) (*Readline, bool) {
 	u, ok := val.TryUserData()
 	if !ok {
 		return nil, false
 	}
 
-	j, ok := u.Value().(*Instance)
+	j, ok := u.Value().(*Readline)
 	return j, ok
 }
 
-func rlUserData(rtm *rt.Runtime, rl *Instance) *rt.UserData {
+func rlUserData(rtm *rt.Runtime, rl *Readline) *rt.UserData {
 	rlMeta := rtm.Registry(rlMetaKey)
 	return rt.NewUserData(rl, rlMeta.AsTable())
 }

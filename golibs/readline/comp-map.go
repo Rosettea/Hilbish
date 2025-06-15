@@ -7,7 +7,7 @@ import (
 
 // initMap - Map display details. Called each time we want to be sure to have
 // a working completion group either immediately, or later on. Generally defered.
-func (g *CompletionGroup) initMap(rl *Instance) {
+func (g *CompletionGroup) initMap(rl *Readline) {
 
 	// We make the map anyway, especially if we need to use it later
 	if g.Descriptions == nil {
@@ -35,7 +35,7 @@ func (g *CompletionGroup) initMap(rl *Instance) {
 }
 
 // moveTabMapHighlight - Moves the highlighting for currently selected completion item (map display)
-func (g *CompletionGroup) moveTabMapHighlight(rl *Instance, x, y int) (done bool, next bool) {
+func (g *CompletionGroup) moveTabMapHighlight(rl *Readline, x, y int) (done bool, next bool) {
 
 	g.tcPosY += x
 	g.tcPosY += y
@@ -72,7 +72,7 @@ func (g *CompletionGroup) moveTabMapHighlight(rl *Instance, x, y int) (done bool
 }
 
 // writeMap - A map or list completion string
-func (g *CompletionGroup) writeMap(rl *Instance) (comp string) {
+func (g *CompletionGroup) writeMap(rl *Readline) (comp string) {
 
 	if g.Name != "" {
 		// Print group title (changes with line returns depending on type)

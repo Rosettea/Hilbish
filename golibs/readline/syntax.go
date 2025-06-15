@@ -2,7 +2,7 @@ package readline
 
 // syntaxCompletion - applies syntax highlighting to the current input line.
 // nothing special to note here, nor any changes envisioned.
-func (rl *Instance) syntaxCompletion() {
+func (rl *Readline) syntaxCompletion() {
 	if rl.SyntaxCompleter == nil {
 		return
 	}

@@ -2,13 +2,14 @@ package readline
 
 import (
 	"strings"
+
 	"github.com/rivo/uniseg"
 )
 
 // insertCandidateVirtual - When a completion candidate is selected, we insert it virtually in the input line:
 // this will not trigger further firltering against the other candidates. Each time this function
 // is called, any previous candidate is dropped, after being used for moving the cursor around.
-func (rl *Instance) insertCandidateVirtual(candidate []rune) {
+func (rl *Readline) insertCandidateVirtual(candidate []rune) {
 	for {
 		// I don't really understand why `0` is creaping in at the end of the
 		// array but it only happens with unicode characters.
@@ -57,7 +58,7 @@ func (rl *Instance) insertCandidateVirtual(candidate []rune) {
 // Insert the current completion candidate into the input line.
 // This candidate might either be the currently selected one (white frame),
 // or the only candidate available, if the total number of candidates is 1.
-func (rl *Instance) insertCandidate() {
+func (rl *Readline) insertCandidate() {
 
 	cur := rl.getCurrentGroup()
 
@@ -83,7 +84,7 @@ func (rl *Instance) insertCandidate() {
 }
 
 // updateVirtualComp - Either insert the current completion candidate virtually, or on the real line.
-func (rl *Instance) updateVirtualComp() {
+func (rl *Readline) updateVirtualComp() {
 	cur := rl.getCurrentGroup()
 	if cur != nil {
 
@@ -118,7 +119,7 @@ func (rl *Instance) updateVirtualComp() {
 // resetVirtualComp - This function is called before most of our readline key handlers,
 // and makes sure that the current completion (virtually inserted) is either inserted or dropped,
 // and that all related parameters are reinitialized.
-func (rl *Instance) resetVirtualComp(drop bool) {
+func (rl *Readline) resetVirtualComp(drop bool) {
 
 	// If we don't have a current virtual completion, there's nothing to do.
 	// IMPORTANT: this MUST be first, to avoid nil problems with empty comps.
@@ -196,7 +197,7 @@ func trimTrailing(comp string) (trimmed string, hadSlash bool) {
 }
 
 // viDeleteByAdjustVirtual - Same as viDeleteByAdjust, but for our virtually completed input line.
-func (rl *Instance) viDeleteByAdjustVirtual(adjust int) {
+func (rl *Readline) viDeleteByAdjustVirtual(adjust int) {
 	var (
 		newLine []rune
 		backOne bool
@@ -235,7 +236,7 @@ func (rl *Instance) viDeleteByAdjustVirtual(adjust int) {
 }
 
 // viJumpEVirtual - Same as viJumpE, but for our virtually completed input line.
-func (rl *Instance) viJumpEVirtual(tokeniser func([]rune, int) ([]string, int, int)) (adjust int) {
+func (rl *Readline) viJumpEVirtual(tokeniser func([]rune, int) ([]string, int, int)) (adjust int) {
 	split, index, pos := tokeniser(rl.lineComp, rl.pos)
 	if len(split) == 0 {
 		return
@@ -258,7 +259,7 @@ func (rl *Instance) viJumpEVirtual(tokeniser func([]rune, int) ([]string, int, i
 	return
 }
 
-func (rl *Instance) deleteVirtual() {
+func (rl *Readline) deleteVirtual() {
 	switch {
 	case len(rl.lineComp) == 0:
 		return
@@ -274,7 +275,7 @@ func (rl *Instance) deleteVirtual() {
 
 // We are done with the current virtual completion candidate.
 // Get ready for the next one
-func (rl *Instance) clearVirtualComp() {
+func (rl *Readline) clearVirtualComp() {
 	rl.line = rl.lineComp
 	rl.currentComp = []rune{}
 	rl.compAddSpace = false

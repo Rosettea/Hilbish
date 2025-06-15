@@ -1,6 +1,6 @@
 ---
 title: Module readline
-description: Package readline is a pure-Go re-imagining of the UNIX readline API
+description: line reader library
 layout: doc
 menu:
   docs:
@@ -8,38 +8,60 @@ menu:
 ---
 
 ## Introduction
-
-This package is designed to be run independently from murex and at some
-point it will be separated into it's own git repository (at a stage when I
-am confident that murex will no longer be the primary driver for features,
-bugs or other code changes)
-
-line reader library
 The readline module is responsible for reading input from the user.
 The readline module is what Hilbish uses to read input from the user,
 including all the interactive features of Hilbish like history search,
 syntax highlighting, everything. The global Hilbish readline instance
 is usable at `hilbish.editor`.
 
-Package terminal provides support functions for dealing with terminals, as
-commonly found on UNIX systems.
+## Functions
+|||
+|----|----|
+|<a href="#New">new() -> @Readline</a>|Creates a new readline instance.|
 
-Putting a terminal into raw mode is the most common requirement:
+<hr>
+<div id='New'>
+<h4 class='heading'>
+readline.new() -> <a href="/Hilbish/docs/api/readline/#readline" style="text-decoration: none;" id="lol">Readline</a>
+<a href="#New" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
 
-	oldState, err := terminal.MakeRaw(0)
-	if err != nil {
-	        panic(err)
-	}
-	defer terminal.Restore(0, oldState)
+Creates a new readline instance.  
 
-Package terminal provides support functions for dealing with terminals, as
-commonly found on UNIX systems.
+#### Parameters
+This function has no parameters.  
+</div>
 
-Putting a terminal into raw mode is the most common requirement:
+## Types
+<hr>
 
-	oldState, err := terminal.MakeRaw(0)
-	if err != nil {
-	        panic(err)
-	}
-	defer terminal.Restore(0, oldState)
+## Readline
+blah blah
+
+### Methods
+#### deleteByAmount(amount)
+Deletes characters in the line by the given amount.
+
+#### getLine() -> string
+Returns the current input line.
+
+#### getVimRegister(register) -> string
+Returns the text that is at the register.
+
+#### insert(text)
+Inserts text into the Hilbish command line.
+
+#### log(text)
+Prints a message *before* the prompt without it being interrupted by user input.
+
+#### read() -> string
+Reads input from the user.
+
+#### getChar() -> string
+Reads a keystroke from the user. This is in a format of something like Ctrl-L.
+
+#### setVimRegister(register, text)
+Sets the vim register at `register` to hold the passed text.
 

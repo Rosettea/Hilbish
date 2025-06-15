@@ -1,7 +1,7 @@
 package readline
 
 import (
-//	"fmt"
+	//	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -28,7 +28,7 @@ func leftMost() []byte {
 
 var rxRcvCursorPos = regexp.MustCompile("^\x1b([0-9]+);([0-9]+)R$")
 
-func (rl *Instance) getCursorPos() (x int, y int) {
+func (rl *Readline) getCursorPos() (x int, y int) {
 	if !rl.EnableGetCursorPos {
 		return -1, -1
 	}
@@ -143,7 +143,7 @@ func unhideCursor() {
 	print(seqUnhideCursor)
 }
 
-func (rl *Instance) backspace(forward bool) {
+func (rl *Readline) backspace(forward bool) {
 	if len(rl.line) == 0 || rl.pos == 0 {
 		return
 	}
@@ -151,7 +151,7 @@ func (rl *Instance) backspace(forward bool) {
 	rl.deleteBackspace(forward)
 }
 
-func (rl *Instance) moveCursorByAdjust(adjust int) {
+func (rl *Readline) moveCursorByAdjust(adjust int) {
 	switch {
 	case adjust > 0:
 		rl.pos += adjust
