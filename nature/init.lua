@@ -95,16 +95,3 @@ end)
 bait.catch('command.not-executable', function(cmd)
 	print(string.format('hilbish: %s: not executable', cmd))
 end)
-
-print 'we are at the end'
-while true do
-	print 'reading input'
-	local ok, res = pcall(function() return hilbish.editor:read() end)
-	if not ok then
-		print(res)
-		print(res == 'EOF')
-		os.exit(0)
-	end
-
-	print(ok, res)
-end
