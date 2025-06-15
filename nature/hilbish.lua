@@ -14,12 +14,16 @@ local function abbrevHome(path)
 	if path:sub(1, hilbish.home:len()) == hilbish.home then
 		return fs.join('~', path:sub(hilbish.home:len() + 1))
 	end
+
+	return path
 end
 
 local function fmtPrompt(p)
 	return p:gsub('%%(%w)', function(c)
 		if c == 'd' then
 			return abbrevHome(hilbish.cwd())
+		elseif c == 'D' then
+			return fs.basename(abbrevHome(hilbish.cwd()))
 		elseif c == 'u' then
 			return hilbish.user
 		elseif c == 'h' then
@@ -33,6 +37,7 @@ end
 --- There are a few verbs that can be used in the prompt text.
 --- These will be formatted and replaced with the appropriate values.
 --- `%d` - Current working directory
+--- `%D` - Basename of working directory ()
 --- `%u` - Name of current user
 --- `%h` - Hostname of device
 --- #param str string
