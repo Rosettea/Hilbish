@@ -5,16 +5,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
 	"hilbish/golibs/snail"
 	"hilbish/golibs/terminal"
+	"hilbish/util"
 
-	rt "github.com/arnodel/golua/runtime"
 	"github.com/arnodel/golua/lib"
 	"github.com/arnodel/golua/lib/debuglib"
+	rt "github.com/arnodel/golua/runtime"
 )
 
 var minimalconf = `hilbish.prompt '& '`
@@ -55,10 +55,10 @@ func luaInit() {
 
 	cmds = commander.New(l)
 	lib.LoadLibs(l, cmds.Loader)
-
+	lib.LoadLibs(l, lr.rl.Loader)
 
 	// Add more paths that Lua can require from
-	_, err := util.DoString(l, "package.path = package.path .. " + requirePaths)
+	_, err := util.DoString(l, "package.path = package.path .. "+requirePaths)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Could not add Hilbish require paths! Libraries will be missing. This shouldn't happen.")
 	}
