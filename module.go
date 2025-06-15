@@ -1,11 +1,7 @@
 package main
 
 import (
-	"plugin"
-
-	"hilbish/util"
-
-	rt "github.com/arnodel/golua/runtime"
+	"hilbish/moonlight"
 )
 
 // #interface module
@@ -46,13 +42,13 @@ func Loader(rtm *rt.Runtime) rt.Value {
 This can be compiled with `go build -buildmode=plugin plugin.go`.
 If you attempt to require and print the result (`print(require 'plugin')`), it will show "hello world!"
 */
-func moduleLoader(rtm *rt.Runtime) *rt.Table {
-	exports := map[string]util.LuaExport{
-		"load": {moduleLoad, 2, false},
+func moduleLoader(mlr *moonlight.Runtime) *moonlight.Table {
+	exports := map[string]moonlight.Export{
+		//"load": {moduleLoad, 2, false},
 	}
 
-	mod := rt.NewTable()
-	util.SetExports(rtm, mod, exports)
+	mod := moonlight.NewTable()
+	mlr.SetExports(mod, exports)
 
 	return mod
 }
@@ -61,13 +57,14 @@ func moduleLoader(rtm *rt.Runtime) *rt.Table {
 // load(path)
 // Loads a module at the designated `path`.
 // It will throw if any error occurs.
-// #param path string 
-func moduleLoad(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(1); err != nil {
+// #param path string
+/*
+func moduleLoad(mlr *moonlight.Runtime, c *moonlight.GoCont) (moonlight.Cont, error) {
+	if err := mlr.Check1Arg(c); err != nil {
 		return nil, err
 	}
-	
-	path, err := c.StringArg(0)
+
+	path, err := mlr.StringArg(c, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +79,13 @@ func moduleLoad(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		return nil, err
 	}
 
-	loader, ok := value.(func(*rt.Runtime) rt.Value)
+	loader, ok := value.(func(*moonlight.Runtime) moonlight.Value)
 	if !ok {
 		return nil, nil
 	}
 
-	val := loader(t.Runtime)
+	val := loader(mlr)
 
-	return c.PushingNext1(t.Runtime, val), nil
+	return mlr.PushNext1(c, val), nil
 }
+*/

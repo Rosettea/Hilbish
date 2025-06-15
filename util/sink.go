@@ -2,11 +2,13 @@ package util
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+
+	//"hilbish/util"
+	"hilbish/moonlight"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -15,69 +17,74 @@ var sinkMetaKey = rt.StringValue("hshsink")
 
 // #type
 // A sink is a structure that has input and/or output to/from a desination.
-type Sink struct{
-	Rw *bufio.ReadWriter
-	file *os.File
-	UserData *rt.UserData
+type Sink struct {
+	Rw        *bufio.ReadWriter
+	file      *os.File
+	UserData  *rt.UserData
 	autoFlush bool
 }
 
-func SinkLoader(rtm *rt.Runtime) *rt.Table {
-	sinkMeta := rt.NewTable()
+func SinkLoader(mlr *moonlight.Runtime) *moonlight.Table {
+	//sinkMeta := moonlight.NewTable()
 
-	sinkMethods := rt.NewTable()
-	sinkFuncs := map[string]LuaExport{
-		"flush": {luaSinkFlush, 1, false},
-		"read": {luaSinkRead, 1, false},
-		"readAll": {luaSinkReadAll, 1, false},
-		"autoFlush": {luaSinkAutoFlush, 2, false},
-		"write": {luaSinkWrite, 2, false},
-		"writeln": {luaSinkWriteln, 2, false},
-	}
-	SetExports(rtm, sinkMethods, sinkFuncs)
+	/*
+		sinkMethods := moonlight.NewTable()
+		sinkFuncs := map[string]moonlight.Export{
+				"flush": {luaSinkFlush, 1, false},
+				"read": {luaSinkRead, 1, false},
+				"readAll": {luaSinkReadAll, 1, false},
+				"autoFlush": {luaSinkAutoFlush, 2, false},
+				"write": {luaSinkWrite, 2, false},
+				"writeln": {luaSinkWriteln, 2, false},
+		}
+	*/
+	//l.SetExports(sinkMethods, sinkFuncs)
+	/*
+		sinkIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+			s, _ := sinkArg(c, 0)
 
-	sinkIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-		s, _ := sinkArg(c, 0)
+			arg := c.Arg(1)
+			val := sinkMethods.Get(arg)
 
-		arg := c.Arg(1)
-		val := sinkMethods.Get(arg)
+			if val != rt.NilValue {
+				return c.PushingNext1(t.Runtime, val), nil
+			}
 
-		if val != rt.NilValue {
+			keyStr, _ := arg.TryString()
+
+			switch keyStr {
+				case "pipe":
+					val = rt.BoolValue(false)
+					if s.file != nil {
+						fileInfo, _ := s.file.Stat();
+						val = rt.BoolValue(fileInfo.Mode() & os.ModeCharDevice == 0)
+					}
+			}
+
 			return c.PushingNext1(t.Runtime, val), nil
 		}
 
-		keyStr, _ := arg.TryString()
+		sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
+		mlr.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
+	*/
 
-		switch keyStr {
-			case "pipe":
-				val = rt.BoolValue(false)
-				if s.file != nil {
-					fileInfo, _ := s.file.Stat();
-					val = rt.BoolValue(fileInfo.Mode() & os.ModeCharDevice == 0)
-				}
-		}
-
-		return c.PushingNext1(t.Runtime, val), nil
-	}
-
-	sinkMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(sinkIndex, "__index", 2, false)))
-	rtm.SetRegistry(sinkMetaKey, rt.TableValue(sinkMeta))
-
-	exports := map[string]LuaExport{
+	exports := map[string]moonlight.Export{
 		"new": {luaSinkNew, 0, false},
 	}
 
-	mod := rt.NewTable()
-	SetExports(rtm, mod, exports)
+	mod := moonlight.NewTable()
+	mlr.SetExports(mod, exports)
 
 	return mod
 }
 
+func luaSinkNew(mlr *moonlight.Runtime) error {
+	/*
+		snk := NewSink(t.Runtime, new(bytes.Buffer))
 
-func luaSinkNew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	snk := NewSink(t.Runtime, new(bytes.Buffer))
-
-	return c.PushingNext1(t.Runtime, rt.UserDataValue(snk.UserData)), nil
+		return c.PushingNext1(t.Runtime, rt.UserDataValue(snk.UserData)), nil
+	*/
+	return nil
 }
 
 // #member
@@ -230,12 +237,12 @@ func luaSinkAutoFlush(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	return c.Next(), nil
 }
 
-func NewSink(rtm *rt.Runtime, Rw io.ReadWriter) *Sink {
+func NewSink(mlr *moonlight.Runtime, Rw io.ReadWriter) *Sink {
 	s := &Sink{
-		Rw: bufio.NewReadWriter(bufio.NewReader(Rw), bufio.NewWriter(Rw)),
+		Rw:        bufio.NewReadWriter(bufio.NewReader(Rw), bufio.NewWriter(Rw)),
 		autoFlush: true,
 	}
-	s.UserData = sinkUserData(rtm, s)
+	//s.UserData = sinkUserData(rtm, s)
 
 	if f, ok := Rw.(*os.File); ok {
 		s.file = f
@@ -244,11 +251,11 @@ func NewSink(rtm *rt.Runtime, Rw io.ReadWriter) *Sink {
 	return s
 }
 
-func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
+func NewSinkInput(mlr *moonlight.Runtime, r io.Reader) *Sink {
 	s := &Sink{
 		Rw: bufio.NewReadWriter(bufio.NewReader(r), nil),
 	}
-	s.UserData = sinkUserData(rtm, s)
+	//s.UserData = sinkUserData(rtm, s)
 
 	if f, ok := r.(*os.File); ok {
 		s.file = f
@@ -257,12 +264,12 @@ func NewSinkInput(rtm *rt.Runtime, r io.Reader) *Sink {
 	return s
 }
 
-func NewSinkOutput(rtm *rt.Runtime, w io.Writer) *Sink {
+func NewSinkOutput(mlr *moonlight.Runtime, w io.Writer) *Sink {
 	s := &Sink{
-		Rw: bufio.NewReadWriter(nil, bufio.NewWriter(w)),
+		Rw:        bufio.NewReadWriter(nil, bufio.NewWriter(w)),
 		autoFlush: true,
 	}
-	s.UserData = sinkUserData(rtm, s)
+	//s.UserData = sinkUserData(rtm, s)
 
 	return s
 }
@@ -270,7 +277,7 @@ func NewSinkOutput(rtm *rt.Runtime, w io.Writer) *Sink {
 func sinkArg(c *rt.GoCont, arg int) (*Sink, error) {
 	s, ok := valueToSink(c.Arg(arg))
 	if !ok {
-		return nil, fmt.Errorf("#%d must be a sink", arg + 1)
+		return nil, fmt.Errorf("#%d must be a sink", arg+1)
 	}
 
 	return s, nil
@@ -286,7 +293,9 @@ func valueToSink(val rt.Value) (*Sink, bool) {
 	return s, ok
 }
 
+/*
 func sinkUserData(rtm *rt.Runtime, s *Sink) *rt.UserData {
 	sinkMeta := rtm.Registry(sinkMetaKey)
 	return rt.NewUserData(s, sinkMeta.AsTable())
 }
+*/

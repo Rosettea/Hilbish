@@ -6,17 +6,21 @@ local fs = require 'fs'
 package.path = package.path .. ';' .. hilbish.dataDir .. '/?/init.lua'
 .. ';' .. hilbish.dataDir .. '/?/?.lua' .. ";" .. hilbish.dataDir .. '/?.lua'
 
-hilbish.module.paths = '?.so;?/?.so;'
-.. hilbish.userDir.data .. 'hilbish/libs/?/?.so'
-.. ";" .. hilbish.userDir.data .. 'hilbish/libs/?.so'
+if not hilbish.midnightEdition then
+	hilbish.module.paths = '?.so;?/?.so;'
+	.. hilbish.userDir.data .. 'hilbish/libs/?/?.so'
+	.. ";" .. hilbish.userDir.data .. 'hilbish/libs/?.so'
 
-table.insert(package.searchers, function(module)
-	local path = package.searchpath(module, hilbish.module.paths)
-	if not path then return nil end
+	table.insert(package.searchers, function(module)
+		local path = package.searchpath(module, hilbish.module.paths)
+		if not path then return nil end
 
-	-- it didnt work normally, idk
-	return function() return hilbish.module.load(path) end, path
-end)
+		-- it didnt work normally, idk
+		return function() return hilbish.module.load(path) end, path
+	end)
+else
+	pcall = unsafe_pcall
+end
 
 require 'nature.hilbish'
 require 'nature.processors'
@@ -66,6 +70,7 @@ do
 	})
 end
 
+--[[
 do
 	local startSearchPath = hilbish.userDir.data .. '/hilbish/start/?/init.lua;'
 	.. hilbish.userDir.data .. '/hilbish/start/?.lua'
@@ -82,6 +87,7 @@ do
 
 	package.path = package.path .. ';' .. startSearchPath
 end
+]]--
 
 bait.catch('error', function(event, handler, err)
 	print(string.format('Encountered an error in %s handler\n%s', event, err:sub(8)))

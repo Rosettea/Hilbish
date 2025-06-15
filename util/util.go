@@ -1,18 +1,18 @@
 package util
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"path/filepath"
-	"strings"
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"syscall"
+
+	"hilbish/moonlight"
 
 	rt "github.com/arnodel/golua/runtime"
 )
@@ -20,12 +20,12 @@ import (
 var ErrNotExec = errors.New("not executable")
 var ErrNotFound = errors.New("not found")
 
-type ExecError struct{
-	Typ string
-	Cmd string
-	Code int
+type ExecError struct {
+	Typ   string
+	Cmd   string
+	Code  int
 	Colon bool
-	Err error
+	Err   error
 }
 
 func (e ExecError) Error() string {
@@ -56,18 +56,18 @@ func IsExecError(err error) (ExecError, bool) {
 		var colon bool
 		var e error
 		switch fields[1] {
-			case "not-found":
-				e = ErrNotFound
-			case "not-executable":
-				colon = true
-				e = ErrNotExec
+		case "not-found":
+			e = ErrNotFound
+		case "not-executable":
+			colon = true
+			e = ErrNotExec
 		}
 
 		return ExecError{
-			Cmd: fields[0],
-			Typ: fields[1],
+			Cmd:   fields[0],
+			Typ:   fields[1],
 			Colon: colon,
-			Err: e,
+			Err:   e,
 		}, true
 	}
 
@@ -76,101 +76,21 @@ func IsExecError(err error) (ExecError, bool) {
 
 // SetField sets a field in a table, adding docs for it.
 // It is accessible via the __docProp metatable. It is a table of the names of the fields.
-func SetField(rtm *rt.Runtime, module *rt.Table, field string, value rt.Value) {
-	// TODO:    ^ rtm isnt needed, i should remove it
+func SetField(module *rt.Table, field string, value rt.Value) {
 	module.Set(rt.StringValue(field), value)
-}
-
-// SetFieldProtected sets a field in a protected table. A protected table
-// is one which has a metatable proxy to ensure no overrides happen to it.
-// It sets the field in the table and sets the __docProp metatable on the
-// user facing table.
-func SetFieldProtected(module, realModule *rt.Table, field string, value rt.Value) {
-	realModule.Set(rt.StringValue(field), value)
-}
-
-// DoString runs the code string in the Lua runtime.
-func DoString(rtm *rt.Runtime, code string) (rt.Value, error) {
-	chunk, err := rtm.CompileAndLoadLuaChunk("<string>", []byte(code), rt.TableValue(rtm.GlobalEnv()))
-	var ret rt.Value
-	if chunk != nil {
-		ret, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(chunk))
-	}
-
-	return ret, err
-}
-
-func MustDoString(rtm *rt.Runtime, code string) rt.Value {
-	val, err := DoString(rtm, code)
-	if err != nil {
-		panic(err)
-	}
-
-	return val
-}
-
-// DoFile runs the contents of the file in the Lua runtime.
-func DoFile(rtm *rt.Runtime, path string) error {
-	f, err := os.Open(path)
-	defer f.Close()
-
-	if err != nil {
-		return err
-	}
-	
-	reader := bufio.NewReader(f)
-	c, err := reader.ReadByte()
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// unread so a char won't be missing
-	err = reader.UnreadByte()
-	if err != nil {
-		return err
-	}
-
-	var buf []byte
-	if c == byte('#') {
-		// shebang - skip that line
-		_, err := reader.ReadBytes('\n')
-		if err != nil && err != io.EOF {
-			return err
-		}
-		buf = []byte{'\n'}
-	}
-
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return err
-		}
-		
-		buf = append(buf, line...)
-	}
-
-	clos, err := rtm.LoadFromSourceOrCode(path, buf, "bt", rt.TableValue(rtm.GlobalEnv()), false)
-	if clos != nil {
-		_, err = rt.Call1(rtm.MainThread(), rt.FunctionValue(clos))
-	}
-
-	return err
 }
 
 // HandleStrCallback handles function parameters for Go functions which take
 // a string and a closure.
-func HandleStrCallback(t *rt.Thread, c *rt.GoCont) (string, *rt.Closure, error) {
-	if err := c.CheckNArgs(2); err != nil {
+func HandleStrCallback(mlr *moonlight.Runtime) (string, *moonlight.Closure, error) {
+	if err := mlr.CheckNArgs(2); err != nil {
 		return "", nil, err
 	}
-	name, err := c.StringArg(0)
+	name, err := mlr.StringArg(0)
 	if err != nil {
 		return "", nil, err
 	}
-	cb, err := c.ClosureArg(1)
+	cb, err := mlr.ClosureArg(1)
 	if err != nil {
 		return "", nil, err
 	}
@@ -273,7 +193,8 @@ func HandleExecErr(err error) (exit uint8) {
 		// did not start
 		//fmt.Fprintf(hc.Stderr, "%v\n", err)
 		exit = 127
-	default: return
+	default:
+		return
 	}
 
 	return

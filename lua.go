@@ -5,67 +5,63 @@ import (
 	"os"
 	"path/filepath"
 
-	"hilbish/util"
+	//"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
 	"hilbish/golibs/snail"
 	"hilbish/golibs/terminal"
 
-	rt "github.com/arnodel/golua/runtime"
-	"github.com/arnodel/golua/lib"
-	"github.com/arnodel/golua/lib/debuglib"
+	"hilbish/moonlight"
 )
 
 var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
-	l = rt.New(os.Stdout)
-	l.PushContext(rt.RuntimeContextDef{
-		MessageHandler: debuglib.Traceback,
-	})
-	lib.LoadAll(l)
+	l = moonlight.NewRuntime()
 
-	lib.LoadLibs(l, hilbishLoader)
+	l.LoadLibrary(hilbishLoader, "hilbish")
 	// yes this is stupid, i know
-	util.DoString(l, "hilbish = require 'hilbish'")
+	l.DoString("hilbish = require 'hilbish'")
 
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
 		fmt.Println("Error in `error` hook handler:", err)
 		hooks.Off(event, handler)
 	})
-	lib.LoadLibs(l, hooks.Loader)
+	l.LoadLibrary(hooks.Loader, "bait")
 
 	// Add Ctrl-C handler
-	hooks.On("signal.sigint", func(...interface{}) rt.Value {
-		if !interactive {
-			os.Exit(0)
+	/*
+		hooks.On("signal.sigint", func(...interface{}) rt.Value {
+			if !interactive {
+				os.Exit(0)
+			}
+			return rt.NilValue
+		})
+
+		lr.rl.RawInputCallback = func(r []rune) {
+			hooks.Emit("hilbish.rawInput", string(r))
 		}
-		return rt.NilValue
-	})
+	*/
 
-	lr.rl.RawInputCallback = func(r []rune) {
-		hooks.Emit("hilbish.rawInput", string(r))
-	}
-
-	lib.LoadLibs(l, fs.Loader)
-	lib.LoadLibs(l, terminal.Loader)
-	lib.LoadLibs(l, snail.Loader)
+	l.LoadLibrary(fs.Loader, "fs")
+	l.LoadLibrary(terminal.Loader, "terminal")
+	l.LoadLibrary(snail.Loader, "snail")
 
 	cmds = commander.New(l)
-	lib.LoadLibs(l, cmds.Loader)
-
+	l.LoadLibrary(cmds.Loader, "commander")
 
 	// Add more paths that Lua can require from
-	_, err := util.DoString(l, "package.path = package.path .. " + requirePaths)
+	_, err := l.DoString("package.path = package.path .. " + requirePaths)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		fmt.Fprintln(os.Stderr, "Could not add Hilbish require paths! Libraries will be missing. This shouldn't happen.")
 	}
 
-	err1 := util.DoFile(l, "nature/init.lua")
+	err1 := l.DoFile("nature/init.lua")
 	if err1 != nil {
-		err2 := util.DoFile(l, filepath.Join(dataDir, "nature", "init.lua"))
+		err2 := l.DoFile(filepath.Join(dataDir, "nature", "init.lua"))
 		if err2 != nil {
 			fmt.Fprintln(os.Stderr, "Missing nature module, some functionality and builtins will be missing.")
 			fmt.Fprintln(os.Stderr, "local error:", err1)
@@ -78,9 +74,9 @@ func runConfig(confpath string) {
 	if !interactive {
 		return
 	}
-	err := util.DoFile(l, confpath)
+	err := l.DoFile(confpath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err, "\nAn error has occured while loading your config! Falling back to minimal default config.")
-		util.DoString(l, minimalconf)
+		l.DoString(minimalconf)
 	}
 }

@@ -25,6 +25,7 @@ local function doNotifyPrompt()
 end
 
 doPrompt()
+--[[
 
 bait.catch('command.preexec', function()
 	running = true
@@ -47,3 +48,4 @@ end)
 bait.catch('hilbish.notification', function(notif)
 	doNotifyPrompt()
 end)
+]]--

@@ -12,29 +12,25 @@ import (
 	"io"
 	"strings"
 
+	"hilbish/moonlight"
 	"hilbish/util"
 
-	rt "github.com/arnodel/golua/runtime"
-	"github.com/arnodel/golua/lib/packagelib"
 	"github.com/arnodel/golua/lib/iolib"
+	rt "github.com/arnodel/golua/runtime"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
 
 var snailMetaKey = rt.StringValue("hshsnail")
-var Loader = packagelib.Loader{
-	Load: loaderFunc,
-	Name: "snail",
-}
 
-func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
-	snailMeta := rt.NewTable()
-	snailMethods := rt.NewTable()
-	snailFuncs := map[string]util.LuaExport{
+func Loader(mlr *moonlight.Runtime) moonlight.Value {
+	snailMeta := moonlight.NewTable()
+	snailMethods := moonlight.NewTable()
+	snailFuncs := map[string]moonlight.Export{
 		"run": {snailrun, 3, false},
 		"dir": {snaildir, 2, false},
 	}
-	util.SetExports(rtm, snailMethods, snailFuncs)
+	mlr.SetExports(snailMethods, snailFuncs)
 
 	snailIndex := func(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 		arg := c.Arg(1)
@@ -43,23 +39,25 @@ func loaderFunc(rtm *rt.Runtime) (rt.Value, func()) {
 		return c.PushingNext1(t.Runtime, val), nil
 	}
 	snailMeta.Set(rt.StringValue("__index"), rt.FunctionValue(rt.NewGoFunction(snailIndex, "__index", 2, false)))
-	rtm.SetRegistry(snailMetaKey, rt.TableValue(snailMeta))
+	mlr.SetRegistry(snailMetaKey, moonlight.TableValue(snailMeta))
 
-	exports := map[string]util.LuaExport{
-		"new": util.LuaExport{snailnew, 0, false},
+	exports := map[string]moonlight.Export{
+		"new": {snailnew, 0, false},
 	}
 
-	mod := rt.NewTable()
-	util.SetExports(rtm, mod, exports)
+	mod := moonlight.NewTable()
+	mlr.SetExports(mod, exports)
 
-	return rt.TableValue(mod), nil
+	return moonlight.TableValue(mod)
 }
 
 // new() -> @Snail
 // Creates a new Snail instance.
-func snailnew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	s := New(t.Runtime)
-	return c.PushingNext1(t.Runtime, rt.UserDataValue(snailUserData(s))), nil
+func snailnew(mlr *moonlight.Runtime) error {
+	s := New(mlr)
+
+	mlr.PushNext1(moonlight.UserDataValue(snailUserData(s)))
+	return nil
 }
 
 // #member
@@ -67,25 +65,26 @@ func snailnew(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Runs a shell command. Works the same as `hilbish.run`, but only accepts a table of streams.
 // #param command string
 // #param streams table
-func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
-		return nil, err
+func snailrun(mlr *moonlight.Runtime) error {
+	if err := mlr.CheckNArgs(2); err != nil {
+		return err
 	}
 
-	s, err := snailArg(c, 0)
+	s, err := snailArg(mlr, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	cmd, err := c.StringArg(1)
+	cmd, err := mlr.StringArg(1)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	streams := &util.Streams{}
-	thirdArg := c.Arg(2)
+	thirdArg := mlr.Arg(2)
 	switch thirdArg.Type() {
-		case rt.TableType:
+	case moonlight.TableType:
+		/*
 			args := thirdArg.AsTable()
 
 			if luastreams, ok := args.Get(rt.StringValue("sinks")).TryTable(); ok {
@@ -93,22 +92,23 @@ func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 				handleStream(luastreams.Get(rt.StringValue("err")), streams, true, false)
 				handleStream(luastreams.Get(rt.StringValue("input")), streams, false, true)
 			}
-		case rt.NilType: // noop
-		default:
-			return nil, errors.New("expected 3rd arg to be a table")
+		*/
+	case moonlight.NilType: // noop
+	default:
+		return errors.New("expected 3rd arg to be a table")
 	}
 
 	var newline bool
 	var cont bool
-	var luaErr rt.Value = rt.NilValue
+	var luaErr moonlight.Value = moonlight.NilValue
 	exitCode := 0
 	bg, _, _, err := s.Run(cmd, streams)
 	if err != nil {
 		if syntax.IsIncomplete(err) {
 			/*
-			if !interactive {
-				return cmdString, 126, false, false, err
-			}
+				if !interactive {
+					return cmdString, 126, false, false, err
+				}
 			*/
 			if strings.Contains(err.Error(), "unclosed here-document") {
 				newline = true
@@ -121,19 +121,21 @@ func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 				if exErr, ok := util.IsExecError(err); ok {
 					exitCode = exErr.Code
 				}
-				luaErr = rt.StringValue(err.Error())
+				luaErr = moonlight.StringValue(err.Error())
 			}
 		}
 	}
-	runnerRet := rt.NewTable()
-	runnerRet.Set(rt.StringValue("input"), rt.StringValue(cmd))
-	runnerRet.Set(rt.StringValue("exitCode"), rt.IntValue(int64(exitCode)))
-	runnerRet.Set(rt.StringValue("continue"), rt.BoolValue(cont))
-	runnerRet.Set(rt.StringValue("newline"), rt.BoolValue(newline))
-	runnerRet.Set(rt.StringValue("err"), luaErr)
 
-	runnerRet.Set(rt.StringValue("bg"), rt.BoolValue(bg))
-	return c.PushingNext1(t.Runtime, rt.TableValue(runnerRet)), nil
+	runnerRet := moonlight.NewTable()
+	runnerRet.SetField("input", moonlight.StringValue(cmd))
+	runnerRet.SetField("exitCode", moonlight.IntValue(int64(exitCode)))
+	runnerRet.SetField("continue", moonlight.BoolValue(cont))
+	runnerRet.SetField("newline", moonlight.BoolValue(newline))
+	runnerRet.SetField("err", luaErr)
+	runnerRet.SetField("bg", moonlight.BoolValue(bg))
+
+	mlr.PushNext1(moonlight.TableValue(runnerRet))
+	return nil
 }
 
 // #member
@@ -142,23 +144,23 @@ func snailrun(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // The interpreter keeps its set directory even when the Hilbish process changes
 // directory, so this should be called on the `hilbish.cd` hook.
 // #param path string Has to be an absolute path.
-func snaildir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.CheckNArgs(2); err != nil {
-		return nil, err
+func snaildir(mlr *moonlight.Runtime) error {
+	if err := mlr.CheckNArgs(2); err != nil {
+		return err
 	}
 
-	s, err := snailArg(c, 0)
+	s, err := snailArg(mlr, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	dir, err := c.StringArg(1)
+	dir, err := mlr.StringArg(1)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	interp.Dir(dir)(s.runner)
-	return c.Next(), nil
+	return nil
 }
 
 func handleStream(v rt.Value, strms *util.Streams, errStream, inStream bool) error {
@@ -196,10 +198,10 @@ func handleStream(v rt.Value, strms *util.Streams, errStream, inStream bool) err
 	return nil
 }
 
-func snailArg(c *rt.GoCont, arg int) (*Snail, error) {
-	s, ok := valueToSnail(c.Arg(arg))
+func snailArg(mlr *moonlight.Runtime, arg int) (*Snail, error) {
+	s, ok := valueToSnail(mlr.Arg(arg))
 	if !ok {
-		return nil, fmt.Errorf("#%d must be a snail", arg + 1)
+		return nil, fmt.Errorf("#%d must be a snail", arg+1)
 	}
 
 	return s, nil
@@ -215,7 +217,7 @@ func valueToSnail(val rt.Value) (*Snail, bool) {
 	return s, ok
 }
 
-func snailUserData(s *Snail) *rt.UserData {
+func snailUserData(s *Snail) *moonlight.UserData {
 	snailMeta := s.runtime.Registry(snailMetaKey)
-	return rt.NewUserData(s, snailMeta.AsTable())
+	return moonlight.NewUserData(s, moonlight.ToTable(s.runtime, snailMeta))
 }

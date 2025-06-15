@@ -12,33 +12,35 @@ import (
 	"strings"
 	"time"
 
+	"hilbish/moonlight"
 	"hilbish/util"
 
 	rt "github.com/arnodel/golua/runtime"
 	"mvdan.cc/sh/v3/shell"
+
 	//"github.com/yuin/gopher-lua/parse"
+	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
-	"mvdan.cc/sh/v3/expand"
 )
 
 // #type
 // A Snail is a shell script interpreter instance.
-type Snail struct{
-	runner *interp.Runner
-	runtime *rt.Runtime
+type Snail struct {
+	runner  *interp.Runner
+	runtime *moonlight.Runtime
 }
 
-func New(rtm *rt.Runtime) *Snail {
+func New(mlr *moonlight.Runtime) *Snail {
 	runner, _ := interp.New()
 
 	return &Snail{
-		runner: runner,
-		runtime: rtm,
+		runner:  runner,
+		runtime: mlr,
 	}
 }
 
-func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer, error){
+func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer, error) {
 	file, err := syntax.NewParser().Parse(strings.NewReader(cmd), "")
 	if err != nil {
 		return false, nil, nil, err
@@ -84,10 +86,12 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			_, argstring := splitInput(strings.Join(args, " "))
 			// i dont really like this but it works
 			aliases := make(map[string]string)
-			aliasesLua, _ := util.DoString(s.runtime, "return hilbish.aliases.list()")
-			util.ForEach(aliasesLua.AsTable(), func(k, v rt.Value) {
-				aliases[k.AsString()] = v.AsString()
-			})
+			/*
+				aliasesLua, _ := s.runtime.DoString("return hilbish.aliases.list()")
+				util.ForEach(aliasesLua.AsTable(), func(k, v rt.Value) {
+					aliases[k.AsString()] = v.AsString()
+				})
+			*/
 			if aliases[args[0]] != "" {
 				for i, arg := range args {
 					if strings.Contains(arg, " ") {
@@ -97,7 +101,7 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 				_, argstring = splitInput(strings.Join(args, " "))
 
 				// If alias was found, use command alias
-				argstring = util.MustDoString(s.runtime, fmt.Sprintf(`return hilbish.aliases.resolve [[%s]]`, replacer.Replace(argstring))).AsString()
+				argstring = s.runtime.MustDoString(fmt.Sprintf(`return hilbish.aliases.resolve [[%s]]`, replacer.Replace(argstring))).AsString()
 
 				var err error
 				args, err = shell.Fields(argstring, nil)
@@ -109,13 +113,13 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			// If command is defined in Lua then run it
 			luacmdArgs := rt.NewTable()
 			for i, str := range args[1:] {
-				luacmdArgs.Set(rt.IntValue(int64(i + 1)), rt.StringValue(str))
+				luacmdArgs.Set(rt.IntValue(int64(i+1)), rt.StringValue(str))
 			}
 
 			hc := interp.HandlerCtx(ctx)
 
 			cmds := make(map[string]*rt.Closure)
-			luaCmds := util.MustDoString(s.runtime, "local commander = require 'commander'; return commander.registry()").AsTable()
+			luaCmds := s.runtime.MustDoString("local commander = require 'commander'; return commander.registry()").AsTable()
 			util.ForEach(luaCmds, func(k, v rt.Value) {
 				cmds[k.AsString()] = v.AsTable().Get(rt.StringValue("exec")).AsClosure()
 			})
@@ -130,7 +134,7 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 				sinks.Set(rt.StringValue("out"), rt.UserDataValue(stdout.UserData))
 				sinks.Set(rt.StringValue("err"), rt.UserDataValue(stderr.UserData))
 
-				t := rt.NewThread(s.runtime)
+				//t := rt.NewThread(s.runtime)
 				sig := make(chan os.Signal)
 				exit := make(chan bool)
 
@@ -145,21 +149,21 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 
 					signal.Notify(sig, os.Interrupt)
 					select {
-						case <-sig:
-							t.KillContext()
-							return
+					case <-sig:
+						//t.KillContext()
+						return
 					}
 
 				}()
 
 				go func() {
-					luaexitcode, err = rt.Call1(t, rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
+					//luaexitcode, err = rt.Call1(t, rt.FunctionValue(cmd), rt.TableValue(luacmdArgs), rt.TableValue(sinks))
 					exit <- true
 				}()
 
 				<-exit
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "Error in command:\n" + err.Error())
+					fmt.Fprintln(os.Stderr, "Error in command:\n"+err.Error())
 					return interp.NewExitStatus(1)
 				}
 
@@ -179,18 +183,18 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			path, err := util.LookPath(args[0])
 			if err == util.ErrNotExec {
 				return util.ExecError{
-					Typ: "not-executable",
-					Cmd: args[0],
-					Code: 126,
+					Typ:   "not-executable",
+					Cmd:   args[0],
+					Code:  126,
 					Colon: true,
-					Err: util.ErrNotExec,
+					Err:   util.ErrNotExec,
 				}
 			} else if err != nil {
 				return util.ExecError{
-					Typ: "not-found",
-					Cmd: args[0],
+					Typ:  "not-found",
+					Cmd:  args[0],
 					Code: 127,
-					Err: util.ErrNotFound,
+					Err:  util.ErrNotFound,
 				}
 			}
 
@@ -208,11 +212,11 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			})
 
 			cmd := exec.Cmd{
-				Path: path,
-				Args: args,
-				Env: envList,
-				Dir: hc.Dir,
-				Stdin: hc.Stdin,
+				Path:   path,
+				Args:   args,
+				Env:    envList,
+				Dir:    hc.Dir,
+				Stdin:  hc.Stdin,
 				Stdout: hc.Stdout,
 				Stderr: hc.Stderr,
 			}
@@ -220,9 +224,9 @@ func (s *Snail) Run(cmd string, strms *util.Streams) (bool, io.Writer, io.Writer
 			//var j *job
 			if bg {
 				/*
-				j = jobs.getLatest()
-				j.setHandle(&cmd)
-				err = j.start()
+					j = jobs.getLatest()
+					j.setHandle(&cmd)
+					err = j.start()
 				*/
 			} else {
 				err = cmd.Start()
