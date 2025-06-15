@@ -217,6 +217,11 @@ func (g *CompletionGroup) writeList(rl *Instance) (comp string) {
 			alt = strings.Repeat(" ", maxLengthAlt+1) // + 2 to keep account of spaces
 		}
 
+		styledSugg, ok := g.ItemDisplays[item]
+		if ok {
+			sugg = fmt.Sprintf("\r%s%-"+cellWidth+"s", highlight(y, 0), fmtEscape(styledSugg))
+		}
+
 		// Description
 		description := g.Descriptions[g.Suggestions[i]]
 		if len(description) > maxDescWidth {

@@ -48,7 +48,7 @@ type Recoverer func(event string, handler *Listener, err interface{})
 type Listener struct {
 	typ       listenerType
 	once      bool
-	caller    func(...interface{})
+	caller    func(...interface{}) rt.Value
 	luaCaller *moonlight.Closure
 }
 
@@ -69,10 +69,11 @@ func New(rtm *moonlight.Runtime) *Bait {
 }
 
 // Emit throws an event.
-func (b *Bait) Emit(event string, args ...interface{}) {
+func (b *Bait) Emit(event string, args ...interface{}) []rt.Value {
+	var returns []rt.Value
 	handles := b.handlers[event]
 	if handles == nil {
-		return
+		return nil
 	}
 
 	for idx, handle := range handles {
@@ -96,29 +97,38 @@ func (b *Bait) Emit(event string, args ...interface{}) {
 				luaArgs = append(luaArgs, luarg)
 			}
 			/*
-				_, err := b.rtm.Call1(funcVal, luaArgs...)
+				luaRet, err := rt.Call1(b.rtm.MainThread(), funcVal, luaArgs...)
 				if err != nil {
 					if event != "error" {
 						b.Emit("error", event, handle.luaCaller, err.Error())
-						return
+						return nil
 					}
 					// if there is an error in an error event handler, panic instead
 					// (calls the go recoverer function)
 					panic(err)
 				}
+
+				if luaRet != rt.NilValue {
+					returns = append(returns, luaRet)
+				}
 			*/
 		} else {
-			handle.caller(args...)
+			ret := handle.caller(args...)
+			if ret != rt.NilValue {
+				returns = append(returns, ret)
+			}
 		}
 
 		if handle.once {
 			b.removeListener(event, idx)
 		}
 	}
+
+	return returns
 }
 
 // On adds a Go function handler for an event.
-func (b *Bait) On(event string, handler func(...interface{})) *Listener {
+func (b *Bait) On(event string, handler func(...interface{}) rt.Value) *Listener {
 	listener := &Listener{
 		typ:    goListener,
 		caller: handler,
@@ -162,7 +172,7 @@ func (b *Bait) OffLua(event string, handler *moonlight.Closure) {
 }
 
 // Once adds a Go function listener for an event that only runs once.
-func (b *Bait) Once(event string, handler func(...interface{})) *Listener {
+func (b *Bait) Once(event string, handler func(...interface{}) rt.Value) *Listener {
 	listener := &Listener{
 		typ:    goListener,
 		once:   true,
@@ -225,29 +235,6 @@ func (b *Bait) Loader(rtm *moonlight.Runtime) moonlight.Value {
 	rtm.SetExports(mod, exports)
 
 	return moonlight.TableValue(mod)
-}
-
-func handleHook(t *rt.Thread, c *rt.GoCont, name string, catcher *rt.Closure, args ...interface{}) {
-	funcVal := rt.FunctionValue(catcher)
-	var luaArgs []rt.Value
-	for _, arg := range args {
-		var luarg rt.Value
-		switch arg.(type) {
-		case rt.Value:
-			luarg = arg.(rt.Value)
-		default:
-			luarg = rt.AsValue(arg)
-		}
-		luaArgs = append(luaArgs, luarg)
-	}
-	_, err := rt.Call1(t, funcVal, luaArgs...)
-	if err != nil {
-		e := rt.NewError(rt.StringValue(err.Error()))
-		e = e.AddContext(c.Next(), 1)
-		// panicking here won't actually cause hilbish to panic and instead will
-		// print the error and remove the hook (look at emission recover from above)
-		panic(e)
-	}
 }
 
 // catch(name, cb)
@@ -378,8 +365,8 @@ func (b *Bait) bthrow(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	for i, v := range c.Etc() {
 		ifaceSlice[i] = v
 	}
-	b.Emit(name, ifaceSlice...)
+	ret := b.Emit(name, ifaceSlice...)
 
-	return c.Next(), nil
+	return c.PushingNext(t.Runtime, ret...), nil
 }
 */

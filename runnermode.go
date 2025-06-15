@@ -1,6 +1,8 @@
 package main
 
-import "hilbish/moonlight"
+import (
+	"hilbish/moonlight"
+)
 
 // #interface runner
 // interactive command runner customization
@@ -17,6 +19,7 @@ A runner is passed the input and has to return a table with these values.
 All are not required, only the useful ones the runner needs to return.
 (So if there isn't an error, just omit `err`.)
 
+<<<<<<< HEAD
 - `exitCode` (number): A numerical code to indicate the exit result.
 - `input` (string): The user input. This will be used to add
 to the history.
@@ -27,6 +30,20 @@ It can be set to a few special values for Hilbish to throw the right hooks and h
 
 `[command]: not-executable` will throw a command.not-executable hook.
 - `continue` (boolean): Whether to prompt the user for more input.
+=======
+- `exitCode` (number): Exit code of the command
+- `input` (string): The text input of the user. This is used by Hilbish to append extra input, in case
+more is requested.
+- `err` (string): A string that represents an error from the runner.
+This should only be set when, for example, there is a syntax error.
+It can be set to a few special values for Hilbish to throw the right
+hooks and have a better looking message.
+	- `<command>: not-found` will throw a `command.not-found` hook
+	based on what `<command>` is.
+	- `<command>: not-executable` will throw a `command.not-executable` hook.
+- `continue` (boolean): Whether Hilbish should prompt the user for no input
+- `newline` (boolean): Whether a newline should be added at the end of `input`.
+>>>>>>> master
 
 Here is a simple example of a fennel runner. It falls back to
 shell script if fennel eval has an error.
@@ -45,55 +62,15 @@ hilbish.runnerMode(function(input)
 end)
 ```
 */
-func runnerModeLoader(rtm *moonlight.Runtime) *moonlight.Table {
+func runnerModeLoader(mlr *moonlight.Runtime) *moonlight.Table {
 	exports := map[string]moonlight.Export{
-		"sh":      {shRunner, 1, false},
-		"lua":     {luaRunner, 1, false},
-		"setMode": {hlrunnerMode, 1, false},
+		"lua": {luaRunner, 1, false},
 	}
 
 	mod := moonlight.NewTable()
-	rtm.SetExports(mod, exports)
+	mlr.SetExports(mod, exports)
 
 	return mod
-}
-
-// #interface runner
-// setMode(cb)
-// This is the same as the `hilbish.runnerMode` function.
-// It takes a callback, which will be used to execute all interactive input.
-// In normal cases, neither callbacks should be overrided by the user,
-// as the higher level functions listed below this will handle it.
-// #param cb function
-func _runnerMode() {}
-
-// #interface runner
-// sh(cmd)
-// Runs a command in Hilbish's shell script interpreter.
-// This is the equivalent of using `source`.
-// #param cmd string
-func shRunner(mlr *moonlight.Runtime) error {
-	if err := mlr.Check1Arg(); err != nil {
-		return err
-	}
-	cmd, err := mlr.StringArg(0)
-	if err != nil {
-		return err
-	}
-
-	_, exitCode, cont, err := execSh(aliases.Resolve(cmd))
-	var luaErr moonlight.Value = moonlight.NilValue
-	if err != nil {
-		luaErr = moonlight.StringValue(err.Error())
-	}
-	runnerRet := moonlight.NewTable()
-	runnerRet.SetField("input", moonlight.StringValue(cmd))
-	runnerRet.SetField("exitCode", moonlight.IntValue(int64(exitCode)))
-	runnerRet.SetField("continue", moonlight.BoolValue(cont))
-	runnerRet.SetField("err", luaErr)
-
-	mlr.PushNext1(moonlight.TableValue(runnerRet))
-	return nil
 }
 
 // #interface runner

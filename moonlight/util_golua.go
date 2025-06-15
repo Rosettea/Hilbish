@@ -1,4 +1,5 @@
 //go:build !midnight
+
 package moonlight
 
 import (
@@ -20,6 +21,15 @@ func (mlr *Runtime) DoString(code string) (Value, error) {
 	return ret, err
 }
 
+func (mlr *Runtime) MustDoString(code string) Value {
+	val, err := mlr.DoString(code)
+	if err != nil {
+		panic(err)
+	}
+
+	return val
+}
+
 // DoFile runs the contents of the file in the Lua runtime.
 func (mlr *Runtime) DoFile(path string) error {
 	f, err := os.Open(path)
@@ -28,7 +38,7 @@ func (mlr *Runtime) DoFile(path string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	reader := bufio.NewReader(f)
 	c, err := reader.ReadByte()
 	if err != nil && err != io.EOF {
@@ -59,7 +69,7 @@ func (mlr *Runtime) DoFile(path string) error {
 			}
 			return err
 		}
-		
+
 		buf = append(buf, line...)
 	}
 

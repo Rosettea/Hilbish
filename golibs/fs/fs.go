@@ -19,38 +19,26 @@ import (
 
 	"github.com/arnodel/golua/lib/iolib"
 	rt "github.com/arnodel/golua/runtime"
-	"mvdan.cc/sh/v3/interp"
 )
 
-type fs struct {
-	runner *interp.Runner
-}
-
-func New(runner *interp.Runner) *fs {
-	return &fs{
-		runner: runner,
-	}
-}
-
-func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
-	println("fs loader called")
+func Loader(mlr *moonlight.Runtime) moonlight.Value {
 	exports := map[string]moonlight.Export{
 		/*
-			"cd": util.LuaExport{f.fcd, 1, false},
-			"mkdir": util.LuaExport{f.fmkdir, 2, false},
-			"stat": util.LuaExport{f.fstat, 1, false},
-			"abs": util.LuaExport{f.fabs, 1, false},
-			"basename": util.LuaExport{f.fbasename, 1, false},
-			"glob": util.LuaExport{f.fglob, 1, false},
-			"join": util.LuaExport{f.fjoin, 0, true},
-			"pipe": util.LuaExport{f.fpipe, 0, false},
+			"cd": util.LuaExport{fcd, 1, false},
+			"mkdir": util.LuaExport{fmkdir, 2, false},
+			"stat": util.LuaExport{fstat, 1, false},
+			"abs": util.LuaExport{fabs, 1, false},
+			"basename": util.LuaExport{fbasename, 1, false},
+			"glob": util.LuaExport{fglob, 1, false},
+			"join": util.LuaExport{fjoin, 0, true},
+			"pipe": util.LuaExport{fpipe, 0, false},
 		*/
-		"readdir": {f.freaddir, 1, false},
-		"dir":     {f.fdir, 1, false},
+		"dir":     {fdir, 1, false},
+		"readdir": {freaddir, 1, false},
 	}
 
 	mod := moonlight.NewTable()
-	rtm.SetExports(mod, exports)
+	mlr.SetExports(mod, exports)
 
 	mod.SetField("pathSep", moonlight.StringValue(string(os.PathSeparator)))
 	mod.SetField("pathListSep", moonlight.StringValue(string(os.PathListSeparator)))
@@ -63,7 +51,7 @@ func (f *fs) Loader(rtm *moonlight.Runtime) moonlight.Value {
 // This can be used to resolve short paths like `..` to `/home/user`.
 // #param path string
 // #returns string
-func (f *fs) fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	path, err := c.StringArg(0)
 	if err != nil {
 		return nil, err
@@ -83,7 +71,7 @@ func (f *fs) fabs(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `.` will be returned.
 // #param path string Path to get the base name of.
 // #returns string
-func (f *fs) fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -98,23 +86,33 @@ func (f *fs) fbasename(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // cd(dir)
 // Changes Hilbish's directory to `dir`.
 // #param dir string Path to change directory to.
-func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
-	if err := c.Check1Arg(); err != nil {
-		return nil, err
+func fcd(mlr *moonlight.Runtime) error {
+	if err := mlr.Check1Arg(); err != nil {
+		return err
 	}
-	path, err := c.StringArg(0)
+	path, err := mlr.StringArg(0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	path = util.ExpandHome(strings.TrimSpace(path))
+	oldWd, _ := os.Getwd()
+
+	abspath, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
 
 	err = os.Chdir(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	interp.Dir(path)(f.runner)
 
-	return c.Next(), err
+	mlr.DoString(fmt.Sprintf(`
+	local bait = require 'bait'
+	bait.throw('hilbish.cd', '%s', '%s')
+	`, abspath, oldWd))
+
+	return err
 }
 
 // dir(path) -> string
@@ -122,7 +120,7 @@ func (f *fs) fcd(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // `~/Documents/doc.txt` then this function will return `~/Documents`.
 // #param path string Path to get the directory for.
 // #returns string
-func (f *fs) fdir(mlr *moonlight.Runtime) error {
+func fdir(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
 		return err
 	}
@@ -154,7 +152,7 @@ print(matches)
 -- -> {'init.lua', 'code.lua'}
 #example
 */
-func (f *fs) fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fglob(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}
@@ -188,7 +186,7 @@ print(fs.join(hilbish.userDir.config, 'hilbish'))
 -- -> '/home/user/.config/hilbish' on Linux
 #example
 */
-func (f *fs) fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	strs := make([]string, len(c.Etc()))
 	for i, v := range c.Etc() {
 		if v.Type() != rt.StringType {
@@ -215,7 +213,7 @@ func (f *fs) fjoin(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 fs.mkdir('./foo/bar', true)
 #example
 */
-func (f *fs) fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.CheckNArgs(2); err != nil {
 		return nil, err
 	}
@@ -246,7 +244,7 @@ func (f *fs) fmkdir(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // The type returned is a Lua file, same as returned from `io` functions.
 // #returns File
 // #returns File
-func (f *fs) fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	rf, wf, err := os.Pipe()
 	if err != nil {
 		return nil, err
@@ -262,7 +260,7 @@ func (f *fs) fpipe(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 // Returns a list of all files and directories in the provided path.
 // #param dir string
 // #returns table
-func (f *fs) freaddir(mlr *moonlight.Runtime) error {
+func freaddir(mlr *moonlight.Runtime) error {
 	if err := mlr.Check1Arg(); err != nil {
 		return err
 	}
@@ -311,7 +309,7 @@ Would print the following:
 ]]--
 #example
 */
-func (f *fs) fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
+func fstat(t *rt.Thread, c *rt.GoCont) (rt.Cont, error) {
 	if err := c.Check1Arg(); err != nil {
 		return nil, err
 	}

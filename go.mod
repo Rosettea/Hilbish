@@ -29,7 +29,7 @@ require (
 	golang.org/x/text v0.26.0 // indirect
 )
 
-replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20240720131751-805c301321fd
+replace mvdan.cc/sh/v3 => github.com/Rosettea/sh/v3 v3.4.0-0.dev.0.20240815163633-562273e09b73
 
 replace github.com/maxlandon/readline => ./readline
 

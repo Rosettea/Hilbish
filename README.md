@@ -31,19 +31,23 @@ will always be more supported than Midnight Edition.**
 # Back the original README
 
 Hilbish is an extensible shell designed to be highly customizable.
-It is configured in Lua and provides a good range of features.
-It aims to be easy to use for anyone but powerful enough for
-those who need it.
+
+It is configured in Lua, and provides a good range of features.
+It aims to be easy to use for anyone, and powerful enough for
+those who need more.
 
 The motivation for choosing Lua was that its simpler and better to use
-than old shell script. It's fine for basic interactive shell uses,
-but that's the only place Hilbish has shell script; everything else is Lua
-and aims to be infinitely configurable. If something isn't, open an issue!
+than old shell scripts. It's fine for basic interactive shell uses,
+and supports [both Lua and Sh interactively](https://rosettea.github.io/Hilbish/docs/features/runner-mode/).
+
+That's the only place Hilbish can use traditional shell syntax though; 
+everything else is Lua and aims to be infinitely configurable. 
+
+If something isn't, open an issue!
 
 # Screenshots
 <div align="center">
 <img src="gallery/tab.png">
-<img src="gallery/pillprompt.png">
 </div>
 
 # Getting Hilbish

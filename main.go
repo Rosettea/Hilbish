@@ -22,7 +22,6 @@ import (
 	"github.com/pborman/getopt"
 	"github.com/maxlandon/readline"
 	"golang.org/x/term"
-	"mvdan.cc/sh/v3/interp"
 )
 
 var (
@@ -39,16 +38,27 @@ var (
 	cmds *commander.Commander
 	defaultConfPath string
 	defaultHistPath string
-	runner *interp.Runner
 )
 
 func main() {
-	runner, _ = interp.New()
+	if runtime.GOOS == "linux" {
+		// dataDir should only be empty on linux to allow XDG_DATA_DIRS searching.
+		// but since it might be set on some distros (nixos) we should still check if its really is empty.
+		if dataDir == "" {
+			searchableDirs := getenv("XDG_DATA_DIRS", "/usr/local/share/:/usr/share/")
+			dataDir = "."
+			for _, path := range strings.Split(searchableDirs, ":") {
+				_, err := os.Stat(filepath.Join(path, "hilbish", ".hilbishrc.lua"))
+				if err == nil {
+					dataDir = filepath.Join(path, "hilbish")
+					break
+				}
+			}
+		}
+	}
+
 	curuser, _ = user.Current()
-	homedir := curuser.HomeDir
 	confDir, _ = os.UserConfigDir()
-	preloadPath = strings.Replace(preloadPath, "~", homedir, 1)
-	sampleConfPath = strings.Replace(sampleConfPath, "~", homedir, 1)
 
 	// i honestly dont know what directories to use for this
 	switch runtime.GOOS {
@@ -142,10 +152,11 @@ func main() {
 		confpath := ".hilbishrc.lua"
 		if err != nil {
 			// If it wasnt found, go to the real sample conf
-			_, err = os.ReadFile(sampleConfPath)
-			confpath = sampleConfPath
+			sampleConfigPath := filepath.Join(dataDir, ".hilbishrc.lua")
+			_, err = os.ReadFile(sampleConfigPath)
+			confpath = sampleConfigPath
 			if err != nil {
-				fmt.Println("could not find .hilbishrc.lua or", sampleConfPath)
+				fmt.Println("could not find .hilbishrc.lua or", sampleConfigPath)
 				return
 			}
 		}
@@ -224,8 +235,9 @@ input:
 		}
 
 		if strings.HasSuffix(input, "\\") {
+			print("\n")
 			for {
-				input, err = continuePrompt(input)
+				input, err = continuePrompt(strings.TrimSuffix(input, "\\") + "\n", false)
 				if err != nil {
 					running = true
 					lr.SetPrompt(fmtPrompt(prompt))
@@ -249,16 +261,24 @@ input:
 	exit(0)
 }
 
-func continuePrompt(prev string) (string, error) {
+func continuePrompt(prev string, newline bool) (string, error) {
 	hooks.Emit("multiline", nil)
 	lr.SetPrompt(multilinePrompt)
+
 	cont, err := lr.Read()
 	if err != nil {
 		return "", err
 	}
-	cont = strings.TrimSpace(cont)
 
-	return prev + strings.TrimSuffix(cont, "\n"), nil
+	if newline {
+		cont = "\n" + cont
+	}
+
+	if strings.HasSuffix(cont, "\\") {
+		cont = strings.TrimSuffix(cont, "\\") + "\n"
+	}
+
+	return prev + cont, nil
 }
 
 // This semi cursed function formats our prompt (obviously)
@@ -303,15 +323,6 @@ func removeDupes(slice []string) []string {
 	}
 
 	return newSlice
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if strings.ToLower(a) == strings.ToLower(e) {
-			return true
-		}
-	}
-	return false
 }
 
 func exit(code int) {

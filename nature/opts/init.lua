@@ -2,7 +2,7 @@ hilbish.opts = {}
 
 local function setupOpt(name, default)
 	hilbish.opts[name] = default
-	pcall(require, 'nature.opts.' .. name)
+	local ok, err = pcall(require, 'nature.opts.' .. name)
 end
 
 local defaultOpts = {
@@ -14,7 +14,9 @@ The nice lil shell for {blue}Lua{reset} fanatics!
 	motd = true,
 	fuzzy = false,
 	notifyJobFinish = true,
-	crimmas = true
+	crimmas = true,
+	tips = true,
+	processorSkipList = {}
 }
 
 for optsName, default in pairs(defaultOpts) do

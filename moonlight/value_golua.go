@@ -1,4 +1,5 @@
 //go:build !midnight
+
 package moonlight
 
 import (
@@ -9,11 +10,13 @@ var NilValue = rt.NilValue
 
 type Value = rt.Value
 type ValueType = rt.ValueType
+
 const (
-	IntType = rt.IntType
-	StringType = rt.StringType
+	NilType      = rt.NilType
+	IntType      = rt.IntType
+	StringType   = rt.StringType
 	FunctionType = rt.FunctionType
-	TableType = rt.TableType
+	TableType    = rt.TableType
 )
 
 func Type(v Value) ValueType {
@@ -40,7 +43,7 @@ func ToString(v Value) string {
 	return v.AsString()
 }
 
-func ToTable(v Value) *Table {
+func ToTable(mlr *Runtime, v Value) *Table {
 	return convertToMoonlightTable(v.AsTable())
 }
 

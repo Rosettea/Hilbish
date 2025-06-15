@@ -707,6 +707,9 @@ func (rl *Instance) escapeSeq(r []rune) {
 			rl.renderHelpers()
 			return
 		}
+
+		rl.insertHintText()
+
 		if (rl.modeViMode == VimInsert && rl.pos < len(rl.line)) ||
 			(rl.modeViMode != VimInsert && rl.pos < len(rl.line)-1) {
 			rl.moveCursorByAdjust(1)

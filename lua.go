@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	//"hilbish/util"
 	"hilbish/golibs/bait"
 	"hilbish/golibs/commander"
 	"hilbish/golibs/fs"
+	"hilbish/golibs/snail"
 	"hilbish/golibs/terminal"
 
 	"hilbish/moonlight"
@@ -17,20 +19,10 @@ var minimalconf = `hilbish.prompt '& '`
 
 func luaInit() {
 	l = moonlight.NewRuntime()
-	setupSinkType()
 
 	l.LoadLibrary(hilbishLoader, "hilbish")
 	// yes this is stupid, i know
 	l.DoString("hilbish = require 'hilbish'")
-
-	// Add fs and terminal module module to Lua
-	f := fs.New(runner)
-	l.LoadLibrary(f.Loader, "fs")
-
-	l.LoadLibrary(terminal.Loader, "terminal")
-
-	cmds = commander.New(l)
-	l.LoadLibrary(cmds.Loader, "commander")
 
 	hooks = bait.New(l)
 	hooks.SetRecoverer(func(event string, handler *bait.Listener, err interface{}) {
@@ -38,18 +30,27 @@ func luaInit() {
 		hooks.Off(event, handler)
 	})
 	l.LoadLibrary(hooks.Loader, "bait")
+
+	// Add Ctrl-C handler
 	/*
-		// Add Ctrl-C handler
-		hooks.On("signal.sigint", func(...interface{}) {
+		hooks.On("signal.sigint", func(...interface{}) rt.Value {
 			if !interactive {
 				os.Exit(0)
 			}
+			return rt.NilValue
 		})
 
 		lr.rl.RawInputCallback = func(r []rune) {
 			hooks.Emit("hilbish.rawInput", string(r))
 		}
 	*/
+
+	l.LoadLibrary(fs.Loader, "fs")
+	l.LoadLibrary(terminal.Loader, "terminal")
+	l.LoadLibrary(snail.Loader, "snail")
+
+	cmds = commander.New(l)
+	l.LoadLibrary(cmds.Loader, "commander")
 
 	// Add more paths that Lua can require from
 	_, err := l.DoString("package.path = package.path .. " + requirePaths)
@@ -60,7 +61,7 @@ func luaInit() {
 
 	err1 := l.DoFile("nature/init.lua")
 	if err1 != nil {
-		err2 := l.DoFile(preloadPath)
+		err2 := l.DoFile(filepath.Join(dataDir, "nature", "init.lua"))
 		if err2 != nil {
 			fmt.Fprintln(os.Stderr, "Missing nature module, some functionality and builtins will be missing.")
 			fmt.Fprintln(os.Stderr, "local error:", err1)

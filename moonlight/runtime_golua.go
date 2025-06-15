@@ -48,3 +48,12 @@ func (mlr *Runtime) PushNext1(v Value) {
 func (mlr *Runtime) Call1(val Value, args ...Value) (Value, error) {
 	return rt.Call1(mlr.rt.MainThread(), val, args...)
 }
+
+// Get a value from the registry.
+func (mlr *Runtime) Registry(key Value) Value {
+	return mlr.rt.Registry(key)
+}
+
+func (mlr *Runtime) SetRegistry(key, value Value) {
+	mlr.rt.SetRegistry(key, value)
+}

@@ -22,12 +22,16 @@ else
 	pcall = unsafe_pcall
 end
 
+require 'nature.hilbish'
+require 'nature.processors'
+
 require 'nature.commands'
 require 'nature.completions'
 require 'nature.opts'
 require 'nature.vim'
 require 'nature.runner'
 require 'nature.hummingbird'
+require 'nature.abbr'
 
 local shlvl = tonumber(os.getenv 'SHLVL')
 if shlvl ~= nil then

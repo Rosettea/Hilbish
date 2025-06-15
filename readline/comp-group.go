@@ -14,6 +14,7 @@ type CompletionGroup struct {
 	Suggestions  []string
 	Aliases      map[string]string // A candidate has an alternative name (ex: --long, -l option flags)
 	Descriptions map[string]string // Items descriptions
+	ItemDisplays map[string]string // What to display the item as (can be used for styling items)
 	DisplayType  TabDisplayType    // Map, list or normal
 	MaxLength    int               // Each group can be limited in the number of comps offered
 

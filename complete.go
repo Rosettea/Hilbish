@@ -97,7 +97,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			if len(fileCompletions) != 0 {
 				for _, f := range fileCompletions {
 					fullPath, _ := filepath.Abs(util.ExpandHome(query + strings.TrimPrefix(f, filePref)))
-					if err := findExecutable(escapeInvertReplaer.Replace(fullPath), false, true); err != nil {
+					if err := util.FindExecutable(escapeInvertReplaer.Replace(fullPath), false, true); err != nil {
 						continue
 					}
 					completions = append(completions, f)
@@ -114,7 +114,7 @@ func binaryComplete(query, ctx string, fields []string) ([]string, string) {
 			// get basename from matches
 			for _, match := range matches {
 				// check if we have execute permissions for our match
-				err := findExecutable(match, true, false)
+				err := util.FindExecutable(match, true, false)
 				if err != nil {
 					continue
 				}
@@ -156,9 +156,12 @@ func matchPath(query string) ([]string, string) {
 
 	files, _ := os.ReadDir(path)
 	for _, entry := range files {
-		// should we handle errors here?
 		file, err := entry.Info()
-		if err == nil && file.Mode()&os.ModeSymlink != 0 {
+		if err != nil {
+			continue
+		}
+
+		if file.Mode()&os.ModeSymlink != 0 {
 			path, err := filepath.EvalSymlinks(filepath.Join(path, file.Name()))
 			if err == nil {
 				file, err = os.Lstat(path)
