@@ -14,7 +14,6 @@ import (
 // captures without having to repeatedly unload configuration.
 
 // #type
-// blah blah
 type Readline struct {
 
 	//

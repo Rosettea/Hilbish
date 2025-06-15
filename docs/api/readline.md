@@ -38,7 +38,6 @@ This function has no parameters.
 <hr>
 
 ## Readline
-blah blah
 
 ### Methods
 #### deleteByAmount(amount)
