@@ -251,37 +251,6 @@ func continuePrompt(prev string, newline bool) (string, error) {
 }
 */
 
-// This semi cursed function formats our prompt (obviously)
-func fmtPrompt(prompt string) string {
-	host, _ := os.Hostname()
-	cwd, _ := os.Getwd()
-
-	cwd = util.AbbrevHome(cwd)
-	username := curuser.Username
-	// this will be baked into binary since GOOS is a constant
-	if runtime.GOOS == "windows" {
-		username = strings.Split(username, "\\")[1] // for some reason Username includes the hostname on windows
-	}
-
-	args := []string{
-		"d", cwd,
-		"D", filepath.Base(cwd),
-		"h", host,
-		"u", username,
-	}
-
-	for i, v := range args {
-		if i%2 == 0 {
-			args[i] = "%" + v
-		}
-	}
-
-	r := strings.NewReplacer(args...)
-	nprompt := r.Replace(prompt)
-
-	return nprompt
-}
-
 func removeDupes(slice []string) []string {
 	all := make(map[string]bool)
 	newSlice := []string{}

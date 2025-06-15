@@ -110,10 +110,6 @@ func hilbishLoad(rtm *rt.Runtime) (rt.Value, func()) {
 	mod.Set(rt.StringValue("completion"), rt.TableValue(hshcomp))
 	mod.Set(rt.StringValue("completions"), rt.TableValue(hshcomp))
 
-	// hilbish.runner table
-	runnerModule := runnerModeLoader(rtm)
-	mod.Set(rt.StringValue("runner"), rt.TableValue(runnerModule))
-
 	// hilbish.jobs table
 	jobs = newJobHandler()
 	jobModule := jobs.loader(rtm)
