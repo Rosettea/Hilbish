@@ -22,6 +22,27 @@ local t = yarn.thread(print)
 t 'printing from another lua state!'
 ```
 
+## Functions
+|||
+|----|----|
+|<a href="#thread">thread(fun) -> @Thread</a>|Creates a new, fresh Yarn thread.|
+
+<hr>
+<div id='thread'>
+<h4 class='heading'>
+yarn.thread(fun) -> <a href="/Hilbish/docs/api/yarn/#thread" style="text-decoration: none;" id="lol">Thread</a>
+<a href="#thread" class='heading-link'>
+	<i class="fas fa-paperclip"></i>
+</a>
+</h4>
+
+Creates a new, fresh Yarn thread.  
+`fun` is the function that will run in the thread.  
+
+#### Parameters
+This function has no parameters.  
+</div>
+
 ## Types
 <hr>
 
