@@ -26,7 +26,7 @@ pub fn page() -> element.Element(a) {
               ]),
             ],
           ),
-          html.p([attribute.class("text-4xl font-light")], [
+          html.p([attribute.class("text-6xl font-light")], [
             element.text("Something Unique."),
           ]),
         ]),
@@ -58,6 +58,32 @@ pub fn page() -> element.Element(a) {
           ),
         ],
         [element.text("Feature Overview")],
+      ),
+      html.br([]),
+      html.h1(
+        [
+          attribute.class(
+            "mt-3 text-5xl gap-2 font-bold inline-flex justify-center items-center",
+          ),
+        ],
+        [
+          element.text("What Makes "),
+          html.span(
+            [
+              attribute.class(
+                "inline-flex text-pink-500 items-center justify-center h-8",
+              ),
+            ],
+            [
+              html.img([
+                attribute.class("h-8"),
+                attribute.src(conf.base_url_join("hilbish-flower.png")),
+              ]),
+              element.text("Hilbish"),
+            ],
+          ),
+          element.text(" Great?"),
+        ],
       ),
       html.div(
         [
@@ -220,17 +246,7 @@ fn feature_section(
             <> reverse,
           ),
         ],
-        [
-          case image {
-            "" -> element.none()
-            _ ->
-              html.img([
-                attribute.src(image),
-                attribute.class("h-32 rounded-md"),
-              ])
-          },
-          html.p([], [element.text(text)]),
-        ],
+        [html.p([], [element.text(text)])],
       ),
     ],
   )
