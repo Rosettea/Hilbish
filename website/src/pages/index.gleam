@@ -38,7 +38,7 @@ pub fn page() -> element.Element(a) {
           element.text("Extensible, scriptable, configurable: All in Lua."),
         ]),
         html.div([attribute.class("flex flex-row gap-2 mt-2")], [
-          button("Install", "bg-pink-500/30", conf.base_url_join("install")),
+          button("Install", "bg-pink-500/30", conf.base_url_join("/install")),
           button(
             "GitHub",
             "bg-stone-500/30",
@@ -77,7 +77,7 @@ pub fn page() -> element.Element(a) {
             [
               html.img([
                 attribute.class("h-8"),
-                attribute.src(conf.base_url_join("hilbish-flower.png")),
+                attribute.src(conf.base_url_join("/hilbish-flower.png")),
               ]),
               element.text("Hilbish"),
             ],

@@ -3,6 +3,7 @@ import gleam/list
 import gleam/option
 import gleam/order
 import gleam/string
+import util
 
 import glaml
 import lustre/attribute
@@ -34,6 +35,7 @@ pub fn main() {
         _ -> slug
       }
 
+      io.debug(path)
       let assert Ok(content) = simplifile.read(path)
       let frontmatter = djot.frontmatter(content)
       let metadata = case frontmatter {
@@ -72,44 +74,7 @@ pub fn main() {
         option.None -> False
       }
     })
-    |> list.sort(fn(p1, p2) {
-      //io.debug(p1)
-      //io.debug(p2)
-      let assert option.Some(p1_metadata) = { p1.1 }.metadata
-      let p1_weight = case
-        glaml.select_sugar(glaml.document_root(p1_metadata), "weight")
-      {
-        Ok(glaml.NodeInt(w)) -> w
-        _ -> 0
-      }
-
-      let assert option.Some(p2_metadata) = { p2.1 }.metadata
-      let p2_weight = case
-        glaml.select_sugar(glaml.document_root(p2_metadata), "weight")
-      {
-        Ok(glaml.NodeInt(w)) -> w
-        _ -> 0
-      }
-
-      case p1_weight == 0 {
-        True -> {
-          case p1_weight == 0 {
-            True -> order.Eq
-            False ->
-              case p1_weight > p2_weight {
-                True -> order.Lt
-                False -> order.Gt
-              }
-          }
-        }
-        False -> {
-          case p1_weight > p2_weight {
-            True -> order.Lt
-            False -> order.Gt
-          }
-        }
-      }
-    })
+    |> list.sort(util.sort_weight)
 
   let build =
     ssg.new("./public")
@@ -156,7 +121,7 @@ fn nav() -> element.Element(a) {
             [attribute.href("/"), attribute.class("flex items-center gap-1")],
             [
               html.img([
-                attribute.src(conf.base_url_join("hilbish-flower.png")),
+                attribute.src(conf.base_url_join("/hilbish-flower.png")),
                 attribute.class("h-8"),
               ]),
               html.span([attribute.class("self-center text-3xl font-medium")], [
@@ -169,7 +134,7 @@ fn nav() -> element.Element(a) {
       html.div(
         [attribute.class("flex gap-3 dark:text-pink-300 text-pink-600")],
         [
-          html.a([attribute.href(conf.base_url_join(""))], [
+          html.a([attribute.href(conf.base_url_join("/"))], [
             element.text("Home"),
           ]),
           html.a([attribute.href(conf.base_url_join("/install"))], [
@@ -203,7 +168,7 @@ fn footer() -> element.Element(a) {
           ],
           [
             html.img([
-              attribute.src(conf.base_url_join("hilbish-flower.png")),
+              attribute.src(conf.base_url_join("/hilbish-flower.png")),
               attribute.class("h-24"),
             ]),
             html.span([attribute.class("self-center text-6xl")], [
@@ -246,12 +211,12 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
         ]),
         html.link([
           attribute.rel("stylesheet"),
-          attribute.href(conf.base_url_join("tailwind.css")),
+          attribute.href(conf.base_url_join("/tailwind.css")),
         ]),
         html.title([], "Hilbish"),
         html.meta([attribute.name("theme-color"), attribute.content("#ff89dd")]),
         html.meta([
-          attribute.content(conf.base_url_join("hilbish-flower.png")),
+          attribute.content(conf.base_url_join("/hilbish-flower.png")),
           attribute.attribute("property", "og:image"),
         ]),
         html.meta([
