@@ -7,6 +7,7 @@ import lustre/element
 import lustre/element/html
 import lustre/ssg/djot
 
+import conf
 import jot
 import post
 
@@ -50,7 +51,7 @@ pub fn page(p: post.Post, doc_pages_list) -> element.Element(a) {
             [],
             list.map(doc_pages_list, fn(post: #(String, post.Post)) {
               html.li([attribute.class("mb-2")], [
-                html.a([attribute.href(post.0)], [
+                html.a([attribute.href(conf.base_url_join(post.0))], [
                   element.text({ post.1 }.title),
                 ]),
               ])
