@@ -9,6 +9,7 @@ menu:
 
 ## Introduction
 
+
 Commander is the library which handles Hilbish commands. This makes
 the user able to add Lua-written commands to their shell without making
 a separate script in a bin folder. Instead, you may simply use the Commander
@@ -29,7 +30,7 @@ have is: What is the `sinks` parameter?
 The `sinks` parameter is a table with 3 keys: `input`, `out`, and `err`.
 There is an `in` alias to `input`, but it requires using the string accessor syntax (`sinks['in']`)
 as `in` is also a Lua keyword, so `input` is preferred for use.
-All of them are a <a href="/Hilbish/docs/api/hilbish/#sink" style="text-decoration: none;">Sink</a>.
+All of them are a @Sink.
 In the future, `sinks.in` will be removed.
 
 - `in` is the standard input.
@@ -40,49 +41,76 @@ This is usually where command output should go.
 This sink is for writing errors, as the name would suggest.
 
 ## Functions
-|||
-|----|----|
-|<a href="#deregister">deregister(name)</a>|Removes the named command. Note that this will only remove Commander-registered commands.|
-|<a href="#register">register(name, cb)</a>|Adds a new command with the given `name`. When Hilbish has to run a command with a name,|
-|<a href="#registry">registry() -> table</a>|Returns all registered commanders. Returns a list of tables with the following keys:|
 
-<hr>
+``` =html
+<div class='relative overflow-x-auto sm:rounded-lg my-4'>
+<table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+<tbody>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#deregister">deregister(name)</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Removes the named command. Note that this will only remove Commander-registered commands.</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#register">register(name, cb)</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Adds a new command with the given `name`. When Hilbish has to run a command with a name,</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#registry">registry() -> table</a></td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns all registered commanders. Returns a list of tables with the following keys:</td>
+</tr>
+</tbody>
+</table>
+</div>
+```
+
+## Functions
+
+``` =html
+<hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='deregister'>
-<h4 class='heading'>
+<h4 class='text-xl font-medium mb-2'>
 commander.deregister(name)
 <a href="#deregister" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
+```
+
 Removes the named command. Note that this will only remove Commander-registered commands.  
 
 #### Parameters
-`string` **`name`**  
+
+`string` `*name*`  
 Name of the command to remove.
 
-</div>
 
-<hr>
+
+``` =html
+<hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='register'>
-<h4 class='heading'>
+<h4 class='text-xl font-medium mb-2'>
 commander.register(name, cb)
 <a href="#register" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
+```
+
 Adds a new command with the given `name`. When Hilbish has to run a command with a name,  
 it will run the function providing the arguments and sinks.  
 
 #### Parameters
-`string` **`name`**  
+
+`string` `*name*`  
 Name of the command
 
-`function` **`cb`**  
+`function` `*cb*`  
 Callback to handle command invocation
 
 #### Example
+
 ```lua
 -- When you run the command `hello` in the shell, it will print `Hello world`.
 -- If you run it with, for example, `hello Hilbish`, it will print 'Hello Hilbish'
@@ -93,21 +121,25 @@ commander.register('hello', function(args, sinks)
 	sinks.out:writeln('Hello ' .. name)
 end)
 ```
-</div>
 
-<hr>
+
+``` =html
+<hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='registry'>
-<h4 class='heading'>
+<h4 class='text-xl font-medium mb-2'>
 commander.registry() -> table
 <a href="#registry" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
 
+```
+
 Returns all registered commanders. Returns a list of tables with the following keys:  
 - `exec`: The function used to run the commander. Commanders require args and sinks to be passed.  
 
 #### Parameters
+
 This function has no parameters.  
-</div>
+
 
