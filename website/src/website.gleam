@@ -111,7 +111,7 @@ fn nav() -> element.Element(a) {
   html.nav(
     [
       attribute.class(
-        "bg-stone-50/80 dark:bg-neutral-950/80 flex justify-around sticky items-center top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12",
+        "bg-stone-100/80 dark:bg-neutral-950/80 flex justify-around sticky items-center top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12",
       ),
     ],
     [

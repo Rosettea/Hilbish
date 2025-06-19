@@ -48,7 +48,7 @@ pub fn page(p: post.Post, doc_pages_list) -> element.Element(a) {
       html.div(
         [
           attribute.class(
-            "p-4 sm:border-r sm:border-r-zinc-300 col-start-1 row-start-1 bg-neutral-200 dark:bg-neutral-900 basis-2/10 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 sm:translate-x-0 z-30",
+            "p-4 sm:border-r sm:border-r-zinc-300 col-start-1 row-start-1 bg-neutral-100 dark:bg-neutral-950 basis-2/10 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 sm:translate-x-0 z-30",
           ),
         ],
         [
