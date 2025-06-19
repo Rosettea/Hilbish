@@ -1,6 +1,6 @@
 ---
 title: Module hilbish
-description: the core Hilbish API
+description: 
 layout: doc
 menu:
   docs:
@@ -9,8 +9,7 @@ menu:
 
 ## Introduction
 
-The Hilbish module includes the core API, containing
-interfaces and functions which directly relate to shell functionality.
+
 
 ## Functions
 
@@ -81,53 +80,6 @@ interfaces and functions which directly relate to shell functionality.
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
 <td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#which">which(name) -> string</a></td>
 <td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Checks if `name` is a valid command.</td>
-</tr>
-</tbody>
-</table>
-</div>
-```
-
-## Static module fields
-
-``` =html
-<div class='relative overflow-x-auto sm:rounded-lg my-4'>
-<table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
-<tbody>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>ver</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The version of Hilbish</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>goVersion</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The version of Go that Hilbish was compiled with</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>user</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Username of the user</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>host</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Hostname of the machine</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>dataDir</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Directory for Hilbish data files, including the docs and default modules</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>interactive</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Is Hilbish in an interactive shell?</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>login</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Is Hilbish the login shell?</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>vimMode</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Current Vim input mode of Hilbish (will be nil if not in Vim input mode)</td>
-</tr>
-<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>exitCode</td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Exit code of the last executed command</td>
 </tr>
 </tbody>
 </table>
@@ -351,7 +303,9 @@ Note that to set a highlighter, one has to override this function.
 ```lua
 --This code will highlight all double quoted strings in green.
 function hilbish.highlighter(line)
-   return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+
+	return line:gsub('"%w+"', function(c) return lunacolors.green(c) end)
+
 end
 ```
 

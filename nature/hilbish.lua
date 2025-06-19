@@ -3,6 +3,7 @@ local bait = require 'bait'
 local snail = require 'snail'
 
 hilbish.snail = snail.new()
+hilbish.snail:run 'true' -- to "initialize" snail
 bait.catch('hilbish.cd', function(path)
 	hilbish.snail:dir(path)
 end)

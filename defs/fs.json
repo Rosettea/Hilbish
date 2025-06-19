@@ -44,14 +44,14 @@
 						"fields": [
 							"string"
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				],
 				"returns": [
 					{
 						"id": "string",
 						"fields": [],
-						"StartIdx": 4
+						"startIdx": 4
 					}
 				]
 			}
@@ -96,14 +96,14 @@
 							"name",
 							"of."
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				],
 				"returns": [
 					{
 						"id": "string",
 						"fields": [],
-						"StartIdx": 4
+						"startIdx": 4
 					}
 				]
 			}
@@ -143,7 +143,7 @@
 							"directory",
 							"to."
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					}
 				]
 			}
@@ -186,14 +186,14 @@
 							"directory",
 							"for."
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				],
 				"returns": [
 					{
 						"id": "string",
 						"fields": [],
-						"StartIdx": 4
+						"startIdx": 4
 					}
 				]
 			}
@@ -240,7 +240,7 @@
 							"print(matches)",
 							"-- -\u003e {'init.lua', 'code.lua'}"
 						],
-						"StartIdx": 6
+						"startIdx": 6
 					}
 				],
 				"param": [
@@ -254,7 +254,7 @@
 							"files",
 							"with."
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				],
 				"returns": [
@@ -269,7 +269,7 @@
 							"that",
 							"match."
 						],
-						"StartIdx": 4
+						"startIdx": 4
 					}
 				]
 			}
@@ -307,7 +307,7 @@
 							"print(fs.join(hilbish.userDir.config, 'hilbish'))",
 							"-- -\u003e '/home/user/.config/hilbish' on Linux"
 						],
-						"StartIdx": 5
+						"startIdx": 5
 					}
 				],
 				"param": [
@@ -320,7 +320,7 @@
 							"join",
 							"together"
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					}
 				],
 				"returns": [
@@ -331,7 +331,7 @@
 							"joined",
 							"path."
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				]
 			}
@@ -385,7 +385,7 @@
 							"-- foo directory. If recursive is false in this case, it will fail.",
 							"fs.mkdir('./foo/bar', true)"
 						],
-						"StartIdx": 6
+						"startIdx": 6
 					}
 				],
 				"param": [
@@ -398,7 +398,7 @@
 							"the",
 							"directory"
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					},
 					{
 						"id": "recursive",
@@ -414,7 +414,7 @@
 							"provided",
 							"name"
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -435,12 +435,12 @@
 					{
 						"id": "File",
 						"fields": [],
-						"StartIdx": 3
+						"startIdx": 3
 					},
 					{
 						"id": "File",
 						"fields": [],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -469,14 +469,14 @@
 						"fields": [
 							"string"
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					}
 				],
 				"returns": [
 					{
 						"id": "table",
 						"fields": [],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				]
 			}
@@ -524,7 +524,7 @@
 							"}",
 							"]]--"
 						],
-						"StartIdx": 10
+						"startIdx": 10
 					}
 				],
 				"param": [
@@ -533,14 +533,14 @@
 						"fields": [
 							"string"
 						],
-						"StartIdx": 7
+						"startIdx": 7
 					}
 				],
 				"returns": [
 					{
 						"id": "table",
 						"fields": [],
-						"StartIdx": 8
+						"startIdx": 8
 					}
 				]
 			}

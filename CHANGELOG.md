@@ -3,7 +3,30 @@
 ## Unreleased
 ### Added
 - Forward/Right arrow key will fill in hint text (#327)
+- The readline library adds the ability to create custom instances of the Hilbish
+line editor. Now, `hilbish.editor` has been changed to a readline instance, instead of just being a table of a few functions to access it.
+This means the colon operator is now the *preferred* way of accessing its functions,
+and the dot operator will cause errors in 3.0.
+Example: `hilbish.editor.getLine()` should be changed to `hilbish.editor:getLine()`
+before 3.0
+- Added the `hilbish.editor:read` and `hilbish.editor:log(text)` functions.
+- `yarn` threading library (See the docs)
+
+### Changed
+- Documentation for Lunacolors has been improved, with more information added.
 - Values returned by bait hooks will be passed to the `throw` caller
+- `display` property to completion groups entries to style completion entries when type is `list`.
+example:
+```lua
+local cg = {
+	items = {
+		'list item 1',
+		['--command-flag-here'] = {'this does a thing', '--the-flag-alias'},
+		['--styled-command-flag-here'] = {'this does a thing', '--the-flag-alias', display = lunacolors.blue '--styled-command-flag-here'}
+	},
+	type = 'list'
+}
+```
 
 ## [2.3.4] - 2024-12-28
 ### Fixed

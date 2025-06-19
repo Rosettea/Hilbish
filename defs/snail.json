@@ -19,7 +19,7 @@
 					{
 						"id": "",
 						"fields": null,
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -57,7 +57,7 @@
 					{
 						"id": "",
 						"fields": null,
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				],
 				"param": [
@@ -72,7 +72,7 @@
 							"absolute",
 							"path."
 						],
-						"StartIdx": 5
+						"startIdx": 5
 					}
 				]
 			}
@@ -115,7 +115,7 @@
 					{
 						"id": "",
 						"fields": null,
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				],
 				"param": [
@@ -124,14 +124,14 @@
 						"fields": [
 							"string"
 						],
-						"StartIdx": 3
+						"startIdx": 3
 					},
 					{
 						"id": "streams",
 						"fields": [
 							"table"
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}

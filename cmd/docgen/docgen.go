@@ -72,7 +72,7 @@ type docPiece struct {
 type tag struct {
 	Id       string   `json:"id"`
 	Fields   []string `json:"fields"`
-	StartIdx int      `json:"startIdx`
+	StartIdx int      `json:"startIdx"`
 }
 
 var docs = make(map[string]module)
@@ -86,6 +86,8 @@ var prefix = map[string]string{
 	"bait":      "b",
 	"terminal":  "term",
 	"snail":     "snail",
+	"readline":  "rl",
+	"yarn":      "yarn",
 }
 
 func getTagsAndDocs(docs string) (map[string][]tag, []string) {
@@ -220,6 +222,10 @@ func setupDoc(mod string, fun *doc.Func) *docPiece {
 	// i couldnt fit this into the condition below for some reason so here's a goto!
 	if tags["member"] != nil {
 		goto start
+	}
+
+	if prefix[mod] == "" {
+		return nil
 	}
 
 	if (!strings.HasPrefix(fun.Name, prefix[mod]) && tags["interface"] == nil) || (strings.ToLower(fun.Name) == "loader" && tags["interface"] == nil) {

@@ -56,7 +56,7 @@
 							"\tprint 'Goodbye Hilbish!'",
 							"end)"
 						],
-						"StartIdx": 5
+						"startIdx": 5
 					}
 				],
 				"param": [
@@ -70,7 +70,7 @@
 							"the",
 							"hook."
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					},
 					{
 						"id": "cb",
@@ -88,7 +88,7 @@
 							"is",
 							"thrown."
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -145,7 +145,7 @@
 							"the",
 							"event"
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					},
 					{
 						"id": "cb",
@@ -163,7 +163,7 @@
 							"is",
 							"thrown."
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -203,14 +203,14 @@
 							"the",
 							"hook"
 						],
-						"StartIdx": 2
+						"startIdx": 2
 					}
 				],
 				"returns": [
 					{
 						"id": "table\u003cfunction\u003e",
 						"fields": [],
-						"StartIdx": 3
+						"startIdx": 3
 					}
 				]
 			}
@@ -268,7 +268,7 @@
 							"bait.release('event', hookCallback)",
 							"-- and now hookCallback will no longer be ran for the event."
 						],
-						"StartIdx": 7
+						"startIdx": 7
 					}
 				],
 				"param": [
@@ -285,7 +285,7 @@
 							"is",
 							"on"
 						],
-						"StartIdx": 4
+						"startIdx": 4
 					},
 					{
 						"id": "catcher",
@@ -296,7 +296,7 @@
 							"to",
 							"remove"
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
@@ -351,7 +351,7 @@
 							"\tprint('Hello ' .. greetTo)",
 							"end)"
 						],
-						"StartIdx": 5
+						"startIdx": 5
 					}
 				],
 				"param": [
@@ -365,7 +365,7 @@
 							"the",
 							"hook."
 						],
-						"StartIdx": 1
+						"startIdx": 1
 					},
 					{
 						"id": "args",
@@ -379,7 +379,7 @@
 							"the",
 							"hook."
 						],
-						"StartIdx": 0
+						"startIdx": 0
 					}
 				]
 			}
