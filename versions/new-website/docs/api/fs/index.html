@@ -63,7 +63,7 @@ fs.abs(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Returns an absolute version of the <code class="text-violet-600 dark:text-violet-400">path</code>.  
-This can be used to resolve short paths like <code class="text-violet-600 dark:text-violet-400">..</code> to <code class="text-violet-600 dark:text-violet-400">/home/user</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+This can be used to resolve short paths like <code class="text-violet-600 dark:text-violet-400">..</code> to <code class="text-violet-600 dark:text-violet-400">/home/user</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>path</em>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='basename'>
 <h4 class='text-xl font-medium mb-2'>
 fs.basename(path) -> string
@@ -71,7 +71,7 @@ fs.basename(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Returns the &quot;basename,&quot; or the last part of the provided <code class="text-violet-600 dark:text-violet-400">path</code>. If path is empty,  
-<code class="text-violet-600 dark:text-violet-400">.</code> will be returned.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  
+<code class="text-violet-600 dark:text-violet-400">.</code> will be returned.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>path</em>  
 Path to get the base name of.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='cd'>
 <h4 class='text-xl font-medium mb-2'>
@@ -79,7 +79,7 @@ fs.cd(dir)
 <a href="#cd" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Changes Hilbish&#39;s directory to <code class="text-violet-600 dark:text-violet-400">dir</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  
+</h4></div><p>Changes Hilbish&#39;s directory to <code class="text-violet-600 dark:text-violet-400">dir</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>dir</em>  
 Path to change directory to.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='dir'>
 <h4 class='text-xl font-medium mb-2'>
@@ -88,7 +88,7 @@ fs.dir(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Returns the directory part of <code class="text-violet-600 dark:text-violet-400">path</code>. If a file path like  
-<code class="text-violet-600 dark:text-violet-400">~/Documents/doc.txt</code> then this function will return <code class="text-violet-600 dark:text-violet-400">~/Documents</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  
+<code class="text-violet-600 dark:text-violet-400">~/Documents/doc.txt</code> then this function will return <code class="text-violet-600 dark:text-violet-400">~/Documents</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>path</em>  
 Path to get the directory for.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='glob'>
 <h4 class='text-xl font-medium mb-2'>
@@ -97,7 +97,7 @@ fs.glob(pattern) -> matches (table)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Match all files based on the provided <code class="text-violet-600 dark:text-violet-400">pattern</code>.  
-For the syntax&#39; refer to Go&#39;s filepath.Match function: https://pkg.go.dev/path/filepath#Match  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*pattern*</code>  
+For the syntax&#39; refer to Go&#39;s filepath.Match function: https://pkg.go.dev/path/filepath#Match  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>pattern</em>  
 Pattern to compare files with.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Example">Example</h4><pre><code data-lang="lua">--[[
 	Within a folder that contains the following files:
 	a.txt
@@ -115,7 +115,7 @@ fs.join(...path) -> string
 <a href="#join" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Takes any list of paths and joins them based on the operating system&#39;s path separator.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code> (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+</h4></div><p>Takes any list of paths and joins them based on the operating system&#39;s path separator.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>path</em> (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 Paths to join together</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- This prints the directory for Hilbish&#39;s config!
 print(fs.join(hilbish.userDir.config, &#39;hilbish&#39;))
 -- -&gt; &#39;/home/user/.config/hilbish&#39; on Linux
@@ -127,8 +127,8 @@ fs.mkdir(name, recursive)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Creates a new directory with the provided <code class="text-violet-600 dark:text-violet-400">name</code>.  
-With <code class="text-violet-600 dark:text-violet-400">recursive</code>, mkdir will create parent directories.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-Name of the directory</p><p><code class="text-violet-600 dark:text-violet-400">boolean</code> <code class="text-violet-600 dark:text-violet-400">*recursive*</code>  
+With <code class="text-violet-600 dark:text-violet-400">recursive</code>, mkdir will create parent directories.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+Name of the directory</p><p><code class="text-violet-600 dark:text-violet-400">boolean</code> <em>recursive</em>  
 Whether to create parent directories for the provided name</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- This will create the directory foo, then create the directory bar in the
 -- foo directory. If recursive is false in this case, it will fail.
 fs.mkdir(&#39;./foo/bar&#39;, true)
@@ -147,7 +147,7 @@ fs.readdir(path) -> table[string]
 <a href="#readdir" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Returns a list of all files and directories in the provided path.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+</h4></div><p>Returns a list of all files and directories in the provided path.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>dir</em>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='stat'>
 <h4 class='text-xl font-medium mb-2'>
 fs.stat(path) -> {}
@@ -159,7 +159,7 @@ The returned table contains the following values:
 name (string) - Name of the path  
 size (number) - Size of the path in bytes  
 mode (string) - Unix permission mode in an octal format string (with leading 0)  
-isDir (boolean) - If the path is a directory  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*path*</code>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">local inspect = require &#39;inspect&#39;
+isDir (boolean) - If the path is a directory  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>path</em>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">local inspect = require &#39;inspect&#39;
 
 local stat = fs.stat &#39;~&#39;
 print(inspect(stat))

@@ -75,8 +75,8 @@ hilbish.alias(cmd, orig)
 <a href="#alias" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Sets an alias, with a name of <code class="text-violet-600 dark:text-violet-400">cmd</code> to another command.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*cmd*</code>  
-Name of the alias</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*orig*</code>  
+</h4></div><p>Sets an alias, with a name of <code class="text-violet-600 dark:text-violet-400">cmd</code> to another command.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>cmd</em>  
+Name of the alias</p><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>orig</em>  
 Command that will be aliased</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Example">Example</h4><pre><code data-lang="lua">-- With this, &quot;ga file&quot; will turn into &quot;git add file&quot;
 hilbish.alias(&#39;ga&#39;, &#39;git add&#39;)
 
@@ -90,7 +90,7 @@ hilbish.appendPath(dir)
 <a href="#appendPath" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Appends the provided dir to the command path (<code class="text-violet-600 dark:text-violet-400">$PATH</code>)  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string|table</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  
+</h4></div><p>Appends the provided dir to the command path (<code class="text-violet-600 dark:text-violet-400">$PATH</code>)  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string|table</code> <em>dir</em>  
 Directory (or directories) to append to path</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">hilbish.appendPath &#39;~/go/bin&#39;
 -- Will add ~/go/bin to the command path.
 
@@ -110,7 +110,7 @@ hilbish.complete(scope, cb)
 A <code class="text-violet-600 dark:text-violet-400">scope</code> is expected to be <code class="text-violet-600 dark:text-violet-400">command.&lt;cmd&gt;</code>,  
 replacing &lt;cmd&gt; with the name of the command (for example <code class="text-violet-600 dark:text-violet-400">command.git</code>).  
 The documentation for completions, under Features/Completions or <code class="text-violet-600 dark:text-violet-400">doc completions</code>  
-provides more details.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*scope*</code>  </p><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- This is a very simple example. Read the full doc for completions for details.
+provides more details.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>scope</em>  </p><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- This is a very simple example. Read the full doc for completions for details.
 hilbish.complete(&#39;command.sudo&#39;, function(query, ctx, fields)
 	if #fields == 0 then
 		-- complete for commands
@@ -148,7 +148,7 @@ hilbish.exec(cmd)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Replaces the currently running Hilbish instance with the supplied command.  
-This can be used to do an in-place restart.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*cmd*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+This can be used to do an in-place restart.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>cmd</em>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='goro'>
 <h4 class='text-xl font-medium mb-2'>
 hilbish.goro(fn)
@@ -158,7 +158,7 @@ hilbish.goro(fn)
 </h4></div><p>Puts <code class="text-violet-600 dark:text-violet-400">fn</code> in a Goroutine.  
 This can be used to run any function in another thread at the same time as other Lua code.  
 *<strong>NOTE: THIS FUNCTION MAY CRASH HILBISH IF OUTSIDE VARIABLES ARE ACCESSED.</strong>*  
-*<strong>This is a limitation of the Lua runtime.</strong>*  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*fn*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+*<strong>This is a limitation of the Lua runtime.</strong>*  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>fn</em>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='highlighter'>
 <h4 class='text-xl font-medium mb-2'>
 hilbish.highlighter(line)
@@ -169,7 +169,7 @@ hilbish.highlighter(line)
 This is mainly for syntax highlighting, but in reality could set the input  
 of the prompt to <strong>display</strong> anything. The callback is passed the current line  
 and is expected to return a line that will be used as the input display.  
-Note that to set a highlighter, one has to override this function.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*line*</code>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">--This code will highlight all double quoted strings in green.
+Note that to set a highlighter, one has to override this function.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>line</em>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">--This code will highlight all double quoted strings in green.
 function hilbish.highlighter(line)
 
 	return line:gsub(&#39;&quot;%w+&quot;&#39;, function(c) return lunacolors.green(c) end)
@@ -186,7 +186,7 @@ hilbish.hinter(line, pos)
 determine what text to use as an inline hint. It is passed the current  
 line and cursor position. It is expected to return a string which is used  
 as the text for the hint. This is by default a shim. To set hints,  
-override this function with your custom handler.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*line*</code>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <code class="text-violet-600 dark:text-violet-400">*pos*</code>  
+override this function with your custom handler.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>line</em>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <em>pos</em>  
 Position of cursor in line. Usually equals string.len(line)</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- this will display &quot;hi&quot; after the cursor in a dimmed color.
 function hilbish.hinter(line, pos)
 	return &#39;hi&#39;
@@ -200,7 +200,7 @@ hilbish.inputMode(mode)
 </a>
 </h4></div><p>Sets the input mode for Hilbish&#39;s line reader.  
 <code class="text-violet-600 dark:text-violet-400">emacs</code> is the default. Setting it to <code class="text-violet-600 dark:text-violet-400">vim</code> changes behavior of input to be  
-Vim-like with modes and Vim keybinds.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*mode*</code>  
+Vim-like with modes and Vim keybinds.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>mode</em>  
 Can be set to either <code class="text-violet-600 dark:text-violet-400">emacs</code> or <code class="text-violet-600 dark:text-violet-400">vim</code></p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='interval'>
 <h4 class='text-xl font-medium mb-2'>
@@ -209,7 +209,7 @@ hilbish.interval(cb, time) -> @Timer
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Runs the <code class="text-violet-600 dark:text-violet-400">cb</code> function every specified amount of <code class="text-violet-600 dark:text-violet-400">time</code>.  
-This creates a timer that ticking immediately.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <code class="text-violet-600 dark:text-violet-400">*time*</code>  
+This creates a timer that ticking immediately.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <em>time</em>  
 Time in milliseconds.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='multiprompt'>
 <h4 class='text-xl font-medium mb-2'>
@@ -218,7 +218,7 @@ hilbish.multiprompt(str)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Changes the text prompt when Hilbish asks for more input.  
-This will show up when text is incomplete, like a missing quote  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*str*</code>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">--[[
+This will show up when text is incomplete, like a missing quote  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>str</em>  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">--[[
 imagine this is your text input:
 user ~ ∆ echo &quot;hey
 
@@ -240,7 +240,7 @@ hilbish.prependPath(dir)
 <a href="#prependPath" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Prepends <code class="text-violet-600 dark:text-violet-400">dir</code> to $PATH.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*dir*</code>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
+</h4></div><p>Prepends <code class="text-violet-600 dark:text-violet-400">dir</code> to $PATH.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>dir</em>  </p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='prompt'>
 <h4 class='text-xl font-medium mb-2'>
 hilbish.prompt(str, typ)
@@ -252,7 +252,7 @@ There are a few verbs that can be used in the prompt text.
 These will be formatted and replaced with the appropriate values.  
 <code class="text-violet-600 dark:text-violet-400">%d</code> - Current working directory  
 <code class="text-violet-600 dark:text-violet-400">%u</code> - Name of current user  
-<code class="text-violet-600 dark:text-violet-400">%h</code> - Hostname of device  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*str*</code>  </p><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*typ?*</code>  
+<code class="text-violet-600 dark:text-violet-400">%h</code> - Hostname of device  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>str</em>  </p><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>typ?</em>  
 Type of prompt, being left or right. Left by default.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">-- the default hilbish prompt without color
 hilbish.prompt &#39;%u %d ∆&#39;
 -- or something of old:
@@ -267,7 +267,7 @@ hilbish.read(prompt) -> input (string)
 </a>
 </h4></div><p>Read input from the user, using Hilbish&#39;s line editor/input reader.  
 This is a separate instance from the one Hilbish actually uses.  
-Returns <code class="text-violet-600 dark:text-violet-400">input</code>, will be nil if Ctrl-D is pressed, or an error occurs.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*prompt?*</code>  
+Returns <code class="text-violet-600 dark:text-violet-400">input</code>, will be nil if Ctrl-D is pressed, or an error occurs.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>prompt?</em>  
 Text to print before input, can be empty.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='timeout'>
 <h4 class='text-xl font-medium mb-2'>
@@ -276,7 +276,7 @@ hilbish.timeout(cb, time) -> @Timer
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Executed the <code class="text-violet-600 dark:text-violet-400">cb</code> function after a period of <code class="text-violet-600 dark:text-violet-400">time</code>.  
-This creates a Timer that starts ticking immediately.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <code class="text-violet-600 dark:text-violet-400">*time*</code>  
+This creates a Timer that starts ticking immediately.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  </p><p><code class="text-violet-600 dark:text-violet-400">number</code> <em>time</em>  
 Time to run in milliseconds.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='which'>
 <h4 class='text-xl font-medium mb-2'>
@@ -285,7 +285,7 @@ hilbish.which(name) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Checks if <code class="text-violet-600 dark:text-violet-400">name</code> is a valid command.  
-Will return the path of the binary, or a basename if it&#39;s a commander.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  </p><h2 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Types">Types</h2><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'></div><h2 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Sink">Sink</h2><p>A sink is a structure that has input and/or output to/from a desination.</p><h3 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-2xl" id="Methods">Methods</h3><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="autoFlush(auto)">autoFlush(auto)</h4><p>Sets/toggles the option of automatically flushing output.
+Will return the path of the binary, or a basename if it&#39;s a commander.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  </p><h2 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Types">Types</h2><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'></div><h2 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-3xl" id="Sink">Sink</h2><p>A sink is a structure that has input and/or output to/from a desination.</p><h3 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-2xl" id="Methods">Methods</h3><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="autoFlush(auto)">autoFlush(auto)</h4><p>Sets/toggles the option of automatically flushing output.
 A call with no argument will toggle the value.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="flush()">flush()</h4><p>Flush writes all buffered input to the sink.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="read()--&gt;-string">read() -&gt; string</h4><p>Reads a liine of input from the sink.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="readAll()--&gt;-string">readAll() -&gt; string</h4><p>Reads all input from the sink.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="write(str)">write(str)</h4><p>Writes data to a sink.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="writeln(str)">writeln(str)</h4><p>Writes data to a sink with a newline at the end.</p></main></div></div><footer class="py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300"><div class="flex flex-col"><a class="flex items-center gap-1" href="https://rosettea.github.io/Hilbish/versions/new-website"><img class="h-24" src="https://rosettea.github.io/Hilbish/versions/new-website/hilbish-flower.png"><span class="self-center text-6xl">Hilbish</span></a><span class="text-xl">The Moon-powered shell!</span><span class="text-light text-neutral-500">MIT License, copyright sammyette 2025</span></div><div class="flex flex-col"><a href="https://github.com/Rosettea/Hilbish" target="_blank"><span class="inline-flex text-light dark:text-pink-300 dark:hover:text-pink-200 text-pink-600 hover:text-pink-500 hover:underline"><tag><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
 </svg>

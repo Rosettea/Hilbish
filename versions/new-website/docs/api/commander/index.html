@@ -41,7 +41,7 @@ commander.deregister(name)
 <a href="#deregister" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Removes the named command. Note that this will only remove Commander-registered commands.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
+</h4></div><p>Removes the named command. Note that this will only remove Commander-registered commands.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
 Name of the command to remove.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='register'>
 <h4 class='text-xl font-medium mb-2'>
@@ -50,8 +50,8 @@ commander.register(name, cb)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4></div><p>Adds a new command with the given <code class="text-violet-600 dark:text-violet-400">name</code>. When Hilbish has to run a command with a name,  
-it will run the function providing the arguments and sinks.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-Name of the command</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  
+it will run the function providing the arguments and sinks.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+Name of the command</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  
 Callback to handle command invocation</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Example">Example</h4><pre><code data-lang="lua">-- When you run the command `hello` in the shell, it will print `Hello world`.
 -- If you run it with, for example, `hello Hilbish`, it will print &#39;Hello Hilbish&#39;
 commander.register(&#39;hello&#39;, function(args, sinks)

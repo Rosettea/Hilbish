@@ -46,8 +46,8 @@ bait.catch(name, cb)
 <a href="#catch" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Catches an event. This function can be used to act on events.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-The name of the hook.</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  
+</h4></div><p>Catches an event. This function can be used to act on events.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Parameters">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+The name of the hook.</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  
 The function that will be called when the hook is thrown.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl" id="Example">Example</h4><pre><code data-lang="lua">bait.catch(&#39;hilbish.exit&#39;, function()
 	print &#39;Goodbye Hilbish!&#39;
 end)
@@ -58,8 +58,8 @@ bait.catchOnce(name, cb)
 <a href="#catchOnce" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Catches an event, but only once. This will remove the hook immediately after it runs for the first time.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-The name of the event</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*cb*</code>  
+</h4></div><p>Catches an event, but only once. This will remove the hook immediately after it runs for the first time.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+The name of the event</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>cb</em>  
 The function that will be called when the event is thrown.</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='hooks'>
 <h4 class='text-xl font-medium mb-2'>
@@ -67,7 +67,7 @@ bait.hooks(name) -> table
 <a href="#hooks" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Returns a table of functions that are hooked on an event with the corresponding <code class="text-violet-600 dark:text-violet-400">name</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
+</h4></div><p>Returns a table of functions that are hooked on an event with the corresponding <code class="text-violet-600 dark:text-violet-400">name</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
 The name of the hook</p><div><hr class='my-4 text-neutral-400 dark:text-neutral-600'>
 <div id='release'>
 <h4 class='text-xl font-medium mb-2'>
@@ -77,8 +77,8 @@ bait.release(name, catcher)
 </a>
 </h4></div><p>Removes the <code class="text-violet-600 dark:text-violet-400">catcher</code> for the event with <code class="text-violet-600 dark:text-violet-400">name</code>.  
 For this to work, <code class="text-violet-600 dark:text-violet-400">catcher</code> has to be the same function used to catch  
-an event, like one saved to a variable.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-Name of the event the hook is on</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <code class="text-violet-600 dark:text-violet-400">*catcher*</code>  
+an event, like one saved to a variable.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+Name of the event the hook is on</p><p><code class="text-violet-600 dark:text-violet-400">function</code> <em>catcher</em>  
 Hook function to remove</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">local hookCallback = function() print &#39;hi&#39; end
 
 bait.catch(&#39;event&#39;, hookCallback)
@@ -93,8 +93,8 @@ bait.throw(name, ...args)
 <a href="#throw" class='heading-link'>
 	<i class="fas fa-paperclip"></i>
 </a>
-</h4></div><p>Throws a hook with <code class="text-violet-600 dark:text-violet-400">name</code> with the provided <code class="text-violet-600 dark:text-violet-400">args</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <code class="text-violet-600 dark:text-violet-400">*name*</code>  
-The name of the hook.</p><p><code class="text-violet-600 dark:text-violet-400">any</code> <code class="text-violet-600 dark:text-violet-400">*args*</code> (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+</h4></div><p>Throws a hook with <code class="text-violet-600 dark:text-violet-400">name</code> with the provided <code class="text-violet-600 dark:text-violet-400">args</code>.  </p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Parameters</h4><p><code class="text-violet-600 dark:text-violet-400">string</code> <em>name</em>  
+The name of the hook.</p><p><code class="text-violet-600 dark:text-violet-400">any</code> <em>args</em> (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 The arguments to pass to the hook.</p><h4 class="my-1 text-neutral-800 dark:text-neutral-300 font-bold text-xl">Example</h4><pre><code data-lang="lua">bait.throw(&#39;greeting&#39;, &#39;world&#39;)
 
 -- This can then be listened to via
