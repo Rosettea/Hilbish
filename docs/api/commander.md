@@ -44,16 +44,16 @@ In the future, `sinks.in` will be removed.\
 <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
 <tbody>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#deregister">deregister(name)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Removes the named command. Note that this will only remove Commander-registered commands.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#deregister">deregister(name)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Removes the named command. Note that this will only remove Commander-registered commands.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#register">register(name, cb)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Adds a new command with the given `name`. When Hilbish has to run a command with a name,</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#register">register(name, cb)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Adds a new command with the given `name`. When Hilbish has to run a command with a name,</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#registry">registry() -> table</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns all registered commanders. Returns a list of tables with the following keys:</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#registry">registry() -> table</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Returns all registered commanders. Returns a list of tables with the following keys:</td>
 </tr>
 </tbody>
 </table>

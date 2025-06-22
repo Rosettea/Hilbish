@@ -21,8 +21,8 @@ Hilbish functions.
 <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
 <tbody>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#new">new() -> @Snail</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Creates a new Snail instance.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#new">new() -> @Snail</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Creates a new Snail instance.</td>
 </tr>
 </tbody>
 </table>

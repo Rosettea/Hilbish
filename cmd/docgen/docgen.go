@@ -724,7 +724,7 @@ func table(elems [][]string) string {
 	for _, line := range elems {
 		b.WriteString("<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>\n")
 		for _, col := range line {
-			b.WriteString("<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>")
+			b.WriteString("<td class='p-3 font-medium text-black dark:text-white'>")
 			b.WriteString(col)
 			b.WriteString("</td>\n")
 		}

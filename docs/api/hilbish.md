@@ -18,68 +18,68 @@ menu:
 <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
 <tbody>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#alias">alias(cmd, orig)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Sets an alias, with a name of `cmd` to another command.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#alias">alias(cmd, orig)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Sets an alias, with a name of `cmd` to another command.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#appendPath">appendPath(dir)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Appends the provided dir to the command path (`$PATH`)</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#appendPath">appendPath(dir)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Appends the provided dir to the command path (`$PATH`)</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#complete">complete(scope, cb)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Registers a completion handler for the specified scope.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#complete">complete(scope, cb)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Registers a completion handler for the specified scope.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#cwd">cwd() -> string</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns the current directory of the shell.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#cwd">cwd() -> string</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Returns the current directory of the shell.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#exec">exec(cmd)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Replaces the currently running Hilbish instance with the supplied command.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#exec">exec(cmd)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Replaces the currently running Hilbish instance with the supplied command.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#goro">goro(fn)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Puts `fn` in a Goroutine.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#goro">goro(fn)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Puts `fn` in a Goroutine.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#highlighter">highlighter(line)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Line highlighter handler.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#highlighter">highlighter(line)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Line highlighter handler.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#hinter">hinter(line, pos)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The command line hint handler. It gets called on every key insert to</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#hinter">hinter(line, pos)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>The command line hint handler. It gets called on every key insert to</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#inputMode">inputMode(mode)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Sets the input mode for Hilbish's line reader.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#inputMode">inputMode(mode)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Sets the input mode for Hilbish's line reader.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#interval">interval(cb, time) -> @Timer</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Runs the `cb` function every specified amount of `time`.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#interval">interval(cb, time) -> @Timer</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Runs the `cb` function every specified amount of `time`.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#multiprompt">multiprompt(str)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Changes the text prompt when Hilbish asks for more input.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#multiprompt">multiprompt(str)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Changes the text prompt when Hilbish asks for more input.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#prependPath">prependPath(dir)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Prepends `dir` to $PATH.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#prependPath">prependPath(dir)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Prepends `dir` to $PATH.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#prompt">prompt(str, typ)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Changes the shell prompt to the provided string.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#prompt">prompt(str, typ)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Changes the shell prompt to the provided string.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#read">read(prompt) -> input (string)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Read input from the user, using Hilbish's line editor/input reader.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#read">read(prompt) -> input (string)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Read input from the user, using Hilbish's line editor/input reader.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#timeout">timeout(cb, time) -> @Timer</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Executed the `cb` function after a period of `time`.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#timeout">timeout(cb, time) -> @Timer</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Executed the `cb` function after a period of `time`.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#which">which(name) -> string</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Checks if `name` is a valid command.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#which">which(name) -> string</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Checks if `name` is a valid command.</td>
 </tr>
 </tbody>
 </table>

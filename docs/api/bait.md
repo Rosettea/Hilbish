@@ -41,24 +41,24 @@ this function will set the user prompt.
 <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
 <tbody>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#catch">catch(name, cb)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Catches an event. This function can be used to act on events.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#catch">catch(name, cb)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Catches an event. This function can be used to act on events.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#catchOnce">catchOnce(name, cb)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Catches an event, but only once. This will remove the hook immediately after it runs for the first time.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#catchOnce">catchOnce(name, cb)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Catches an event, but only once. This will remove the hook immediately after it runs for the first time.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#hooks">hooks(name) -> table</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Returns a table of functions that are hooked on an event with the corresponding `name`.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#hooks">hooks(name) -> table</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Returns a table of functions that are hooked on an event with the corresponding `name`.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#release">release(name, catcher)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Removes the `catcher` for the event with `name`.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#release">release(name, catcher)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Removes the `catcher` for the event with `name`.</td>
 </tr>
 <tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'><a href="#throw">throw(name, ...args)</a></td>
-<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Throws a hook with `name` with the provided `args`.</td>
+<td class='p-3 font-medium text-black dark:text-white'><a href="#throw">throw(name, ...args)</a></td>
+<td class='p-3 font-medium text-black dark:text-white'>Throws a hook with `name` with the provided `args`.</td>
 </tr>
 </tbody>
 </table>
