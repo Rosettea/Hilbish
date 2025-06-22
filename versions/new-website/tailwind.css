@@ -2405,6 +2405,9 @@
   .text-neutral-800 {
     color: var(--color-neutral-800);
   }
+  .text-pink-400 {
+    color: var(--color-pink-400);
+  }
   .text-pink-500 {
     color: var(--color-pink-500);
   }
