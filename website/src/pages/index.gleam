@@ -173,12 +173,12 @@ pub fn page() -> element.Element(a) {
                 ),
               ],
               [
-                html.div([attribute.class("flex flex-col gap-2")], [
+                html.div([attribute.class("flex flex-col gap-2 items-center")], [
                   html.img([
                     attribute.src(
                       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1200px-Tux.svg.png",
                     ),
-                    attribute.class("h-36"),
+                    attribute.class("h-28 w-fit"),
                   ]),
                   button(
                     "Linux (64-bit)",
@@ -186,12 +186,12 @@ pub fn page() -> element.Element(a) {
                     download_link("linux", "amd64"),
                   ),
                 ]),
-                html.div([attribute.class("flex flex-col gap-2")], [
+                html.div([attribute.class("flex flex-col gap-2 items-center")], [
                   html.img([
                     attribute.src(
                       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg/2321px-Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg.png",
                     ),
-                    attribute.class("h-36"),
+                    attribute.class("h-28 h-28 w-fit"),
                   ]),
                   button(
                     "Windows (64-bit)",
@@ -210,7 +210,7 @@ pub fn page() -> element.Element(a) {
                       attribute.src(
                         "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
                       ),
-                      attribute.class("h-36"),
+                      attribute.class("h-28 h-28 w-fit"),
                     ]),
                     button(
                       "MacOS (64-bit)",
@@ -230,7 +230,7 @@ pub fn page() -> element.Element(a) {
                       attribute.src(
                         "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
                       ),
-                      attribute.class("h-36"),
+                      attribute.class("h-28 h-28 w-fit"),
                     ]),
                     button(
                       "MacOS (ARM)",
