@@ -82,10 +82,10 @@ Catches an event. This function can be used to act on events.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 The name of the hook.
 
-`function` `*cb*`  
+`function` _cb_  
 The function that will be called when the hook is thrown.
 
 #### Example
@@ -113,10 +113,10 @@ Catches an event, but only once. This will remove the hook immediately after it 
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 The name of the event
 
-`function` `*cb*`  
+`function` _cb_  
 The function that will be called when the event is thrown.
 
 
@@ -137,7 +137,7 @@ Returns a table of functions that are hooked on an event with the corresponding 
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 The name of the hook
 
 
@@ -160,10 +160,10 @@ an event, like one saved to a variable.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 Name of the event the hook is on
 
-`function` `*catcher*`  
+`function` _catcher_  
 Hook function to remove
 
 #### Example
@@ -195,10 +195,10 @@ Throws a hook with `name` with the provided `args`.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 The name of the hook.
 
-`any` `*args*` (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+`any` _args_ (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 The arguments to pass to the hook.
 
 #### Example

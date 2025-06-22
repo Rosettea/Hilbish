@@ -81,7 +81,7 @@ Removes the named command. Note that this will only remove Commander-registered 
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 Name of the command to remove.
 
 
@@ -103,10 +103,10 @@ it will run the function providing the arguments and sinks.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 Name of the command
 
-`function` `*cb*`  
+`function` _cb_  
 Callback to handle command invocation
 
 #### Example

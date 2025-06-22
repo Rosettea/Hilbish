@@ -649,7 +649,7 @@ func generateFile(v module) {
 					typ = p.Type[3:]
 				}
 
-				f.WriteString(fmt.Sprintf("`%s` `*%s*`", typ, p.Name))
+				f.WriteString(fmt.Sprintf("`%s` _%s_", typ, p.Name))
 				if isVariadic {
 					f.WriteString(" (This type is variadic. You can pass an infinite amount of parameters with this type.)")
 				}

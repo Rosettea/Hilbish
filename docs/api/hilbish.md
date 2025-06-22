@@ -104,10 +104,10 @@ Sets an alias, with a name of `cmd` to another command.
 
 #### Parameters
 
-`string` `*cmd*`  
+`string` _cmd_  
 Name of the alias
 
-`string` `*orig*`  
+`string` _orig_  
 Command that will be aliased
 
 #### Example
@@ -138,7 +138,7 @@ Appends the provided dir to the command path (`$PATH`)
 
 #### Parameters
 
-`string|table` `*dir*`  
+`string|table` _dir_  
 Directory (or directories) to append to path
 
 #### Example
@@ -175,10 +175,10 @@ provides more details.
 
 #### Parameters
 
-`string` `*scope*`  
+`string` _scope_  
 
 
-`function` `*cb*`  
+`function` _cb_  
 
 
 #### Example
@@ -246,7 +246,7 @@ This can be used to do an in-place restart.
 
 #### Parameters
 
-`string` `*cmd*`  
+`string` _cmd_  
 
 
 
@@ -270,7 +270,7 @@ This can be used to run any function in another thread at the same time as other
 
 #### Parameters
 
-`function` `*fn*`  
+`function` _fn_  
 
 
 
@@ -295,7 +295,7 @@ Note that to set a highlighter, one has to override this function.
 
 #### Parameters
 
-`string` `*line*`  
+`string` _line_  
 
 
 #### Example
@@ -330,10 +330,10 @@ override this function with your custom handler.
 
 #### Parameters
 
-`string` `*line*`  
+`string` _line_  
 
 
-`number` `*pos*`  
+`number` _pos_  
 Position of cursor in line. Usually equals string.len(line)
 
 #### Example
@@ -364,7 +364,7 @@ Vim-like with modes and Vim keybinds.
 
 #### Parameters
 
-`string` `*mode*`  
+`string` _mode_  
 Can be set to either `emacs` or `vim`
 
 
@@ -386,10 +386,10 @@ This creates a timer that ticking immediately.
 
 #### Parameters
 
-`function` `*cb*`  
+`function` _cb_  
 
 
-`number` `*time*`  
+`number` _time_  
 Time in milliseconds.
 
 
@@ -411,7 +411,7 @@ This will show up when text is incomplete, like a missing quote
 
 #### Parameters
 
-`string` `*str*`  
+`string` _str_  
 
 
 #### Example
@@ -451,7 +451,7 @@ Prepends `dir` to $PATH.
 
 #### Parameters
 
-`string` `*dir*`  
+`string` _dir_  
 
 
 
@@ -477,10 +477,10 @@ These will be formatted and replaced with the appropriate values.
 
 #### Parameters
 
-`string` `*str*`  
+`string` _str_  
 
 
-`string` `*typ?*`  
+`string` _typ?_  
 Type of prompt, being left or right. Left by default.
 
 #### Example
@@ -512,7 +512,7 @@ Returns `input`, will be nil if Ctrl-D is pressed, or an error occurs.
 
 #### Parameters
 
-`string` `*prompt?*`  
+`string` _prompt?_  
 Text to print before input, can be empty.
 
 
@@ -534,10 +534,10 @@ This creates a Timer that starts ticking immediately.
 
 #### Parameters
 
-`function` `*cb*`  
+`function` _cb_  
 
 
-`number` `*time*`  
+`number` _time_  
 Time to run in milliseconds.
 
 
@@ -559,7 +559,7 @@ Will return the path of the binary, or a basename if it's a commander.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 
 
 

@@ -99,7 +99,7 @@ This can be used to resolve short paths like `..` to `/home/user`.
 
 #### Parameters
 
-`string` `*path*`  
+`string` _path_  
 
 
 
@@ -121,7 +121,7 @@ Returns the "basename," or the last part of the provided `path`. If path is empt
 
 #### Parameters
 
-`string` `*path*`  
+`string` _path_  
 Path to get the base name of.
 
 
@@ -142,7 +142,7 @@ Changes Hilbish's directory to `dir`.
 
 #### Parameters
 
-`string` `*dir*`  
+`string` _dir_  
 Path to change directory to.
 
 
@@ -164,7 +164,7 @@ Returns the directory part of `path`. If a file path like
 
 #### Parameters
 
-`string` `*path*`  
+`string` _path_  
 Path to get the directory for.
 
 
@@ -186,7 +186,7 @@ For the syntax' refer to Go's filepath.Match function: https://pkg.go.dev/path/f
 
 #### Parameters
 
-`string` `*pattern*`  
+`string` _pattern_  
 Pattern to compare files with.
 
 #### Example
@@ -221,7 +221,7 @@ Takes any list of paths and joins them based on the operating system's path sepa
 
 #### Parameters
 
-`string` `*path*` (This type is variadic. You can pass an infinite amount of parameters with this type.)  
+`string` _path_ (This type is variadic. You can pass an infinite amount of parameters with this type.)  
 Paths to join together
 
 #### Example
@@ -250,10 +250,10 @@ With `recursive`, mkdir will create parent directories.
 
 #### Parameters
 
-`string` `*name*`  
+`string` _name_  
 Name of the directory
 
-`boolean` `*recursive*`  
+`boolean` _recursive_  
 Whether to create parent directories for the provided name
 
 #### Example
@@ -301,7 +301,7 @@ Returns a list of all files and directories in the provided path.
 
 #### Parameters
 
-`string` `*dir*`  
+`string` _dir_  
 
 
 
@@ -327,7 +327,7 @@ isDir (boolean) - If the path is a directory
 
 #### Parameters
 
-`string` `*path*`  
+`string` _path_  
 
 
 #### Example
