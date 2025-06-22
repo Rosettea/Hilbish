@@ -14,23 +14,26 @@ pub fn page() -> element.Element(a) {
         ),
       ],
       [
-        html.div([attribute.class("gap-1 flex flex-col items-center")], [
-          html.span(
-            [attribute.class("flex flex-row items-center justify-center")],
-            [
-              html.img([
-                attribute.src("./hilbish-flower.png"),
-                attribute.class("h-20"),
-              ]),
-              html.p([attribute.class("text-4xl font-bold")], [
-                element.text("Hilbish"),
-              ]),
-            ],
-          ),
-          html.p([attribute.class("text-6xl font-light")], [
-            element.text("Something Unique."),
-          ]),
-        ]),
+        html.div(
+          [attribute.class("gap-1 flex flex-col items-center text-center")],
+          [
+            html.span(
+              [attribute.class("flex flex-row items-center justify-center")],
+              [
+                html.img([
+                  attribute.src("./hilbish-flower.png"),
+                  attribute.class("h-20"),
+                ]),
+                html.p([attribute.class("text-4xl font-bold")], [
+                  element.text("Hilbish"),
+                ]),
+              ],
+            ),
+            html.p([attribute.class("text-6xl font-light")], [
+              element.text("Something Unique."),
+            ]),
+          ],
+        ),
         html.p([attribute.class("text-center")], [
           element.text(
             "Hilbish is the new Moon-powered interactive shell for Lua fans!",
@@ -55,7 +58,7 @@ pub fn page() -> element.Element(a) {
         ]),
       ],
     ),
-    html.div([attribute.class("text-center")], [
+    html.div([attribute.class("py-4 text-center border-b border-b-zinc-300")], [
       html.span(
         [
           attribute.class(
@@ -68,14 +71,14 @@ pub fn page() -> element.Element(a) {
       html.div(
         [
           attribute.class(
-            "flex flex-col justify-center items-center gap-6 mt-4",
+            "min-h-screen flex flex-col justify-around items-center gap-6",
           ),
         ],
         [
           html.h1(
             [
               attribute.class(
-                "mt-3 text-5xl gap-2 font-bold inline-flex justify-center items-center",
+                "mt-3 text-5xl gap-2 font-bold inline-flex flex-wrap justify-center items-center",
               ),
             ],
             [
@@ -133,7 +136,7 @@ pub fn page() -> element.Element(a) {
     html.div(
       [
         attribute.class(
-          "border-t border-t-zinc-300 text-center bg-neutral-100 dark:bg-neutral-900 -mx-4 p-4",
+          "-mx-4 px-4 py-8 -mt-4 text-center border-b border-b-zinc-300 bg-neutral-100 dark:bg-neutral-900",
         ),
       ],
       [
@@ -145,97 +148,102 @@ pub fn page() -> element.Element(a) {
           ],
           [element.text("Download It Now!")],
         ),
-        html.div([attribute.class("flex flex-col items-center mt-4 gap-2")], [
-          html.p([attribute.class("md:w-3/6")], [
-            element.text(
-              "To find out all that Hilbish can do, you should just try it out! It's officially available on Linux, MacOS, Windows, and probably builds on anything Go is available on!",
-            ),
-          ]),
-          html.h2([attribute.class("text-3xl font-semibold")], [
-            element.text("Featured Downloads"),
-          ]),
-          html.p([], [
-            element.text(
-              "These are \"portable\" binary releases of Hilbish from GitHub. All the required files are in the archive. Put it somewhere, add the directory to your $PATH, and use Hilbish.",
-            ),
-          ]),
-          html.div(
-            [
-              attribute.class(
-                "mt-6 flex flex-row flex-wrap items-center justify-center gap-8",
+        html.div(
+          [attribute.class("h-full flex flex-col items-center mt-8 gap-6")],
+          [
+            html.p([attribute.class("md:w-3/6")], [
+              element.text(
+                "To find out all that Hilbish can do, you should just try it out! It's officially available on Linux, MacOS, Windows, and probably builds on anything Go is available on!",
               ),
-            ],
-            [
-              html.div([attribute.class("flex flex-col gap-2")], [
-                html.img([
-                  attribute.src(
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1200px-Tux.svg.png",
-                  ),
-                  attribute.class("h-36"),
-                ]),
-                button(
-                  "Linux (64-bit)",
-                  "bg-stone-500/30 hover:bg-stone-500/80",
-                  download_link("linux", "amd64"),
+            ]),
+            html.div([], [
+              html.h2([attribute.class("text-3xl font-semibold")], [
+                element.text("Featured Downloads"),
+              ]),
+              html.p([attribute.class("sm:w-1/2 justify-self-center")], [
+                element.text(
+                  "These are \"portable\" binary releases of Hilbish from GitHub. All the required files are in the archive. Put it somewhere, add the directory to your $PATH, and use Hilbish.",
                 ),
               ]),
-              html.div([attribute.class("flex flex-col gap-2")], [
-                html.img([
-                  attribute.src(
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg/2321px-Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg.png",
-                  ),
-                  attribute.class("h-36"),
-                ]),
-                button(
-                  "Windows (64-bit)",
-                  "bg-stone-500/30 hover:bg-stone-500/80",
-                  download_link("windows", "amd64"),
+            ]),
+            html.div(
+              [
+                attribute.class(
+                  "mt-6 flex flex-row flex-wrap items-center justify-center gap-8",
                 ),
-              ]),
-              html.div(
-                [
-                  attribute.class(
-                    "flex flex-col gap-2 justify-center items-center",
-                  ),
-                ],
-                [
+              ],
+              [
+                html.div([attribute.class("flex flex-col gap-2")], [
                   html.img([
                     attribute.src(
-                      "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
+                      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/1200px-Tux.svg.png",
                     ),
                     attribute.class("h-36"),
                   ]),
                   button(
-                    "MacOS (64-bit)",
+                    "Linux (64-bit)",
                     "bg-stone-500/30 hover:bg-stone-500/80",
-                    download_link("darwin", "amd64"),
+                    download_link("linux", "amd64"),
                   ),
-                ],
-              ),
-              html.div(
-                [
-                  attribute.class(
-                    "flex flex-col gap-2 justify-center items-center",
-                  ),
-                ],
-                [
+                ]),
+                html.div([attribute.class("flex flex-col gap-2")], [
                   html.img([
                     attribute.src(
-                      "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
+                      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg/2321px-Unofficial_Windows_logo_variant_-_2002%E2%80%932012_%28Multicolored%29.svg.png",
                     ),
                     attribute.class("h-36"),
                   ]),
                   button(
-                    "MacOS (ARM)",
+                    "Windows (64-bit)",
                     "bg-stone-500/30 hover:bg-stone-500/80",
-                    download_link("darwin", "arm64"),
+                    download_link("windows", "amd64"),
                   ),
-                ],
-              ),
-            ],
-          ),
-          util.link(conf.base_url_join("/install"), "Other Downloads", True),
-        ]),
+                ]),
+                html.div(
+                  [
+                    attribute.class(
+                      "flex flex-col gap-2 justify-center items-center",
+                    ),
+                  ],
+                  [
+                    html.img([
+                      attribute.src(
+                        "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
+                      ),
+                      attribute.class("h-36"),
+                    ]),
+                    button(
+                      "MacOS (64-bit)",
+                      "bg-stone-500/30 hover:bg-stone-500/80",
+                      download_link("darwin", "amd64"),
+                    ),
+                  ],
+                ),
+                html.div(
+                  [
+                    attribute.class(
+                      "flex flex-col gap-2 justify-center items-center",
+                    ),
+                  ],
+                  [
+                    html.img([
+                      attribute.src(
+                        "https://images.seeklogo.com/logo-png/38/2/apple-mac-os-logo-png_seeklogo-381401.png",
+                      ),
+                      attribute.class("h-36"),
+                    ]),
+                    button(
+                      "MacOS (ARM)",
+                      "bg-stone-500/30 hover:bg-stone-500/80",
+                      download_link("darwin", "arm64"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            util.link(conf.base_url_join("/install"), "Other Downloads", True),
+          ],
+        ),
       ],
     ),
   ])
