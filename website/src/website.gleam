@@ -35,7 +35,6 @@ pub fn main() {
         _ -> slug
       }
 
-      io.debug(path)
       let assert Ok(content) = simplifile.read(path)
       let frontmatter = djot.frontmatter(content)
       let metadata = case frontmatter {
@@ -82,10 +81,10 @@ pub fn main() {
     |> ssg.add_static_route("/", create_page(index.page()))
     |> list.fold(posts, _, fn(config, post) {
       let page = case is_doc_page(post.0) {
-        True -> doc.page(post.1, doc_pages)
-        False -> doc.page(post.1, doc_pages)
+        True -> doc.page(post.1, post.0, doc_pages)
+        False -> doc.page(post.1, post.0, doc_pages)
       }
-      io.debug(post.0)
+      //io.debug(post.0)
       ssg.add_static_route(config, post.0, create_page(page))
     })
     |> ssg.use_index_routes

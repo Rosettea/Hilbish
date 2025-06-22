@@ -16,7 +16,11 @@ import jot
 import post
 import util
 
-pub fn page(p: post.Post, doc_pages_list) -> element.Element(a) {
+pub fn page(
+  p: post.Post,
+  this_slug: String,
+  doc_pages_list,
+) -> element.Element(a) {
   html.div([attribute.class("flex-auto flex flex-col overflow-none")], [
     html.div(
       [
@@ -103,16 +107,37 @@ pub fn page(p: post.Post, doc_pages_list) -> element.Element(a) {
                   })
                   |> list.first()
                 [
-                  html.li([attribute.class("font-bold")], [
-                    html.a(
-                      [
-                        attribute.href(conf.base_url_join(
-                          { parent_post.1 }.slug,
-                        )),
-                      ],
-                      [element.text({ parent_post.1 }.title)],
-                    ),
-                  ]),
+                  html.li(
+                    [
+                      attribute.class(
+                        "font-bold"
+                        <> case this_slug == { parent_post.1 }.slug {
+                          False -> {
+                            ""
+                          }
+                          True -> " text-pink-400"
+                        },
+                      ),
+                    ],
+                    [
+                      html.a(
+                        [
+                          attribute.href(conf.base_url_join(
+                            { parent_post.1 }.slug,
+                          )),
+                        ],
+                        [
+                          element.text(
+                            case this_slug == { parent_post.1 }.slug {
+                              False -> ""
+                              True -> " -> "
+                            }
+                            <> { parent_post.1 }.title,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   case list.length(group.1) {
                     1 -> element.none()
                     _ ->
@@ -123,12 +148,33 @@ pub fn page(p: post.Post, doc_pages_list) -> element.Element(a) {
                             { p1.1 }.title != { parent_post.1 }.title
                           })
                           |> list.map(fn(post: #(String, post.Post)) {
-                            html.li([attribute.class("mb-2")], [
-                              html.a(
-                                [attribute.href(conf.base_url_join(post.0))],
-                                [element.text({ post.1 }.title)],
-                              ),
-                            ])
+                            html.li(
+                              [
+                                attribute.class(
+                                  "mb-2"
+                                  <> case this_slug == { post.1 }.slug {
+                                    False -> {
+                                      ""
+                                    }
+                                    True -> " text-pink-400"
+                                  },
+                                ),
+                              ],
+                              [
+                                html.a(
+                                  [attribute.href(conf.base_url_join(post.0))],
+                                  [
+                                    element.text(
+                                      case this_slug == { post.1 }.slug {
+                                        False -> ""
+                                        True -> " -> "
+                                      }
+                                      <> { post.1 }.title,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
                           }),
                       )
                   },
