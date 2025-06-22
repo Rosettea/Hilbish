@@ -13,15 +13,19 @@ menu:
 Bait is the event emitter for Hilbish. Much like Node.js and
 its `events` system, many actions in Hilbish emit events.
 Unlike Node.js, Hilbish events are global. So make sure to
-pick a unique name!
+pick a unique name!\
+ \
 
 Usage of the Bait module consists of userstanding
 event-driven architecture, but it's pretty simple:
 If you want to act on a certain event, you can `catch` it.
-You can act on events via callback functions.
+You can act on events via callback functions.\
+ \
 
 Examples of this are in the Hilbish default config!
-Consider this part of it:
+Consider this part of it:\
+ \
+
 ```lua
 bait.catch('command.exit', function(code)
 	running = false
@@ -75,6 +79,7 @@ bait.catch(name, cb)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -106,6 +111,7 @@ bait.catchOnce(name, cb)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -130,6 +136,7 @@ bait.hooks(name) -> table
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -151,6 +158,7 @@ bait.release(name, catcher)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -188,6 +196,7 @@ bait.throw(name, ...args)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 

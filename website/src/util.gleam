@@ -6,6 +6,7 @@ import lustre/attribute
 import lustre/element
 import lustre/element/html
 
+import conf
 import glaml
 import post
 
@@ -65,6 +66,77 @@ pub fn link(url: String, text: String, out: Bool) {
           element.text(text),
         ],
       ),
+    ],
+  )
+}
+
+pub fn nav() -> element.Element(a) {
+  html.nav(
+    [
+      attribute.class(
+        "bg-stone-100/80 dark:bg-neutral-950/80 flex justify-around sticky items-center top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12",
+      ),
+    ],
+    [
+      html.div([attribute.class("flex my-auto px-2")], [
+        html.div([], [
+          html.a(
+            [attribute.href("/"), attribute.class("flex items-center gap-1")],
+            [
+              html.img([
+                attribute.src(conf.base_url_join("/hilbish-flower.png")),
+                attribute.class("h-8"),
+              ]),
+              html.span([attribute.class("self-center text-3xl font-medium")], [
+                element.text("Hilbish"),
+              ]),
+            ],
+          ),
+        ]),
+      ]),
+      html.div([attribute.class("flex gap-3")], [
+        link(conf.base_url_join("/install"), "Install", False),
+        link(conf.base_url_join("/docs"), "Docs", False),
+        link(conf.base_url_join("/blog"), "Blog", False),
+      ]),
+    ],
+  )
+}
+
+pub fn footer() -> element.Element(a) {
+  html.footer(
+    [
+      attribute.class(
+        "py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300",
+      ),
+    ],
+    [
+      html.div([attribute.class("flex flex-col")], [
+        html.a(
+          [
+            attribute.href(conf.base_url),
+            attribute.class("flex items-center gap-1"),
+          ],
+          [
+            html.img([
+              attribute.src(conf.base_url_join("/hilbish-flower.png")),
+              attribute.class("h-24"),
+            ]),
+            html.span([attribute.class("self-center text-6xl")], [
+              element.text("Hilbish"),
+            ]),
+          ],
+        ),
+        html.span([attribute.class("text-xl")], [
+          element.text("The Moon-powered shell!"),
+        ]),
+        html.span([attribute.class("text-light text-neutral-500")], [
+          element.text("MIT License, copyright sammyette 2025"),
+        ]),
+      ]),
+      html.div([attribute.class("flex flex-col")], [
+        link("https://github.com/Rosettea/Hilbish", "GitHub", True),
+      ]),
     ],
   )
 }

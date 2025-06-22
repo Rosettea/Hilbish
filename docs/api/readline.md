@@ -41,6 +41,7 @@ readline.new() -> @Readline
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 

@@ -56,8 +56,20 @@ pub fn main() {
         option.None -> ""
       }
 
+      let description = case metadata {
+        option.Some(metadata) -> {
+          case
+            glaml.select_sugar(glaml.document_root(metadata), "description")
+          {
+            Ok(glaml.NodeStr(s)) -> s
+            _ -> ""
+          }
+        }
+        option.None -> ""
+      }
+
       let assert Ok(filename) = path |> string.split("/") |> list.last
-      #(slug, post.Post(name, title, slug, metadata, content))
+      #(slug, post.Post(name, description, title, slug, metadata, content))
     })
 
   let doc_pages =
@@ -78,14 +90,18 @@ pub fn main() {
   let build =
     ssg.new("./public")
     |> ssg.add_static_dir("static")
-    |> ssg.add_static_route("/", create_page(index.page()))
+    |> ssg.add_static_route("/", create_page(index.page(), False))
     |> list.fold(posts, _, fn(config, post) {
       let page = case is_doc_page(post.0) {
         True -> doc.page(post.1, post.0, doc_pages)
         False -> doc.page(post.1, post.0, doc_pages)
       }
       //io.debug(post.0)
-      ssg.add_static_route(config, post.0, create_page(page))
+      ssg.add_static_route(
+        config,
+        post.0,
+        create_page(page, is_doc_page(post.0)),
+      )
     })
     |> ssg.use_index_routes
     |> ssg.build
@@ -106,78 +122,10 @@ fn is_doc_page(slug: String) {
   }
 }
 
-fn nav() -> element.Element(a) {
-  html.nav(
-    [
-      attribute.class(
-        "bg-stone-100/80 dark:bg-neutral-950/80 flex justify-around sticky items-center top-0 w-full z-50 border-b border-b-zinc-300 backdrop-blur-md h-12",
-      ),
-    ],
-    [
-      html.div([attribute.class("flex my-auto px-2")], [
-        html.div([], [
-          html.a(
-            [attribute.href("/"), attribute.class("flex items-center gap-1")],
-            [
-              html.img([
-                attribute.src(conf.base_url_join("/hilbish-flower.png")),
-                attribute.class("h-8"),
-              ]),
-              html.span([attribute.class("self-center text-3xl font-medium")], [
-                element.text("Hilbish"),
-              ]),
-            ],
-          ),
-        ]),
-      ]),
-      html.div([attribute.class("flex gap-3")], [
-        util.link(conf.base_url_join("/install"), "Install", False),
-        util.link(conf.base_url_join("/docs"), "Docs", False),
-        util.link(conf.base_url_join("/blog"), "Blog", False),
-      ]),
-    ],
-  )
-}
-
-fn footer() -> element.Element(a) {
-  html.footer(
-    [
-      attribute.class(
-        "py-4 px-6 flex flex-row justify-around border-t border-t-zinc-300",
-      ),
-    ],
-    [
-      html.div([attribute.class("flex flex-col")], [
-        html.a(
-          [
-            attribute.href(conf.base_url),
-            attribute.class("flex items-center gap-1"),
-          ],
-          [
-            html.img([
-              attribute.src(conf.base_url_join("/hilbish-flower.png")),
-              attribute.class("h-24"),
-            ]),
-            html.span([attribute.class("self-center text-6xl")], [
-              element.text("Hilbish"),
-            ]),
-          ],
-        ),
-        html.span([attribute.class("text-xl")], [
-          element.text("The Moon-powered shell!"),
-        ]),
-        html.span([attribute.class("text-light text-neutral-500")], [
-          element.text("MIT License, copyright sammyette 2025"),
-        ]),
-      ]),
-      html.div([attribute.class("flex flex-col")], [
-        util.link("https://github.com/Rosettea/Hilbish", "GitHub", True),
-      ]),
-    ],
-  )
-}
-
-fn create_page(content: element.Element(a)) -> element.Element(a) {
+fn create_page(
+  content: element.Element(a),
+  doc_page: Bool,
+) -> element.Element(a) {
   let description =
     "Something Unique. Hilbish is the new interactive shell for Lua fans. Extensible, scriptable, configurable: All in Lua."
 
@@ -236,10 +184,13 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
           attribute.attribute("property", "og:url"),
         ]),
       ]),
-      html.body([attribute.class("min-h-screen flex flex-col")], [
-        nav(),
+      html.body([attribute.class("h-screen flex flex-col")], [
+        util.nav(),
         content,
-        footer(),
+        case doc_page {
+          True -> element.none()
+          False -> util.footer()
+        },
       ]),
     ],
   )

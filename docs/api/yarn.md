@@ -49,6 +49,7 @@ yarn.thread(fun) -> @Thread
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 

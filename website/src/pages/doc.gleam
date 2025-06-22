@@ -21,7 +21,7 @@ pub fn page(
   this_slug: String,
   doc_pages_list,
 ) -> element.Element(a) {
-  html.div([attribute.class("flex-auto flex flex-col overflow-none")], [
+  html.div([attribute.class("flex-1 flex flex-col overflow-hidden")], [
     html.div(
       [
         attribute.class(
@@ -43,7 +43,7 @@ pub fn page(
         html.span([attribute.class("font-bold")], [element.text(p.title)]),
       ],
     ),
-    html.div([attribute.class("h-full sm:flex grid")], [
+    html.div([attribute.class("flex-1 sm:flex grid overflow-hidden")], [
       html.input([
         attribute.type_("checkbox"),
         attribute.id("sidebar-toggle"),
@@ -52,7 +52,7 @@ pub fn page(
       html.div(
         [
           attribute.class(
-            "p-4 sm:border-r sm:border-r-zinc-300 col-start-1 row-start-1 bg-neutral-100 dark:bg-neutral-950 basis-2/10 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 sm:translate-x-0 z-30",
+            "overflow-y-scroll p-4 sm:border-r sm:border-r-zinc-300 col-start-1 row-start-1 bg-neutral-100 dark:bg-neutral-950 basis-2/10 transition-transform duration-300 -translate-x-full peer-checked:translate-x-0 sm:translate-x-0 z-30",
           ),
         ],
         [
@@ -187,18 +187,24 @@ pub fn page(
       html.main(
         [
           attribute.class(
-            "mb-4 h-full overflow-y-auto basis-7/7 col-start-1 row-start-1 transition-all duration-300 peer-checked:filter peer-checked:blur-sm peer-checked:bg-black/30 px-4 pt-2",
+            "flex-1 flex justify-center basis-7/7 col-start-1 row-start-1 transition-all duration-300 peer-checked:filter peer-checked:blur-sm peer-checked:bg-black/30",
           ),
         ],
         [
-          html.h1([attribute.class("my-3 font-bold text-4xl")], [
-            element.text(p.title),
+          html.div([attribute.class("flex-1 flex flex-col overflow-y-auto")], [
+            // todo: add date of publishing
+            //html.time([], [])
+            //html.small([], [element.text({{p.contents |> string.split(" ") |> list.length} / 200} |> int.to_string <> " min read")]),
+            //element.unsafe_raw_html("namespace", "Tag", [], render_doc(p.contents))
+            html.div([attribute.class("flex-1 w-3/4 self-center p-8")], [
+              html.h1([attribute.class("my-3 font-bold text-4xl")], [
+                element.text(p.title),
+              ]),
+              html.i([], [element.text(p.description)]),
+              ..render_doc(p.contents)
+            ]),
+            util.footer(),
           ]),
-          // todo: add date of publishing
-          //html.time([], [])
-          //html.small([], [element.text({{p.contents |> string.split(" ") |> list.length} / 200} |> int.to_string <> " min read")]),
-          //element.unsafe_raw_html("namespace", "Tag", [], render_doc(p.contents))
-          ..render_doc(p.contents)
         ],
       ),
     ]),
@@ -218,7 +224,8 @@ fn render_doc(md: String) {
         }
 
         let margin = case level {
-          1 -> "my-2"
+          1 -> "my-4"
+          2 -> "my-2"
           _ -> "my-1"
         }
 

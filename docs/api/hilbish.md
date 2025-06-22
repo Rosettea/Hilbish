@@ -1,6 +1,6 @@
 ---
 title: Module hilbish
-description: 
+description: the core Hilbish API
 layout: doc
 menu:
   docs:
@@ -9,7 +9,8 @@ menu:
 
 ## Introduction
 
-
+The Hilbish module includes the core API, containing
+interfaces and functions which directly relate to shell functionality.
 
 ## Functions
 
@@ -86,6 +87,53 @@ menu:
 </div>
 ```
 
+## Static module fields
+
+``` =html
+<div class='relative overflow-x-auto sm:rounded-lg my-4'>
+<table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+<tbody>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>ver</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The version of Hilbish</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>goVersion</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>The version of Go that Hilbish was compiled with</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>user</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Username of the user</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>host</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Hostname of the machine</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>dataDir</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Directory for Hilbish data files, including the docs and default modules</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>interactive</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Is Hilbish in an interactive shell?</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>login</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Is Hilbish the login shell?</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>vimMode</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Current Vim input mode of Hilbish (will be nil if not in Vim input mode)</td>
+</tr>
+<tr class='bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200'>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>exitCode</td>
+<td class='p-3 font-medium text-black whitespace-nowrap dark:text-white'>Exit code of the last executed command</td>
+</tr>
+</tbody>
+</table>
+</div>
+```
+
 ## Functions
 
 ``` =html
@@ -97,6 +145,7 @@ hilbish.alias(cmd, orig)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -131,6 +180,7 @@ hilbish.appendPath(dir)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -164,6 +214,7 @@ hilbish.complete(scope, cb)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -219,6 +270,7 @@ hilbish.cwd() -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -238,6 +290,7 @@ hilbish.exec(cmd)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -260,6 +313,7 @@ hilbish.goro(fn)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -284,6 +338,7 @@ hilbish.highlighter(line)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -319,6 +374,7 @@ hilbish.hinter(line, pos)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -355,6 +411,7 @@ hilbish.inputMode(mode)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -378,6 +435,7 @@ hilbish.interval(cb, time) -> @Timer
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -403,6 +461,7 @@ hilbish.multiprompt(str)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -444,6 +503,7 @@ hilbish.prependPath(dir)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -465,6 +525,7 @@ hilbish.prompt(str, typ)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -503,6 +564,7 @@ hilbish.read(prompt) -> input (string)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -526,6 +588,7 @@ hilbish.timeout(cb, time) -> @Timer
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -551,6 +614,7 @@ hilbish.which(name) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 

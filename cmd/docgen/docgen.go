@@ -403,7 +403,7 @@ func main() {
 					shortDesc := piece.Doc[0]
 					desc := piece.Doc[1:]
 					interfaceModules[modname].ShortDescription = shortDesc
-					interfaceModules[modname].Description = strings.Join(desc, "\n")
+					interfaceModules[modname].Description = strings.Replace(strings.Join(desc, "\n"), "<nl>", "\\\n \\", -1)
 					interfaceModules[modname].Fields = piece.Fields
 					interfaceModules[modname].Properties = piece.Properties
 					continue
@@ -441,7 +441,7 @@ func main() {
 					Types:            filteredTypePieces,
 					Docs:             filteredPieces,
 					ShortDescription: shortDesc,
-					Description:      strings.Join(desc, "\n"),
+					Description:      strings.Replace(strings.Join(desc, "\n"), "<nl>", "\\\n \\", -1),
 					HasInterfaces:    hasInterfaces,
 					Properties:       docPieceTag("property", tags),
 					Fields:           docPieceTag("field", tags),
@@ -627,6 +627,7 @@ func generateFile(v module) {
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 `, htmlSig, dps.FuncName))
 			f.WriteString("```\n\n")

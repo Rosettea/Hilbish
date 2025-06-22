@@ -91,6 +91,7 @@ fs.abs(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -113,6 +114,7 @@ fs.basename(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -135,6 +137,7 @@ fs.cd(dir)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -156,6 +159,7 @@ fs.dir(path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -178,6 +182,7 @@ fs.glob(pattern) -> matches (table)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -214,6 +219,7 @@ fs.join(...path) -> string
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -242,6 +248,7 @@ fs.mkdir(name, recursive)
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -274,6 +281,7 @@ fs.fpipe() -> File, File
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -294,6 +302,7 @@ fs.readdir(path) -> table[string]
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -315,6 +324,7 @@ fs.stat(path) -> {}
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 

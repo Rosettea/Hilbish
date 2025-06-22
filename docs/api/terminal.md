@@ -49,6 +49,7 @@ terminal.restoreState()
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -68,6 +69,7 @@ terminal.saveState()
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -87,6 +89,7 @@ terminal.setRaw()
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
@@ -106,6 +109,7 @@ terminal.size()
 	<i class="fas fa-paperclip"></i>
 </a>
 </h4>
+</div>
 
 ```
 
