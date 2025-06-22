@@ -737,9 +737,6 @@
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
-  .mb-4 {
-    margin-bottom: calc(var(--spacing) * 4);
-  }
   .mb-8 {
     margin-bottom: calc(var(--spacing) * 8);
   }
@@ -877,9 +874,6 @@
   .h-auto {
     height: auto;
   }
-  .h-full {
-    height: 100%;
-  }
   .h-lh {
     height: 1lh;
   }
@@ -912,6 +906,9 @@
   }
   .min-h-screen {
     min-height: 100vh;
+  }
+  .w-3\/4 {
+    width: calc(3/4 * 100%);
   }
   .w-\[100px\] {
     width: 100px;
@@ -1543,6 +1540,9 @@
   }
   .overflow-y-auto {
     overflow-y: auto;
+  }
+  .overflow-y-scroll {
+    overflow-y: scroll;
   }
   .scroll-auto {
     scroll-behavior: auto;
@@ -2179,9 +2179,6 @@
   }
   .pt-0 {
     padding-top: calc(var(--spacing) * 0);
-  }
-  .pt-2 {
-    padding-top: calc(var(--spacing) * 2);
   }
   .pt-6 {
     padding-top: calc(var(--spacing) * 6);
