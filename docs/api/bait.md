@@ -15,16 +15,13 @@ its `events` system, many actions in Hilbish emit events.
 Unlike Node.js, Hilbish events are global. So make sure to
 pick a unique name!\
  \
-
 Usage of the Bait module consists of userstanding
 event-driven architecture, but it's pretty simple:
 If you want to act on a certain event, you can `catch` it.
 You can act on events via callback functions.\
  \
-
 Examples of this are in the Hilbish default config!
-Consider this part of it:\
- \
+Consider this part of it:
 
 ```lua
 bait.catch('command.exit', function(code)

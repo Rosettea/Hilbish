@@ -3,7 +3,8 @@
 Commander is the library which handles Hilbish commands. This makes
 the user able to add Lua-written commands to their shell without making
 a separate script in a bin folder. Instead, you may simply use the Commander
-library in your Hilbish config.<nl>
+library in your Hilbish config.
+
 ```lua
 local commander = require 'commander'
 
