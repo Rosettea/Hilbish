@@ -81,7 +81,10 @@ pub fn nav() -> element.Element(a) {
       html.div([attribute.class("flex my-auto px-2")], [
         html.div([], [
           html.a(
-            [attribute.href("/"), attribute.class("flex items-center gap-1")],
+            [
+              attribute.href(conf.base_url_join("/")),
+              attribute.class("flex items-center gap-1"),
+            ],
             [
               html.img([
                 attribute.src(conf.base_url_join("/hilbish-flower.png")),
