@@ -486,7 +486,7 @@ func main() {
 		f.WriteString(`---
 title: API
 layout: doc
-weight: -100
+weight: -70
 menu: docs
 ---
 
