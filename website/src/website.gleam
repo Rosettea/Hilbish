@@ -131,23 +131,11 @@ fn nav() -> element.Element(a) {
           ),
         ]),
       ]),
-      html.div(
-        [attribute.class("flex gap-3 dark:text-pink-300 text-pink-600")],
-        [
-          html.a([attribute.href(conf.base_url_join("/"))], [
-            element.text("Home"),
-          ]),
-          html.a([attribute.href(conf.base_url_join("/install"))], [
-            element.text("Install"),
-          ]),
-          html.a([attribute.href(conf.base_url_join("/docs"))], [
-            element.text("Docs"),
-          ]),
-          html.a([attribute.href(conf.base_url_join("/blog"))], [
-            element.text("Blog"),
-          ]),
-        ],
-      ),
+      html.div([attribute.class("flex gap-3")], [
+        util.link(conf.base_url_join("/install"), "Install", False),
+        util.link(conf.base_url_join("/docs"), "Docs", False),
+        util.link(conf.base_url_join("/blog"), "Blog", False),
+      ]),
     ],
   )
 }
@@ -184,7 +172,7 @@ fn footer() -> element.Element(a) {
         ]),
       ]),
       html.div([attribute.class("flex flex-col")], [
-        link("https://github.com/Rosettea/Hilbish", "GitHub"),
+        util.link("https://github.com/Rosettea/Hilbish", "GitHub", True),
       ]),
     ],
   )
@@ -256,12 +244,4 @@ fn create_page(content: element.Element(a)) -> element.Element(a) {
       ]),
     ],
   )
-}
-
-fn link(url: String, text: String) {
-  html.a([attribute.href(url)], [
-    html.span([attribute.class("text-pink-300 text-light")], [
-      element.text(text),
-    ]),
-  ])
 }

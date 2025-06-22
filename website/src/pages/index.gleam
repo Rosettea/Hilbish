@@ -1,4 +1,5 @@
 import conf
+import util
 
 import lustre/attribute
 import lustre/element
@@ -38,10 +39,14 @@ pub fn page() -> element.Element(a) {
           element.text("Extensible, scriptable, configurable: All in Lua."),
         ]),
         html.div([attribute.class("flex flex-row gap-2 mt-2")], [
-          button("Install", "bg-pink-500/30", conf.base_url_join("/install")),
+          button(
+            "Install",
+            "bg-pink-500/30 hover:bg-pink-500/80",
+            conf.base_url_join("/install"),
+          ),
           button(
             "GitHub",
-            "bg-stone-500/30",
+            "bg-stone-500/30 hover:bg-stone-500/80",
             "https://github.com/Rosettea/Hilbish",
           ),
         ]),
@@ -60,31 +65,6 @@ pub fn page() -> element.Element(a) {
         [element.text("Feature Overview")],
       ),
       html.br([]),
-      html.h1(
-        [
-          attribute.class(
-            "mt-3 text-5xl gap-2 font-bold inline-flex justify-center items-center",
-          ),
-        ],
-        [
-          element.text("What Makes "),
-          html.span(
-            [
-              attribute.class(
-                "inline-flex text-pink-500 items-center justify-center h-8",
-              ),
-            ],
-            [
-              html.img([
-                attribute.class("h-8"),
-                attribute.src(conf.base_url_join("/hilbish-flower.png")),
-              ]),
-              element.text("Hilbish"),
-            ],
-          ),
-          element.text(" Great?"),
-        ],
-      ),
       html.div(
         [
           attribute.class(
@@ -92,6 +72,31 @@ pub fn page() -> element.Element(a) {
           ),
         ],
         [
+          html.h1(
+            [
+              attribute.class(
+                "mt-3 text-5xl gap-2 font-bold inline-flex justify-center items-center",
+              ),
+            ],
+            [
+              element.text("What Makes "),
+              html.span(
+                [
+                  attribute.class(
+                    "inline-flex text-pink-500 items-center justify-center h-8",
+                  ),
+                ],
+                [
+                  html.img([
+                    attribute.class("h-8"),
+                    attribute.src(conf.base_url_join("/hilbish-flower.png")),
+                  ]),
+                  element.text("Hilbish"),
+                ],
+              ),
+              element.text(" Great?"),
+            ],
+          ),
           feature_section(
             "The Moon-powered shell",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Lua-Logo.svg/2048px-Lua-Logo.svg.png",
@@ -128,7 +133,7 @@ pub fn page() -> element.Element(a) {
     html.div(
       [
         attribute.class(
-          "text-center bg-neutral-100 dark:bg-neutral-900 -mx-4 p-4",
+          "border-t border-t-zinc-300 text-center bg-neutral-100 dark:bg-neutral-900 -mx-4 p-4",
         ),
       ],
       [
@@ -151,7 +156,7 @@ pub fn page() -> element.Element(a) {
           ]),
           html.p([], [
             element.text(
-              "These are binary releases of Hilbish from GitHub. Install instructions are located at an INSTALL.md file.",
+              "These are \"portable\" binary releases of Hilbish from GitHub. All the required files are in the archive. Put it somewhere, add the directory to your $PATH, and use Hilbish.",
             ),
           ]),
           html.div(
@@ -168,7 +173,11 @@ pub fn page() -> element.Element(a) {
                   ),
                   attribute.class("h-36"),
                 ]),
-                button("Linux (64-bit)", "bg-stone-500/30", ""),
+                button(
+                  "Linux (64-bit)",
+                  "bg-stone-500/30 hover:bg-stone-500/80",
+                  download_link("linux", "amd64"),
+                ),
               ]),
               html.div([attribute.class("flex flex-col gap-2")], [
                 html.img([
@@ -177,7 +186,11 @@ pub fn page() -> element.Element(a) {
                   ),
                   attribute.class("h-36"),
                 ]),
-                button("Windows (64-bit)", "bg-stone-500/30", ""),
+                button(
+                  "Windows (64-bit)",
+                  "bg-stone-500/30 hover:bg-stone-500/80",
+                  download_link("windows", "amd64"),
+                ),
               ]),
               html.div(
                 [
@@ -192,7 +205,11 @@ pub fn page() -> element.Element(a) {
                     ),
                     attribute.class("h-36"),
                   ]),
-                  button("MacOS (64-bit)", "bg-stone-500/30", ""),
+                  button(
+                    "MacOS (64-bit)",
+                    "bg-stone-500/30 hover:bg-stone-500/80",
+                    download_link("darwin", "amd64"),
+                  ),
                 ],
               ),
               html.div(
@@ -208,11 +225,16 @@ pub fn page() -> element.Element(a) {
                     ),
                     attribute.class("h-36"),
                   ]),
-                  button("MacOS (ARM)", "bg-stone-500/30", ""),
+                  button(
+                    "MacOS (ARM)",
+                    "bg-stone-500/30 hover:bg-stone-500/80",
+                    download_link("darwin", "arm64"),
+                  ),
                 ],
               ),
             ],
           ),
+          util.link(conf.base_url_join("/install"), "Other Downloads", True),
         ]),
       ],
     ),
@@ -234,7 +256,8 @@ fn feature_section(
   html.div(
     [
       attribute.class(
-        "flex flex-col gap-2 md:w-3/6 text-start xl:items-" <> align,
+        "flex flex-col gap-2 md:w-3/6 text-start xl:items-",
+        // <> align,
       ),
     ],
     [
@@ -242,8 +265,8 @@ fn feature_section(
       html.div(
         [
           attribute.class(
-            "flex flex-row flex-wrap xl:flex-nowrap justify-center items-center gap-4 "
-            <> reverse,
+            "flex flex-row flex-wrap xl:flex-nowrap justify-center items-center gap-4 ",
+            //<> reverse,
           ),
         ],
         [html.p([], [element.text(text)])],
@@ -263,4 +286,13 @@ fn button(text: String, color: String, link: String) -> element.Element(a) {
       [element.text(text)],
     ),
   ])
+}
+
+fn download_link(os: String, arch: String) -> String {
+  // TODO: remove version in asset name when 3.0 drops
+  "https://github.com/Rosettea/Hilbish/releases/download/latest/hilbish-v2.3.4-"
+  <> os
+  <> "-"
+  <> arch
+  <> ".tar.gz"
 }
