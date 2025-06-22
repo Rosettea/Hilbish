@@ -156,11 +156,11 @@ pub fn page() -> element.Element(a) {
                 "To find out all that Hilbish can do, you should just try it out! It's officially available on Linux, MacOS, Windows, and probably builds on anything Go is available on!",
               ),
             ]),
-            html.div([], [
+            html.div([attribute.class("sm:w-1/2 text-center")], [
               html.h2([attribute.class("text-3xl font-semibold")], [
                 element.text("Featured Downloads"),
               ]),
-              html.p([attribute.class("sm:w-1/2 justify-self-center")], [
+              html.p([], [
                 element.text(
                   "These are \"portable\" binary releases of Hilbish from GitHub. All the required files are in the archive. Put it somewhere, add the directory to your $PATH, and use Hilbish.",
                 ),
