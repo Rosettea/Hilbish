@@ -183,6 +183,8 @@ fn create_page(
           attribute.content(conf.base_url),
           attribute.attribute("property", "og:url"),
         ]),
+        // disable dark reader
+        html.meta([attribute.name("darkreader-lock")]),
       ]),
       html.body([attribute.class("h-screen flex flex-col")], [
         util.nav(),
